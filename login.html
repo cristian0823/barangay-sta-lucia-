@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #059669;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            width: fit-content;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #047857;
+        }
+
+        .login-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 44px 40px;
+            box-shadow: 0 8px 40px rgba(16, 185, 129, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #d1fae5;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-ring {
+            width: 88px;
+            height: 88px;
+            border-radius: 22px;
+            overflow: hidden;
+            border: 3px solid #e1ffe6;
+            margin: 0 auto 18px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .logo-ring img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #064e3b;
+            margin-bottom: 6px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Alert boxes */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1f2937;
+            background: #fafafa;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #10b981;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .remember-row input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #10b981;
+            cursor: pointer;
+        }
+
+        .remember-row label {
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .login-footer p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .login-footer a {
+            color: #059669;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateY(80px);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        #toast.success {
+            background: #10b981;
+            color: #fff;
+        }
+
+        #toast.error {
+            background: #ef4444;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <a href="index.html" class="back-link">← Back to Home</a>
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-ring">
+                    <img src="barangay.jpg" alt="Barangay Logo">
+                </div>
+                <h2>Welcome Back!</h2>
+                <p>Sign in to access barangay services</p>
+            </div>
+
+            <form id="loginForm">
+                <input type="hidden" id="csrfToken" name="csrfToken">
+
+                <div id="attemptsWarning" class="alert alert-warning hidden">
+                    ⚠️ <span id="attemptsCount">3</span> attempts remaining before account lockout.
+                </div>
+                <div id="lockoutWarning" class="alert alert-danger hidden">
+                    🔒 Account locked. Try again in <span id="lockoutTime">15</span> minutes.
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required placeholder="Enter your username" autocomplete="username"
+                        maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Enter your password"
+                        autocomplete="current-password" maxlength="128">
+                </div>
+                <div class="remember-row">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Remember me for 30 days</label>
+                </div>
+                <button type="submit" id="loginBtn" class="btn-login">Sign In →</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="signup.html">Register here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const SECURITY = { maxAttempts: 5, lockoutDuration: 15 * 60 * 1000 };
+
+        function generateCSRFToken() {
+            const token = crypto.randomUUID();
+            document.getElementById('csrfToken').value = token;
+            sessionStorage.setItem('csrfToken', token);
+        }
+
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        function validateUsername(username) {
+            return /^[a-zA-Z0-9_]{3,50}$/.test(username);
+        }
+
+        function getLoginAttempts() {
+            const a = localStorage.getItem('loginAttempts');
+            return a ? JSON.parse(a) : { count: 0, lockedUntil: null, username: '' };
+        }
+
+        function saveLoginAttempts(a) { localStorage.setItem('loginAttempts', JSON.stringify(a)); }
+
+        function updateAttemptsWarning() {
+            const a = getLoginAttempts();
+            const warn = document.getElementById('attemptsWarning');
+            const lock = document.getElementById('lockoutWarning');
+            const btn = document.getElementById('loginBtn');
+            if (a.lockedUntil && Date.now() < a.lockedUntil) {
+                warn.classList.add('hidden'); lock.classList.remove('hidden');
+                btn.disabled = true; btn.textContent = '🔒 Account Locked';
+                document.getElementById('lockoutTime').textContent = Math.ceil((a.lockedUntil - Date.now()) / 60000);
+                return true;
+            } else if (a.count >= 2) {
+                warn.classList.remove('hidden'); lock.classList.add('hidden');
+                document.getElementById('attemptsCount').textContent = SECURITY.maxAttempts - a.count;
+                btn.disabled = false; btn.textContent = 'Sign In →';
+                return false;
+            }
+            warn.classList.add('hidden'); lock.classList.add('hidden');
+            btn.disabled = false; btn.textContent = 'Sign In →';
+            return false;
+        }
+
+        function resetLoginAttempts() { saveLoginAttempts({ count: 0, lockedUntil: null, username: '' }); updateAttemptsWarning(); }
+
+        function recordFailedAttempt(username) {
+            const a = getLoginAttempts();
+            if (a.username !== username) { a.count = 0; a.username = username; }
+            a.count++;
+            if (a.count >= SECURITY.maxAttempts) a.lockedUntil = Date.now() + SECURITY.lockoutDuration;
+            saveLoginAttempts(a); updateAttemptsWarning();
+        }
+
+        function showToast(message, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = type; t.textContent = message;
+            t.style.transform = 'translateY(0)';
+            setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
+        }
+
+        const user = getCurrentUser();
+        if (user) redirectToDashboard();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            generateCSRFToken();
+            updateAttemptsWarning();
+            document.getElementById('username').addEventListener('input', function (e) {
+                e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+            });
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
+            const username = sanitizeInput(document.getElementById('username').value.trim());
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            if (!validateUsername(username)) { showToast('Invalid username format.', 'error'); return; }
+            if (!password) { showToast('Please enter your password.', 'error'); return; }
+            const result = await loginUser(username, password, rememberMe);
+            if (result.success) {
+                resetLoginAttempts();
+                showToast('✅ Login successful! Redirecting...', 'success');
+                setTimeout(() => redirectToDashboard(), 1000);
+            } else {
+                recordFailedAttempt(username);
+                showToast(result.message, 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

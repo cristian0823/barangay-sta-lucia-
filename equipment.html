@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Borrowing - Barangay Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .equipment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-emerald-600 to-emerald-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <img src="barangay.jpg" alt="Barangay Logo" class="w-10 h-10 rounded-full border-2 border-white">
+                    <span class="text-xl font-bold">Barangay Services</span>
+                </div>
+                <ul class="flex space-x-6">
+                    <li><a href="home.html" class="hover:text-blue-200 transition">Home</a></li>
+                    <li><a href="equipment.html" class="text-yellow-400 font-semibold">Equipment</a></li>
+                    <li><a href="concerns.html" class="hover:text-blue-200 transition">Concerns</a></li>
+                    <li><a href="court-scheduling.html" class="hover:text-blue-200 transition">Court Booking</a></li>
+                    <li id="adminLink" class="hidden"><a href="admin.html"
+                            class="hover:text-blue-200 transition">Admin</a></li>
+                    <li><a href="#" id="logoutBtn" class="hover:text-red-300 transition">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🪑 Equipment Borrowing</h1>
+            <p class="text-gray-600">Request barangay equipment for your events and activities</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+                <p id="pendingCount" class="text-4xl font-bold text-yellow-600">0</p>
+                <p class="text-gray-500 mt-2">Pending Requests</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+                <p id="approvedCount" class="text-4xl font-bold text-green-600">0</p>
+                <p class="text-gray-500 mt-2">Approved</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+                <p id="rejectedCount" class="text-4xl font-bold text-red-600">0</p>
+                <p class="text-gray-500 mt-2">Rejected</p>
+            </div>
+        </div>
+
+        <!-- Available Equipment -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">📦 Available Equipment</h2>
+            <div id="equipmentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Equipment rendered here -->
+            </div>
+        </div>
+
+        <!-- My Requests -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">📋 My Equipment Requests</h2>
+            <div id="myRequestsList" class="space-y-4">
+                <!-- Requests rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Borrowing Modal -->
+    <div id="borrowModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Request Equipment</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+
+            <div id="modalEquipmentInfo" class="mb-4 p-3 bg-blue-50 rounded-lg">
+                <!-- Equipment info -->
+            </div>
+
+            <form id="borrowForm" class="space-y-4">
+                <input type="hidden" id="modalEquipmentId">
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Quantity</label>
+                    <input type="number" id="borrowQuantity" min="1" value="1" required
+                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                    <p id="availableQty" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Purpose</label>
+                    <textarea id="borrowPurpose" required placeholder="Describe the purpose of borrowing..."
+                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none h-24"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Borrow Date</label>
+                        <input type="date" id="borrowDate" required
+                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Return Date</label>
+                        <input type="date" id="returnDate" required
+                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl transition">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300">
+        <!-- Toast message -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let currentEquipment = null;
+
+        // Custom toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500'
+            };
+            toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300`;
+            toast.textContent = message;
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(5rem)';
+            }, 3000);
+        }
+
+        // Check authentication
+        const user = getCurrentUser();
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+
+        // Show admin link for admins
+        if (user && user.role === 'admin') {
+            document.getElementById('adminLink').classList.remove('hidden');
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function (e) {
+            e.preventDefault();
+            logoutUser();
+        });
+
+        // Set minimum dates
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('borrowDate').min = today;
+        document.getElementById('returnDate').min = today;
+
+        // Load data
+        (async function init() {
+            await loadEquipment();
+            await loadMyRequests();
+            await updateStats();
+        })();
+
+        // Load equipment
+        async function loadEquipment() {
+            const equipment = await getEquipment();
+            const container = document.getElementById('equipmentList');
+
+            let html = '';
+            equipment.forEach(item => {
+                const availablePercent = Math.round((item.available / item.quantity) * 100);
+                const colorClass = availablePercent > 50 ? 'bg-green-500' : availablePercent > 25 ? 'bg-yellow-500' : 'bg-red-500';
+                const isAvailable = item.available > 0;
+
+                html += `
+                    <div class="equipment-card border-2 border-gray-200 rounded-xl p-5 transition-all duration-300 ${isAvailable ? 'hover:border-blue-400' : 'opacity-60'}">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">${item.icon}</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-lg">${item.name}</h4>
+                                    <p class="text-sm text-gray-500">${item.description}</p>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-blue-600">${item.available}/${item.quantity}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div class="${colorClass} h-2 rounded-full transition" style="width: ${availablePercent}%"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-4">${item.available} available</p>
+                        <button onclick="openBorrowModal(${item.id})" 
+                            class="w-full ${isAvailable ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' : 'bg-gray-400 cursor-not-allowed'} text-white font-bold py-3 rounded-xl transition"
+                            ${!isAvailable ? 'disabled' : ''}>
+                            ${isAvailable ? '📝 Request Equipment' : '❌ Not Available'}
+                        </button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Open borrow modal
+        async function openBorrowModal(equipmentId) {
+            const equipment = await getEquipment();
+            currentEquipment = equipment.find(e => e.id === equipmentId);
+
+            if (!currentEquipment) return;
+
+            document.getElementById('modalEquipmentId').value = equipmentId;
+            document.getElementById('modalEquipmentInfo').innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span class="text-3xl">${currentEquipment.icon}</span>
+                    <div>
+                        <h4 class="font-bold text-gray-800">${currentEquipment.name}</h4>
+                        <p class="text-sm text-gray-600">Available: ${currentEquipment.available} / ${currentEquipment.quantity}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('availableQty').textContent = `Maximum: ${currentEquipment.available}`;
+            document.getElementById('borrowQuantity').max = currentEquipment.available;
+            document.getElementById('borrowQuantity').value = 1;
+            document.getElementById('borrowPurpose').value = '';
+            document.getElementById('borrowDate').value = today;
+            document.getElementById('returnDate').value = today;
+
+            document.getElementById('borrowModal').classList.remove('hidden');
+            document.getElementById('borrowModal').classList.add('flex');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('borrowModal').classList.add('hidden');
+            document.getElementById('borrowModal').classList.remove('flex');
+            currentEquipment = null;
+        }
+
+        // Submit borrow request
+        document.getElementById('borrowForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const equipmentId = parseInt(document.getElementById('modalEquipmentId').value);
+            const quantity = parseInt(document.getElementById('borrowQuantity').value);
+            const purpose = document.getElementById('borrowPurpose').value;
+            const borrowDate = document.getElementById('borrowDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+
+            if (returnDate < borrowDate) {
+                showToast('Return date must be after borrow date', 'error');
+                return;
+            }
+
+            const result = await borrowEquipment(equipmentId, quantity, borrowDate, returnDate, purpose);
+
+            if (result.success) {
+                showToast(result.message, 'success');
+                closeModal();
+                await loadEquipment();
+                await loadMyRequests();
+                await updateStats();
+            } else {
+                showToast(result.message, 'error');
+            }
+        });
+
+        // Load my requests
+        async function loadMyRequests() {
+            const borrowings = await getMyBorrowings();
+            const container = document.getElementById('myRequestsList');
+
+            if (borrowings.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No equipment requests yet.</p>';
+                return;
+            }
+
+            borrowings.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
+
+            let html = '';
+            borrowings.forEach(borrowing => {
+                const statusColors = {
+                    pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                    approved: 'bg-green-100 text-green-800 border-green-300',
+                    rejected: 'bg-red-100 text-red-800 border-red-300',
+                    returned: 'bg-blue-100 text-blue-800 border-blue-300'
+                };
+
+                const statusIcons = {
+                    pending: '⏳',
+                    approved: '✅',
+                    rejected: '❌',
+                    returned: '📦'
+                };
+
+                html += `
+                    <div class="border-2 border-gray-200 rounded-xl p-5 hover:shadow-lg transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">🪑</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-lg">${borrowing.equipment}</h4>
+                                    <p class="text-sm text-gray-500">Quantity: ${borrowing.quantity}</p>
+                                </div>
+                            </div>
+                            <span class="px-4 py-2 rounded-full text-sm font-semibold border ${statusColors[borrowing.status]}">
+                                ${statusIcons[borrowing.status]} ${borrowing.status.charAt(0).toUpperCase() + borrowing.status.slice(1)}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-3 text-sm">
+                            <div>
+                                <p class="text-gray-500">Borrow Date:</p>
+                                <p class="font-medium">${formatDate(borrowing.borrowDate)}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Return Date:</p>
+                                <p class="font-medium">${formatDate(borrowing.returnDate)}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-3"><strong>Purpose:</strong> ${borrowing.purpose}</p>
+                        ${borrowing.status === 'pending' ? `
+                            <button onclick="cancelRequest(${borrowing.id})" class="text-red-500 hover:text-red-700 text-sm font-medium">
+                                ❌ Cancel Request
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Cancel request
+        async function cancelRequest(borrowingId) {
+            if (confirm('Are you sure you want to cancel this request?')) {
+                const result = await cancelBorrowingRequest(borrowingId);
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    await loadEquipment();
+                    await loadMyRequests();
+                    await updateStats();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            }
+        }
+
+        // Update stats
+        async function updateStats() {
+            const borrowings = await getMyBorrowings();
+
+            document.getElementById('pendingCount').textContent = borrowings.filter(b => b.status === 'pending').length;
+            document.getElementById('approvedCount').textContent = borrowings.filter(b => b.status === 'approved').length;
+            document.getElementById('rejectedCount').textContent = borrowings.filter(b => b.status === 'rejected').length;
+        }
+
+        // Close modal on outside click
+        document.getElementById('borrowModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+
+</html>

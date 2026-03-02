@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-xl: #047857;
+            --primary-50: #f0fdf4;
+            --primary-100: #dcfce7;
+            --primary-200: #bbf7d0;
+            --text: #1a2e1f;
+            --text-secondary: #4b5563;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --surface: #fff;
+            --bg: #f0fdf4;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --warning-bg: #fffbeb;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --transition: all 0.25s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER - Same as user dashboard */
+        .dashboard-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--primary-200);
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-200);
+            object-fit: cover;
+        }
+
+        .header-brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-brand .brand {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-xl);
+        }
+
+        .header-brand .subtitle {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 16px;
+            border-right: 1px solid var(--border);
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            border: 3px solid var(--primary-200);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            border-color: var(--primary-200);
+            color: var(--primary-xl);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* MAIN */
+        .dashboard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 28px 32px;
+        }
+
+        /* BANNER */
+        .admin-banner {
+            background: linear-gradient(135deg, var(--primary-xl), #065f46);
+            padding: 28px 32px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 24px rgba(5, 150, 105, 0.22);
+        }
+
+        .welcome-content h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .welcome-content p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .welcome-icon { font-size: 52px; }
+
+        /* STATS GRID - 4 columns */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-200);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: var(--primary-50);
+            border: 1.5px solid var(--primary-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-content h3 {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-xl);
+        }
+
+        /* SECTION CARDS - Always visible like user dashboard */
+        .section-container {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, var(--surface), var(--primary-50));
+        }
+
+        .section-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-xl);
+        }
+
+        .section-content { padding: 20px 24px; }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+
+        .card:last-child { margin-bottom: 0; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .card-title { font-weight: 700; color: var(--text); }
+
+        .card-body p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .card-body strong { color: var(--text); }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; }
+
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+
+        th {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            background: var(--bg);
+        }
+
+        tr:hover td { background: var(--primary-50); }
+
+        /* STATUS */
+        .status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-resolved { background: #d1fae5; color: #065f46; }
+        .status-returned { background: #e0e7ff; color: #3730a3; }
+        .status-confirmed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+        /* FORMS */
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit;
+        }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: var(--radius-lg); padding: 24px; max-width: 450px; width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: var(--primary-xl); }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .dashboard-header { padding: 0 16px; height: auto; flex-direction: column; gap: 12px; padding: 12px; }
+            .header-left, .header-right { width: 100%; justify-content: center; }
+            .user-menu { border-right: none; padding-right: 0; }
+            .dashboard-content { padding: 16px; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Logo -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="barangay.jpg" alt="Logo" class="header-logo">
+            <div class="header-brand">
+                <span class="brand">Barangay Sta. Lucia</span>
+                <span class="subtitle">Admin Dashboard</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-menu">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Administrator</span>
+                    <span class="user-role">Official</span>
+                </div>
+                <div class="user-avatar" id="userAvatar">A</div>
+            </div>
+            <button class="btn" onclick="window.location.href='admin-settings.html'">⚙️ Settings</button>
+            <button class="btn" onclick="logoutUser()">Logout</button>
+        </div>
+    </header>
+
+    <div class="dashboard-content">
+        <!-- Banner -->
+        <div class="admin-banner">
+            <div class="welcome-content">
+                <h2>Admin Dashboard</h2>
+                <p>Manage barangay equipment, bookings, concerns, and events</p>
+            </div>
+            <div class="welcome-icon">🏛️</div>
+        </div>
+
+        <!-- Stats - 4 columns -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content"><h3>Pending Requests</h3><div class="stat-value" id="pendingRequests">0</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-content"><h3>Pending Concerns</h3><div class="stat-value" id="pendingConcerns">0</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏀</div>
+                <div class="stat-content"><h3>Total Bookings</h3><div class="stat-value" id="totalBookings">0</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content"><h3>Total Users</h3><div class="stat-value" id="totalUsers">0</div></div>
+            </div>
+        </div>
+
+        <!-- Equipment Table -->
+        <div class="section-container">
+            <div class="section-header">
+                <h3>🪑 Equipment Inventory</h3>
+                <button class="btn btn-primary" onclick="openAddEquipmentModal()">+ Add Equipment</button>
+            </div>
+            <div class="section-content">
+                <table>
+                    <thead><tr><th>Equipment</th><th>Total</th><th>Available</th><th>Broken</th><th>Actions</th></tr></thead>
+                    <tbody id="equipmentTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Equipment Requests -->
+        <div class="section-container">
+            <div class="section-header"><h3>📦 Equipment Requests</h3></div>
+            <div class="section-content"><div id="requestsList"></div></div>
+        </div>
+
+        <!-- Court Bookings -->
+        <div class="section-container">
+            <div class="section-header"><h3>🏀 Court Bookings</h3></div>
+            <div class="section-content"><div id="bookingsList"></div></div>
+        </div>
+
+        <!-- Concerns -->
+        <div class="section-container">
+            <div class="section-header"><h3>📋 Citizen Concerns</h3></div>
+            <div class="section-content"><div id="concernsList"></div></div>
+        </div>
+
+        <!-- Events -->
+        <div class="section-container">
+            <div class="section-header">
+                <h3>📅 Court Events</h3>
+                <button class="btn btn-primary" onclick="openEventModal()">+ Add Event</button>
+            </div>
+            <div class="section-content"><div id="eventsList"></div></div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Add Court Event</h3><button class="modal-close" onclick="closeModal('eventModal')">&times;</button></div>
+            <form id="eventForm">
+                <div class="form-group"><label>Event Title</label><input type="text" id="eventTitle" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="eventDate" required></div>
+                    <div class="form-group"><label>Time</label><input type="time" id="eventTime" required></div>
+                </div>
+                <div class="form-group"><label>Location</label><input type="text" id="eventLocation"></div>
+                <button type="submit" class="btn btn-primary">Create Event</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Equipment Modal -->
+    <div id="addEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Add Equipment</h3><button class="modal-close" onclick="closeModal('addEquipmentModal')">&times;</button></div>
+            <form id="addEquipmentForm">
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="equipName" required></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="equipQty" required></div>
+                </div>
+                <div class="form-group"><label>Icon</label><input type="text" id="equipIcon" value="📦"></div>
+                <button type="submit" class="btn btn-primary">Add Equipment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Concern Modal -->
+    <div id="concernModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Respond to Concern</h3><button class="modal-close" onclick="closeModal('concernModal')">&times;</button></div>
+            <form id="concernResponseForm">
+                <input type="hidden" id="concernId">
+                <div class="form-group"><label>Response</label><textarea id="concernResponse" rows="4" required></textarea></div>
+                <button type="submit" class="btn btn-primary">Send Response</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return; }
+            if (user.role !== 'admin') { window.location.href = 'home.html'; return; }
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userAvatar').textContent = (user.fullName || user.username).charAt(0).toUpperCase();
+            await loadAllData();
+        });
+
+        async function loadAllData() {
+            await Promise.all([loadStats(), loadEquipment(), loadRequests(), loadBookings(), loadConcerns(), loadEvents()]);
+        }
+
+        async function loadStats() {
+            const [borrowings, concerns, events, bookings, users] = await Promise.all([
+                getAllBorrowings(), getAllConcerns(), getEvents(), getCourtBookings(), getAllUsers()
+            ]);
+            document.getElementById('pendingRequests').textContent = borrowings.filter(b => b.status === 'pending').length;
+            document.getElementById('pendingConcerns').textContent = concerns.filter(c => c.status === 'pending').length;
+            document.getElementById('totalBookings').textContent = bookings.length;
+            document.getElementById('totalUsers').textContent = users.length;
+        }
+
+        async function loadEquipment() {
+            const equipment = await getEquipment();
+            const tbody = document.getElementById('equipmentTable');
+            if (equipment.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No equipment</td></tr>'; return; }
+            tbody.innerHTML = equipment.map(e => `
+                <tr>
+                    <td><strong>${e.icon || '📦'} ${e.name}</strong></td>
+                    <td>${e.quantity}</td>
+                    <td>${e.available}</td>
+                    <td>${e.broken || 0}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteEquipment(${e.id})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteEquipment(id) { if (confirm('Delete equipment?')) { await deleteEquipmentItem(id); await loadAllData(); }}
+
+        async function loadRequests() {
+            const borrowings = await getAllBorrowings();
+            const container = document.getElementById('requestsList');
+            if (borrowings.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No equipment requests</p>'; return; }
+            container.innerHTML = borrowings.map(b => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${b.equipment} (x${b.quantity})</span><span class="status status-${b.status}">${b.status}</span></div>
+                    <div class="card-body"><p><strong>User:</strong> ${b.userName}</p><p><strong>Borrow:</strong> ${b.borrowDate} | <strong>Return:</strong> ${b.returnDate}</p></div>
+                    <div class="card-actions">
+                        ${b.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="approveRequest(${b.id})">Approve</button><button class="btn btn-danger btn-sm" onclick="rejectRequest(${b.id})">Reject</button>` : ''}
+                        ${b.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="returnRequest(${b.id})">Mark Returned</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function approveRequest(id) { if (await updateBorrowingStatus(id, 'approved')) { alert('Approved!'); await loadAllData(); }}
+        async function rejectRequest(id) { if (await updateBorrowingStatus(id, 'rejected')) { await loadAllData(); }}
+        async function returnRequest(id) { if (await updateBorrowingStatus(id, 'returned')) { await loadAllData(); }}
+
+        async function loadBookings() {
+            const bookings = await getCourtBookings();
+            const container = document.getElementById('bookingsList');
+            if (bookings.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No court bookings</p>'; return; }
+            container.innerHTML = bookings.map(b => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${b.date} at ${b.time}</span><span class="status status-${b.status}">${b.status}</span></div>
+                    <div class="card-body"><p><strong>Venue:</strong> ${b.venueName} | <strong>User:</strong> ${b.userName}</p><p><strong>Purpose:</strong> ${b.purpose || 'N/A'}</p></div>
+                    <div class="card-actions">
+                        ${b.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="handleApproveCourtBooking(${b.id})">Approve</button><button class="btn btn-danger btn-sm" onclick="handleRejectCourtBooking(${b.id})">Reject</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleApproveCourtBooking(id) { await approveCourtBooking(id); await loadAllData(); }
+        async function handleRejectCourtBooking(id) { await rejectCourtBooking(id); await loadAllData(); }
+
+        async function loadConcerns() {
+            const concerns = await getAllConcerns();
+            const container = document.getElementById('concernsList');
+            if (concerns.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No concerns</p>'; return; }
+            container.innerHTML = concerns.map(c => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${c.title}</span><span class="status status-${c.status}">${c.status}</span></div>
+                    <div class="card-body"><p><strong>Category:</strong> ${c.category} | <strong>User:</strong> ${c.userName}</p><p>${c.description}</p>${c.response ? `<p style="color:var(--primary)"><strong>Response:</strong> ${c.response}</p>` : ''}</div>
+                    <div class="card-actions">
+                        ${c.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="openConcernModal(${c.id})">Respond</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="deleteConcernAdmin(${c.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteConcernAdmin(id) { if (confirm('Delete?')) { await adminDeleteConcern(id); await loadAllData(); }}
+
+        async function loadEvents() {
+            const events = await getEvents();
+            const container = document.getElementById('eventsList');
+            if (events.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No events</p>'; return; }
+            container.innerHTML = events.map(e => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${e.title}</span><span class="status status-${e.status}">${e.status}</span></div>
+                    <div class="card-body"><p><strong>Date:</strong> ${e.date} at ${e.time}</p><p><strong>Location:</strong> ${e.location || 'TBD'}</p></div>
+                    <div class="card-actions">
+                        ${e.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="approveEvent(${e.id})">Approve</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="deleteEvent(${e.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function approveEvent(id) { if (await updateEventStatus(id, 'approved')) { await loadAllData(); }}
+
+        function openEventModal() { document.getElementById('eventModal').classList.add('active'); }
+        function openAddEquipmentModal() { document.getElementById('addEquipmentModal').classList.add('active'); }
+        function openConcernModal(id) { document.getElementById('concernId').value = id; document.getElementById('concernModal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await createEvent({ title: document.getElementById('eventTitle').value, date: document.getElementById('eventDate').value, time: document.getElementById('eventTime').value, location: document.getElementById('eventLocation').value, organizer: 'Barangay' });
+            closeModal('eventModal'); this.reset(); await loadAllData();
+        });
+
+        document.getElementById('addEquipmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await addEquipment({ name: document.getElementById('equipName').value, quantity: parseInt(document.getElementById('equipQty').value), available: parseInt(document.getElementById('equipQty').value), icon: document.getElementById('equipIcon').value });
+            closeModal('addEquipmentModal'); this.reset(); await loadAllData();
+        });
+
+        document.getElementById('concernResponseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await updateConcernStatus(document.getElementById('concernId').value, 'resolved', document.getElementById('concernResponse').value);
+            closeModal('concernModal'); this.reset(); await loadAllData();
+        });
+    </script>
+</body>
+</html>

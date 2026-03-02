@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #10b981;
+            --green-dark: #059669;
+            --green-xl: #047857;
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-200: #bbf7d0;
+            --green-600: #16a34a;
+            --text: #1a2e1f;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --surface: #fff;
+            --bg: #f0fdf4;
+            --radius-md: 14px;
+            --radius-lg: 18px;
+            --radius-xl: 22px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --transition: all 0.25s ease;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --warning-text: #92400e;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --white: #fff;
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .dashboard-header {
+            background: #fff;
+            border-bottom: 1px solid var(--green-200);
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 6px rgba(16, 185, 129, 0.08);
+        }
+
+        .dashboard-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .dashboard-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-image {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1.5px solid var(--green-200);
+            object-fit: cover;
+        }
+
+        .dashboard-logo span {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--green-xl);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--green);
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            border: 2px solid var(--green-200);
+        }
+
+        .logout-btn {
+            padding: 7px 15px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .logout-btn:first-of-type {
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+        }
+
+        .logout-btn:first-of-type:hover {
+            border-color: #9ca3af;
+            color: var(--text);
+        }
+
+        .logout-btn:last-of-type {
+            border: 1.5px solid var(--danger-border);
+            background: transparent;
+            color: var(--danger);
+        }
+
+        .logout-btn:last-of-type:hover {
+            background: var(--danger-bg);
+        }
+
+        .notification-badge {
+            cursor: pointer;
+            font-size: 20px;
+            position: relative;
+            display: none;
+        }
+
+        .notification-badge::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CONTENT */
+        .dashboard-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 32px 80px;
+        }
+
+        /* WELCOME BANNER */
+        .welcome-banner {
+            background: linear-gradient(135deg, #059669, #047857);
+            border-radius: var(--radius-xl);
+            padding: 26px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 24px rgba(5, 150, 105, 0.22);
+        }
+
+        .admin-banner {
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+
+        .welcome-content h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .welcome-content p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .welcome-icon {
+            font-size: 56px;
+            opacity: 0.9;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card:hover {
+            border-color: var(--green-200);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 13px;
+            background: var(--green-50);
+            border: 1.5px solid var(--green-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stat-content h3 {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--green-xl);
+            line-height: 1;
+        }
+
+        /* NAV TABS */
+        .sidebar-nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-btn {
+            padding: 9px 18px;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sidebar-btn:hover {
+            color: var(--green-xl);
+            background: var(--green-50);
+        }
+
+        .sidebar-btn.active {
+            background: var(--green-50);
+            color: var(--green-xl);
+            border: 1.5px solid var(--green-200);
+        }
+
+        /* TEST BUTTON */
+        .test-btn {
+            background: red;
+            color: white;
+            padding: 20px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+        }
+
+        /* SECTIONS */
+        .section-container {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            padding: 20px 26px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--green-50);
+        }
+
+        .section-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--green-xl);
+        }
+
+        .section-content {
+            padding: 22px 26px;
+        }
+
+        /* TABLES */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 13px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--green-50);
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .data-table td {
+            font-size: 14px;
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover td {
+            background: #f9fafb;
+        }
+
+        .admin-tables {
+            overflow-x: auto;
+        }
+
+        /* STATUS BADGES */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .status-approved,
+        .status-available,
+        .status-resolved {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-rejected,
+        .status-borrowed {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 9px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        .btn-light {
+            background: var(--green-50);
+            color: var(--green-xl);
+            border: 1.5px solid var(--green-200);
+        }
+
+        .btn-light:hover {
+            background: var(--green-100);
+        }
+
+        .btn-small {
+            padding: 6px 13px;
+            font-size: 13px;
+        }
+
+        .btn-smaller {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            background: #fafafa;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #10b981;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* MODALS */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border: 1.5px solid var(--green-200);
+            border-radius: 22px;
+            padding: 34px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: modalIn 0.25s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--green-xl);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            border-color: #9ca3af;
+            color: var(--text);
+        }
+
+        .concern-details {
+            background: var(--green-50);
+            border: 1.5px solid var(--green-200);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+        .concern-details p {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+
+        .concern-details p strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* COURT BOOKING CARDS */
+        .court-bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 16px;
+            padding: 22px;
+        }
+
+        .court-booking-card {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .court-booking-card:hover {
+            border-color: var(--green-200);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 52px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 44px;
+            margin-bottom: 12px;
+            opacity: 0.35;
+        }
+
+        .empty-state p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* EVENT ITEMS */
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .event-item:hover {
+            border-color: var(--green-200);
+            background: var(--green-50);
+        }
+
+        .event-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: var(--text);
+        }
+
+        .event-info p {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .event-time {
+            font-size: 13px;
+            color: var(--green-xl);
+            font-weight: 700;
+        }
+
+        /* EQUIPMENT CARDS */
+        .equipment-card {
+            background: var(--green-50);
+            border: 1.5px solid var(--green-200);
+            border-radius: 12px;
+            padding: 16px;
+            transition: var(--transition);
+        }
+
+        .equipment-card:hover {
+            background: var(--green-100);
+        }
+
+        /* ALERT / TOAST */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateY(-80px);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+            max-width: 360px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .alert.show {
+            transform: translateY(0);
+        }
+
+        .alert-success {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .alert-error {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 0 14px;
+            }
+
+            .dashboard-content {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="test-btn" onclick="alert('TEST BUTTON WORKS!')">🧪 TEST</button>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="dashboard-nav">
+                <div class="dashboard-logo">
+                    <!-- REPLACE THE SRC BELOW WITH YOUR OWN LOGO IMAGE -->
+                    <!-- Example: <img src="images/your-logo.png" alt="Barangay Logo" class="logo-image"> -->
+                    <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
+                    <span>Admin Dashboard</span>
+                </div>
+            </div>
+            <div class="user-menu">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Administrator</span>
+                    <span class="user-role">Official</span>
+                </div>
+                <div class="notification-badge" id="notificationBadge" data-count="0" onclick="showSection('requests')">
+                    🔔</div>
+                <div class="user-avatar" id="userAvatar">A</div>
+                <button class="logout-btn" onclick="window.location.href='admin-settings.html'">⚙️ Settings</button>
+                <button class="logout-btn" onclick="logoutUser()">Logout</button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="welcome-banner admin-banner">
+                <div class="welcome-content">
+                    <h2>Admin Dashboard</h2>
+                    <p>Manage barangay services and monitor activities</p>
+                </div>
+                <div class="welcome-icon">⚙️</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-content">
+                        <h3>Pending Requests</h3>
+                        <div class="stat-value" id="pendingRequests">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-content">
+                        <h3>Pending Concerns</h3>
+                        <div class="stat-value" id="pendingConcerns">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏀</div>
+                    <div class="stat-content">
+                        <h3>Upcoming Events</h3>
+                        <div class="stat-value" id="upcomingEvents">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3>Total Users</h3>
+                        <div class="stat-value" id="totalUsers">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-nav">
+                <button class="sidebar-btn" onclick="switchSection('court-bookings', this); alert('Court Bookings clicked')">🏀 Court Bookings</button>
+                <button class="sidebar-btn active" onclick="switchSection('requests', this); alert('Requests clicked')">📦 Equipment
+                    Requests</button>
+                <button class="sidebar-btn" onclick="switchSection('concerns', this); alert('Concerns clicked')">📋 Concerns</button>
+                <button class="sidebar-btn" onclick="switchSection('events', this); alert('Events clicked')">📅 Court Events</button>
+                <button class="sidebar-btn" onclick="switchSection('equipment', this); alert('Equipment clicked')">🪑 Equipment</button>
+            </div>
+
+            <div id="requests-section" class="section-container">
+                <div class="section-header">
+                    <h3>Equipment Borrowing Requests</h3>
+                </div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="admin-tables">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Resident</th>
+                                    <th>Equipment</th>
+                                    <th>Qty</th>
+                                    <th>Dates</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTable"></tbody>
+                        </table>
+                        <div id="noRequests" class="empty-state">
+                            <div class="empty-state-icon">📦</div>
+                            <p>No pending requests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="court-bookings-section" class="section-container" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h3>🏀 Court Bookings Management</h3>
+                        <p style="margin-top: 5px; color: #666;">View and manage basketball court bookings. Reply to
+                            users
+                            if there's an unexpected event.</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-small btn-light" onclick="generateBookingsCSV()">📊 Export CSV</button>
+                        <button class="btn btn-small btn-light"
+                            onclick="printReport('Court Bookings Report', getCourtBookings(), ['id', 'userName', 'venueName', 'date', 'time', 'purpose', 'status'])">🖨️
+                            Print</button>
+                    </div>
+                </div>
+                <div class="section-content" style="padding: 0;">
+                    <div id="courtBookingsList" class="court-bookings-grid"></div>
+                    <div id="noCourtBookings" class="empty-state">
+                        <div class="empty-state-icon">🏀</div>
+                        <p>No court bookings</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="concerns-section" class="section-container" style="display: none;">
+                <div class="section-header">
+                    <h3>Citizen Concerns</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-small btn-light" onclick="generateConcernsCSV()">📊 Export CSV</button>
+                        <button class="btn btn-small btn-light"
+                            onclick="printReport('Citizen Concerns Report', getAllConcerns(), ['id', 'userName', 'assignedTo', 'category', 'title', 'createdAt', 'status'])">🖨️
+                            Print</button>
+                    </div>
+                </div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="admin-tables">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Citizen</th>
+                                    <th>Address</th>
+                                    <th>Category</th>
+                                    <th>Title</th>
+                                    <th>Assigned To</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="concernsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="events-section" class="section-container" style="display: none;">
+                <div class="section-header">
+                    <h3>Court Events</h3>
+                    <button class="btn btn-small btn-light" onclick="openEventModal()">+ Add Event</button>
+                </div>
+                <div class="section-content">
+                    <div id="eventsList"></div>
+                </div>
+            </div>
+
+            <div id="equipment-section" class="section-container" style="display: none;">
+                <div class="section-header">
+                    <h3>Equipment Inventory</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-small btn-light" onclick="generateEquipmentCSV()">📊 Export CSV</button>
+                        <button class="btn btn-small btn-light"
+                            onclick="printReport('Equipment Inventory Report', getEquipment(), ['id', 'name', 'quantity', 'available', 'broken', 'isArchived'])">🖨️
+                            Print</button>
+                        <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add
+                            Equipment</button>
+                    </div>
+                </div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="admin-tables">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Equipment</th>
+                                    <th>Total</th>
+                                    <th>Available</th>
+                                    <th>Under Repair</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipmentTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="concernModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Respond to Concern</h3>
+                <button class="modal-close" onclick="closeModal('concernModal')">&times;</button>
+            </div>
+            <div id="concernDetails" style="margin-bottom: 18px;"></div>
+            <form id="concernResponseForm">
+                <input type="hidden" id="concernId">
+                <div class="form-group">
+                    <label for="concernAssignee">Assign To</label>
+                    <input type="text" id="concernAssignee" placeholder="e.g. Tanod Juan">
+                </div>
+                <div class="form-group">
+                    <label for="concernStatus">Status</label>
+                    <select id="concernStatus" required>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="concernResponse">Response</label>
+                    <textarea id="concernResponse" placeholder="Enter your response..." rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Response</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Court Event</h3>
+                <button class="modal-close" onclick="closeModal('eventModal')">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" placeholder="e.g., Basketball Tournament" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Time</label>
+                        <input type="time" id="eventTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" value="Barangay Basketball Court" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventOrganizer">Organizer</label>
+                    <input type="text" id="eventOrganizer" placeholder="Organizer name" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="addEquipmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Equipment</h3>
+                <button class="modal-close" onclick="closeModal('addEquipmentModal')">&times;</button>
+            </div>
+            <form id="addEquipmentForm">
+                <div class="form-group">
+                    <label for="equipName">Equipment Name</label>
+                    <input type="text" id="equipName" placeholder="e.g., Portable Tables" required>
+                </div>
+                <div class="form-group">
+                    <label for="equipIcon">Icon (Emoji)</label>
+                    <input type="text" id="equipIcon" placeholder="e.g., 🪵" required>
+                </div>
+                <div class="form-group">
+                    <label for="equipDesc">Description</label>
+                    <textarea id="equipDesc" placeholder="Brief description" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="equipQuantity">Quantity</label>
+                    <input type="number" id="equipQuantity" min="1" value="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="editEquipmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Equipment</h3>
+                <button class="modal-close" onclick="closeModal('editEquipmentModal')">&times;</button>
+            </div>
+            <form id="editEquipmentForm">
+                <input type="hidden" id="editEquipId">
+                <div class="form-group">
+                    <label for="editEquipName">Equipment Name</label>
+                    <input type="text" id="editEquipName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEquipIcon">Icon (Emoji)</label>
+                    <input type="text" id="editEquipIcon" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEquipDesc">Description</label>
+                    <textarea id="editEquipDesc" rows="2"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editEquipQuantity">Total Quantity</label>
+                        <input type="number" id="editEquipQuantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEquipBroken">Under Repair</label>
+                        <input type="number" id="editEquipBroken" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="editEquipArchived" style="width: 16px; margin: 0;">
+                    <label for="editEquipArchived" style="margin: 0;">Archive this equipment</label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        if (!requireAuth()) window.location.href = 'login.html';
+        if (!requireAdmin()) window.location.href = 'home.html';
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            const user = getCurrentUser();
+            document.getElementById('userName').textContent = user.fullName;
+            document.getElementById('userAvatar').textContent = user.avatar;
+            await loadStats();
+            await loadCourtBookings();
+            await loadRequests();
+            await loadConcerns();
+            await loadEvents();
+            await loadEquipment();
+        });
+
+        function switchSection(section, btn) {
+            alert('Switching to: ' + section);
+            console.log('switchSection called with:', section);
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('court-bookings-section').style.display = 'none';
+            document.getElementById('requests-section').style.display = 'none';
+            document.getElementById('concerns-section').style.display = 'none';
+            document.getElementById('events-section').style.display = 'none';
+            document.getElementById('equipment-section').style.display = 'none';
+            var targetSection = document.getElementById(section + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            } else {
+                alert('Section not found: ' + section + '-section');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function loadStats() {
+            const [borrowings, concerns, events, bookings, users] = await Promise.all([
+                getAllBorrowings(),
+                getAllConcerns(),
+                getEvents(),
+                getCourtBookings(),
+                getAllUsers()
+            ]);
+
+            const pendingReqs = borrowings.filter(b => b.status === 'pending').length;
+            const pendingCons = concerns.filter(c => c.status === 'pending').length;
+            const upcomingEvts = events.filter(e => e.status === 'approved').length;
+            const totalBookings = bookings.filter(b => b.status !== 'cancelled').length;
+
+            document.getElementById('pendingRequests').textContent = pendingReqs;
+            document.getElementById('pendingConcerns').textContent = pendingCons;
+            document.getElementById('upcomingEvents').textContent = totalBookings;
+            document.getElementById('totalUsers').textContent = users.length;
+
+            const badge = document.getElementById('notificationBadge');
+            const total = pendingReqs + pendingCons;
+            badge.setAttribute('data-count', total);
+            badge.style.display = total > 0 ? 'block' : 'none';
+        }
+
+        async function loadRequests() {
+            const borrowings = await getAllBorrowings();
+            const container = document.getElementById('requestsTable');
+            const noRequests = document.getElementById('noRequests');
+
+            if (borrowings.length === 0) {
+                container.innerHTML = '';
+                noRequests.style.display = 'block';
+                return;
+            }
+
+            noRequests.style.display = 'none';
+            container.innerHTML = borrowings.map(b => `
+                <tr>
+                    <td><strong>${b.userName}</strong></td>
+                    <td>${b.equipment}</td>
+                    <td>${b.quantity}</td>
+                    <td>${b.borrowDate} to ${b.returnDate}</td>
+                    <td>${b.purpose}</td>
+                    <td>${getStatusBadge(b.status)}</td>
+                    <td class="admin-actions">
+                        ${b.status === 'pending' ? `
+                            <button class="btn btn-small btn-primary" onclick="approveRequest(${b.id})">Approve</button>
+                            <button class="btn btn-small btn-danger" onclick="rejectRequest(${b.id})">Reject</button>
+                        ` : b.status === 'approved' ? `
+                            <button class="btn btn-small btn-light" onclick="returnRequest(${b.id})">Mark Returned</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadCourtBookings() {
+            const bookings = await getCourtBookings();
+            const container = document.getElementById('courtBookingsList');
+            const noBookings = document.getElementById('noCourtBookings');
+
+            if (bookings.length === 0) {
+                container.innerHTML = '';
+                noBookings.style.display = 'block';
+                return;
+            }
+
+            noBookings.style.display = 'none';
+
+            // Sort by date (upcoming first)
+            bookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            container.innerHTML = bookings.map(booking => {
+                const statusClass = booking.status === 'cancelled'
+                    ? 'status-rejected'
+                    : booking.status === 'approved'
+                        ? 'status-approved'
+                        : 'status-pending';
+                const statusText = booking.status === 'cancelled' ? 'Cancelled' : booking.status === 'approved' ? 'Approved' : 'Pending';
+
+                return `
+                    <div class="court-booking-card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                            <div>
+                                <h4 style="margin: 0; color: var(--dark); font-size: 16px; font-weight: 700;">📅 ${formatDate(booking.date)}</h4>
+                                <p style="margin: 6px 0 0; color: var(--gray); font-size: 14px;">⏰ ${booking.time}</p>
+                                <p style="margin: 6px 0 0; color: var(--primary); font-size: 14px; font-weight: 600;">${booking.venueName || 'Basketball Court'}</p>
+                            </div>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <p style="margin: 4px 0; color: #555; font-size: 14px;"><strong>👤 Resident:</strong> ${booking.userName}</p>
+                            <p style="margin: 4px 0; color: #555; font-size: 14px;"><strong>📝 Purpose:</strong> ${booking.purpose}</p>
+                        </div>
+                        
+                        ${booking.adminComment ? `
+                            <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 10px; border-radius: 4px; margin-bottom: 12px;">
+                                <p style="margin: 0; color: #92400e; font-size: 13px;"><strong>💬 Admin Reply:</strong> ${booking.adminComment}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${booking.replies && booking.replies.length > 0 ? `
+                            <div style="margin-bottom: 12px;">
+                                <p style="margin: 0 0 8px; color: #555; font-size: 13px; font-weight: 600;">💬 Replies:</p>
+                                ${booking.replies.map(reply => `
+                                    <div style="background: #f9fafb; padding: 8px; border-radius: 4px; margin-bottom: 6px;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-bottom: 4px;">
+                                            <span>👤 ${reply.userName}</span>
+                                            <span>${formatDate(reply.createdAt)}</span>
+                                        </div>
+                                        <p style="margin: 0; font-size: 13px; color: #333;">${reply.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${booking.status !== 'cancelled' ? `
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--gray); font-weight: 600;">💬 Send Reply / Explanation:</label>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <input type="text" 
+                                        id="adminComment-${booking.id}" 
+                                        placeholder="Reply to user (e.g., unexpected event)..." 
+                                        value="${booking.adminComment || ''}"
+                                        style="flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 200px; outline: none; transition: border-color 0.2s;"
+                                        onfocus="this.style.borderColor='var(--primary)'"
+                                        onblur="this.style.borderColor='#e2e8f0'">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                                <button onclick="handleApproveCourtBooking(${booking.id})" 
+                                    class="btn btn-small" style="background: #10b981; border: none; color: white;">
+                                    ✅ Approve
+                                </button>
+                                <button onclick="addAdminCommentToBooking(${booking.id})" 
+                                    class="btn btn-small" style="background: #f59e0b; border: none; color: white;">
+                                    💬 Reply
+                                </button>
+                                <button onclick="handleRejectCourtBooking(${booking.id})" 
+                                    class="btn btn-small btn-danger">
+                                    ❌ Reject
+                                </button>
+                                <button onclick="deleteCourtBooking(${booking.id})" 
+                                    class="btn btn-small" style="background: #dc2626; border-color: #dc2626; color: white;">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        ` : `
+                            <div style="text-align: center;">
+                                <button onclick="restoreCourtBooking(${booking.id})" 
+                                    class="btn btn-small" style="background: #22c55e; border-color: #22c55e; color: white;">
+                                    🔄 Restore Booking
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function addAdminCommentToBooking(bookingId) {
+            const commentInput = document.getElementById(`adminComment-${bookingId}`);
+            const comment = commentInput.value.trim();
+
+            if (!comment) {
+                showAlert('Please enter a reply message', 'error');
+                return;
+            }
+
+            const result = await addAdminComment(bookingId, comment);
+            if (result.success) {
+                showAlert('Reply sent to user', 'success');
+                await loadCourtBookings();
+            } else {
+                showAlert(result.message, 'error');
+            }
+        }
+
+        async function handleApproveCourtBooking(bookingId) {
+            const result = await approveCourtBooking(bookingId);
+            if (result.success) {
+                showAlert('Court booking approved', 'success');
+                await loadCourtBookings();
+                await loadStats();
+            } else {
+                showAlert(result.message, 'error');
+            }
+        }
+
+        async function handleRejectCourtBooking(bookingId) {
+            const commentInput = document.getElementById(`adminComment-${bookingId}`);
+            const comment = commentInput ? commentInput.value.trim() : '';
+
+            // If there's a comment, send it with the rejection
+            if (comment) {
+                await addAdminComment(bookingId, comment);
+            }
+
+            const result = await rejectCourtBooking(bookingId);
+            if (result.success) {
+                showAlert('Court booking rejected', 'success');
+                await loadCourtBookings();
+                await loadStats();
+            } else {
+                showAlert(result.message, 'error');
+            }
+        }
+
+        async function restoreCourtBooking(bookingId) {
+            const result = await updateCourtBookingStatus(bookingId, 'booked');
+            if (result.success) {
+                showAlert('Court booking restored', 'success');
+                await loadCourtBookings();
+                await loadStats();
+            } else {
+                showAlert(result.message, 'error');
+            }
+        }
+
+        async function cancelCourtBookingAdmin(bookingId) {
+            if (confirm('Are you sure you want to cancel this court booking?')) {
+                const result = await cancelCourtBooking(bookingId);
+                if (result.success) {
+                    showAlert('Booking cancelled', 'success');
+                    await loadCourtBookings();
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            }
+        }
+
+        async function deleteCourtBooking(bookingId) {
+            if (confirm('Are you sure you want to permanently delete this court booking?')) {
+                const result = await (typeof window.deleteBooking === 'function' ? window.deleteBooking(bookingId) : supabase.from('court_bookings').delete().eq('id', bookingId));
+                if (result.success || !result.error) {
+                    showAlert('Court booking deleted', 'success');
+                    await loadCourtBookings();
+                    await loadStats();
+                } else {
+                    showAlert(result.message || result.error.message, 'error');
+                }
+            }
+        }
+
+        async function deleteConcernAdmin(concernId) {
+            if (confirm('Are you sure you want to permanently delete this concern?')) {
+                if (typeof window.deleteConcern === 'function') {
+                    const result = await window.deleteConcern(concernId);
+                    if (result.success) {
+                        showAlert('Concern deleted', 'success');
+                        await loadConcerns();
+                        await loadStats();
+                    } else {
+                        showAlert(result.message, 'error');
+                    }
+                } else {
+                    await supabase.from('concerns').delete().eq('id', concernId);
+                    showAlert('Concern deleted', 'success');
+                    await loadConcerns();
+                    await loadStats();
+                }
+            }
+        }
+
+        async function approveRequest(id) {
+            if (await updateBorrowingStatus(id, 'approved')) {
+                showAlert('Request approved', 'success');
+                await loadStats();
+                await loadRequests();
+            }
+        }
+
+        async function rejectRequest(id) {
+            if (await updateBorrowingStatus(id, 'rejected')) {
+                showAlert('Request rejected', 'success');
+                await loadStats();
+                await loadRequests();
+                await loadEquipment();
+            }
+        }
+
+        async function returnRequest(id) {
+            if (await updateBorrowingStatus(id, 'returned')) {
+                showAlert('Equipment marked as returned', 'success');
+                await loadStats();
+                await loadRequests();
+                await loadEquipment();
+            }
+        }
+
+        async function loadConcerns() {
+            const concerns = await getAllConcerns();
+            const container = document.getElementById('concernsTable');
+
+            if (concerns.length === 0) {
+                container.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No concerns</td></tr>';
+                return;
+            }
+
+            container.innerHTML = concerns.map(c => `
+                <tr>
+                    <td><strong>${c.userName}</strong></td>
+                    <td>${c.address || 'N/A'}</td>
+                    <td>${c.category}</td>
+                    <td>${c.title}</td>
+                    <td>${c.assignedTo || 'Unassigned'}</td>
+                    <td>${formatDate(c.createdAt)}</td>
+                    <td>${getStatusBadge(c.status)}</td>
+                    <td class="admin-actions">
+                        <button class="btn btn-small btn-primary" onclick="openConcernModal(${c.id})">Respond</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteConcernAdmin(${c.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function openConcernModal(concernId) {
+            const concerns = await getAllConcerns();
+            const concern = concerns.find(c => c.id === concernId);
+            if (concern) {
+                document.getElementById('concernId').value = concernId;
+                document.getElementById('concernAssignee').value = concern.assignedTo || '';
+                document.getElementById('concernStatus').value = concern.status;
+                document.getElementById('concernResponse').value = concern.response || '';
+                document.getElementById('concernDetails').innerHTML = `
+                    <div class="concern-details">
+                        <p><strong>Category:</strong> ${concern.category}</p>
+                        <p><strong>Title:</strong> ${concern.title}</p>
+                        <p><strong>Address:</strong> ${concern.address || 'N/A'}</p>
+                        <p><strong>Description:</strong> ${concern.description}</p>
+                        <p><strong>Submitted by:</strong> ${concern.userName}</p>
+                    </div>
+                `;
+                document.getElementById('concernModal').classList.add('active');
+            }
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+
+        document.getElementById('concernResponseForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const success = await updateConcernStatus(
+                parseInt(document.getElementById('concernId').value),
+                document.getElementById('concernStatus').value,
+                document.getElementById('concernResponse').value,
+                document.getElementById('concernAssignee').value
+            );
+            if (success) {
+                showAlert('Response submitted', 'success');
+                closeModal('concernModal');
+                await loadStats();
+                await loadConcerns();
+            }
+        });
+
+        async function loadEvents() {
+            const events = await getEvents();
+            const container = document.getElementById('eventsList');
+
+            if (events.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏀</div><p>No events</p></div>';
+                return;
+            }
+
+            container.innerHTML = events.map(e => `
+                <div class="event-item">
+                    <div class="event-info">
+                        <h4>${e.title}</h4>
+                        <p>${e.location}</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="event-time">${e.date} - ${e.time}</div>
+                        ${e.status === 'pending' ? `
+                            <button class="btn btn-smaller btn-primary" onclick="approveEvent(${e.id})">Approve</button>
+                            <button class="btn btn-smaller btn-danger" onclick="deleteEvent(${e.id})">Delete</button>
+                        ` : getStatusBadge(e.status)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openEventModal() {
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventDate').min = new Date().toISOString().split('T')[0];
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const result = await createEvent({
+                title: document.getElementById('eventTitle').value,
+                date: document.getElementById('eventDate').value,
+                time: document.getElementById('eventTime').value,
+                location: document.getElementById('eventLocation').value,
+                organizer: document.getElementById('eventOrganizer').value
+            });
+            if (result.success) {
+                showAlert('Event created', 'success');
+                closeModal('eventModal');
+                await loadEvents();
+            }
+        });
+
+        async function approveEvent(id) {
+            if (await updateEventStatus(id, 'approved')) {
+                showAlert('Event approved', 'success');
+                await loadStats();
+                await loadEvents();
+            }
+        }
+
+        async function deleteEvent(id) {
+            if (confirm('Delete this event?')) {
+                if (typeof window.deleteEvent === 'function') {
+                    const result = await window.deleteEvent(id);
+                    if (result.success) {
+                        showAlert('Event deleted', 'success');
+                        await loadEvents();
+                    } else {
+                        showAlert(result.message, 'error');
+                    }
+                } else {
+                    await supabase.from('events').delete().eq('id', id);
+                    showAlert('Event deleted', 'success');
+                    await loadEvents();
+                }
+            }
+        }
+
+        async function loadEquipment() {
+            const equipment = await getEquipment();
+            const container = document.getElementById('equipmentTable');
+            container.innerHTML = equipment.map(e => `
+                <tr style="${e.isArchived ? 'opacity: 0.5;' : ''}">
+                    <td><strong>${e.icon} ${e.name}</strong></td>
+                    <td>${e.quantity}</td>
+                    <td>${e.available}</td>
+                    <td>${e.broken || 0}</td>
+                    <td>
+                        ${e.isArchived ? '<span class="status-badge status-rejected">Archived</span>' :
+                    (e.available > 0 ? '<span class="status-badge status-available">Available</span>' : '<span class="status-badge status-borrowed">In Use/Out</span>')}
+                    </td>
+                    <td>
+                        <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddEquipmentModal() {
+            document.getElementById('addEquipmentForm').reset();
+            document.getElementById('addEquipmentModal').classList.add('active');
+        }
+
+        document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const result = await addEquipment({
+                name: document.getElementById('equipName').value,
+                icon: document.getElementById('equipIcon').value,
+                description: document.getElementById('equipDesc').value,
+                quantity: parseInt(document.getElementById('equipQuantity').value),
+                available: parseInt(document.getElementById('equipQuantity').value),
+                broken: 0,
+                is_archived: false
+            });
+
+            if (result.success) {
+                showAlert('Equipment added', 'success');
+                closeModal('addEquipmentModal');
+                await loadEquipment();
+            } else {
+                showAlert(result.message, 'error');
+            }
+        });
+
+        async function openEditEquipmentModal(id) {
+            const equipmentList = await getEquipment();
+            const equipment = equipmentList.find(e => e.id === id);
+            if (!equipment) return;
+            document.getElementById('editEquipId').value = equipment.id;
+            document.getElementById('editEquipName').value = equipment.name;
+            document.getElementById('editEquipIcon').value = equipment.icon;
+            document.getElementById('editEquipDesc').value = equipment.description || '';
+            document.getElementById('editEquipQuantity').value = equipment.quantity;
+            document.getElementById('editEquipBroken').value = equipment.broken || 0;
+            document.getElementById('editEquipArchived').checked = equipment.isArchived || false;
+
+            document.getElementById('editEquipmentModal').classList.add('active');
+        }
+
+        document.getElementById('editEquipmentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editEquipId').value);
+            const updates = {
+                name: document.getElementById('editEquipName').value,
+                icon: document.getElementById('editEquipIcon').value,
+                description: document.getElementById('editEquipDesc').value,
+                quantity: parseInt(document.getElementById('editEquipQuantity').value),
+                broken: parseInt(document.getElementById('editEquipBroken').value),
+                isArchived: document.getElementById('editEquipArchived').checked
+            };
+
+            const result = await updateEquipment(id, updates);
+            if (result.success) {
+                showAlert('Equipment updated', 'success');
+                closeModal('editEquipmentModal');
+                await loadEquipment();
+            } else {
+                showAlert(result.message, 'error');
+            }
+        });
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ==========================================
+        // REPORT GENERATION & EXPORT
+        // ==========================================
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (navigator.msSaveBlob) {
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        function convertToCSV(array) {
+            if (array.length === 0) return '';
+            const headers = Object.keys(array[0]).join(',');
+            const rows = array.map(obj =>
+                Object.values(obj).map(val => {
+                    const str = String(val === null || val === undefined ? '' : val);
+                    return '"' + str.replace(/"/g, '""') + '"';
+                }).join(',')
+            ).join('\\n');
+            return headers + '\\n' + rows;
+        }
+
+        async function generateEquipmentCSV() {
+            const eqData = await getEquipment();
+            const data = eqData.map(e => ({
+                ID: e.id,
+                Name: e.name,
+                Total_Quantity: e.quantity,
+                Available: e.available,
+                Under_Repair: e.broken || 0,
+                Archived: e.isArchived ? 'Yes' : 'No'
+            }));
+            downloadCSV(convertToCSV(data), 'equipment_report.csv');
+            showAlert('Equipment CSV Exported', 'success');
+        }
+
+        async function generateBookingsCSV() {
+            const cbData = await getCourtBookings();
+            const data = cbData.map(b => ({
+                ID: b.id,
+                Resident: b.userName,
+                Venue: b.venueName || b.venue,
+                Date: b.date,
+                Time: b.time,
+                Purpose: b.purpose,
+                Status: b.status
+            }));
+            downloadCSV(convertToCSV(data), 'court_bookings_report.csv');
+            showAlert('Bookings CSV Exported', 'success');
+        }
+
+        async function generateConcernsCSV() {
+            const coData = await getAllConcerns();
+            const data = coData.map(c => ({
+                ID: c.id,
+                Resident: c.userName,
+                Address: c.address,
+                Category: c.category,
+                Title: c.title,
+                Assigned_To: c.assignedTo || 'Unassigned',
+                Date: c.createdAt,
+                Status: c.status
+            }));
+            downloadCSV(convertToCSV(data), 'concerns_report.csv');
+            showAlert('Concerns CSV Exported', 'success');
+        }
+
+        async function printReport(title, dataPromise, keysToInclude) {
+            const rawData = await dataPromise;
+            if (!rawData || rawData.length === 0) {
+                alert("No data available to print.");
+                return;
+            }
+            // Filter keys
+            const printableData = rawData.map(item => {
+                let obj = {};
+                keysToInclude.forEach(key => obj[key.toUpperCase()] = item[key] || '');
+                return obj;
+            });
+
+            const headers = Object.keys(printableData[0]);
+
+            let printContents = `
+                <html>
+                <head>
+                    <title>${title}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { text-align: center; color: #047857; margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+                        th { background-color: #f0fdf4; color: #1a2e1f; }
+                        @media print {
+                            button { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>${title}</h2>
+                    <p>Generated on: ${new Date().toLocaleString()}</p>
+                    <hr/>
+                    <table>
+                        <thead>
+                            <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                        </thead>
+                        <tbody>
+                            ${printableData.map(row => `
+                                <tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <script>
+                        window.onload = function() { window.print(); window.close(); }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(printContents);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+
+</html>

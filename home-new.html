@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-xl: #047857;
+            --primary-50: #f0fdf4;
+            --primary-200: #bbf7d0;
+            --text: #1a2e1f;
+            --text-secondary: #4b5563;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --surface: #fff;
+            --bg: #f0fdf4;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --transition: all 0.25s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .dashboard-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--primary-200);
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-200);
+            object-fit: cover;
+        }
+
+        .header-brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-brand .brand {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-xl);
+        }
+
+        .header-brand .subtitle {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 16px;
+            border-right: 1px solid var(--border);
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            border: 3px solid var(--primary-200);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            border-color: var(--primary-200);
+            color: var(--primary-xl);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* MAIN */
+        .dashboard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 28px 32px;
+        }
+
+        /* BANNER */
+        .admin-banner {
+            background: linear-gradient(135deg, var(--primary-xl), #065f46);
+            padding: 28px 32px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 24px rgba(5, 150, 105, 0.22);
+        }
+
+        .welcome-content h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .welcome-content p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .welcome-icon { font-size: 52px; }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-200);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: var(--primary-50);
+            border: 1.5px solid var(--primary-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-content h3 {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-xl);
+        }
+
+        /* NAV TABS */
+        .sidebar-nav {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 22px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 6px;
+            flex-wrap: wrap;
+        }
+
+        .sidebar-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            min-width: fit-content;
+        }
+
+        .sidebar-btn:hover {
+            color: var(--primary-xl);
+            background: var(--primary-50);
+        }
+
+        .sidebar-btn.active {
+            background: var(--primary);
+            color: white;
+            border: 1.5px solid var(--primary);
+        }
+
+        /* SECTIONS */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .section-container {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-xl);
+        }
+
+        .section-content { padding: 20px 24px; }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .card-title { font-weight: 700; color: var(--text); }
+
+        .card-body p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .card-body strong { color: var(--text); }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; }
+
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+
+        th {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* STATUS */
+        .status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-resolved { background: #d1fae5; color: #065f46; }
+        .status-returned { background: #e0e7ff; color: #3730a3; }
+
+        /* FORMS */
+        .form-group { margin-bottom: 14px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .dashboard-header { padding: 0 16px; height: auto; flex-direction: column; gap: 12px; padding: 12px; }
+            .dashboard-content { padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .sidebar-nav { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Logo -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="barangay.jpg" alt="Logo" class="header-logo">
+            <div class="header-brand">
+                <span class="brand">Barangay Sta. Lucia</span>
+                <span class="subtitle">User Dashboard</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-menu">
+                <div class="user-info">
+                    <span class="user-name" id="userName">User</span>
+                    <span class="user-role">Resident</span>
+                </div>
+                <div class="user-avatar" id="userAvatar">U</div>
+            </div>
+            <button class="btn" onclick="window.location.href='user-settings.html'">⚙️ Settings</button>
+            <button class="btn" onclick="logoutUser()">Logout</button>
+        </div>
+    </header>
+
+    <div class="dashboard-content">
+        <!-- Banner -->
+        <div class="admin-banner">
+            <div class="welcome-content">
+                <h2>Welcome, <span id="welcomeName">User</span>!</h2>
+                <p>Manage your equipment requests, concerns, and court bookings</p>
+            </div>
+            <div class="welcome-icon">👤</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h3>My Requests</h3>
+                    <div class="stat-value" id="myRequests">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-content">
+                    <h3>My Concerns</h3>
+                    <div class="stat-value" id="myConcerns">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏀</div>
+                <div class="stat-content">
+                    <h3>My Bookings</h3>
+                    <div class="stat-value" id="myBookings">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="sidebar-nav">
+            <button class="sidebar-btn active" onclick="showSection('equipment', this)">🪑 Equipment</button>
+            <button class="sidebar-btn" onclick="showSection('myrequests', this)">📦 My Requests</button>
+            <button class="sidebar-btn" onclick="showSection('concerns', this)">📋 Concerns</button>
+            <button class="sidebar-btn" onclick="showSection('bookings', this)">🏀 Court Booking</button>
+        </div>
+
+        <!-- Equipment Section -->
+        <div id="equipment-section" class="section active">
+            <div class="section-container">
+                <div class="section-header"><h3>🪑 Available Equipment</h3></div>
+                <div class="section-content">
+                    <table>
+                        <thead><tr><th>Equipment</th><th>Available</th><th>Action</th></tr></thead>
+                        <tbody id="equipmentTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Requests Section -->
+        <div id="myrequests-section" class="section">
+            <div class="section-container">
+                <div class="section-header"><h3>📦 My Equipment Requests</h3></div>
+                <div class="section-content"><div id="requestsList"></div></div>
+            </div>
+        </div>
+
+        <!-- Concerns Section -->
+        <div id="concerns-section" class="section">
+            <div class="section-container">
+                <div class="section-header"><h3>📋 Submit a Concern</h3></div>
+                <div class="section-content">
+                    <form id="concernForm">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="concernCategory" required>
+                                <option value="">Select category</option>
+                                <option value="Infrastructure">Infrastructure</option>
+                                <option value="Sanitation">Sanitation</option>
+                                <option value="Security">Security</option>
+                                <option value="Health">Health</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="concernTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="concernDesc" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="concernAddress">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Concern</button>
+                    </form>
+                    <h3 style="margin: 24px 0 12px; font-size: 16px; font-weight: 700; color: var(--primary-xl);">My Concerns</h3>
+                    <div id="myConcernsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Court Booking Section -->
+        <div id="bookings-section" class="section">
+            <div class="section-container">
+                <div class="section-header"><h3>🏀 Book a Court</h3></div>
+                <div class="section-content">
+                    <form id="bookingForm">
+                        <div class="form-group">
+                            <label>Venue</label>
+                            <select id="bookingVenue" required>
+                                <option value="basketball">Basketball Court</option>
+                                <option value="volleyball">Volleyball Court</option>
+                                <option value="tennis">Tennis Court</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="bookingDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" id="bookingTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Purpose</label>
+                            <input type="text" id="bookingPurpose" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Book Court</button>
+                    </form>
+                    <h3 style="margin: 24px 0 12px; font-size: 16px; font-weight: 700; color: var(--primary-xl);">My Bookings</h3>
+                    <div id="myBookingsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return; }
+            
+            const displayName = user.fullName || user.username;
+            document.getElementById('userName').textContent = displayName;
+            document.getElementById('welcomeName').textContent = displayName;
+            document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
+            
+            await loadAllData();
+        });
+
+        async function loadAllData() {
+            await Promise.all([loadEquipment(), loadMyRequests(), loadMyConcerns(), loadMyBookings(), updateStats()]);
+        }
+
+        async function updateStats() {
+            const user = getCurrentUser();
+            const stats = await getUserStats(user.id);
+            document.getElementById('myRequests').textContent = stats.totalBorrowings;
+            document.getElementById('myConcerns').textContent = stats.totalConcerns;
+            document.getElementById('myBookings').textContent = stats.totalBookings;
+        }
+
+        async function loadEquipment() {
+            const equipment = await getEquipment();
+            const tbody = document.getElementById('equipmentTable');
+            tbody.innerHTML = equipment.map(e => `
+                <tr>
+                    <td>${e.icon || '📦'} ${e.name}</td>
+                    <td>${e.available} / ${e.quantity}</td>
+                    <td>${e.available > 0 ? `<button class="btn btn-primary btn-sm" onclick="requestEquipment('${e.id}')">Request</button>` : '<span style="color:red">Not Available</span>'}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function requestEquipment(id) {
+            const qty = prompt('How many do you need?', '1');
+            if (qty && qty > 0) {
+                const today = new Date().toISOString().split('T')[0];
+                const returnDate = new Date();
+                returnDate.setDate(returnDate.getDate() + 7);
+                const result = await borrowEquipment(id, parseInt(qty), today, returnDate.toISOString().split('T')[0], 'Personal use');
+                alert(result.message);
+                if (result.success) await loadAllData();
+            }
+        }
+
+        async function loadMyRequests() {
+            const borrowings = await getMyBorrowings();
+            const container = document.getElementById('requestsList');
+            if (borrowings.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No equipment requests</p>'; return; }
+            container.innerHTML = borrowings.map(b => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${b.equipment} (x${b.quantity})</span><span class="status status-${b.status}">${b.status}</span></div>
+                    <div class="card-body"><p><strong>Borrow:</strong> ${b.borrowDate} | <strong>Return:</strong> ${b.returnDate}</p></div>
+                    <div class="card-actions">${b.status === 'pending' ? `<button class="btn btn-danger btn-sm" onclick="cancelRequest('${b.id}')">Cancel</button>` : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        async function cancelRequest(id) { if (confirm('Cancel this request?')) { await cancelBorrowingRequest(id); await loadAllData(); }}
+
+        async function loadMyConcerns() {
+            const concerns = await getMyConcerns();
+            const container = document.getElementById('myConcernsList');
+            if (concerns.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No concerns submitted</p>'; return; }
+            container.innerHTML = concerns.map(c => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${c.title}</span><span class="status status-${c.status}">${c.status}</span></div>
+                    <div class="card-body"><p><strong>Category:</strong> ${c.category}</p><p>${c.description}</p>${c.response ? `<p style="color:var(--primary)"><strong>Response:</strong> ${c.response}</p>` : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        async function loadMyBookings() {
+            const bookings = await getCourtBookings();
+            const user = getCurrentUser();
+            const myBookings = bookings.filter(b => b.userId === user.id);
+            const container = document.getElementById('myBookingsList');
+            if (myBookings.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No court bookings</p>'; return; }
+            container.innerHTML = myBookings.map(b => `
+                <div class="card">
+                    <div class="card-header"><span class="card-title">${b.date} at ${b.time}</span><span class="status status-${b.status}">${b.status}</span></div>
+                    <div class="card-body"><p><strong>Venue:</strong> ${b.venueName}</p><p><strong>Purpose:</strong> ${b.purpose}</p></div>
+                    <div class="card-actions">${b.status !== 'cancelled' ? `<button class="btn btn-danger btn-sm" onclick="cancelBooking('${b.id}')">Cancel</button>` : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        async function cancelBooking(id) { if (confirm('Cancel this booking?')) { await cancelCourtBooking(id); await loadAllData(); }}
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+        }
+
+        document.getElementById('concernForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const result = await submitConcern(
+                document.getElementById('concernCategory').value,
+                document.getElementById('concernTitle').value,
+                document.getElementById('concernDesc').value,
+                document.getElementById('concernAddress').value
+            );
+            alert(result.message);
+            if (result.success) { this.reset(); await loadAllData(); }
+        });
+
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const result = await bookCourt({
+                venue: document.getElementById('bookingVenue').value,
+                date: document.getElementById('bookingDate').value,
+                time: document.getElementById('bookingTime').value,
+                purpose: document.getElementById('bookingPurpose').value
+            });
+            alert(result.message);
+            if (result.success) { this.reset(); await loadAllData(); }
+        });
+    </script>
+</body>
+</html>

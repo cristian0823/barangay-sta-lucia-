@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Barangay Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .signup-bg {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+        }
+
+        .input-field {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .btn-submit {
+            background: #047857;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #059669;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: #e5e7eb;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+
+<body class="signup-bg min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <div class="bg-white rounded-xl shadow-xl p-8">
+            <!-- Logo & Header -->
+            <div class="text-center mb-6">
+                <a href="index.html">
+                    <img src="barangay.jpg" alt="Barangay Logo"
+                        class="w-20 h-20 mx-auto rounded-full border-4 border-green-500 mb-4">
+                </a>
+                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
+                <p class="text-gray-500 mt-1">Join the barangay community</p>
+            </div>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="space-y-4">
+                <input type="hidden" id="csrfToken" name="csrfToken">
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                    <input type="text" id="fullName" required placeholder="Enter your full name" class="input-field"
+                        maxlength="100">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <input type="email" id="email" required placeholder="Enter your email" class="input-field"
+                        maxlength="100">
+                    <p id="emailError" class="hidden text-xs text-red-500 mt-1">Please enter a valid email</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Username</label>
+                    <input type="text" id="username" required placeholder="Choose a username (3-20 chars)"
+                        class="input-field" minlength="3" maxlength="20">
+                    <p class="text-xs text-gray-400 mt-1">Only letters, numbers, underscores</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Password</label>
+                    <input type="password" id="password" required placeholder="Create a strong password"
+                        class="input-field" minlength="8" maxlength="128">
+
+                    <!-- Password Strength -->
+                    <div class="mt-2">
+                        <div class="flex gap-1">
+                            <div id="strengthBar1" class="flex-1 strength-bar"></div>
+                            <div id="strengthBar2" class="flex-1 strength-bar"></div>
+                            <div id="strengthBar3" class="flex-1 strength-bar"></div>
+                            <div id="strengthBar4" class="flex-1 strength-bar"></div>
+                        </div>
+                        <p id="strengthText" class="text-xs text-gray-500 mt-1">Password strength: None</p>
+                    </div>
+                </div>
+
+                <!-- Password Requirements -->
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs font-semibold text-gray-600 mb-2">Password must have:</p>
+                    <div class="grid grid-cols-2 gap-1 text-xs">
+                        <p id="reqLength" class="text-gray-400">✓ At least 8 characters</p>
+                        <p id="reqUpper" class="text-gray-400">✓ One uppercase</p>
+                        <p id="reqLower" class="text-gray-400">✓ One lowercase</p>
+                        <p id="reqNumber" class="text-gray-400">✓ One number</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required placeholder="Confirm your password"
+                        class="input-field" maxlength="128">
+                    <p id="confirmError" class="hidden text-xs text-red-500 mt-1">Passwords do not match</p>
+                </div>
+
+                <div class="flex items-start">
+                    <input type="checkbox" id="agreeTerms" required class="w-4 h-4 mt-1">
+                    <label for="agreeTerms" class="ml-2 text-sm text-gray-600">
+                        I agree to the <a href="#" class="text-green-600 hover:underline">Terms</a>
+                    </label>
+                </div>
+
+                <button type="submit" id="signupBtn" class="btn-submit">Create Account</button>
+            </form>
+
+            <!-- Footer Links -->
+            <div class="text-center mt-6">
+                <p class="text-gray-600">Already have an account?
+                    <a href="login.html" class="text-green-600 font-semibold hover:underline">Sign in</a>
+                </p>
+                <a href="index.html" class="text-gray-500 hover:text-green-600 text-sm">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const SECURITY = {
+            minPasswordLength: 8,
+            maxPasswordLength: 128
+        };
+
+        const passwordRequirements = {
+            length: /.{8,}/,
+            uppercase: /[A-Z]/,
+            lowercase: /[a-z]/,
+            number: /[0-9]/
+        };
+
+        function generateCSRFToken() {
+            const token = crypto.randomUUID();
+            document.getElementById('csrfToken').value = token;
+            sessionStorage.setItem('csrfToken', token);
+            return token;
+        }
+
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function validateUsername(username) {
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            return usernameRegex.test(username);
+        }
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            const requirements = {
+                length: passwordRequirements.length.test(password),
+                uppercase: passwordRequirements.uppercase.test(password),
+                lowercase: passwordRequirements.lowercase.test(password),
+                number: passwordRequirements.number.test(password)
+            };
+
+            document.getElementById('reqLength').className = requirements.length ? 'text-green-600' : 'text-gray-400';
+            document.getElementById('reqUpper').className = requirements.uppercase ? 'text-green-600' : 'text-gray-400';
+            document.getElementById('reqLower').className = requirements.lowercase ? 'text-green-600' : 'text-gray-400';
+            document.getElementById('reqNumber').className = requirements.number ? 'text-green-600' : 'text-gray-400';
+
+            Object.values(requirements).forEach(met => { if (met) score++; });
+
+            const bars = [
+                document.getElementById('strengthBar1'),
+                document.getElementById('strengthBar2'),
+                document.getElementById('strengthBar3'),
+                document.getElementById('strengthBar4')
+            ];
+            const strengthText = document.getElementById('strengthText');
+
+            const colors = ['bg-red-500', 'bg-yellow-500', 'bg-yellow-400', 'bg-green-500'];
+            const texts = ['Very Weak', 'Weak', 'Fair', 'Strong'];
+
+            bars.forEach((bar, index) => {
+                if (index < score) {
+                    bar.className = `flex-1 strength-bar ${colors[score - 1]}`;
+                } else {
+                    bar.className = 'flex-1 strength-bar bg-gray-200';
+                }
+            });
+
+            strengthText.textContent = score > 0 ? `Password strength: ${texts[score - 1]}` : 'Password strength: None';
+
+            return score;
+        }
+
+        // checkUsernameExists and checkEmailExists handled by Supabase in registerUser
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const colors = { success: 'bg-green-500', error: 'bg-red-500' };
+            toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300`;
+            toast.textContent = message;
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => { toast.style.transform = 'translateY(5rem)'; }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            generateCSRFToken();
+
+            document.getElementById('password').addEventListener('input', function (e) {
+                checkPasswordStrength(e.target.value);
+            });
+
+            document.getElementById('username').addEventListener('input', function (e) {
+                e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+            });
+
+            document.getElementById('confirmPassword').addEventListener('input', function (e) {
+                const password = document.getElementById('password').value;
+                const errorElement = document.getElementById('confirmError');
+                if (e.target.value && password !== e.target.value) {
+                    errorElement.classList.remove('hidden');
+                } else {
+                    errorElement.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('email').addEventListener('input', function (e) {
+                const errorElement = document.getElementById('emailError');
+                if (e.target.value && !validateEmail(e.target.value)) {
+                    errorElement.classList.remove('hidden');
+                } else {
+                    errorElement.classList.add('hidden');
+                }
+            });
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const fullName = sanitizeInput(document.getElementById('fullName').value.trim());
+            const email = sanitizeInput(document.getElementById('email').value.trim());
+            const username = sanitizeInput(document.getElementById('username').value.trim());
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+
+            if (!fullName || fullName.length < 2) {
+                showToast('Please enter a valid full name', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email', 'error');
+                return;
+            }
+
+            if (!validateUsername(username)) {
+                showToast('Invalid username format', 'error');
+                return;
+            }
+
+            const strength = checkPasswordStrength(password);
+            if (strength < 4) {
+                showToast('Password does not meet requirements', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            if (!agreeTerms) {
+                showToast('Please agree to the Terms', 'error');
+                return;
+            }
+
+            const userData = {
+                fullName,
+                email,
+                username,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+
+            const result = await registerUser(userData);
+
+            if (result.success) {
+                showToast('Account created! Redirecting...', 'success');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+            } else {
+                showToast(result.message, 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>
