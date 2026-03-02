@@ -1268,6 +1268,375 @@ body {
         width: 100%;
         justify-content: center;
     }
+
+    /* Mobile Navigation Fixes */
+    nav {
+        padding: 0 15px;
+    }
+
+    .nav-inner {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 12px 0;
+        gap: 10px;
+    }
+
+    .nav-brand img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-brand-text h1 {
+        font-size: 14px;
+    }
+
+    .nav-links {
+        display: none; /* Will be shown via JS */
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--primary);
+        padding: 8px;
+    }
+
+    /* Hero Section Mobile */
+    .hero {
+        padding: 40px 15px;
+    }
+
+    .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 28px;
+        line-height: 1.3;
+    }
+
+    .hero-content p {
+        font-size: 16px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    /* Auth Pages */
+    .auth-container {
+        padding: 20px 15px;
+    }
+
+    .auth-card {
+        padding: 24px 20px;
+        margin: 10px;
+    }
+
+    .auth-card h2 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+
+    /* Dashboard Mobile */
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 20px;
+    }
+
+    .user-info {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .dashboard-content {
+        padding: 15px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card, .info-card, .action-card {
+        padding: 16px;
+    }
+
+    /* Forms Mobile */
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    input, select, textarea {
+        font-size: 16px; /* Prevents iOS zoom */
+        padding: 12px 10px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+
+    /* Tables Mobile */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        font-size: 13px;
+        min-width: 600px;
+    }
+
+    th, td {
+        padding: 10px 8px;
+    }
+
+    /* Cards Mobile */
+    .card {
+        margin-bottom: 15px;
+        padding: 15px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    /* Modal Mobile */
+    .modal-content {
+        width: 95%;
+        margin: 20px 10px;
+        padding: 20px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding: 15px;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+
+    .modal-footer {
+        padding: 15px;
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        flex-direction: column;
+    }
+
+    .stat-mini {
+        width: 100%;
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .welcome-icon {
+        display: none;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    /* Equipment Grid */
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-bar select {
+        width: 100%;
+    }
+
+    /* Calendar Mobile */
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        font-size: 12px;
+    }
+
+    .calendar-day {
+        padding: 8px 4px;
+        min-height: 40px;
+    }
+
+    .time-slots {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .time-slot {
+        padding: 12px 8px;
+    }
+
+    /* Profile Page */
+    .profile-section {
+        padding: 15px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+
+    /* Settings Form */
+    .settings-form {
+        padding: 15px;
+    }
+
+    /* Footer */
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    .hero-content h1 {
+        font-size: 24px;
+    }
+
+    .section-title {
+        font-size: 20px;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 14px 20px;
+    }
+
+    .auth-card {
+        padding: 20px 15px;
+    }
+
+    .form-title {
+        font-size: 18px;
+    }
+
+    .card-header {
+        padding: 12px;
+    }
+
+    .card-body {
+        padding: 12px;
+    }
+
+    .badge {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+}
+
+/* Landscape Mode */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        padding: 30px 15px;
+    }
+
+    .hero-inner {
+        gap: 20px;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+}
+
+/* Touch Device Improvements */
+@media (hover: none) and (pointer: coarse) {
+    .btn, .card, .nav-links a, .action-card {
+        min-height: 44px;
+    }
+
+    input, select, textarea {
+        min-height: 44px;
+    }
+
+    a, button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Smooth Scrolling */
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        -webkit-font-smoothing: antialiased;
+    }
 }
 
 /* User Home */
@@ -1537,4 +1906,4 @@ body {
 
 .form-row .form-group {
     flex: 1;
-}
+} 
