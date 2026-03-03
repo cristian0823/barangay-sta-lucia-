@@ -586,7 +586,7 @@
             if (bookings.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No court bookings</p>'; return; }
             container.innerHTML = bookings.map(b => `
                 <div class="card">
-                    <div class="card-header"><span class="card-title">${b.date} at ${b.time}</span><span class="status status-${b.status}">${b.status}</span></div>
+                    <div class="card-header"><span class="card-title">${b.date} at ${b.time} - ${b.end_time || 'N/A'}</span><span class="status status-${b.status}">${b.status}</span></div>
                     <div class="card-body"><p><strong>Venue:</strong> ${b.venueName} | <strong>User:</strong> ${b.userName}</p><p><strong>Purpose:</strong> ${b.purpose || 'N/A'}</p></div>
                     <div class="card-actions">
                         ${b.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="handleApproveCourtBooking(${b.id})">Approve</button><button class="btn btn-danger btn-sm" onclick="handleRejectCourtBooking(${b.id})">Reject</button>` : ''}

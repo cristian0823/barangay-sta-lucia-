@@ -762,6 +762,7 @@ async function bookCourt(bookingData) {
             user_name: user.fullName || user.username,
             date: bookingData.date,
             time: bookingData.time,
+            end_time: bookingData.end_time,
             purpose: bookingData.purpose,
             venue_name: venue,
             status: 'booked'
@@ -789,6 +790,7 @@ async function bookCourt(bookingData) {
             userName: user.fullName || user.username,
             date: bookingData.date,
             time: bookingData.time,
+            end_time: bookingData.end_time,
             purpose: bookingData.purpose,
             venue: venue,
             status: 'booked'

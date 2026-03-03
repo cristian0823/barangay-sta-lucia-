@@ -557,8 +557,12 @@
                             <input type="date" id="bookingDate" required>
                         </div>
                         <div class="form-group">
-                            <label>Time</label>
-                            <input type="time" id="bookingTime" required>
+                            <label>Start Time</label>
+                            <input type="time" id="bookingTime" min="06:00" max="22:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>End Time</label>
+                            <input type="time" id="bookingEndTime" min="06:00" max="22:00" required>
                         </div>
                         <div class="form-group">
                             <label>Purpose</label>
@@ -660,7 +664,7 @@
             if (myBookings.length === 0) { container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No court bookings</p>'; return; }
             container.innerHTML = myBookings.map(b => `
                 <div class="card">
-                    <div class="card-header"><span class="card-title">${b.date} at ${b.time}</span><span class="status status-${b.status}">${b.status}</span></div>
+                    <div class="card-header"><span class="card-title">${b.date} at ${b.time} - ${b.end_time || 'N/A'}</span><span class="status status-${b.status}">${b.status}</span></div>
                     <div class="card-body"><p><strong>Venue:</strong> ${b.venueName}</p><p><strong>Purpose:</strong> ${b.purpose}</p></div>
                     <div class="card-actions">${b.status !== 'cancelled' ? `<button class="btn btn-danger btn-sm" onclick="cancelBooking('${b.id}')">Cancel</button>` : ''}</div>
                 </div>
@@ -694,6 +698,7 @@
                 venue: document.getElementById('bookingVenue').value,
                 date: document.getElementById('bookingDate').value,
                 time: document.getElementById('bookingTime').value,
+                end_time: document.getElementById('bookingEndTime').value,
                 purpose: document.getElementById('bookingPurpose').value
             });
             alert(result.message);

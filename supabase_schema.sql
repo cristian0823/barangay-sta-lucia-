@@ -81,6 +81,7 @@ CREATE TABLE court_bookings (
     user_name VARCHAR(255),
     date DATE NOT NULL,
     time VARCHAR(100) NOT NULL,
+    end_time VARCHAR(100),
     purpose TEXT,
     venue_name VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending',

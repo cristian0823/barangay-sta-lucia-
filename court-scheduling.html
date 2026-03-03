@@ -151,10 +151,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">⏰ Select Time</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">⏰ Start Time</label>
                         <select id="bookingTime" required
                             class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none transition">
                             <option value="">-- Choose Time --</option>
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="7:00 AM">7:00 AM</option>
                             <option value="8:00 AM">8:00 AM</option>
                             <option value="9:00 AM">9:00 AM</option>
                             <option value="10:00 AM">10:00 AM</option>
@@ -168,6 +170,33 @@
                             <option value="6:00 PM">6:00 PM</option>
                             <option value="7:00 PM">7:00 PM</option>
                             <option value="8:00 PM">8:00 PM</option>
+                            <option value="9:00 PM">9:00 PM</option>
+                            <option value="10:00 PM">10:00 PM</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">⏰ End Time</label>
+                        <select id="bookingEndTime" required
+                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none transition">
+                            <option value="">-- Choose Time --</option>
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="7:00 AM">7:00 AM</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="7:00 PM">7:00 PM</option>
+                            <option value="8:00 PM">8:00 PM</option>
+                            <option value="9:00 PM">9:00 PM</option>
+                            <option value="10:00 PM">10:00 PM</option>
                         </select>
                     </div>
 
@@ -417,6 +446,7 @@
             document.getElementById('bookingForm').classList.remove('hidden');
             document.getElementById('bookingDate').value = '';
             document.getElementById('bookingTime').value = '';
+            document.getElementById('bookingEndTime').value = '';
             document.getElementById('bookingPurpose').value = '';
         }
 
@@ -452,6 +482,7 @@
             const bookingData = {
                 date: document.getElementById('bookingDate').value,
                 time: document.getElementById('bookingTime').value,
+                end_time: document.getElementById('bookingEndTime').value,
                 purpose: document.getElementById('bookingPurpose').value,
                 venue: venue,
                 venueName: venueName

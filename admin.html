@@ -1716,7 +1716,7 @@
                 Resident: b.userName,
                 Venue: b.venueName || b.venue,
                 Date: b.date,
-                Time: b.time,
+                Time: b.time + (b.end_time ? ' - ' + b.end_time : ''),
                 Purpose: b.purpose,
                 Status: b.status
             }));
