@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +31,11 @@
             --transition: all 0.25s ease;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -171,7 +176,10 @@
             color: white;
         }
 
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
 
         /* MAIN */
         .dashboard-content {
@@ -204,7 +212,9 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        .welcome-icon { font-size: 52px; }
+        .welcome-icon {
+            font-size: 52px;
+        }
 
         /* STATS GRID - 4 columns */
         .stats-grid {
@@ -282,7 +292,9 @@
             color: var(--primary-xl);
         }
 
-        .section-content { padding: 20px 24px; }
+        .section-content {
+            padding: 20px 24px;
+        }
 
         /* CARDS */
         .card {
@@ -293,7 +305,9 @@
             margin-bottom: 14px;
         }
 
-        .card:last-child { margin-bottom: 0; }
+        .card:last-child {
+            margin-bottom: 0;
+        }
 
         .card-header {
             display: flex;
@@ -301,7 +315,10 @@
             margin-bottom: 10px;
         }
 
-        .card-title { font-weight: 700; color: var(--text); }
+        .card-title {
+            font-weight: 700;
+            color: var(--text);
+        }
 
         .card-body p {
             font-size: 13px;
@@ -309,7 +326,9 @@
             margin-bottom: 4px;
         }
 
-        .card-body strong { color: var(--text); }
+        .card-body strong {
+            color: var(--text);
+        }
 
         .card-actions {
             display: flex;
@@ -320,9 +339,17 @@
         }
 
         /* TABLES */
-        table { width: 100%; border-collapse: collapse; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
 
         th {
             font-size: 12px;
@@ -332,7 +359,9 @@
             background: var(--bg);
         }
 
-        tr:hover td { background: var(--primary-50); }
+        tr:hover td {
+            background: var(--primary-50);
+        }
 
         /* STATUS */
         .status {
@@ -342,38 +371,151 @@
             font-weight: 600;
         }
 
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-approved { background: #d1fae5; color: #065f46; }
-        .status-rejected { background: #fee2e2; color: #991b1b; }
-        .status-resolved { background: #d1fae5; color: #065f46; }
-        .status-returned { background: #e0e7ff; color: #3730a3; }
-        .status-confirmed { background: #d1fae5; color: #065f46; }
-        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-returned {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         /* FORMS */
-        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit;
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
         }
 
         /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: var(--radius-lg); padding: 24px; max-width: 450px; width: 90%; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { font-size: 18px; font-weight: 700; color: var(--primary-xl); }
-        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-xl);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
 
         /* RESPONSIVE */
-        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
-            .dashboard-header { padding: 0 16px; height: auto; flex-direction: column; gap: 12px; padding: 12px; }
-            .header-left, .header-right { width: 100%; justify-content: center; }
-            .user-menu { border-right: none; padding-right: 0; }
-            .dashboard-content { padding: 16px; }
-            .form-row { grid-template-columns: 1fr; }
+            .dashboard-header {
+                padding: 0 16px;
+                height: auto;
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .header-left,
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .user-menu {
+                border-right: none;
+                padding-right: 0;
+            }
+
+            .dashboard-content {
+                padding: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Calendar styles like user dashboard */
@@ -420,19 +562,31 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📦</div>
-                <div class="stat-content"><h3>Pending Requests</h3><div class="stat-value" id="pendingRequests">0</div></div>
+                <div class="stat-content">
+                    <h3>Pending Requests</h3>
+                    <div class="stat-value" id="pendingRequests">0</div>
+                </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📋</div>
-                <div class="stat-content"><h3>Pending Concerns</h3><div class="stat-value" id="pendingConcerns">0</div></div>
+                <div class="stat-content">
+                    <h3>Pending Concerns</h3>
+                    <div class="stat-value" id="pendingConcerns">0</div>
+                </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🏀</div>
-                <div class="stat-content"><h3>Total Bookings</h3><div class="stat-value" id="totalBookings">0</div></div>
+                <div class="stat-content">
+                    <h3>Total Bookings</h3>
+                    <div class="stat-value" id="totalBookings">0</div>
+                </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">👥</div>
-                <div class="stat-content"><h3>Total Users</h3><div class="stat-value" id="totalUsers">0</div></div>
+                <div class="stat-content">
+                    <h3>Total Users</h3>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
             </div>
         </div>
 
@@ -444,7 +598,15 @@
             </div>
             <div class="section-content">
                 <table>
-                    <thead><tr><th>Equipment</th><th>Total</th><th>Available</th><th>Broken</th><th>Actions</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Equipment</th>
+                            <th>Total</th>
+                            <th>Available</th>
+                            <th>Broken</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
                     <tbody id="equipmentTable"></tbody>
                 </table>
             </div>
@@ -452,20 +614,32 @@
 
         <!-- Equipment Requests -->
         <div class="section-container">
-            <div class="section-header"><h3>📦 Equipment Requests</h3></div>
-            <div class="section-content"><div id="requestsList"></div></div>
+            <div class="section-header">
+                <h3>📦 Equipment Requests</h3>
+            </div>
+            <div class="section-content">
+                <div id="requestsList"></div>
+            </div>
         </div>
 
         <!-- Court Bookings -->
         <div class="section-container">
-            <div class="section-header"><h3>🏀 Court Bookings</h3></div>
-            <div class="section-content"><div id="bookingsList"></div></div>
+            <div class="section-header">
+                <h3>🏀 Court Bookings</h3>
+            </div>
+            <div class="section-content">
+                <div id="bookingsList"></div>
+            </div>
         </div>
 
         <!-- Concerns -->
         <div class="section-container">
-            <div class="section-header"><h3>📋 Citizen Concerns</h3></div>
-            <div class="section-content"><div id="concernsList"></div></div>
+            <div class="section-header">
+                <h3>📋 Citizen Concerns</h3>
+            </div>
+            <div class="section-content">
+                <div id="concernsList"></div>
+            </div>
         </div>
 
         <!-- Events -->
@@ -478,8 +652,12 @@
                 <!-- Venue Selection -->
                 <div class="flex justify-center mb-6">
                     <div class="bg-white rounded-xl shadow-lg p-2 flex gap-2">
-                        <button onclick="adminSelectVenue('basketball')" id="admin-venue-basketball" class="px-6 py-3 rounded-lg font-semibold transition bg-emerald-600 text-white">🏀 Basketball Court</button>
-                        <button onclick="adminSelectVenue('multipurpose')" id="admin-venue-multipurpose" class="px-6 py-3 rounded-lg font-semibold transition bg-gray-200 text-gray-700 hover:bg-gray-300">🏢 Multi-Purpose Hall</button>
+                        <button onclick="adminSelectVenue('basketball')" id="admin-venue-basketball"
+                            class="px-6 py-3 rounded-lg font-semibold transition bg-emerald-600 text-white">🏀
+                            Basketball Court</button>
+                        <button onclick="adminSelectVenue('multipurpose')" id="admin-venue-multipurpose"
+                            class="px-6 py-3 rounded-lg font-semibold transition bg-gray-200 text-gray-700 hover:bg-gray-300">🏢
+                            Multi-Purpose Hall</button>
                     </div>
                 </div>
                 <input type="hidden" id="adminSelectedVenue" value="basketball">
@@ -490,8 +668,12 @@
                         <div class="flex justify-between items-center mb-6">
                             <h2 id="adminCalendarMonth" class="text-2xl font-bold text-gray-800"></h2>
                             <div class="flex space-x-2">
-                                <button onclick="changeAdminMonth(-1)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition shadow">← Prev</button>
-                                <button onclick="changeAdminMonth(1)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition shadow">Next →</button>
+                                <button onclick="changeAdminMonth(-1)"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition shadow">←
+                                    Prev</button>
+                                <button onclick="changeAdminMonth(1)"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition shadow">Next
+                                    →</button>
                             </div>
                         </div>
 
@@ -509,25 +691,121 @@
 
                         <!-- Legend -->
                         <div class="flex justify-center space-x-6 text-sm mt-4">
-                            <div class="flex items-center"><div class="w-4 h-4 bg-green-500 rounded mr-2"></div><span>Available</span></div>
-                            <div class="flex items-center"><div class="w-4 h-4 bg-purple-500 rounded mr-2"></div><span>Event</span></div>
-                            <div class="flex items-center"><div class="w-4 h-4 bg-red-500 rounded mr-2"></div><span>Booked</span></div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-green-500 rounded mr-2"></div><span>Available</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-purple-500 rounded mr-2"></div><span>Event</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-red-500 rounded mr-2"></div><span>Booked</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Booking Form Section -->
                     <div class="bg-white rounded-2xl shadow-xl p-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">📅 Manage Bookings</h2>
-                        <div id="adminVenueDisplay" class="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg mb-4 text-center font-semibold">🏀 Basketball Court</div>
-                        
-                        <button onclick="adminShowBookingForm()" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-105 mb-4">➕ New Booking</button>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">📅 Manage Bookings & Events</h2>
+                        <div id="adminVenueDisplay"
+                            class="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg mb-4 text-center font-semibold">
+                            🏀 Basketball Court</div>
+
+                        <div class="flex gap-2 mb-4">
+                            <button onclick="adminShowBookingForm()"
+                                class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-105">➕
+                                New Booking</button>
+                            <button onclick="adminShowEventForm()"
+                                class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-105">🎉
+                                New Event</button>
+                        </div>
 
                         <form id="adminBookingForm" class="hidden space-y-4">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📆 Select Date</label><input type="date" id="adminBookingDate" required class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ Start Time</label><select id="adminBookingTime" required class="w-full border-2 border-gray-200 rounded-lg px-4 py-2"><option value="">-- Choose Time --</option><option value="6:00 AM">6:00 AM</option><option value="7:00 AM">7:00 AM</option><option value="8:00 AM">8:00 AM</option><option value="9:00 AM">9:00 AM</option><option value="10:00 AM">10:00 AM</option><option value="11:00 AM">11:00 AM</option><option value="12:00 PM">12:00 PM</option><option value="1:00 PM">1:00 PM</option><option value="2:00 PM">2:00 PM</option><option value="3:00 PM">3:00 PM</option><option value="4:00 PM">4:00 PM</option><option value="5:00 PM">5:00 PM</option><option value="6:00 PM">6:00 PM</option><option value="7:00 PM">7:00 PM</option><option value="8:00 PM">8:00 PM</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ End Time</label><select id="adminBookingEndTime" required class="w-full border-2 border-gray-200 rounded-lg px-4 py-2"><option value="">-- Choose Time --</option><option value="6:00 AM">6:00 AM</option><option value="7:00 AM">7:00 AM</option><option value="8:00 AM">8:00 AM</option><option value="9:00 AM">9:00 AM</option><option value="10:00 AM">10:00 AM</option><option value="11:00 AM">11:00 AM</option><option value="12:00 PM">12:00 PM</option><option value="1:00 PM">1:00 PM</option><option value="2:00 PM">2:00 PM</option><option value="3:00 PM">3:00 PM</option><option value="4:00 PM">4:00 PM</option><option value="5:00 PM">5:00 PM</option><option value="6:00 PM">6:00 PM</option><option value="7:00 PM">7:00 PM</option><option value="8:00 PM">8:00 PM</option><option value="9:00 PM">9:00 PM</option><option value="10:00 PM">10:00 PM</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📝 Purpose</label><textarea id="adminBookingPurpose" required placeholder="Describe the purpose..." class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 h-24 resize-none"></textarea></div>
-                            <div class="flex space-x-2"><button type="submit" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">✅ Submit</button><button type="button" onclick="adminHideBookingForm()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">❌ Cancel</button></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📆 Select
+                                    Date</label><input type="date" id="adminBookingDate" required
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ Start Time</label><select
+                                    id="adminBookingTime" required
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2">
+                                    <option value="">-- Choose Time --</option>
+                                    <option value="6:00 AM">6:00 AM</option>
+                                    <option value="7:00 AM">7:00 AM</option>
+                                    <option value="8:00 AM">8:00 AM</option>
+                                    <option value="9:00 AM">9:00 AM</option>
+                                    <option value="10:00 AM">10:00 AM</option>
+                                    <option value="11:00 AM">11:00 AM</option>
+                                    <option value="12:00 PM">12:00 PM</option>
+                                    <option value="1:00 PM">1:00 PM</option>
+                                    <option value="2:00 PM">2:00 PM</option>
+                                    <option value="3:00 PM">3:00 PM</option>
+                                    <option value="4:00 PM">4:00 PM</option>
+                                    <option value="5:00 PM">5:00 PM</option>
+                                    <option value="6:00 PM">6:00 PM</option>
+                                    <option value="7:00 PM">7:00 PM</option>
+                                    <option value="8:00 PM">8:00 PM</option>
+                                </select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ End Time</label><select
+                                    id="adminBookingEndTime" required
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2">
+                                    <option value="">-- Choose Time --</option>
+                                    <option value="6:00 AM">6:00 AM</option>
+                                    <option value="7:00 AM">7:00 AM</option>
+                                    <option value="8:00 AM">8:00 AM</option>
+                                    <option value="9:00 AM">9:00 AM</option>
+                                    <option value="10:00 AM">10:00 AM</option>
+                                    <option value="11:00 AM">11:00 AM</option>
+                                    <option value="12:00 PM">12:00 PM</option>
+                                    <option value="1:00 PM">1:00 PM</option>
+                                    <option value="2:00 PM">2:00 PM</option>
+                                    <option value="3:00 PM">3:00 PM</option>
+                                    <option value="4:00 PM">4:00 PM</option>
+                                    <option value="5:00 PM">5:00 PM</option>
+                                    <option value="6:00 PM">6:00 PM</option>
+                                    <option value="7:00 PM">7:00 PM</option>
+                                    <option value="8:00 PM">8:00 PM</option>
+                                    <option value="9:00 PM">9:00 PM</option>
+                                    <option value="10:00 PM">10:00 PM</option>
+                                </select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📝 Purpose</label><textarea
+                                    id="adminBookingPurpose" required placeholder="Describe the purpose..."
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 h-24 resize-none"></textarea>
+                            </div>
+                            <div class="flex space-x-2"><button type="submit"
+                                    class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">✅
+                                    Submit</button><button type="button" onclick="adminHideBookingForm()"
+                                    class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">❌
+                                    Cancel</button></div>
+                        </form>
+
+                        <form id="adminSidebarEventForm" class="hidden space-y-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📝 Event
+                                    Title</label><input type="text" id="adminSidebarEventTitle" required
+                                    placeholder="e.g. Basketball Tournament"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📆 Select
+                                    Date</label><input type="date" id="adminSidebarEventDate" required
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ Start
+                                        Time</label><input type="time" id="adminSidebarEventTime" required
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                                </div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ End
+                                        Time</label><input type="time" id="adminSidebarEventEndTime"
+                                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                                </div>
+                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">👤 Organizer</label><input
+                                    type="text" id="adminSidebarEventOrganizer" required placeholder="Organizer name"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div class="flex space-x-2"><button type="submit"
+                                    class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">✅
+                                    Add Event</button><button type="button" onclick="adminHideEventForm()"
+                                    class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">❌
+                                    Cancel</button></div>
                         </form>
                         <div id="adminBookingMessage" class="mt-4"></div>
 
@@ -543,7 +821,9 @@
     <!-- Event Modal -->
     <div id="eventModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Add Court Event</h3><button class="modal-close" onclick="closeModal('eventModal')">&times;</button></div>
+            <div class="modal-header">
+                <h3>Add Court Event</h3><button class="modal-close" onclick="closeModal('eventModal')">&times;</button>
+            </div>
             <form id="eventForm">
                 <div class="form-group"><label>Event Title</label><input type="text" id="eventTitle" required></div>
                 <div class="form-row">
@@ -562,7 +842,10 @@
     <!-- Equipment Modal -->
     <div id="addEquipmentModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Add Equipment</h3><button class="modal-close" onclick="closeModal('addEquipmentModal')">&times;</button></div>
+            <div class="modal-header">
+                <h3>Add Equipment</h3><button class="modal-close"
+                    onclick="closeModal('addEquipmentModal')">&times;</button>
+            </div>
             <form id="addEquipmentForm">
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="equipName" required></div>
@@ -577,10 +860,14 @@
     <!-- Concern Modal -->
     <div id="concernModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Respond to Concern</h3><button class="modal-close" onclick="closeModal('concernModal')">&times;</button></div>
+            <div class="modal-header">
+                <h3>Respond to Concern</h3><button class="modal-close"
+                    onclick="closeModal('concernModal')">&times;</button>
+            </div>
             <form id="concernResponseForm">
                 <input type="hidden" id="concernId">
-                <div class="form-group"><label>Response</label><textarea id="concernResponse" rows="4" required></textarea></div>
+                <div class="form-group"><label>Response</label><textarea id="concernResponse" rows="4"
+                        required></textarea></div>
                 <button type="submit" class="btn btn-primary">Send Response</button>
             </form>
         </div>
@@ -590,7 +877,7 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             const user = getCurrentUser();
             if (!user) { window.location.href = 'login.html'; return; }
             if (user.role !== 'admin') { window.location.href = 'home.html'; return; }
@@ -732,6 +1019,7 @@
         }
 
         function adminShowBookingForm() {
+            document.getElementById('adminSidebarEventForm')?.classList.add('hidden');
             document.getElementById('adminBookingForm').classList.remove('hidden');
             document.getElementById('adminBookingDate').value = adminSelectedDate || '';
         }
@@ -740,6 +1028,44 @@
             document.getElementById('adminBookingForm').classList.add('hidden');
             document.getElementById('adminBookingForm').reset();
         }
+
+        function adminShowEventForm() {
+            document.getElementById('adminBookingForm')?.classList.add('hidden');
+            document.getElementById('adminSidebarEventForm').classList.remove('hidden');
+            document.getElementById('adminSidebarEventDate').value = adminSelectedDate || '';
+        }
+
+        function adminHideEventForm() {
+            document.getElementById('adminSidebarEventForm').classList.add('hidden');
+            document.getElementById('adminSidebarEventForm').reset();
+        }
+
+        document.getElementById('adminSidebarEventForm')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const venue = document.getElementById('adminSelectedVenue').value;
+            const venueName = venue === 'basketball' ? 'Basketball Court, Barangay Sta. Lucia' : 'Multi-Purpose Hall, Barangay Sta. Lucia';
+
+            const eventData = {
+                title: document.getElementById('adminSidebarEventTitle').value,
+                date: document.getElementById('adminSidebarEventDate').value,
+                time: document.getElementById('adminSidebarEventTime').value,
+                end_time: document.getElementById('adminSidebarEventEndTime').value,
+                location: venueName,
+                organizer: document.getElementById('adminSidebarEventOrganizer').value,
+                status: 'approved'
+            };
+
+            const result = await createEvent(eventData);
+            document.getElementById('adminBookingMessage').innerHTML = result.success
+                ? '<div class="bg-green-100 text-green-700 p-3 rounded">✅ Event Created</div>'
+                : '<div class="bg-red-100 text-red-700 p-3 rounded">❌ ' + result.message + '</div>';
+
+            if (result.success) {
+                adminHideEventForm();
+                await renderAdminCalendar();
+                if (typeof loadEvents === 'function') await loadEvents();
+            }
+        });
 
         async function renderAdminAllBookings() {
             const container = document.getElementById('adminAllBookingsList');
@@ -768,11 +1094,11 @@
         }
 
         // Handle admin booking form
-        document.getElementById('adminBookingForm').addEventListener('submit', async function(e) {
+        document.getElementById('adminBookingForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const venue = document.getElementById('adminSelectedVenue').value;
             const venueName = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
-            
+
             const bookingData = {
                 date: document.getElementById('adminBookingDate').value,
                 time: document.getElementById('adminBookingTime').value,
@@ -783,10 +1109,10 @@
             };
 
             const result = await bookCourt(bookingData);
-            document.getElementById('adminBookingMessage').innerHTML = result.success 
+            document.getElementById('adminBookingMessage').innerHTML = result.success
                 ? '<div class="bg-green-100 text-green-700 p-3 rounded">✅ ' + result.message + '</div>'
                 : '<div class="bg-red-100 text-red-700 p-3 rounded">❌ ' + result.message + '</div>';
-            
+
             if (result.success) {
                 adminHideBookingForm();
                 await renderAdminCalendar();
@@ -831,7 +1157,7 @@
             `).join('');
         }
 
-        async function deleteEquipment(id) { if (confirm('Delete equipment?')) { await deleteEquipmentItem(id); await loadAllData(); }}
+        async function deleteEquipment(id) { if (confirm('Delete equipment?')) { await deleteEquipmentItem(id); await loadAllData(); } }
 
         async function loadRequests() {
             const borrowings = await getAllBorrowings();
@@ -849,9 +1175,9 @@
             `).join('');
         }
 
-        async function approveRequest(id) { if (await updateBorrowingStatus(id, 'approved')) { alert('Approved!'); await loadAllData(); }}
-        async function rejectRequest(id) { if (await updateBorrowingStatus(id, 'rejected')) { await loadAllData(); }}
-        async function returnRequest(id) { if (await updateBorrowingStatus(id, 'returned')) { await loadAllData(); }}
+        async function approveRequest(id) { if (await updateBorrowingStatus(id, 'approved')) { alert('Approved!'); await loadAllData(); } }
+        async function rejectRequest(id) { if (await updateBorrowingStatus(id, 'rejected')) { await loadAllData(); } }
+        async function returnRequest(id) { if (await updateBorrowingStatus(id, 'returned')) { await loadAllData(); } }
 
         async function loadBookings() {
             const bookings = await getCourtBookings();
@@ -887,7 +1213,7 @@
             `).join('');
         }
 
-        async function deleteConcernAdmin(id) { if (confirm('Delete?')) { await adminDeleteConcern(id); await loadAllData(); }}
+        async function deleteConcernAdmin(id) { if (confirm('Delete?')) { await adminDeleteConcern(id); await loadAllData(); } }
 
         async function loadEvents() {
             const events = await getEvents();
@@ -905,30 +1231,31 @@
             `).join('');
         }
 
-        async function approveEvent(id) { if (await updateEventStatus(id, 'approved')) { await loadAllData(); }}
+        async function approveEvent(id) { if (await updateEventStatus(id, 'approved')) { await loadAllData(); } }
 
         function openEventModal() { document.getElementById('eventModal').classList.add('active'); }
         function openAddEquipmentModal() { document.getElementById('addEquipmentModal').classList.add('active'); }
         function openConcernModal(id) { document.getElementById('concernId').value = id; document.getElementById('concernModal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+        document.getElementById('eventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             await createEvent({ title: document.getElementById('eventTitle').value, date: document.getElementById('eventDate').value, time: document.getElementById('eventTime').value, end_time: document.getElementById('eventEndTime').value, location: document.getElementById('eventLocation').value, organizer: 'Barangay' });
             closeModal('eventModal'); this.reset(); await loadAllData();
         });
 
-        document.getElementById('addEquipmentForm').addEventListener('submit', async function(e) {
+        document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             await addEquipment({ name: document.getElementById('equipName').value, quantity: parseInt(document.getElementById('equipQty').value), available: parseInt(document.getElementById('equipQty').value), icon: document.getElementById('equipIcon').value });
             closeModal('addEquipmentModal'); this.reset(); await loadAllData();
         });
 
-        document.getElementById('concernResponseForm').addEventListener('submit', async function(e) {
+        document.getElementById('concernResponseForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             await updateConcernStatus(document.getElementById('concernId').value, 'resolved', document.getElementById('concernResponse').value);
             closeModal('concernModal'); this.reset(); await loadAllData();
         });
     </script>
 </body>
+
 </html>
