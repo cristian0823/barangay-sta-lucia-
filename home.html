@@ -28,7 +28,7 @@
         }
 
         /* NAV */
-        nav {
+        .top-nav {
             background: #fff;
             border-bottom: 1px solid #e7f3ec;
             box-shadow: 0 1px 6px rgba(16, 185, 129, 0.08);
@@ -620,6 +620,7 @@
             color: #fff;
         }
 
+        /* ── RESPONSIVE ─────────────────────────────── */
         @media (max-width: 1024px) {
             .actions-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -627,11 +628,18 @@
         }
 
         @media (max-width: 768px) {
+
+            /* Layout */
             main {
-                padding: 14px 12px 80px;
+                padding: 14px 14px 76px;
             }
 
-            /* Nav: hide text labels, keep avatar + logo */
+            /* Top Nav */
+            .nav-inner {
+                padding: 0 14px;
+                height: 56px;
+            }
+
             .user-info-block {
                 display: none;
             }
@@ -641,12 +649,8 @@
             }
 
             .btn-nav-danger {
-                padding: 7px 12px;
+                padding: 6px 12px;
                 font-size: 12px;
-            }
-
-            .nav-inner {
-                padding: 0 12px;
             }
 
             .nav-brand span {
@@ -655,8 +659,9 @@
 
             /* Welcome banner */
             .welcome-banner {
-                padding: 18px 18px;
-                border-radius: 16px;
+                padding: 16px 18px;
+                border-radius: 14px;
+                margin-bottom: 16px;
             }
 
             .welcome-icon {
@@ -664,57 +669,69 @@
             }
 
             .welcome-text h2 {
-                font-size: 18px;
-            }
-
-            .welcome-text p {
-                font-size: 13px;
-            }
-
-            /* Stats: 3 col → 1 col on very narrow, keep 3 on 768 */
-            .stats-row {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 9px;
-            }
-
-            .stat-card {
-                padding: 14px 10px;
-                flex-direction: column;
-                gap: 6px;
-                text-align: center;
-            }
-
-            .stat-icon-box {
-                width: 38px;
-                height: 38px;
                 font-size: 17px;
             }
 
+            .welcome-text p {
+                font-size: 12px;
+            }
+
+            /* Stats row */
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+
+            .stat-card {
+                padding: 12px 8px;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                text-align: center;
+                border-radius: 12px;
+            }
+
+            .stat-icon-box {
+                width: 34px;
+                height: 34px;
+                font-size: 16px;
+                border-radius: 10px;
+            }
+
             .stat-val {
-                font-size: 22px;
+                font-size: 20px;
             }
 
             .stat-lbl {
-                font-size: 10px;
+                font-size: 9px;
             }
 
-            /* Action grid: 2x2 */
+            /* Quick actions */
+            .sec-title {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
             .actions-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
+                margin-bottom: 16px;
             }
 
             .action-card {
-                padding: 18px 12px;
+                padding: 16px 10px;
+                border-radius: 14px;
             }
 
             .ac-icon {
-                font-size: 28px;
-                margin-bottom: 8px;
+                font-size: 26px;
+                margin-bottom: 6px;
             }
 
             .action-card h4 {
                 font-size: 12px;
+                margin-bottom: 3px;
             }
 
             .action-card p {
@@ -723,31 +740,31 @@
 
             /* Panels */
             .panel {
-                padding: 16px;
+                padding: 14px;
+                border-radius: 14px;
             }
 
-            /* Concern form full-width */
+            .panel-header h3 {
+                font-size: 14px;
+            }
+
+            /* Equipment grid */
+            .equip-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Concern form */
             .concern-form .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            /* Equipment grid: single col */
-            .equip-grid {
-                grid-template-columns: 1fr;
+            .btn-submit {
+                width: 100%;
+                padding: 13px;
             }
         }
 
-        @media (max-width: 420px) {
-            .stats-row {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .stat-card:last-child {
-                grid-column: 1 / -1;
-            }
-        }
-
-        /* ── BOTTOM NAVIGATION BAR (mobile only) ── */
+        /* ── BOTTOM NAV BAR (mobile only) ─────────────── */
         .bottom-nav {
             display: none;
         }
@@ -760,9 +777,9 @@
                 left: 0;
                 right: 0;
                 background: #fff;
-                border-top: 1px solid #e7f3ec;
-                box-shadow: 0 -2px 12px rgba(16, 185, 129, 0.08);
-                z-index: 100;
+                border-top: 1.5px solid #e7f3ec;
+                box-shadow: 0 -2px 16px rgba(16, 185, 129, 0.1);
+                z-index: 200;
                 padding: 6px 0 env(safe-area-inset-bottom, 6px);
             }
 
@@ -784,15 +801,18 @@
                 cursor: pointer;
                 padding: 6px 4px;
                 transition: color 0.2s;
+                min-height: 50px;
             }
 
-            .bottom-nav a:hover,
-            .bottom-nav button:hover {
+            .bottom-nav a.active,
+            .bottom-nav a:active,
+            .bottom-nav button:active {
                 color: #10b981;
             }
 
             .bottom-nav .bn-icon {
-                font-size: 20px;
+                font-size: 22px;
+                line-height: 1;
             }
         }
     </style>
@@ -801,7 +821,7 @@
 <body>
 
     <!-- Navigation -->
-    <nav>
+    <nav class="top-nav">
         <div class="nav-inner">
             <div class="nav-brand">
                 <img src="barangay.jpg" alt="Barangay Logo">
