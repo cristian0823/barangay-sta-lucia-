@@ -989,15 +989,18 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
 async function createEvent(eventData) {
     const supabaseAvailable = await isSupabaseAvailable();
     
+    // Admin-created events should be automatically approved
+    const eventWithStatus = { ...eventData, status: 'approved' };
+    
     if (supabaseAvailable) {
-        const { error } = await supabase.from('events').insert([eventData]);
+        const { error } = await supabase.from('events').insert([eventWithStatus]);
         return { success: !error, message: error ? error.message : 'Event created successfully' };
     } else {
         const events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
         const newEvent = {
             id: Date.now(),
-            ...eventData,
-            status: 'pending'
+            ...eventWithStatus,
+            status: 'approved'
         };
         events.push(newEvent);
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
