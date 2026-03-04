@@ -471,30 +471,71 @@
         <!-- Events -->
         <div class="section-container">
             <div class="section-header">
-                <h3>📅 Court Events</h3>
+                <h3>📅 Court Events & Bookings</h3>
                 <button class="btn btn-primary" onclick="openEventModal()">+ Add Event</button>
             </div>
             <div class="section-content">
-                <!-- Calendar View -->
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 class="font-bold text-lg">Calendar View</h4>
-                        <div class="flex gap-2">
-                            <button onclick="changeAdminMonth(-1)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">← Prev</button>
-                            <button onclick="changeAdminMonth(1)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">Next →</button>
-                        </div>
-                    </div>
-                    <div id="adminCalendarMonth" class="text-center font-bold text-xl mb-4 text-gray-800"></div>
-                    <div id="adminCalendarGrid" class="grid grid-cols-7 gap-2"></div>
-                    <div class="flex justify-center gap-6 mt-4 text-sm">
-                        <div class="flex items-center"><div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded mr-2"></div> Event</div>
-                        <div class="flex items-center"><div class="w-4 h-4 bg-red-100 border border-red-300 rounded mr-2"></div> Booked</div>
-                        <div class="flex items-center"><div class="w-4 h-4 bg-green-100 border border-green-300 rounded mr-2"></div> Available</div>
+                <!-- Venue Selection -->
+                <div class="flex justify-center mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-2 flex gap-2">
+                        <button onclick="adminSelectVenue('basketball')" id="admin-venue-basketball" class="px-6 py-3 rounded-lg font-semibold transition bg-emerald-600 text-white">🏀 Basketball Court</button>
+                        <button onclick="adminSelectVenue('multipurpose')" id="admin-venue-multipurpose" class="px-6 py-3 rounded-lg font-semibold transition bg-gray-200 text-gray-700 hover:bg-gray-300">🏢 Multi-Purpose Hall</button>
                     </div>
                 </div>
-                <!-- List View -->
-                <h4 class="font-bold text-lg mb-2">All Events</h4>
-                <div id="eventsList"></div>
+                <input type="hidden" id="adminSelectedVenue" value="basketball">
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Calendar Section -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 id="adminCalendarMonth" class="text-2xl font-bold text-gray-800"></h2>
+                            <div class="flex space-x-2">
+                                <button onclick="changeAdminMonth(-1)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition shadow">← Prev</button>
+                                <button onclick="changeAdminMonth(1)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition shadow">Next →</button>
+                            </div>
+                        </div>
+
+                        <!-- Calendar Grid -->
+                        <div class="grid grid-cols-7 gap-2 mb-4">
+                            <div class="text-center font-bold text-gray-500 py-2">Sun</div>
+                            <div class="text-center font-bold text-gray-500 py-2">Mon</div>
+                            <div class="text-center font-bold text-gray-500 py-2">Tue</div>
+                            <div class="text-center font-bold text-gray-500 py-2">Wed</div>
+                            <div class="text-center font-bold text-gray-500 py-2">Thu</div>
+                            <div class="text-center font-bold text-gray-500 py-2">Fri</div>
+                            <div class="text-center font-bold text-gray-500 py-2">Sat</div>
+                        </div>
+                        <div id="adminCalendarGrid" class="grid grid-cols-7 gap-2"></div>
+
+                        <!-- Legend -->
+                        <div class="flex justify-center space-x-6 text-sm mt-4">
+                            <div class="flex items-center"><div class="w-4 h-4 bg-green-500 rounded mr-2"></div><span>Available</span></div>
+                            <div class="flex items-center"><div class="w-4 h-4 bg-purple-500 rounded mr-2"></div><span>Event</span></div>
+                            <div class="flex items-center"><div class="w-4 h-4 bg-red-500 rounded mr-2"></div><span>Booked</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Form Section -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">📅 Manage Bookings</h2>
+                        <div id="adminVenueDisplay" class="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg mb-4 text-center font-semibold">🏀 Basketball Court</div>
+                        
+                        <button onclick="adminShowBookingForm()" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-105 mb-4">➕ New Booking</button>
+
+                        <form id="adminBookingForm" class="hidden space-y-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📆 Select Date</label><input type="date" id="adminBookingDate" required class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ Start Time</label><select id="adminBookingTime" required class="w-full border-2 border-gray-200 rounded-lg px-4 py-2"><option value="">-- Choose Time --</option><option value="6:00 AM">6:00 AM</option><option value="7:00 AM">7:00 AM</option><option value="8:00 AM">8:00 AM</option><option value="9:00 AM">9:00 AM</option><option value="10:00 AM">10:00 AM</option><option value="11:00 AM">11:00 AM</option><option value="12:00 PM">12:00 PM</option><option value="1:00 PM">1:00 PM</option><option value="2:00 PM">2:00 PM</option><option value="3:00 PM">3:00 PM</option><option value="4:00 PM">4:00 PM</option><option value="5:00 PM">5:00 PM</option><option value="6:00 PM">6:00 PM</option><option value="7:00 PM">7:00 PM</option><option value="8:00 PM">8:00 PM</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">⏰ End Time</label><select id="adminBookingEndTime" required class="w-full border-2 border-gray-200 rounded-lg px-4 py-2"><option value="">-- Choose Time --</option><option value="6:00 AM">6:00 AM</option><option value="7:00 AM">7:00 AM</option><option value="8:00 AM">8:00 AM</option><option value="9:00 AM">9:00 AM</option><option value="10:00 AM">10:00 AM</option><option value="11:00 AM">11:00 AM</option><option value="12:00 PM">12:00 PM</option><option value="1:00 PM">1:00 PM</option><option value="2:00 PM">2:00 PM</option><option value="3:00 PM">3:00 PM</option><option value="4:00 PM">4:00 PM</option><option value="5:00 PM">5:00 PM</option><option value="6:00 PM">6:00 PM</option><option value="7:00 PM">7:00 PM</option><option value="8:00 PM">8:00 PM</option><option value="9:00 PM">9:00 PM</option><option value="10:00 PM">10:00 PM</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">📝 Purpose</label><textarea id="adminBookingPurpose" required placeholder="Describe the purpose..." class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 h-24 resize-none"></textarea></div>
+                            <div class="flex space-x-2"><button type="submit" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">✅ Submit</button><button type="button" onclick="adminHideBookingForm()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg">❌ Cancel</button></div>
+                        </form>
+                        <div id="adminBookingMessage" class="mt-4"></div>
+
+                        <!-- All Bookings List -->
+                        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-3">📋 All Bookings</h3>
+                        <div id="adminAllBookingsList" class="space-y-2 max-h-64 overflow-y-auto"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -561,11 +602,34 @@
         async function loadAllData() {
             await Promise.all([loadStats(), loadEquipment(), loadRequests(), loadBookings(), loadConcerns(), loadEvents()]);
             await renderAdminCalendar();
+            await renderAdminAllBookings();
         }
 
         // Admin Calendar Variables
         let adminCalendarMonth = new Date().getMonth();
         let adminCalendarYear = new Date().getFullYear();
+
+        // Venue selection
+        function adminSelectVenue(venue) {
+            document.getElementById('adminSelectedVenue').value = venue;
+            const basketballBtn = document.getElementById('admin-venue-basketball');
+            const multipurposeBtn = document.getElementById('admin-venue-multipurpose');
+            const venueDisplay = document.getElementById('adminVenueDisplay');
+
+            if (venue === 'basketball') {
+                basketballBtn.className = 'px-6 py-3 rounded-lg font-semibold transition bg-emerald-600 text-white';
+                multipurposeBtn.className = 'px-6 py-3 rounded-lg font-semibold transition bg-gray-200 text-gray-700 hover:bg-gray-300';
+                venueDisplay.innerHTML = '🏀 Basketball Court';
+                venueDisplay.className = 'bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg mb-4 text-center font-semibold';
+            } else {
+                basketballBtn.className = 'px-6 py-3 rounded-lg font-semibold transition bg-gray-200 text-gray-700 hover:bg-gray-300';
+                multipurposeBtn.className = 'px-6 py-3 rounded-lg font-semibold transition bg-emerald-600 text-white';
+                venueDisplay.innerHTML = '🏢 Multi-Purpose Hall';
+                venueDisplay.className = 'bg-blue-100 text-blue-800 px-4 py-2 rounded-lg mb-4 text-center font-semibold';
+            }
+            renderAdminCalendar();
+            renderAdminAllBookings();
+        }
 
         async function renderAdminCalendar() {
             const grid = document.getElementById('adminCalendarGrid');
@@ -575,17 +639,24 @@
 
             const events = await getEvents();
             const bookings = await getCourtBookings();
+            const selectedVenue = document.getElementById('adminSelectedVenue').value;
+
+            // Filter events that are approved
+            const approvedEvents = events.filter(e => e.status === 'approved');
+
+            // Filter bookings by venue
+            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue);
 
             // Create event map
             const eventDates = {};
-            events.forEach(e => {
+            approvedEvents.forEach(e => {
                 eventDates[e.date] = eventDates[e.date] || [];
                 eventDates[e.date].push(e);
             });
 
-            // Create booking map
+            // Create booking map filtered by venue
             const bookingDates = {};
-            bookings.filter(b => b.status !== 'cancelled').forEach(b => {
+            venueBookings.forEach(b => {
                 bookingDates[b.date] = bookingDates[b.date] || [];
                 bookingDates[b.date].push(b);
             });
@@ -645,9 +716,83 @@
                     dayElement.style.border = '3px solid #22c55e';
                 }
 
+                // Click to select date
+                dayElement.onclick = () => adminSelectDate(dateStr);
                 grid.appendChild(dayElement);
             }
         }
+
+        let adminSelectedDate = null;
+
+        async function adminSelectDate(dateStr) {
+            adminSelectedDate = dateStr;
+            document.getElementById('adminBookingDate').value = dateStr;
+            await renderAdminCalendar();
+            await renderAdminAllBookings();
+        }
+
+        function adminShowBookingForm() {
+            document.getElementById('adminBookingForm').classList.remove('hidden');
+            document.getElementById('adminBookingDate').value = adminSelectedDate || '';
+        }
+
+        function adminHideBookingForm() {
+            document.getElementById('adminBookingForm').classList.add('hidden');
+            document.getElementById('adminBookingForm').reset();
+        }
+
+        async function renderAdminAllBookings() {
+            const container = document.getElementById('adminAllBookingsList');
+            const bookings = await getCourtBookings();
+            const selectedVenue = document.getElementById('adminSelectedVenue').value;
+            const venueBookings = bookings.filter(b => b.venue === selectedVenue);
+
+            if (venueBookings.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No bookings for this venue</p>';
+                return;
+            }
+
+            venueBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+            container.innerHTML = venueBookings.map(b => `
+                <div class="bg-gray-50 p-3 rounded-lg border">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold">${b.date}</p>
+                            <p class="text-sm text-gray-600">${b.time}${b.end_time ? ' - ' + b.end_time : ''}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded text-xs ${b.status === 'approved' ? 'bg-green-100 text-green-700' : b.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${b.status}</span>
+                    </div>
+                    <p class="text-sm mt-1">${b.purpose}</p>
+                </div>
+            `).join('');
+        }
+
+        // Handle admin booking form
+        document.getElementById('adminBookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const venue = document.getElementById('adminSelectedVenue').value;
+            const venueName = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+            
+            const bookingData = {
+                date: document.getElementById('adminBookingDate').value,
+                time: document.getElementById('adminBookingTime').value,
+                end_time: document.getElementById('adminBookingEndTime').value,
+                purpose: document.getElementById('adminBookingPurpose').value,
+                venue: venue,
+                venueName: venueName
+            };
+
+            const result = await bookCourt(bookingData);
+            document.getElementById('adminBookingMessage').innerHTML = result.success 
+                ? '<div class="bg-green-100 text-green-700 p-3 rounded">✅ ' + result.message + '</div>'
+                : '<div class="bg-red-100 text-red-700 p-3 rounded">❌ ' + result.message + '</div>';
+            
+            if (result.success) {
+                adminHideBookingForm();
+                await renderAdminCalendar();
+                await renderAdminAllBookings();
+            }
+        });
 
         async function changeAdminMonth(delta) {
             adminCalendarMonth += delta;
