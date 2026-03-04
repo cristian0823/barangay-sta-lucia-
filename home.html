@@ -627,19 +627,171 @@
 
         @media (max-width: 768px) {
             main {
-                padding: 16px 14px 60px;
+                padding: 14px 12px 80px;
             }
 
-            .stats-row {
-                grid-template-columns: 1fr;
+            /* Nav: hide text labels, keep avatar + logo */
+            .user-info-block {
+                display: none;
+            }
+
+            .btn-nav {
+                display: none;
+            }
+
+            .btn-nav-danger {
+                padding: 7px 12px;
+                font-size: 12px;
+            }
+
+            .nav-inner {
+                padding: 0 12px;
+            }
+
+            .nav-brand span {
+                font-size: 13px;
+            }
+
+            /* Welcome banner */
+            .welcome-banner {
+                padding: 18px 18px;
+                border-radius: 16px;
             }
 
             .welcome-icon {
                 display: none;
             }
 
+            .welcome-text h2 {
+                font-size: 18px;
+            }
+
+            .welcome-text p {
+                font-size: 13px;
+            }
+
+            /* Stats: 3 col → 1 col on very narrow, keep 3 on 768 */
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 9px;
+            }
+
+            .stat-card {
+                padding: 14px 10px;
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+            }
+
+            .stat-icon-box {
+                width: 38px;
+                height: 38px;
+                font-size: 17px;
+            }
+
+            .stat-val {
+                font-size: 22px;
+            }
+
+            .stat-lbl {
+                font-size: 10px;
+            }
+
+            /* Action grid: 2x2 */
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .action-card {
+                padding: 18px 12px;
+            }
+
+            .ac-icon {
+                font-size: 28px;
+                margin-bottom: 8px;
+            }
+
+            .action-card h4 {
+                font-size: 12px;
+            }
+
+            .action-card p {
+                font-size: 10px;
+            }
+
+            /* Panels */
+            .panel {
+                padding: 16px;
+            }
+
+            /* Concern form full-width */
             .concern-form .form-grid {
                 grid-template-columns: 1fr;
+            }
+
+            /* Equipment grid: single col */
+            .equip-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-card:last-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* ── BOTTOM NAVIGATION BAR (mobile only) ── */
+        .bottom-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border-top: 1px solid #e7f3ec;
+                box-shadow: 0 -2px 12px rgba(16, 185, 129, 0.08);
+                z-index: 100;
+                padding: 6px 0 env(safe-area-inset-bottom, 6px);
+            }
+
+            .bottom-nav a,
+            .bottom-nav button {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                background: none;
+                border: none;
+                font-family: inherit;
+                font-size: 10px;
+                font-weight: 600;
+                color: #9ca3af;
+                text-decoration: none;
+                cursor: pointer;
+                padding: 6px 4px;
+                transition: color 0.2s;
+            }
+
+            .bottom-nav a:hover,
+            .bottom-nav button:hover {
+                color: #10b981;
+            }
+
+            .bottom-nav .bn-icon {
+                font-size: 20px;
             }
         }
     </style>
@@ -784,6 +936,26 @@
             <div id="myBorrowingsList"></div>
         </div>
     </main>
+
+    <!-- Bottom Navigation Bar (mobile only) -->
+    <nav class="bottom-nav">
+        <a href="equipment.html">
+            <span class="bn-icon">🪑</span>
+            Borrow
+        </a>
+        <button onclick="showPanel('concerns')">
+            <span class="bn-icon">📋</span>
+            Concern
+        </button>
+        <a href="court-scheduling.html">
+            <span class="bn-icon">🏀</span>
+            Court
+        </a>
+        <button onclick="showPanel('my-borrowings')">
+            <span class="bn-icon">📦</span>
+            My Items
+        </button>
+    </nav>
 
     <div id="toast"></div>
 

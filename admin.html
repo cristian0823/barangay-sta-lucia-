@@ -762,13 +762,272 @@
             }
         }
 
+        /* ── MOBILE HAMBURGER BUTTON ── */
+        .hamburger-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            width: 38px;
+            height: 38px;
+            background: transparent;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* ── MOBILE SIDEBAR OVERLAY ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 199;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ── MOBILE SIDEBAR DRAWER ── */
+        .mobile-sidebar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100dvh;
+            background: #fff;
+            z-index: 200;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+            transition: left 0.3s ease;
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .mobile-sidebar.open {
+            left: 0;
+        }
+
+        .mobile-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+
+        .mobile-sidebar-header span {
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        .mobile-sidebar-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-sidebar-nav {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mobile-sidebar-nav button {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mobile-sidebar-nav button:hover,
+        .mobile-sidebar-nav button.active {
+            background: var(--green-100);
+            color: var(--green-xl);
+        }
+
         @media (max-width: 768px) {
             .dashboard-header {
-                padding: 0 14px;
+                padding: 0 12px;
+            }
+
+            /* Hide desktop nav labels on mobile */
+            .dashboard-logo span,
+            .user-info,
+            .logout-btn {
+                display: none;
+            }
+
+            .hamburger-btn {
+                display: flex;
+            }
+
+            .mobile-sidebar {
+                display: block;
+            }
+
+            .user-menu {
+                gap: 8px;
             }
 
             .dashboard-content {
+                padding: 12px 12px 80px;
+            }
+
+            /* Welcome banner */
+            .welcome-banner {
+                padding: 18px 20px;
+                border-radius: 16px;
+            }
+
+            .welcome-icon {
+                display: none;
+            }
+
+            .welcome-content h2 {
+                font-size: 18px;
+            }
+
+            .welcome-content p {
+                font-size: 13px;
+            }
+
+            /* Stats */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
                 padding: 14px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .stat-card h3 {
+                font-size: 11px;
+            }
+
+            /* Sidebar nav tabs → horizontal scroll */
+            .sidebar-nav {
+                display: flex !important;
+                flex-direction: row !important;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                gap: 6px;
+                padding: 4px 0 8px;
+            }
+
+            .sidebar-nav::-webkit-scrollbar {
+                height: 3px;
+            }
+
+            .sidebar-nav::-webkit-scrollbar-thumb {
+                background: var(--green-200);
+                border-radius: 3px;
+            }
+
+            .sidebar-btn {
+                flex-shrink: 0;
+                white-space: nowrap;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+
+            /* Tables: horizontal scroll */
+            .admin-tables {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .data-table {
+                min-width: 600px;
+            }
+
+            .data-table th,
+            .data-table td {
+                font-size: 12px;
+                padding: 10px 10px;
+            }
+
+            /* Court booking cards */
+            .court-booking-card {
+                padding: 14px;
+            }
+
+            /* Section headers */
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .section-header h3 {
+                font-size: 15px;
+            }
+
+            /* Modal */
+            .modal-content {
+                margin: 10px;
+                width: calc(100% - 20px);
+                max-height: 90dvh;
+                overflow-y: auto;
+            }
+
+            /* Admin actions buttons in table */
+            .admin-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .btn-small {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .welcome-content h2 {
+                font-size: 16px;
             }
         }
 
@@ -796,13 +1055,34 @@
 </head>
 
 <body>
-    <button class="test-btn" onclick="alert('TEST BUTTON WORKS!')">🧪 TEST</button>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- Mobile Sidebar Drawer -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <span>⚙️ Admin Menu</span>
+            <button class="mobile-sidebar-close" onclick="closeMobileSidebar()">✕</button>
+        </div>
+        <div class="mobile-sidebar-nav" id="mobileSidebarNav">
+            <button onclick="mobileSwitchSection('court-bookings')">🏀 Court Bookings</button>
+            <button onclick="mobileSwitchSection('requests')">📦 Equipment Requests</button>
+            <button onclick="mobileSwitchSection('concerns')">📋 Concerns</button>
+            <button onclick="mobileSwitchSection('events')">📅 Court Events</button>
+            <button onclick="mobileSwitchSection('equipment')">🪑 Equipment</button>
+            <button onclick="mobileSwitchSection('users')">👥 Users</button>
+            <button onclick="mobileSwitchSection('activity-log')">📝 Activity Log</button>
+        </div>
+    </div>
+
     <div class="dashboard">
         <header class="dashboard-header">
             <div class="dashboard-nav">
+                <!-- Mobile hamburger -->
+                <button class="hamburger-btn" onclick="openMobileSidebar()" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
                 <div class="dashboard-logo">
-                    <!-- REPLACE THE SRC BELOW WITH YOUR OWN LOGO IMAGE -->
-                    <!-- Example: <img src="images/your-logo.png" alt="Barangay Logo" class="logo-image"> -->
                     <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
                     <span>Admin Dashboard</span>
                 </div>
@@ -2358,6 +2638,31 @@
             const printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.write(printContents);
             printWindow.document.close();
+        }
+
+        // ── Mobile Sidebar ──────────────────────────────────────────────────
+        function openMobileSidebar() {
+            document.getElementById('mobileSidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobileSidebar() {
+            document.getElementById('mobileSidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        function mobileSwitchSection(section) {
+            closeMobileSidebar();
+            // Sync active state in mobile nav
+            const btns = document.querySelectorAll('#mobileSidebarNav button');
+            btns.forEach(b => b.classList.remove('active'));
+            const sectionMap = { 'court-bookings': 0, 'requests': 1, 'concerns': 2, 'events': 3, 'equipment': 4, 'users': 5, 'activity-log': 6 };
+            if (sectionMap[section] !== undefined) btns[sectionMap[section]]?.classList.add('active');
+            // Also sync desktop sidebar
+            const desktopBtns = document.querySelectorAll('.sidebar-btn');
+            desktopBtns.forEach(b => b.classList.remove('active'));
+            // Trigger section switch
+            switchSection(section, null);
         }
     </script>
 </body>
