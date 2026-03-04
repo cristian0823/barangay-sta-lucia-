@@ -780,7 +780,7 @@
                     <div class="stat-card">
                         <div class="stat-icon">📋</div>
                         <div class="stat-content">
-                            <h3>On Loan</h3>
+                            <h3>In Use</h3>
                             <div class="stat-value" id="onLoanItems">0</div>
                         </div>
                     </div>
@@ -1227,6 +1227,269 @@
             await Promise.all([loadStats(), loadEquipment(), loadRequests(), loadBookings(), loadConcerns(), loadEvents()]);
             await renderAdminCalendar();
             await renderAdminAllBookings();
+        }
+
+        // Load Stats for dashboard
+        async function loadStats() {
+            const [borrowings, concerns, events, bookings, users] = await Promise.all([
+                getAllBorrowings(),
+                getAllConcerns(),
+                getEvents(),
+                getCourtBookings(),
+                getAllUsers()
+            ]);
+
+            const pendingReqs = borrowings.filter(b => b.status === 'pending').length;
+            const pendingCons = concerns.filter(c => c.status === 'pending').length;
+            const totalBookings = bookings.filter(b => b.status !== 'cancelled').length;
+
+            // Quick Stats Sidebar
+            document.getElementById('qsPendingRequests').textContent = pendingReqs;
+            document.getElementById('qsPendingConcerns').textContent = pendingCons;
+            document.getElementById('qsTotalBookings').textContent = totalBookings;
+            document.getElementById('qsTotalUsers').textContent = users.length;
+
+            // Equipment Inventory Stats
+            const equipment = await getEquipment();
+            const totalItems = equipment.reduce((sum, e) => sum + e.quantity, 0);
+            const availableItems = equipment.reduce((sum, e) => sum + e.available, 0);
+            const brokenItems = equipment.reduce((sum, e) => sum + (e.broken || 0), 0);
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('availableItems').textContent = availableItems;
+            document.getElementById('brokenItems').textContent = brokenItems;
+            document.getElementById('onLoanItems').textContent = totalItems - availableItems - brokenItems;
+
+            // Equipment Request Stats
+            document.getElementById('reqPending').textContent = borrowings.filter(b => b.status === 'pending').length;
+            document.getElementById('reqApproved').textContent = borrowings.filter(b => b.status === 'approved').length;
+            document.getElementById('reqReturned').textContent = borrowings.filter(b => b.status === 'returned').length;
+            document.getElementById('reqRejected').textContent = borrowings.filter(b => b.status === 'rejected').length;
+
+            // Court Bookings Stats
+            document.getElementById('bookTotal').textContent = bookings.length;
+            document.getElementById('bookPending').textContent = bookings.filter(b => b.status === 'pending').length;
+            document.getElementById('bookConfirmed').textContent = bookings.filter(b => b.status === 'approved').length;
+            
+            // This week bookings
+            const today = new Date();
+            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const thisWeekBookings = bookings.filter(b => {
+                const bookingDate = new Date(b.date);
+                return bookingDate >= today && bookingDate <= weekFromNow;
+            });
+            document.getElementById('bookThisWeek').textContent = thisWeekBookings.length;
+
+            // Citizen Concern Stats
+            document.getElementById('concernTotal').textContent = concerns.length;
+            document.getElementById('concernPending').textContent = concerns.filter(c => c.status === 'pending').length;
+            document.getElementById('concernResolved').textContent = concerns.filter(c => c.status === 'resolved').length;
+            const uniqueCitizens = [...new Set(concerns.map(c => c.userId))];
+            document.getElementById('concernCitizens').textContent = uniqueCitizens.length;
+        }
+
+        // Load Equipment
+        async function loadEquipment() {
+            const equipment = await getEquipment();
+            const container = document.getElementById('equipmentTable');
+            
+            if (equipment.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px;">No equipment found</td></tr>';
+                return;
+            }
+
+            container.innerHTML = equipment.map(e => `
+                <tr>
+                    <td><strong>${e.icon} ${e.name}</strong></td>
+                    <td>${e.quantity}</td>
+                    <td>${e.available}</td>
+                    <td>${e.broken || 0}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="openEditEquipmentModal(${e.id})">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load Equipment Requests
+        async function loadRequests() {
+            const borrowings = await getAllBorrowings();
+            const container = document.getElementById('requestsList');
+
+            if (borrowings.length === 0) {
+                container.innerHTML = '<div class="card"><div class="card-body" style="text-align: center; padding: 40px;">No requests yet</div></div>';
+                return;
+            }
+
+            container.innerHTML = borrowings.map(b => `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">${b.equipment} x ${b.quantity}</span>
+                        <span class="status status-${b.status}">${b.status}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Resident:</strong> ${b.userName}</p>
+                        <p><strong>Dates:</strong> ${b.borrowDate} to ${b.returnDate}</p>
+                        <p><strong>Purpose:</strong> ${b.purpose}</p>
+                    </div>
+                    <div class="card-actions">
+                        ${b.status === 'pending' ? `
+                            <button class="btn btn-sm btn-primary" onclick="approveRequest(${b.id})">Approve</button>
+                            <button class="btn btn-sm btn-danger" onclick="rejectRequest(${b.id})">Reject</button>
+                        ` : b.status === 'approved' ? `
+                            <button class="btn btn-sm btn-primary" onclick="returnRequest(${b.id})">Mark Returned</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load Court Bookings
+        async function loadBookings() {
+            const bookings = await getCourtBookings();
+            const container = document.getElementById('bookingsList');
+
+            if (bookings.length === 0) {
+                container.innerHTML = '<div class="card"><div class="card-body" style="text-align: center; padding: 40px;">No bookings yet</div></div>';
+                return;
+            }
+
+            // Sort by date
+            bookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            container.innerHTML = bookings.map(booking => {
+                const statusClass = booking.status === 'cancelled' ? 'cancelled' : booking.status === 'approved' ? 'approved' : 'pending';
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📅 ${booking.date} - ${booking.time}</span>
+                            <span class="status status-${statusClass}">${booking.status}</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Resident:</strong> ${booking.userName}</p>
+                            <p><strong>Venue:</strong> ${booking.venueName || 'Basketball Court'}</p>
+                            <p><strong>Purpose:</strong> ${booking.purpose}</p>
+                        </div>
+                        <div class="card-actions">
+                            ${booking.status === 'pending' ? `
+                                <button class="btn btn-sm btn-primary" onclick="approveBooking(${booking.id})">Approve</button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectBooking(${booking.id})">Reject</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load Concerns
+        async function loadConcerns() {
+            const concerns = await getAllConcerns();
+            const container = document.getElementById('concernsList');
+
+            if (concerns.length === 0) {
+                container.innerHTML = '<div class="card"><div class="card-body" style="text-align: center; padding: 40px;">No concerns yet</div></div>';
+                return;
+            }
+
+            container.innerHTML = concerns.map(c => `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">${c.title}</span>
+                        <span class="status status-${c.status === 'resolved' ? 'resolved' : 'pending'}">${c.status}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Category:</strong> ${c.category}</p>
+                        <p><strong>Resident:</strong> ${c.userName}</p>
+                        <p><strong>Description:</strong> ${c.description}</p>
+                        ${c.response ? `<p><strong>Response:</strong> ${c.response}</p>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-primary" onclick="openConcernModal(${c.id})">Respond</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load Events
+        async function loadEvents() {
+            const events = await getEvents();
+            // Events are rendered in the calendar, just update the calendar here
+            await renderAdminCalendar();
+        }
+
+        // Approve Request
+        async function approveRequest(id) {
+            if (confirm('Approve this equipment request?')) {
+                const result = await updateBorrowingStatus(id, 'approved');
+                if (result.success) {
+                    await loadAllData();
+                }
+            }
+        }
+
+        // Reject Request
+        async function rejectRequest(id) {
+            if (confirm('Reject this equipment request?')) {
+                const result = await updateBorrowingStatus(id, 'rejected');
+                if (result.success) {
+                    await loadAllData();
+                }
+            }
+        }
+
+        // Return Request
+        async function returnRequest(id) {
+            if (confirm('Mark this equipment as returned?')) {
+                const result = await updateBorrowingStatus(id, 'returned');
+                if (result.success) {
+                    await loadAllData();
+                }
+            }
+        }
+
+        // Approve Booking
+        async function approveBooking(id) {
+            if (confirm('Approve this court booking?')) {
+                const result = await updateBookingStatus(id, 'approved');
+                if (result.success) {
+                    await loadAllData();
+                }
+            }
+        }
+
+        // Reject Booking
+        async function rejectBooking(id) {
+            if (confirm('Reject this court booking?')) {
+                const result = await updateBookingStatus(id, 'cancelled');
+                if (result.success) {
+                    await loadAllData();
+                }
+            }
+        }
+
+        // Open Concern Modal
+        async function openConcernModal(concernId) {
+            const concerns = await getAllConcerns();
+            const concern = concerns.find(c => c.id === concernId);
+            if (concern) {
+                document.getElementById('concernId').value = concernId;
+                document.getElementById('concernResponse').value = '';
+                document.getElementById('concernModal').classList.add('active');
+            }
+        }
+
+        // Open Edit Equipment Modal
+        async function openEditEquipmentModal(equipmentId) {
+            const equipment = await getEquipment();
+            const item = equipment.find(e => e.id === equipmentId);
+            if (item) {
+                document.getElementById('equipName').value = item.name;
+                document.getElementById('equipQty').value = item.quantity;
+                document.getElementById('equipIcon').value = item.icon;
+                // Store the ID for editing
+                document.getElementById('addEquipmentForm').dataset.editId = equipmentId;
+                document.getElementById('addEquipmentModal').classList.add('active');
+            }
         }
 
         // Admin Calendar Variables
