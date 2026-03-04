@@ -937,6 +937,24 @@
                     <button class="btn btn-small btn-light" onclick="openEventModal()">+ Add Event</button>
                 </div>
                 <div class="section-content">
+                    <!-- Calendar View -->
+                    <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="font-weight: bold;">Calendar View</h4>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="changeAdminMonth(-1)" class="btn btn-smaller">← Prev</button>
+                                <button onclick="changeAdminMonth(1)" class="btn btn-smaller">Next →</button>
+                            </div>
+                        </div>
+                        <div id="adminCalendarMonth" style="text-align: center; font-weight: bold; margin-bottom: 10px;"></div>
+                        <div id="adminCalendarGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 12px;"></div>
+                        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px; font-size: 11px;">
+                            <div style="display: flex; align-items: center;"><div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px; margin-right: 5px;"></div> Event</div>
+                            <div style="display: flex; align-items: center;"><div style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px; margin-right: 5px;"></div> Available</div>
+                            <div style="display: flex; align-items: center;"><div style="width: 12px; height: 12px; background: #eab308; border-radius: 2px; margin-right: 5px;"></div> Booked</div>
+                        </div>
+                    </div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">All Events</h4>
                     <div id="eventsList"></div>
                 </div>
             </div>
@@ -1126,7 +1144,99 @@
             await loadConcerns();
             await loadEvents();
             await loadEquipment();
+            await renderAdminCalendar();
         });
+
+        // Admin Calendar Variables
+        let adminCalendarMonth = new Date().getMonth();
+        let adminCalendarYear = new Date().getFullYear();
+
+        async function renderAdminCalendar() {
+            const grid = document.getElementById('adminCalendarGrid');
+            const monthTitle = document.getElementById('adminCalendarMonth');
+            if (!grid || !monthTitle) return;
+            
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
+
+            const events = await getEvents();
+            const bookings = await getCourtBookings();
+
+            const eventDates = {};
+            events.forEach(e => {
+                eventDates[e.date] = eventDates[e.date] || [];
+                eventDates[e.date].push(e);
+            });
+
+            const bookingDates = {};
+            bookings.filter(b => b.status !== 'cancelled').forEach(b => {
+                bookingDates[b.date] = bookingDates[b.date] || [];
+                bookingDates[b.date].push(b);
+            });
+
+            grid.innerHTML = '';
+
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                const header = document.createElement('div');
+                header.style.cssText = 'text-align: center; font-weight: bold; color: #666; padding: 5px;';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            const firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
+            const daysInMonth = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.style.cssText = 'padding: 8px;';
+                grid.appendChild(empty);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayElement = document.createElement('div');
+                const dateObj = new Date(adminCalendarYear, adminCalendarMonth, day);
+
+                const hasEvents = eventDates[dateStr] && eventDates[dateStr].length > 0;
+                const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
+
+                if (dateObj < today) {
+                    dayElement.style.cssText = 'padding: 8px; text-align: center; border-radius: 4px; background: #e5e7eb; color: #9ca3af;';
+                } else if (hasEvents) {
+                    dayElement.style.cssText = 'padding: 8px; text-align: center; border-radius: 4px; background: #8b5cf6; color: white; cursor: pointer;';
+                    const eventCount = eventDates[dateStr].length;
+                    dayElement.innerHTML = `<div>${day}</div><div style="font-size: 10px;">🎉 ${eventCount}</div>`;
+                    dayElement.title = eventDates[dateStr].map(e => `${e.title} (${e.status}) - ${e.time}${e.end_time ? ' to ' + e.end_time : ''}`).join('\n');
+                } else if (hasBookings) {
+                    dayElement.style.cssText = 'padding: 8px; text-align: center; border-radius: 4px; background: #eab308; color: white; cursor: pointer;';
+                    dayElement.innerHTML = `<div>${day}</div><div style="font-size: 10px;">📅 ${bookingDates[dateStr].length}</div>`;
+                    dayElement.title = bookingDates[dateStr].map(b => `${b.venueName || b.venue} - ${b.time}`).join('\n');
+                } else {
+                    dayElement.style.cssText = 'padding: 8px; text-align: center; border-radius: 4px; background: #dcfce7; color: #16a34a; cursor: pointer;';
+                }
+
+                if (!hasEvents && !hasBookings) {
+                    dayElement.innerHTML = `<div>${day}</div>`;
+                }
+
+                grid.appendChild(dayElement);
+            }
+        }
+
+        async function changeAdminMonth(delta) {
+            adminCalendarMonth += delta;
+            if (adminCalendarMonth > 11) {
+                adminCalendarMonth = 0;
+                adminCalendarYear++;
+            } else if (adminCalendarMonth < 0) {
+                adminCalendarMonth = 11;
+                adminCalendarYear--;
+            }
+            await renderAdminCalendar();
+        }
 
         function switchSection(section, btn) {
             alert('Switching to: ' + section);
