@@ -1347,18 +1347,18 @@
                                 <div id="adminCalendarGrid" class="grid grid-cols-7 gap-2"></div>
 
                                 <!-- Legend -->
-                                <div class="flex justify-center space-x-6 text-sm mt-4">
+                                <div class="flex flex-wrap justify-center gap-4 text-sm mt-4">
                                     <div class="flex items-center">
-                                        <div class="w-4 h-4 bg-green-500 rounded mr-2"></div><span>Available</span>
+                                        <div class="w-4 h-4 bg-green-100 border border-green-300 rounded mr-2"></div><span>Available</span>
                                     </div>
                                     <div class="flex items-center">
-                                        <div class="w-4 h-4 bg-purple-500 rounded mr-2"></div><span>Event</span>
+                                        <div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded mr-2"></div><span>Event</span>
                                     </div>
                                     <div class="flex items-center">
-                                        <div class="w-4 h-4 bg-red-500 rounded mr-2"></div><span>Booked</span>
+                                        <div class="w-4 h-4 bg-red-100 border border-red-300 rounded mr-2"></div><span>User Bookings</span>
                                     </div>
                                     <div class="flex items-center">
-                                        <div class="w-4 h-4 bg-blue-500 rounded mr-2"></div><span>Selected</span>
+                                        <div class="w-4 h-4 bg-gradient-to-br from-purple-100 to-red-100 border border-purple-300 rounded mr-2"></div><span>Both</span>
                                     </div>
                                 </div>
                             </div>
@@ -1758,6 +1758,31 @@
             await renderAdminCalendar();
         }
 
+        // Event Form Submission Handler
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const eventData = {
+                title: document.getElementById('eventTitle').value,
+                date: document.getElementById('eventDate').value,
+                time: document.getElementById('eventTime').value,
+                end_time: document.getElementById('eventEndTime').value || null,
+                location: document.getElementById('eventLocation').value || 'TBD',
+                organizer: 'Barangay',
+                status: 'approved' // Admin events are automatically approved
+            };
+
+            const result = await createEvent(eventData);
+            if (result.success) {
+                alert('Event created successfully!');
+                closeModal('eventModal');
+                document.getElementById('eventForm').reset();
+                await loadEvents();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        });
+
         // Approve Request
         async function approveRequest(id) {
             if (confirm('Approve this equipment request?')) {
@@ -1927,11 +1952,15 @@
                     dayElement.classList.add('today');
                 }
 
-                if (hasEvents) {
-                    dayElement.classList.add('booked');
+                if (hasEvents && hasBookings) {
+                    // Both events and bookings on same date - show both indicators
+                    dayElement.classList.add('bg-gradient-to-br', 'from-purple-50', 'to-red-50');
+                    dayElement.innerHTML = `<div class="font-bold text-purple-600">${day}</div><div class="text-xs text-purple-500">Event</div><div class="text-xs text-red-500">${bookingDates[dateStr].length} Bookings</div>`;
+                } else if (hasEvents) {
+                    dayElement.classList.add('bg-purple-100');
                     dayElement.innerHTML = `<div class="font-bold text-purple-600">${day}</div><div class="text-xs text-purple-500">Event</div>`;
                 } else if (hasBookings) {
-                    dayElement.classList.add('booked');
+                    dayElement.classList.add('bg-red-100');
                     dayElement.innerHTML = `<div class="font-bold text-red-600">${day}</div><div class="text-xs text-red-500">${bookingDates[dateStr].length} Bookings</div>`;
                 } else {
                     dayElement.innerHTML = `<div class="font-semibold text-gray-700">${day}</div>`;

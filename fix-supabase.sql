@@ -1,112 +1,132 @@
--- Run this in Supabase SQL Editor to fix database access
--- This will disable RLS and allow the app to read/write data
+-- ============================================================
+-- BARANGAY MANAGEMENT SYSTEM - SUPABASE SETUP SCRIPT
+-- Run this entire script in your Supabase SQL Editor
+-- ============================================================
 
--- Disable RLS on all tables
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE equipment DISABLE ROW LEVEL SECURITY;
-ALTER TABLE borrowings DISABLE ROW LEVEL SECURITY;
-ALTER TABLE concerns DISABLE ROW LEVEL SECURITY;
-ALTER TABLE events DISABLE ROW LEVEL SECURITY;
-ALTER TABLE court_bookings DISABLE ROW LEVEL SECURITY;
+-- ─── 1. Disable RLS on all tables so anon key can read/write ───────────────
+ALTER TABLE IF EXISTS users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS equipment DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS borrowings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS concerns DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS events DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS court_bookings DISABLE ROW LEVEL SECURITY;
 
--- Or if you want to keep RLS enabled, add these policies instead:
+-- ─── 2. Create tables if they don't exist ──────────────────────────────────
 
--- Users table policies
--- DROP POLICY IF EXISTS "Allow public read" ON users;
--- DROP POLICY IF EXISTS "Allow public insert" ON users;
--- DROP POLICY IF EXISTS "Allow public update" ON users;
--- DROP POLICY IF EXISTS "Allow public delete" ON users;
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    role VARCHAR(50) DEFAULT 'user',
+    avatar VARCHAR(10),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
 
--- CREATE POLICY "Allow public read" ON users FOR SELECT USING (true);
--- CREATE POLICY "Allow public insert" ON users FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Allow public update" ON users FOR UPDATE USING (true);
--- CREATE POLICY "Allow public delete" ON users FOR DELETE USING (true);
+CREATE TABLE IF NOT EXISTS equipment (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    quantity INTEGER NOT NULL,
+    available INTEGER NOT NULL,
+    broken INTEGER DEFAULT 0,
+    icon VARCHAR(50),
+    description TEXT,
+    is_archived BOOLEAN DEFAULT false
+);
 
--- Equipment table policies
--- DROP POLICY IF EXISTS "Allow public read" ON equipment;
--- DROP POLICY IF EXISTS "Allow public insert" ON equipment;
--- DROP POLICY IF EXISTS "Allow public update" ON equipment;
--- DROP POLICY IF EXISTS "Allow public delete" ON equipment;
+CREATE TABLE IF NOT EXISTS borrowings (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_name VARCHAR(255),
+    equipment VARCHAR(255),
+    quantity INTEGER NOT NULL,
+    borrow_date DATE NOT NULL,
+    return_date DATE NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    purpose TEXT
+);
 
--- CREATE POLICY "Allow public read" ON equipment FOR SELECT USING (true);
--- CREATE POLICY "Allow public insert" ON equipment FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Allow public update" ON equipment FOR UPDATE USING (true);
--- CREATE POLICY "Allow public delete" ON equipment FOR DELETE USING (true);
+CREATE TABLE IF NOT EXISTS concerns (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_name VARCHAR(255),
+    category VARCHAR(100),
+    title VARCHAR(255),
+    description TEXT,
+    address VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    response TEXT,
+    assigned_to VARCHAR(255)
+);
 
--- Borrowings table policies
--- DROP POLICY IF EXISTS "Allow public read" ON borrowings;
--- DROP POLICY IF EXISTS "Allow public insert" ON borrowings;
--- DROP POLICY IF EXISTS "Allow public update" ON borrowings;
--- DROP POLICY IF EXISTS "Allow public delete" ON borrowings;
+CREATE TABLE IF NOT EXISTS events (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
+    time VARCHAR(50),
+    end_time VARCHAR(50),
+    location VARCHAR(255),
+    organizer VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'approved'
+);
 
--- CREATE POLICY "Allow public read" ON borrowings FOR SELECT USING (true);
--- CREATE POLICY "Allow public insert" ON borrowings FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Allow public update" ON borrowings FOR UPDATE USING (true);
--- CREATE POLICY "Allow public delete" ON borrowings FOR DELETE USING (true);
+CREATE TABLE IF NOT EXISTS court_bookings (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_name VARCHAR(255),
+    date DATE NOT NULL,
+    time VARCHAR(100) NOT NULL,
+    end_time VARCHAR(100),
+    purpose TEXT,
+    venue_name VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'pending',
+    admin_comment TEXT
+);
 
--- Concerns table policies
--- DROP POLICY IF EXISTS "Allow public read" ON concerns;
--- DROP POLICY IF EXISTS "Allow public insert" ON concerns;
--- DROP POLICY IF EXISTS "Allow public update" ON concerns;
--- DROP POLICY IF EXISTS "Allow public delete" ON concerns;
+-- ─── 3. Activity Log table (NEW) ───────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS activity_log (
+    id SERIAL PRIMARY KEY,
+    admin_username VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    details TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
 
--- CREATE POLICY "Allow public read" ON concerns FOR SELECT USING (true);
--- CREATE POLICY "Allow public insert" ON concerns FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Allow public update" ON concerns FOR UPDATE USING (true);
--- CREATE POLICY "Allow public delete" ON concerns FOR DELETE USING (true);
+ALTER TABLE IF EXISTS activity_log DISABLE ROW LEVEL SECURITY;
 
--- Events table policies
--- DROP POLICY IF EXISTS "Allow public read" ON events;
--- DROP POLICY IF EXISTS "Allow public insert" ON events;
--- DROP POLICY IF EXISTS "Allow public update" ON events;
--- DROP POLICY IF EXISTS "Allow public delete" ON events;
-
--- CREATE POLICY "Allow public read" ON events FOR SELECT USING (true);
--- CREATE POLICY "Allow public insert" ON events FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Allow public update" ON events FOR UPDATE USING (true);
--- CREATE POLICY "Allow public delete" ON events FOR DELETE USING (true);
-
--- Court bookings table policies
--- DROP POLICY IF EXISTS "Allow public read" ON court_bookings;
--- DROP POLICY IF EXISTS "Allow public insert" ON court_bookings;
--- DROP POLICY IF EXISTS "Allow public update" ON court_bookings;
--- DROP POLICY IF EXISTS "Allow public delete" ON court_bookings;
-
--- CREATE POLICY "Allow public read" ON court_bookings FOR SELECT USING (true);
--- CREATE POLICY "Allow public insert" ON court_bookings FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Allow public update" ON court_bookings FOR UPDATE USING (true);
--- CREATE POLICY "Allow public delete" ON court_bookings FOR DELETE USING (true);
-
--- Insert default admin if not exists
+-- ─── 4. Default Admins and User Accounts ──────────────────────────────────
+-- Insert admin1 (main admin) if not exists
 INSERT INTO users (username, password, full_name, email, role, avatar)
-SELECT 'admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A'
-WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'admin');
+VALUES ('admin1', 'admin123', 'Barangay Administrator', 'admin1@barangay.gov', 'admin', 'A')
+ON CONFLICT DO NOTHING;
 
--- Insert default equipment if not exists
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Chairs', 150, 150, '🪑', 'Plastic folding chairs'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Chairs');
+-- Insert admin2 (second admin) if not exists
+INSERT INTO users (username, password, full_name, email, role, avatar)
+VALUES ('admin2', 'admin123', 'Barangay Admin 2', 'admin2@barangay.gov', 'admin', 'B')
+ON CONFLICT DO NOTHING;
 
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Tables', 3, 3, '🪵', 'Tables (subject for availability)'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Tables');
+-- Also keep old 'admin' account for backward compatibility
+INSERT INTO users (username, password, full_name, email, role, avatar)
+VALUES ('admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A')
+ON CONFLICT DO NOTHING;
 
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Tents', 5, 5, '⛺', 'Event tents'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Tents');
+-- ─── 5. Default Equipment ─────────────────────────────────────────────────
+INSERT INTO equipment (name, quantity, available, icon, description) 
+SELECT * FROM (VALUES
+    ('Chairs', 150, 150, '🪑', 'Plastic folding chairs'),
+    ('Tables', 3, 3, '🪵', 'Tables (subject for availability)'),
+    ('Tents', 5, 5, '⛺', 'Event tents'),
+    ('Ladder', 1, 1, '🪜', 'Ladder (Barangay use only)'),
+    ('Microphone', 1, 1, '🎤', 'Microphone (Barangay only)'),
+    ('Speaker', 1, 1, '🔊', 'Speaker (Barangay only)'),
+    ('Electric Fan', 5, 5, '🌀', 'Electric Fan (For big events)')
+) AS v(name, quantity, available, icon, description)
+WHERE NOT EXISTS (SELECT 1 FROM equipment LIMIT 1);
 
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Ladder', 1, 1, '🪜', 'Ladder (Barangay use only)'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Ladder');
+-- ─── 6. Grant usage to anon role ──────────────────────────────────────────
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
 
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Microphone', 1, 1, '🎤', 'Microphone (Barangay only)'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Microphone');
-
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Speaker', 1, 1, '🔊', 'Speaker (Barangay only)'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Speaker');
-
-INSERT INTO equipment (name, quantity, available, icon, description)
-SELECT 'Electric Fan', 5, 5, '🌀', 'Electric Fan (For big events)'
-WHERE NOT EXISTS (SELECT 1 FROM equipment WHERE name = 'Electric Fan');
+-- Done! ✅

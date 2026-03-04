@@ -861,18 +861,14 @@
             </div>
 
             <div class="sidebar-nav">
-                <button class="sidebar-btn"
-                    onclick="switchSection('court-bookings', this); alert('Court Bookings clicked')">🏀 Court
-                    Bookings</button>
-                <button class="sidebar-btn active"
-                    onclick="switchSection('requests', this); alert('Requests clicked')">📦 Equipment
+                <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">🏀 Court Bookings</button>
+                <button class="sidebar-btn active" onclick="switchSection('requests', this)">📦 Equipment
                     Requests</button>
-                <button class="sidebar-btn" onclick="switchSection('concerns', this); alert('Concerns clicked')">📋
-                    Concerns</button>
-                <button class="sidebar-btn" onclick="switchSection('events', this); alert('Events clicked')">📅 Court
-                    Events</button>
-                <button class="sidebar-btn" onclick="switchSection('equipment', this); alert('Equipment clicked')">🪑
-                    Equipment</button>
+                <button class="sidebar-btn" onclick="switchSection('concerns', this)">📋 Concerns</button>
+                <button class="sidebar-btn" onclick="switchSection('events', this)">📅 Court Events</button>
+                <button class="sidebar-btn" onclick="switchSection('equipment', this)">🪑 Equipment</button>
+                <button class="sidebar-btn" onclick="switchSection('users', this)">👥 Users</button>
+                <button class="sidebar-btn" onclick="switchSection('activity-log', this)">📝 Activity Log</button>
             </div>
 
             <div id="requests-section" class="section-container">
@@ -1164,6 +1160,61 @@
                             </thead>
                             <tbody id="equipmentTable"></tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="section-container" style="display: none;">
+                <div class="section-header">
+                    <h3>👥 Registered Users</h3>
+                    <span style="font-size:13px;color:var(--muted);">All residents and admins in the system</span>
+                </div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="admin-tables">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                        <div id="noUsers" class="empty-state" style="display:none;">
+                            <div class="empty-state-icon">👥</div>
+                            <p>No users found</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log Section -->
+            <div id="activity-log-section" class="section-container" style="display: none;">
+                <div class="section-header">
+                    <h3>📝 Activity Log</h3>
+                    <button class="btn btn-small btn-light" onclick="loadActivityLog()">🔄 Refresh</button>
+                </div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="admin-tables">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date &amp; Time</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityLogTable"></tbody>
+                        </table>
+                        <div id="noActivityLog" class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <p>No activity recorded yet</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1579,12 +1630,15 @@
             document.getElementById('concerns-section').style.display = 'none';
             document.getElementById('events-section').style.display = 'none';
             document.getElementById('equipment-section').style.display = 'none';
+            document.getElementById('users-section').style.display = 'none';
+            document.getElementById('activity-log-section').style.display = 'none';
             var targetSection = document.getElementById(section + '-section');
             if (targetSection) {
                 targetSection.style.display = 'block';
-            } else {
-                alert('Section not found: ' + section + '-section');
             }
+            // Auto-load section data on switch
+            if (section === 'activity-log') loadActivityLog();
+            if (section === 'users') loadUsers();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1611,6 +1665,70 @@
             const total = pendingReqs + pendingCons;
             badge.setAttribute('data-count', total);
             badge.style.display = total > 0 ? 'block' : 'none';
+        }
+
+        async function loadActivityLog() {
+            const tbody = document.getElementById('activityLogTable');
+            const emptyState = document.getElementById('noActivityLog');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+            const logs = await getActivityLog();
+            if (logs.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.style.display = 'block';
+                return;
+            }
+            if (emptyState) emptyState.style.display = 'none';
+            tbody.innerHTML = logs.map(log => {
+                const dt = new Date(log.createdAt);
+                const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const actionColor = log.action.includes('Deleted') ? '#dc2626' :
+                    log.action.includes('Created') ? '#16a34a' :
+                        log.action.includes('Registered') ? '#2563eb' : '#374151';
+                return `<tr>
+                    <td><span style="font-size:13px;">${dateStr}</span><br><span style="font-size:11px;color:#9ca3af;">${timeStr}</span></td>
+                    <td><strong>${log.adminUsername}</strong></td>
+                    <td><span style="color:${actionColor};font-weight:600;">${log.action}</span></td>
+                    <td style="font-size:13px;color:#6b7280;">${log.details}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function loadUsers() {
+            const tbody = document.getElementById('usersTable');
+            const emptyState = document.getElementById('noUsers');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+            const users = await getAllUsers();
+            if (users.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.style.display = 'block';
+                return;
+            }
+            if (emptyState) emptyState.style.display = 'none';
+            const currentUser = getCurrentUser();
+            tbody.innerHTML = users.map(u => {
+                const isMe = u.id === currentUser?.id;
+                const roleColor = u.role === 'admin' ? '#059669' : '#6b7280';
+                const roleBadge = `<span style="background:${u.role === 'admin' ? '#d1fae5' : '#f3f4f6'};color:${roleColor};padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;">${u.role}</span>`;
+                return `<tr>
+                    <td><strong>${u.fullName || u.username}</strong>${isMe ? ' <span style="font-size:11px;color:#10b981;">(You)</span>' : ''}</td>
+                    <td>${u.username}</td>
+                    <td style="font-size:13px;color:#6b7280;">${u.email || '—'}</td>
+                    <td>${roleBadge}</td>
+                    <td>
+                        ${!isMe && u.role !== 'admin' ? `<button class="btn btn-smaller btn-danger" onclick="adminDeleteUserConfirm(${u.id}, '${u.username}')">Delete</button>` : ''}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function adminDeleteUserConfirm(userId, username) {
+            if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+            const result = await deleteUser(userId);
+            showAlert(result.message, result.success ? 'success' : 'error');
+            if (result.success) loadUsers();
         }
 
         async function loadRequests() {

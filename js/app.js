@@ -6,8 +6,9 @@ if (typeof localStorage !== 'undefined') {
     const storedUsers = localStorage.getItem('barangay_local_users');
     if (!storedUsers) {
         const defaultUsers = [
-            { id: 1, username: 'admin', password: 'admin123', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', role: 'admin', avatar: 'A' },
-            { id: 2, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
+            { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', role: 'admin', avatar: 'A' },
+            { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' },
+            { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
         ];
         localStorage.setItem('barangay_local_users', JSON.stringify(defaultUsers));
     }
@@ -36,14 +37,34 @@ const LOCAL_EVENTS_KEY = 'barangay_local_events';
 const LOCAL_BOOKINGS_KEY = 'barangay_local_bookings';
 
 // Initialize default users in localStorage if not exists
+const LOCAL_ACTIVITY_LOG_KEY = 'barangay_local_activity_log';
+
 function initializeLocalUsers() {
     const stored = localStorage.getItem(LOCAL_USERS_KEY);
     if (!stored) {
         const defaultUsers = [
-            { id: 1, username: 'admin', password: 'admin123', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', role: 'admin', avatar: 'A' },
-            { id: 2, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
+            { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', role: 'admin', avatar: 'A' },
+            { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' },
+            { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
         ];
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(defaultUsers));
+    } else {
+        // Ensure admin2 exists in existing localStorage
+        const users = JSON.parse(stored);
+        const hasAdmin2 = users.some(u => u.username === 'admin2');
+        if (!hasAdmin2) {
+            users.push({ id: Date.now(), username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' });
+            localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+        }
+        // Also rename 'admin' to 'admin1' if old default exists
+        const hasAdmin1 = users.some(u => u.username === 'admin1');
+        if (!hasAdmin1) {
+            const adminIdx = users.findIndex(u => u.username === 'admin' && u.role === 'admin');
+            if (adminIdx !== -1) {
+                users[adminIdx].username = 'admin1';
+                localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+            }
+        }
     }
 }
 
@@ -86,7 +107,7 @@ initializeLocalUsers();
 async function registerUser(userData) {
     // Try Supabase first, fallback to local
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data: existingUsername } = await supabase
             .from('users')
@@ -118,19 +139,20 @@ async function registerUser(userData) {
             }]);
 
         if (error) return { success: false, message: error.message };
-        return { success: true, message: 'Registration successful' };
+        await logActivity('User Registered', `New user registered: ${userData.username}`);
+        return { success: true, message: 'Registration successful! You can now login.' };
     } else {
         // Local fallback
         initializeLocalUsers();
         const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
-        
+
         if (users.find(u => u.username === userData.username)) {
             return { success: false, message: 'Username already exists' };
         }
         if (users.find(u => u.email === userData.email)) {
             return { success: false, message: 'Email already registered' };
         }
-        
+
         const newUser = {
             id: Date.now(),
             username: userData.username,
@@ -142,29 +164,33 @@ async function registerUser(userData) {
         };
         users.push(newUser);
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-        return { success: true, message: 'Registration successful' };
+        logActivity('User Registered', `New user registered: ${userData.username}`);
+        return { success: true, message: 'Registration successful! You can now login.' };
     }
 }
 
 async function loginUser(username, password, rememberMe = false) {
     // Check if Supabase is available
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
-        // Try auto-create admin/user if they don't exist (for Supabase)
-        if ((username === 'admin' && password === 'admin123') || (username === 'user' && password === 'user123')) {
+        // Auto-create default accounts if they don't exist in Supabase
+        const defaultAccounts = [
+            { username: 'admin1', password: 'admin123', role: 'admin', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', avatar: 'A' },
+            { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', avatar: 'B' },
+            { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' }
+        ];
+        const matchedDefault = defaultAccounts.find(a => a.username === username && a.password === password);
+        if (matchedDefault) {
             const { data: checkUser } = await supabase.from('users').select('*').eq('username', username).maybeSingle();
             if (!checkUser) {
-                const role = username === 'admin' ? 'admin' : 'user';
-                const fullName = username === 'admin' ? 'Barangay Administrator' : 'Barangay Resident';
-                const email = username === 'admin' ? 'admin@barangay.gov' : 'user@barangay.gov';
                 await supabase.from('users').insert([{
-                    username: username,
-                    password: password,
-                    full_name: fullName,
-                    email: email,
-                    role: role,
-                    avatar: fullName.charAt(0).toUpperCase()
+                    username: matchedDefault.username,
+                    password: matchedDefault.password,
+                    full_name: matchedDefault.fullName,
+                    email: matchedDefault.email,
+                    role: matchedDefault.role,
+                    avatar: matchedDefault.avatar
                 }]);
             }
         }
@@ -199,14 +225,14 @@ async function loginUser(username, password, rememberMe = false) {
         initializeLocalUsers();
         const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
         const user = users.find(u => u.username === username && u.password === password);
-        
+
         if (user) {
             const sessionData = {
                 ...user,
                 role: user.role || (username === 'admin' ? 'admin' : 'user'),
                 loginTime: new Date().toISOString()
             };
-            
+
             if (rememberMe) {
                 localStorage.setItem('currentUser', JSON.stringify(sessionData));
             } else {
@@ -300,7 +326,7 @@ async function getEquipment() {
 
 async function updateEquipment(id, updates) {
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data: item } = await supabase.from('equipment').select('*').eq('id', id).single();
         if (!item) return { success: false, message: 'Equipment not found' };
@@ -358,7 +384,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data: item } = await supabase.from('equipment').select('*').eq('id', equipmentId).single();
         if (!item) return { success: false, message: 'Equipment not found' };
@@ -408,7 +434,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         };
         borrowings.push(newBorrowing);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
-        
+
         return { success: true, message: 'Equipment request submitted' };
     }
 }
@@ -421,7 +447,7 @@ async function addEquipment(payload) {
 async function getMyBorrowings() {
     const user = getCurrentUser();
     if (!user) return [];
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data } = await supabase.from('borrowings').select('*').eq('user_id', user.id).order('id', { ascending: false });
@@ -468,7 +494,7 @@ async function getAllBorrowings() {
 
 async function updateBorrowingStatus(borrowingId, status) {
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
         if (!borrowing) return false;
@@ -508,7 +534,7 @@ async function cancelBorrowingRequest(borrowingId) {
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).eq('user_id', user.id).single();
         if (!borrowing) return { success: false, message: 'Request not found' };
@@ -549,7 +575,7 @@ async function submitConcern(category, title, description, address) {
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('concerns').insert([{
             user_id: user.id,
@@ -586,7 +612,7 @@ async function submitConcern(category, title, description, address) {
 async function getMyConcerns() {
     const user = getCurrentUser();
     if (!user) return [];
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data } = await supabase.from('concerns').select('*').eq('user_id', user.id).order('id', { ascending: false });
@@ -636,9 +662,9 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
 async function deleteConcern(concernId) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('concerns').delete().eq('id', concernId).eq('user_id', user.id);
         return { success: !error, message: error ? error.message : 'Concern deleted successfully' };
@@ -652,16 +678,18 @@ async function deleteConcern(concernId) {
 
 async function adminDeleteConcern(concernId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('concerns').delete().eq('id', concernId);
+        if (!error) await logActivity('Concern Deleted', `Admin deleted concern ID: ${concernId}`);
         return { success: !error, message: error ? error.message : 'Concern deleted successfully' };
     } else {
         let concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
         concerns = concerns.filter(c => c.id !== concernId);
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
+        logActivity('Concern Deleted', `Admin deleted concern ID: ${concernId}`);
         return { success: true, message: 'Concern deleted successfully' };
     }
 }
@@ -671,10 +699,10 @@ async function getEvents() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('events').select('*').order('date', { ascending: true });
-        // If error or no data, use localStorage
-        if (error || !data || data.length === 0) {
-            const data = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
-            return data.map(item => ({
+        // Only fall back to localStorage on actual error, not on empty results
+        if (error) {
+            const localData = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+            return localData.map(item => ({
                 ...item,
                 title: item.title || 'Untitled Event',
                 date: item.date || '',
@@ -712,6 +740,7 @@ async function updateEventStatus(eventId, status) {
 async function deleteEvent(eventId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('events').delete().eq('id', eventId);
+    if (!error) await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
     return { success: !error, message: error ? error.message : 'Event deleted successfully' };
 }
 
@@ -720,16 +749,16 @@ async function getCourtBookings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('court_bookings').select('*').order('date', { ascending: true });
-        // If error or no data, use localStorage
-        if (error || !data || data.length === 0) {
-            const data = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
-            return data.map(item => ({
+        // Only fall back to localStorage on actual error, not on empty results
+        if (error) {
+            const localData = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+            return localData.map(item => ({
                 ...item,
                 venueName: item.venue || item.venueName || 'Basketball Court',
                 userName: item.userName || item.user_name || 'Unknown'
             }));
         }
-        return mapRecords(data);
+        return mapRecords(data || []);
     } else {
         const data = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         return data.map(item => ({
@@ -746,7 +775,7 @@ async function bookCourt(bookingData) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     const venue = bookingData.venue || 'basketball';
-    
+
     if (supabaseAvailable) {
         const { data: existing } = await supabase.from('court_bookings')
             .select('*')
@@ -775,10 +804,10 @@ async function bookCourt(bookingData) {
     } else {
         // Local fallback
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
-        const existing = bookings.find(b => 
-            b.date === bookingData.date && 
-            b.time === bookingData.time && 
-            b.venue === venue && 
+        const existing = bookings.find(b =>
+            b.date === bookingData.date &&
+            b.time === bookingData.time &&
+            b.venue === venue &&
             b.status !== 'cancelled'
         );
 
@@ -808,7 +837,7 @@ async function cancelCourtBooking(bookingId) {
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         let query = supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
@@ -857,9 +886,9 @@ async function getAllUsers() {
     if (!isAdmin()) {
         return [];
     }
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('users').select('*');
         // If there's an error or no data, fallback to localStorage
@@ -887,7 +916,7 @@ async function getAllUsers() {
 // Admin-specific functions
 async function addAdminComment(bookingId, comment) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('court_bookings').update({ admin_comment: comment }).eq('id', bookingId);
@@ -904,7 +933,7 @@ async function addAdminComment(bookingId, comment) {
 
 async function approveCourtBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('court_bookings').update({ status: 'approved' }).eq('id', bookingId);
@@ -921,7 +950,7 @@ async function approveCourtBooking(bookingId) {
 
 async function rejectCourtBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
@@ -953,15 +982,17 @@ async function updateCourtBookingStatus(bookingId, status) {
 
 async function deleteBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('court_bookings').delete().eq('id', bookingId);
+        if (!error) await logActivity('Booking Deleted', `Deleted court booking ID: ${bookingId}`);
         return { success: !error, message: error ? error.message : 'Booking deleted' };
     } else {
         let bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         bookings = bookings.filter(b => b.id !== bookingId);
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        logActivity('Booking Deleted', `Deleted court booking ID: ${bookingId}`);
         return { success: true, message: 'Booking deleted' };
     }
 }
@@ -970,7 +1001,7 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     const supabaseAvailable = await isSupabaseAvailable();
     const payload = { status, response };
     if (assignedTo !== undefined) payload.assigned_to = assignedTo;
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
         return !error;
@@ -988,12 +1019,13 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
 
 async function createEvent(eventData) {
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     // Admin-created events should be automatically approved
     const eventWithStatus = { ...eventData, status: 'approved' };
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('events').insert([eventWithStatus]);
+        if (!error) await logActivity('Event Created', `Created event: ${eventData.title} on ${eventData.date}`);
         return { success: !error, message: error ? error.message : 'Event created successfully' };
     } else {
         const events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
@@ -1004,13 +1036,14 @@ async function createEvent(eventData) {
         };
         events.push(newEvent);
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
+        logActivity('Event Created', `Created event: ${eventData.title} on ${eventData.date}`);
         return { success: true, message: 'Event created successfully' };
     }
 }
 
 async function updateEventStatus(eventId, status) {
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('events').update({ status }).eq('id', eventId);
         return !error;
@@ -1026,22 +1059,24 @@ async function updateEventStatus(eventId, status) {
 
 async function deleteEvent(eventId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('events').delete().eq('id', eventId);
+        if (!error) await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
         return { success: !error, message: error ? error.message : 'Event deleted successfully' };
     } else {
         let events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
         events = events.filter(e => e.id !== eventId);
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
+        logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
         return { success: true, message: 'Event deleted successfully' };
     }
 }
 
 async function addEquipment(payload) {
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { error } = await supabase.from('equipment').insert([payload]);
         return { success: !error, message: error ? error.message : 'Equipment added' };
@@ -1060,22 +1095,27 @@ async function addEquipment(payload) {
 
 async function deleteUser(userId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
+        // Get user details before deleting for the log
+        const { data: targetUser } = await supabase.from('users').select('username').eq('id', userId).maybeSingle();
         const { error } = await supabase.from('users').delete().eq('id', userId);
+        if (!error) await logActivity('User Deleted', `Deleted user: ${targetUser?.username || userId}`);
         return { success: !error, message: error ? error.message : 'User deleted successfully' };
     } else {
         let users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
+        const targetUser = users.find(u => u.id === userId);
         users = users.filter(u => u.id !== userId);
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+        logActivity('User Deleted', `Deleted user: ${targetUser?.username || userId}`);
         return { success: true, message: 'User deleted successfully' };
     }
 }
 
 async function updateUserRole(userId, newRole) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    
+
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('users').update({ role: newRole }).eq('id', userId);
@@ -1133,7 +1173,7 @@ async function changePassword(currentPassword, newPassword) {
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const { data: dbUser } = await supabase.from('users').select('password').eq('id', user.id).single();
         if (!dbUser || dbUser.password !== currentPassword) {
@@ -1159,7 +1199,7 @@ async function changePassword(currentPassword, newPassword) {
 
 async function getUserStats(userId) {
     const supabaseAvailable = await isSupabaseAvailable();
-    
+
     if (supabaseAvailable) {
         const [{ count: boCount }, { count: coCount }, { count: cbCount }] = await Promise.all([
             supabase.from('borrowings').select('*', { count: 'exact', head: true }).eq('user_id', userId),
@@ -1195,6 +1235,64 @@ async function getUserStats(userId) {
             totalBookings: myBookings.length
         };
     }
+}
+
+// ─── Activity Log ────────────────────────────────────────────────────────────
+
+async function logActivity(action, details) {
+    const user = getCurrentUser();
+    const adminUsername = user ? (user.username || user.fullName || 'admin') : 'system';
+    const timestamp = new Date().toISOString();
+
+    const supabaseAvailable = await isSupabaseAvailable().catch(() => false);
+    if (supabaseAvailable) {
+        try {
+            await supabase.from('activity_log').insert([{
+                admin_username: adminUsername,
+                action: action,
+                details: details,
+                created_at: timestamp
+            }]);
+        } catch (e) {
+            // Silently fall back to local if table doesn't exist yet
+            _saveActivityLocal(adminUsername, action, details, timestamp);
+        }
+    } else {
+        _saveActivityLocal(adminUsername, action, details, timestamp);
+    }
+}
+
+function _saveActivityLocal(adminUsername, action, details, timestamp) {
+    const logs = JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
+    logs.unshift({ id: Date.now(), adminUsername, action, details, createdAt: timestamp });
+    // Keep only last 500 entries
+    if (logs.length > 500) logs.splice(500);
+    localStorage.setItem(LOCAL_ACTIVITY_LOG_KEY, JSON.stringify(logs));
+}
+
+async function getActivityLog() {
+    if (!isAdmin()) return [];
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        try {
+            const { data, error } = await supabase
+                .from('activity_log')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(200);
+            if (!error && data && data.length > 0) {
+                return data.map(r => ({
+                    id: r.id,
+                    adminUsername: r.admin_username,
+                    action: r.action,
+                    details: r.details,
+                    createdAt: r.created_at
+                }));
+            }
+        } catch (e) { /* fall through */ }
+    }
+    // Fall back to localStorage
+    return JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
 }
 
 // Generic Mapper to transform snake_case to camelCase

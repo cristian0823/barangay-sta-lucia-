@@ -369,7 +369,7 @@
                     const timeDisplay = hasEvent.end_time ? `${hasEvent.time} - ${hasEvent.end_time}` : hasEvent.time;
                     dayElement.title = `${hasEvent.title} - ${timeDisplay}`;
                 } else if (bookedDates.includes(dateStr)) {
-                    dayElement.classList.add('booked', 'text-red-700', 'cursor-pointer');
+                    dayElement.classList.add('bg-red-100', 'text-red-700', 'cursor-pointer');
                     dayElement.innerHTML += '<div class="text-xs">Booked</div>';
                 } else {
                     dayElement.classList.add('bg-green-100', 'text-green-700', 'hover:bg-green-200');
