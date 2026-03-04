@@ -679,6 +679,7 @@ async function getEvents() {
                 title: item.title || 'Untitled Event',
                 date: item.date || '',
                 time: item.time || '',
+                end_time: item.end_time || '',
                 location: item.location || 'TBD',
                 organizer: item.organizer || 'Barangay'
             }));
@@ -691,6 +692,7 @@ async function getEvents() {
             title: item.title || 'Untitled Event',
             date: item.date || '',
             time: item.time || '',
+            end_time: item.end_time || '',
             location: item.location || 'TBD',
             organizer: item.organizer || 'Barangay'
         }));

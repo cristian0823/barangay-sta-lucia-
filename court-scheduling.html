@@ -366,7 +366,8 @@
                     // Date has an event
                     dayElement.classList.add('bg-purple-100', 'text-purple-700', 'cursor-pointer');
                     dayElement.innerHTML += '<div class="text-xs">🎉 Event</div>';
-                    dayElement.title = `${hasEvent.title} - ${hasEvent.time}`;
+                    const timeDisplay = hasEvent.end_time ? `${hasEvent.time} - ${hasEvent.end_time}` : hasEvent.time;
+                    dayElement.title = `${hasEvent.title} - ${timeDisplay}`;
                 } else if (bookedDates.includes(dateStr)) {
                     dayElement.classList.add('booked', 'text-red-700', 'cursor-pointer');
                     dayElement.innerHTML += '<div class="text-xs">Booked</div>';
@@ -425,11 +426,12 @@
 
             if (eventOnDate) {
                 // Show warning about event
+                const timeDisplay = eventOnDate.end_time ? `${eventOnDate.time} - ${eventOnDate.end_time}` : eventOnDate.time;
                 document.getElementById('bookingFormMessage').innerHTML = `
                     <div class="bg-purple-100 border-l-4 border-purple-500 p-3 rounded text-purple-700">
                         <p class="font-bold">⚠️ Event Alert!</p>
                         <p>There's already an event on this date: <strong>${eventOnDate.title}</strong></p>
-                        <p class="text-sm">Time: ${eventOnDate.time} | Organizer: ${eventOnDate.organizer}</p>
+                        <p class="text-sm">Time: ${timeDisplay} | Organizer: ${eventOnDate.organizer}</p>
                         <p class="text-sm mt-1">You can still book, but the court may not be available during the event.</p>
                     </div>
                 `;
@@ -557,6 +559,7 @@
 
             let html = '';
             upcomingEvents.forEach(event => {
+                const timeDisplay = event.end_time ? `${event.time} - ${event.end_time}` : event.time;
                 html += `
                     <div class="bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl p-5 text-white">
                         <div class="flex justify-between items-start mb-3">
@@ -570,7 +573,7 @@
                         </div>
                         <div class="space-y-1 text-sm">
                             <p>📅 ${formatDate(event.date)}</p>
-                            <p>⏰ ${event.time}</p>
+                            <p>⏰ ${timeDisplay}</p>
                             <p>👤 Organizer: ${event.organizer}</p>
                         </div>
                     </div>

@@ -69,6 +69,7 @@ CREATE TABLE events (
     title VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
     time TIME NOT NULL,
+    end_time TIME,
     location VARCHAR(255),
     organizer VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending'

@@ -1015,14 +1015,18 @@
                     <label for="eventTitle">Event Title</label>
                     <input type="text" id="eventTitle" placeholder="e.g., Basketball Tournament" required>
                 </div>
+                <div class="form-group">
+                    <label for="eventDate">Date</label>
+                    <input type="date" id="eventDate" required>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="eventDate">Date</label>
-                        <input type="date" id="eventDate" required>
+                        <label for="eventTime">Start Time</label>
+                        <input type="time" id="eventTime" required>
                     </div>
                     <div class="form-group">
-                        <label for="eventTime">Time</label>
-                        <input type="time" id="eventTime" required>
+                        <label for="eventEndTime">End Time</label>
+                        <input type="time" id="eventEndTime">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1520,7 +1524,7 @@
                         <p>${e.location}</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="event-time">${e.date} - ${e.time}</div>
+                        <div class="event-time">${e.date} - ${e.time}${e.end_time ? ' to ' + e.end_time : ''}</div>
                         ${e.status === 'pending' ? `
                             <button class="btn btn-smaller btn-primary" onclick="approveEvent(${e.id})">Approve</button>
                             <button class="btn btn-smaller btn-danger" onclick="deleteEvent(${e.id})">Delete</button>
@@ -1542,6 +1546,7 @@
                 title: document.getElementById('eventTitle').value,
                 date: document.getElementById('eventDate').value,
                 time: document.getElementById('eventTime').value,
+                end_time: document.getElementById('eventEndTime').value,
                 location: document.getElementById('eventLocation').value,
                 organizer: document.getElementById('eventOrganizer').value
             });
