@@ -776,6 +776,22 @@
         .calendar-day:hover {
             transform: scale(1.05);
         }
+
+        .calendar-day.booked {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .calendar-day.today {
+            border: 3px solid #22c55e;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
@@ -944,7 +960,7 @@
 
             <div id="events-section" class="section-container" style="display: none;">
                 <div class="section-header">
-                    <h3>📅 Court Events & Bookings</h3>
+                    <h3>📅 Court Events</h3>
                     <button class="btn btn-small btn-light" onclick="openEventModal()">+ Add Event</button>
                 </div>
                 <div class="section-content">
@@ -998,6 +1014,9 @@
                                 </div>
                                 <div class="flex items-center">
                                     <div class="w-4 h-4 bg-red-500 rounded mr-2"></div><span>Booked</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-blue-500 rounded mr-2"></div><span>Selected</span>
                                 </div>
                             </div>
                         </div>
@@ -1517,6 +1536,12 @@
                 // Check if today
                 if (dateObj.getTime() === today.getTime()) {
                     dayElement.style.border = '3px solid #22c55e';
+                }
+
+                // Check if selected
+                if (adminSelectedDate === dateStr) {
+                    dayElement.classList.remove('bg-green-100', 'bg-gray-200', 'bg-purple-100', 'bg-red-100');
+                    dayElement.classList.add('selected', 'text-green-700');
                 }
 
                 // Click to select date
