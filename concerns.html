@@ -4,304 +4,665 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Concern - Barangay Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Submit a Concern - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .concern-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        :root {
+            --green: #059669;
+            --green-dark: #047857;
+            --green-light: #d1fae5;
+            --green-50: #f0fdf4;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f9fafb;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav {
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: white;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .nav-brand img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, .5);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, .85);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all .2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(255, 255, 255, .2);
+            color: white;
+        }
+
+        .nav-links a#logoutBtn:hover {
+            background: rgba(239, 68, 68, .3);
+        }
+
+        /* ── MAIN ── */
+        .main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        /* ── STATS ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+        }
+
+        .stat-card .num {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .stat-card.yellow .num {
+            color: #d97706;
+        }
+
+        .stat-card.blue .num {
+            color: #2563eb;
+        }
+
+        .stat-card.green .num {
+            color: var(--green);
+        }
+
+        .stat-card.red .num {
+            color: #dc2626;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* ── FORM ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input,
+        select,
+        textarea {
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color .2s;
+            background: #fff;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: white;
+            border: none;
+            padding: 13px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all .2s;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, .25);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(5, 150, 105, .35);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* ── STATUS BADGES ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+
+        .badge-pending {
+            background: #fefce8;
+            color: #a16207;
+            border-color: #fde68a;
+        }
+
+        .badge-progress {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+
+        .badge-resolved {
+            background: var(--green-light);
+            color: var(--green-dark);
+            border-color: #a7f3d0;
+        }
+
+        .badge-rejected {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        /* ── CONCERN ITEMS ── */
+        .concern-item {
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: box-shadow .2s;
+            background: var(--white);
+        }
+
+        .concern-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+        }
+
+        .concern-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .concern-title {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .concern-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .concern-category {
+            background: var(--green-50);
+            color: var(--green-dark);
+            border: 1px solid var(--green-light);
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .concern-desc {
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .concern-reply {
+            background: var(--green-50);
+            border-left: 4px solid var(--green);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 12px;
+        }
+
+        .concern-reply p {
+            font-size: 13px;
+            color: #065f46;
+        }
+
+        .concern-assigned {
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-delete {
+            background: none;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn-delete:hover {
+            background: #fef2f2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 22px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            transform: translateY(100px);
+            transition: transform .3s ease;
+            z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+        }
+
+        #toast.show {
+            transform: translateY(0);
+        }
+
+        #toast.success {
+            background: var(--green);
+        }
+
+        #toast.error {
+            background: #dc2626;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: 1;
+            }
+
+            nav {
+                padding: 0 16px;
+            }
+
+            .nav-links a {
+                padding: 5px 8px;
+                font-size: 13px;
+            }
+
+            .main {
+                padding: 16px;
+            }
         }
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-gradient-to-r from-emerald-600 to-emerald-800 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-3">
-                    <img src="barangay.jpg" alt="Barangay Logo" class="w-10 h-10 rounded-full border-2 border-white">
-                    <span class="text-xl font-bold">Barangay Services</span>
-                </div>
-                <ul class="flex space-x-6">
-                    <li><a href="home.html" class="hover:text-blue-200 transition">Home</a></li>
-                    <li><a href="equipment.html" class="hover:text-blue-200 transition">Equipment</a></li>
-                    <li><a href="concerns.html" class="text-yellow-400 font-semibold">Concerns</a></li>
-                    <li><a href="court-scheduling.html" class="hover:text-blue-200 transition">Court Booking</a></li>
-                    <li id="adminLink" class="hidden"><a href="admin.html"
-                            class="hover:text-blue-200 transition">Admin</a></li>
-                    <li><a href="#" id="logoutBtn" class="hover:text-red-300 transition">Logout</a></li>
-                </ul>
-            </div>
+<body>
+    <nav>
+        <div class="nav-brand">
+            <img src="barangay.jpg" alt="Logo">
+            <span>Barangay Services</span>
+        </div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="equipment.html">Equipment</a>
+            <a href="concerns.html" class="active">Concerns</a>
+            <a href="court-scheduling.html">Booking</a>
+            <a href="#" id="logoutBtn">Logout</a>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">📋 Submit a Concern</h1>
-            <p class="text-gray-600">Report community issues and concerns to the barangay</p>
+    <div class="main">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card yellow">
+                <div class="num" id="pendingCount">0</div>
+                <div class="label">⏳ Pending</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="num" id="progressCount">0</div>
+                <div class="label">🔄 In Progress</div>
+            </div>
+            <div class="stat-card green">
+                <div class="num" id="resolvedCount">0</div>
+                <div class="label">✅ Resolved</div>
+            </div>
+            <div class="stat-card red">
+                <div class="num" id="rejectedCount">0</div>
+                <div class="label">❌ Rejected</div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Submit Form -->
-            <div class="bg-white rounded-2xl shadow-xl p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">✉️ Submit New Concern</h2>
-
-                <form id="concernForm" class="space-y-5">
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Address</label>
-                        <input type="text" id="concernAddress" required
-                            placeholder="Enter your address (e.g., Block 5, Lot 10, Sta. Lucia)"
-                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Category</label>
-                        <select id="concernCategory" required
-                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
-                            <option value="">Select a category</option>
-                            <option value="infrastructure">🏗️ Infrastructure</option>
-                            <option value="sanitation">🧹 Sanitation</option>
-                            <option value="security">👮 Security</option>
-                            <option value="noise">🔊 Noise Complaint</option>
-                            <option value="traffic">🚗 Traffic</option>
-                            <option value="streetlights">💡 Street Lights</option>
-                            <option value="water">💧 Water Supply</option>
-                            <option value="other">📝 Other</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Title</label>
-                        <input type="text" id="concernTitle" required placeholder="Brief summary of your concern"
-                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Description</label>
-                        <textarea id="concernDescription" required placeholder="Describe your concern in detail..."
-                            class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none h-32"></textarea>
-                    </div>
-
-                    <button type="submit"
-                        class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl transition transform hover:scale-[1.02]">
-                        📤 Submit Concern
-                    </button>
-                </form>
+        <!-- Submit Concern Form -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📋 Submit a Concern</h2>
             </div>
-
-            <!-- Stats -->
-            <div class="space-y-6">
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">📊 Your Concerns</h3>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <div class="bg-yellow-50 rounded-xl p-4">
-                            <p id="pendingCount" class="text-3xl font-bold text-yellow-600">0</p>
-                            <p class="text-sm text-gray-500">Pending</p>
+            <div class="card-body">
+                <form id="concernForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="concernCategory">Category <span style="color:#dc2626">*</span></label>
+                            <select id="concernCategory" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="Infrastructure">Infrastructure</option>
+                                <option value="Public Safety">Public Safety</option>
+                                <option value="Sanitation">Sanitation</option>
+                                <option value="Noise Complaint">Noise Complaint</option>
+                                <option value="Illegal Structures">Illegal Structures</option>
+                                <option value="Environmental">Environmental</option>
+                                <option value="Others">Others</option>
+                            </select>
                         </div>
-                        <div class="bg-green-50 rounded-xl p-4">
-                            <p id="resolvedCount" class="text-3xl font-bold text-green-600">0</p>
-                            <p class="text-sm text-gray-500">Resolved</p>
+                        <div class="form-group">
+                            <label for="concernAddress">Address / Location <span style="color:#dc2626">*</span></label>
+                            <input type="text" id="concernAddress" placeholder="e.g. Block 5, Sitio Masagana" required>
                         </div>
-                        <div class="bg-red-50 rounded-xl p-4">
-                            <p id="rejectedCount" class="text-3xl font-bold text-red-600">0</p>
-                            <p class="text-sm text-gray-500">Rejected</p>
+                        <div class="form-group full">
+                            <label for="concernTitle">Title <span style="color:#dc2626">*</span></label>
+                            <input type="text" id="concernTitle" placeholder="Brief title for your concern" required>
+                        </div>
+                        <div class="form-group full">
+                            <label for="concernDescription">Description <span style="color:#dc2626">*</span></label>
+                            <textarea id="concernDescription" placeholder="Describe your concern in detail..."
+                                required></textarea>
                         </div>
                     </div>
-                </div>
-
-                <div class="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-                    <h3 class="text-lg font-bold text-blue-800 mb-2">💡 Tips</h3>
-                    <ul class="text-sm text-blue-700 space-y-2">
-                        <li>• Provide specific location details</li>
-                        <li>• Include date/time if applicable</li>
-                        <li>• Add photos if possible</li>
-                        <li>• Be clear and concise</li>
-                    </ul>
-                </div>
+                    <div style="margin-top: 20px;">
+                        <button type="submit" class="btn-submit">📤 Submit Concern</button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- My Concerns List -->
-        <div class="bg-white rounded-2xl shadow-xl p-6 mt-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">📋 My Concerns History</h2>
-            <div id="myConcernsList" class="space-y-4">
-                <!-- Concerns rendered here -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📁 My Submitted Concerns</h2>
+                <button onclick="loadMyConcerns()"
+                    style="background:none;border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🔄
+                    Refresh</button>
+            </div>
+            <div class="card-body" style="padding: 16px;">
+                <div id="concernsList">
+                    <div class="empty-state">
+                        <div class="icon">📋</div>
+                        <p>Loading your concerns...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast"
-        class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300">
-        <!-- Toast message -->
-    </div>
+    <div id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // Custom toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500'
-            };
-            toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300`;
-            toast.textContent = message;
-            toast.style.transform = 'translateY(0)';
-            setTimeout(() => {
-                toast.style.transform = 'translateY(5rem)';
-            }, 3000);
-        }
-
-        // Check authentication
-        const user = getCurrentUser();
-        if (!user) {
-            window.location.href = 'login.html';
-        }
-
-        // Show admin link for admins
-        if (user && user.role === 'admin') {
-            document.getElementById('adminLink').classList.remove('hidden');
-        }
+        // Auth check
+        const currentUser = getCurrentUser();
+        if (!currentUser) { window.location.href = 'login.html'; }
 
         // Logout
-        document.getElementById('logoutBtn').addEventListener('click', function (e) {
-            e.preventDefault();
-            logoutUser();
-        });
+        document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); logoutUser(); });
 
-        // Load data
-        async function init() {
-            await loadMyConcerns();
-            await updateStats();
+        // Toast
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `show ${type}`;
+            setTimeout(() => toast.className = '', 3200);
         }
-        init();
+
+        // Load data on page load
+        (async function init() {
+            await loadMyConcerns();
+        })();
 
         // Submit concern form
         document.getElementById('concernForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = '⏳ Submitting...';
 
-            const category = document.getElementById('concernCategory').value;
-            const title = document.getElementById('concernTitle').value;
-            const description = document.getElementById('concernDescription').value;
-            const address = document.getElementById('concernAddress').value;
+            const result = await submitConcern(
+                document.getElementById('concernCategory').value,
+                document.getElementById('concernTitle').value,
+                document.getElementById('concernDescription').value,
+                document.getElementById('concernAddress').value
+            );
 
-            const result = await submitConcern(category, title, description, address);
+            btn.disabled = false;
+            btn.textContent = '📤 Submit Concern';
 
             if (result.success) {
-                showToast(result.message, 'success');
-                document.getElementById('concernForm').reset();
+                showToast('Concern submitted successfully!', 'success');
+                this.reset();
                 await loadMyConcerns();
-                await updateStats();
             } else {
                 showToast(result.message, 'error');
             }
         });
 
-        // Load my concerns
+        // Get status badge HTML
+        function getStatusBadgeHtml(status) {
+            const map = {
+                'pending': ['badge-pending', '⏳ Pending'],
+                'in-progress': ['badge-progress', '🔄 In Progress'],
+                'resolved': ['badge-resolved', '✅ Resolved'],
+                'rejected': ['badge-rejected', '❌ Rejected'],
+            };
+            const [cls, label] = map[status] || ['badge-pending', status];
+            return `<span class="badge ${cls}">${label}</span>`;
+        }
+
+        // Load and render my concerns
         async function loadMyConcerns() {
             const concerns = await getMyConcerns();
-            const container = document.getElementById('myConcernsList');
+            const container = document.getElementById('concernsList');
+            updateStats(concerns);
 
-            if (concerns.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="text-6xl mb-4">📋</div>
-                        <p class="text-gray-500 text-lg">No concerns submitted yet.</p>
-                        <p class="text-gray-400">Use the form above to submit your first concern.</p>
-                    </div>
-                `;
+            if (!concerns || concerns.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">📋</div><p>You haven't submitted any concerns yet.</p></div>`;
                 return;
             }
 
-            concerns.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-            const categoryIcons = {
-                infrastructure: '🏗️',
-                sanitation: '🧹',
-                security: '👮',
-                noise: '🔊',
-                traffic: '🚗',
-                streetlights: '💡',
-                water: '💧',
-                other: '📝'
-            };
-
-            let html = '';
-            concerns.forEach(concern => {
-                const statusColors = {
-                    pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-                    resolved: 'bg-green-100 text-green-800 border-green-300',
-                    rejected: 'bg-red-100 text-red-800 border-red-300'
-                };
-
-                const statusIcons = {
-                    pending: '⏳',
-                    resolved: '✅',
-                    rejected: '❌'
-                };
-
-                html += `
-                    <div class="concern-card border-2 border-gray-200 rounded-xl p-5 transition-all duration-300">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-3xl">${categoryIcons[concern.category] || '📝'}</span>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-lg">${concern.title}</h4>
-                                    <p class="text-sm text-gray-500">${concern.category.charAt(0).toUpperCase() + concern.category.slice(1)} • ${formatDate(concern.createdAt)}</p>
-                                    <p class="text-sm text-gray-500">📍 ${concern.address || 'No address provided'}</p>
-                                </div>
+            const sorted = [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            container.innerHTML = sorted.map(c => `
+                <div class="concern-item">
+                    <div class="concern-item-header">
+                        <div>
+                            <div class="concern-title">${c.title}</div>
+                            <div class="concern-meta">
+                                <span class="concern-category">${c.category}</span>
+                                <span>📍 ${c.address || 'N/A'}</span>
+                                <span>📅 ${formatDate(c.createdAt)}</span>
                             </div>
-                            <span class="px-4 py-2 rounded-full text-sm font-semibold border ${statusColors[concern.status]}">
-                                ${statusIcons[concern.status]} ${concern.status.charAt(0).toUpperCase() + concern.status.slice(1)}
-                            </span>
                         </div>
-                        <p class="text-gray-600 mb-4 pl-12">${concern.description}</p>
-                        ${concern.response ? `
-                            <div class="ml-12 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                                <p class="text-sm font-semibold text-blue-800 mb-1">📩 Admin Response:</p>
-                                <p class="text-blue-700">${concern.response}</p>
-                            </div>
-                        ` : ''}
-                        ${concern.status === 'pending' ? `
-                            <div class="ml-12 mt-3">
-                                <button onclick="deleteMyConcern(${concern.id})" class="text-red-500 hover:text-red-700 text-sm font-medium">
-                                    🗑️ Delete Concern
-                                </button>
-                            </div>
-                        ` : ''}
+                        <div style="display:flex;align-items:flex-start;gap:8px;flex-shrink:0;">
+                            ${getStatusBadgeHtml(c.status)}
+                            ${c.status === 'pending' ? `<button class="btn-delete" onclick="handleDelete(${c.id})">🗑 Delete</button>` : ''}
+                        </div>
                     </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        // Delete my concern
-        async function deleteMyConcern(concernId) {
-            if (confirm('Are you sure you want to delete this concern?')) {
-                const result = await deleteConcern(concernId);
-                if (result.success) {
-                    showToast(result.message, 'success');
-                    await loadMyConcerns();
-                    await updateStats();
-                } else {
-                    showToast(result.message, 'error');
-                }
-            }
+                    <div class="concern-desc">${c.description}</div>
+                    ${c.assignedTo ? `<div class="concern-assigned">👤 Assigned to: <strong>${c.assignedTo}</strong></div>` : ''}
+                    ${c.response ? `
+                        <div class="concern-reply" style="margin-top:12px;">
+                            <p><strong>🏛️ Barangay Response:</strong></p>
+                            <p style="margin-top:6px;">${c.response}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
         }
 
         // Update stats
-        async function updateStats() {
-            const concerns = await getMyConcerns();
+        function updateStats(concerns) {
+            const pending = concerns.filter(c => c.status === 'pending').length;
+            const progress = concerns.filter(c => c.status === 'in-progress').length;
+            const resolved = concerns.filter(c => c.status === 'resolved').length;
+            const rejected = concerns.filter(c => c.status === 'rejected').length;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('progressCount').textContent = progress;
+            document.getElementById('resolvedCount').textContent = resolved;
+            document.getElementById('rejectedCount').textContent = rejected;
+        }
 
-            document.getElementById('pendingCount').textContent = concerns.filter(c => c.status === 'pending').length;
-            document.getElementById('resolvedCount').textContent = concerns.filter(c => c.status === 'resolved').length;
-            document.getElementById('rejectedCount').textContent = concerns.filter(c => c.status === 'rejected').length;
+        // Delete concern
+        async function handleDelete(concernId) {
+            if (!confirm('Delete this concern? This cannot be undone.')) return;
+            const result = await deleteConcern(concernId);
+            if (result.success) {
+                showToast('Concern deleted', 'success');
+                await loadMyConcerns();
+            } else {
+                showToast(result.message, 'error');
+            }
         }
     </script>
 </body>

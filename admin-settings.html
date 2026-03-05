@@ -5,80 +5,261 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Settings - Barangay Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+        :root {
+            --green: #059669;
+            --green-dark: #047857;
+            --green-light: #d1fae5;
+            --green-50: #f0fdf4;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f4f6f9;
+            --white: #ffffff;
+        }
+
         * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ── SIDEBAR ── */
+        aside {
+            width: 240px;
+            flex-shrink: 0;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-brand {
+            padding: 20px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-brand img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .sidebar-brand p {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
         }
 
         .sidebar-btn {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 10px;
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 11px 14px;
             border: none;
             background: transparent;
-            color: #374151;
-            font-size: 0.95rem;
+            color: var(--muted);
+            font-size: 14px;
             font-weight: 500;
-            border-radius: 0.5rem;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all .2s;
+            text-align: left;
+            text-decoration: none;
         }
 
         .sidebar-btn:hover {
-            background: #f3f4f6;
+            background: var(--green-50);
+            color: var(--green-dark);
         }
 
         .sidebar-btn.active {
-            background: #059669;
+            background: var(--green);
             color: white;
+            font-weight: 600;
         }
 
         .sidebar-btn.active:hover {
-            background: #047857;
+            background: var(--green-dark);
         }
 
-        .settings-card {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            border: 1px solid #e5e7eb;
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid var(--border);
         }
 
-        .user-table {
+        /* ── MAIN CONTENT ── */
+        main {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        h1.section-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        p.section-sub {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 22px;
+        }
+
+        /* ── STAT GRID ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+        }
+
+        .stat-item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .stat-item-value {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-item-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* ── TABLE ── */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .user-table th {
+        .data-table th {
             text-align: left;
-            padding: 0.75rem 1rem;
-            background: #f9fafb;
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.875rem;
-            border-bottom: 2px solid #e5e7eb;
+            padding: 11px 16px;
+            background: var(--green-50);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--green-dark);
+            border-bottom: 2px solid var(--green-light);
+            text-transform: uppercase;
+            letter-spacing: .04em;
         }
 
-        .user-table td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            color: #4b5563;
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text);
         }
 
-        .user-table tr:hover {
-            background: #f9fafb;
+        .data-table tr:last-child td {
+            border-bottom: none;
         }
 
+        .data-table tr:hover td {
+            background: var(--green-50);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--green-light);
+            color: var(--green-dark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+
+        /* ── ROLE BADGE ── */
         .role-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
         }
 
@@ -88,68 +269,194 @@
         }
 
         .role-user {
-            background: #d1fae5;
-            color: #047857;
+            background: var(--green-light);
+            color: var(--green-dark);
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--green-dark);
+        }
+
+        .btn-danger {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: white;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, .25);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(5, 150, 105, .35);
+        }
+
+        .btn-submit.blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, .25);
+        }
+
+        .btn-submit.blue:hover {
+            box-shadow: 0 6px 18px rgba(59, 130, 246, .35);
+        }
+
+        /* ── FORM ── */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .form-group input {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color .2s;
+            background: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
+        }
+
+        .form-group input:disabled {
+            background: #f9fafb;
+            color: var(--muted);
+        }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 22px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            transform: translateY(100px);
+            transition: transform .3s ease;
+            z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+        }
+
+        #toast.show {
+            transform: translateY(0);
+        }
+
+        #toast.success {
+            background: var(--green);
+        }
+
+        #toast.error {
+            background: #dc2626;
+        }
+
+        #toast.info {
+            background: #3b82f6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen">
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center gap-3">
-                    <img src="barangay.jpg" alt="Logo" class="w-10 h-10 rounded-full">
-                    <div>
-                        <h2 class="font-bold text-gray-800">Admin Settings</h2>
-                        <p class="text-xs text-gray-500">Management Console</p>
-                    </div>
+<body>
+    <!-- Sidebar -->
+    <aside>
+        <div class="sidebar-brand">
+            <img src="barangay.jpg" alt="Logo">
+            <div>
+                <h2>Admin Settings</h2>
+                <p>Management Console</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <button onclick="showSection('users')" id="usersBtn" class="sidebar-btn active">
+                <i class="bi bi-people-fill"></i> User Management
+            </button>
+            <button onclick="showSection('profile')" id="profileBtn" class="sidebar-btn">
+                <i class="bi bi-person-fill"></i> My Profile
+            </button>
+            <button onclick="showSection('system')" id="systemBtn" class="sidebar-btn">
+                <i class="bi bi-gear-fill"></i> System Info
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="admin.html" class="sidebar-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <div id="toast"></div>
+
+        <!-- User Management Section -->
+        <div id="users-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <div>
+                    <h1 class="section-title">User Management</h1>
+                    <p class="section-sub" style="margin-bottom:0;">Manage registered users and their roles</p>
                 </div>
+                <span
+                    style="background:var(--green-50);border:1px solid var(--green-light);color:var(--green-dark);padding:6px 16px;border-radius:10px;font-size:13px;font-weight:700;">
+                    <i class="bi bi-people"></i> <span id="totalUsers">0</span> Users
+                </span>
             </div>
-
-            <nav class="p-4 space-y-1">
-                <button onclick="showSection('users')" id="usersBtn" class="sidebar-btn active">
-                    <i class="bi bi-people-fill"></i> User Management
-                </button>
-                <button onclick="showSection('profile')" id="profileBtn" class="sidebar-btn">
-                    <i class="bi bi-person-fill"></i> My Profile
-                </button>
-                <button onclick="showSection('system')" id="systemBtn" class="sidebar-btn">
-                    <i class="bi bi-gear-fill"></i> System Info
-                </button>
-            </nav>
-
-            <div class="p-4 mt-auto border-t border-gray-200">
-                <a href="admin.html" class="sidebar-btn">
-                    <i class="bi bi-arrow-left"></i> Back to Dashboard
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 p-8">
-            <!-- Toast Notification -->
-            <div id="toast"
-                class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-50">
-            </div>
-
-            <!-- User Management Section -->
-            <div id="users-section">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-800">User Management</h1>
-                        <p class="text-gray-500">Manage registered users and their roles</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg font-medium">
-                            <i class="bi bi-people"></i> <span id="totalUsers">0</span> Users
-                        </span>
-                    </div>
-                </div>
-
-                <div class="settings-card">
-                    <table class="user-table">
+            <div class="card">
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>User</th>
@@ -159,177 +466,147 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="usersTable">
-                            <!-- Users rendered here -->
-                        </tbody>
+                        <tbody id="usersTable"></tbody>
                     </table>
-
-                    <div id="noUsers" class="text-center py-8 text-gray-500 hidden">
-                        <i class="bi bi-people text-4xl mb-2"></i>
+                    <div id="noUsers" class="empty-state hidden">
+                        <i class="bi bi-people" style="font-size:36px;"></i>
                         <p>No users found</p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Profile Section -->
-            <div id="profile-section" class="hidden">
-                <h1 class="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="settings-card">
-                        <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <i class="bi bi-person-circle"></i> Profile Information
-                        </h3>
-                        <form id="profileForm" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                <input type="text" id="fullName"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-emerald-500 focus:outline-none">
+        <!-- Profile Section -->
+        <div id="profile-section" class="hidden">
+            <h1 class="section-title">My Profile</h1>
+            <p class="section-sub">Update your account information and change your password</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="bi bi-person-circle"></i> Profile Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fullName">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input type="email" id="email"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-emerald-500 focus:outline-none">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                <input type="text" id="username" disabled
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 bg-gray-100 text-gray-500">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="username" disabled>
                             </div>
-                            <button type="submit"
-                                class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-lg transition">
-                                Save Changes
-                            </button>
+                            <button type="submit" class="btn-submit">Save Changes</button>
                         </form>
                     </div>
-
-                    <div class="settings-card">
-                        <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <i class="bi bi-key-fill"></i> Change Password
-                        </h3>
-                        <form id="passwordForm" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                                <input type="password" id="currentPassword"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-emerald-500 focus:outline-none">
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="bi bi-key-fill"></i> Change Password</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="passwordForm">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" id="currentPassword">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                                <input type="password" id="newPassword"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-emerald-500 focus:outline-none">
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" id="newPassword">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                                <input type="password" id="confirmPassword"
-                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-emerald-500 focus:outline-none">
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" id="confirmPassword">
                             </div>
-                            <button type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition">
-                                Change Password
-                            </button>
+                            <button type="submit" class="btn-submit blue">Change Password</button>
                         </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- System Info Section -->
-            <div id="system-section" class="hidden">
-                <h1 class="text-2xl font-bold text-gray-800 mb-6">System Information</h1>
+        <!-- System Info Section -->
+        <div id="system-section" class="hidden">
+            <h1 class="section-title">System Information</h1>
+            <p class="section-sub">Overview of all system data and statistics</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="settings-card">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="bi bi-people text-blue-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Total Users</p>
-                                <p id="statTotalUsers" class="text-2xl font-bold text-gray-800">0</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="bi bi-person-check text-green-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Regular Users</p>
-                                <p id="statRegularUsers" class="text-2xl font-bold text-gray-800">0</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <i class="bi bi-shield-check text-purple-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Administrators</p>
-                                <p id="statAdmins" class="text-2xl font-bold text-gray-800">0</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                                <i class="bi bi-box-seam text-amber-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Total Equipment</p>
-                                <p id="statEquipment" class="text-2xl font-bold text-gray-800">0</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                                <i class="bi bi-exclamation-triangle text-red-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Pending Requests</p>
-                                <p id="statPending" class="text-2xl font-bold text-gray-800">0</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                <i class="bi bi-calendar-check text-indigo-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Court Bookings</p>
-                                <p id="statBookings" class="text-2xl font-bold text-gray-800">0</p>
-                            </div>
-                        </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background:#dbeafe;"><i class="bi bi-people"
+                            style="color:#1d4ed8;"></i></div>
+                    <div>
+                        <div class="stat-item-value" id="statTotalUsers">0</div>
+                        <div class="stat-item-label">Total Users</div>
                     </div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background:var(--green-light);"><i class="bi bi-person-check"
+                            style="color:var(--green-dark);"></i></div>
+                    <div>
+                        <div class="stat-item-value" id="statRegularUsers">0</div>
+                        <div class="stat-item-label">Regular Users</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background:#f5f3ff;"><i class="bi bi-shield-check"
+                            style="color:#7c3aed;"></i></div>
+                    <div>
+                        <div class="stat-item-value" id="statAdmins">0</div>
+                        <div class="stat-item-label">Administrators</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background:#fef3c7;"><i class="bi bi-box-seam"
+                            style="color:#d97706;"></i></div>
+                    <div>
+                        <div class="stat-item-value" id="statEquipment">0</div>
+                        <div class="stat-item-label">Equipment Items</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background:#fef2f2;"><i class="bi bi-exclamation-triangle"
+                            style="color:#dc2626;"></i></div>
+                    <div>
+                        <div class="stat-item-value" id="statPending">0</div>
+                        <div class="stat-item-label">Pending Requests</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background:#eff6ff;"><i class="bi bi-calendar-check"
+                            style="color:#1d4ed8;"></i></div>
+                    <div>
+                        <div class="stat-item-value" id="statBookings">0</div>
+                        <div class="stat-item-label">Court Bookings</div>
+                    </div>
+                </div>
+            </div>
 
-                <div class="settings-card mt-6">
-                    <h3 class="font-semibold text-gray-800 mb-4">System Details</h3>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="card">
+                <div class="card-header">
+                    <h3>System Details</h3>
+                </div>
+                <div class="card-body">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:14px;">
                         <div>
-                            <p class="text-gray-500">Version</p>
-                            <p class="font-medium">Barangay Management System v1.0</p>
+                            <p style="color:var(--muted);font-size:12px;margin-bottom:4px;">Version</p>
+                            <p style="font-weight:600;">Barangay Management System v1.0</p>
                         </div>
                         <div>
-                            <p class="text-gray-500">Storage</p>
-                            <p class="font-medium">LocalStorage (Browser)</p>
+                            <p style="color:var(--muted);font-size:12px;margin-bottom:4px;">Backend</p>
+                            <p style="font-weight:600;">Supabase + localStorage</p>
                         </div>
                         <div>
-                            <p class="text-gray-500">Last Updated</p>
-                            <p class="font-medium" id="lastUpdated">-</p>
+                            <p style="color:var(--muted);font-size:12px;margin-bottom:4px;">Last Updated</p>
+                            <p style="font-weight:600;" id="lastUpdated">—</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
@@ -337,11 +614,9 @@
     <script>
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
-            toast.className = `fixed bottom-4 right-4 ${colors[type] || 'bg-gray-800'} text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300 z-50`;
             toast.textContent = message;
-            toast.style.transform = 'translateY(0)';
-            setTimeout(() => { toast.style.transform = 'translateY(5rem)'; }, 3000);
+            toast.className = `show ${type}`;
+            setTimeout(() => toast.className = '', 3200);
         }
 
         // Auth check
@@ -349,29 +624,23 @@
         if (!requireAdmin()) { }
 
         const currentUser = getCurrentUser();
-
-        // Load user data into profile form
-        document.getElementById('fullName').value = currentUser.fullName || '';
-        document.getElementById('email').value = currentUser.email || '';
-        document.getElementById('username').value = currentUser.username || '';
+        if (currentUser) {
+            document.getElementById('fullName').value = currentUser.fullName || '';
+            document.getElementById('email').value = currentUser.email || '';
+            document.getElementById('username').value = currentUser.username || '';
+        }
 
         function showSection(section) {
-            // Update sidebar buttons
-            document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(section + 'Btn').classList.add('active');
-
-            // Show/hide sections
-            document.getElementById('users-section').classList.add('hidden');
-            document.getElementById('profile-section').classList.add('hidden');
-            document.getElementById('system-section').classList.add('hidden');
-            document.getElementById(section + '-section').classList.remove('hidden');
+            ['users', 'profile', 'system'].forEach(s => {
+                document.getElementById(s + '-section').classList.toggle('hidden', s !== section);
+                document.getElementById(s + 'Btn').classList.toggle('active', s === section);
+            });
         }
 
         async function loadUsers() {
             const users = await getAllUsers();
             const container = document.getElementById('usersTable');
             const noUsers = document.getElementById('noUsers');
-
             document.getElementById('totalUsers').textContent = users.length;
 
             if (users.length === 0) {
@@ -384,33 +653,26 @@
             container.innerHTML = users.map(user => `
                 <tr>
                     <td>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600">
-                                ${user.avatar || user.fullName.charAt(0)}
-                            </div>
-                            <span class="font-medium">${user.fullName}</span>
+                        <div style="display:flex;align-items:center;">
+                            <span class="avatar">${(user.avatar || (user.fullName || 'U').charAt(0)).toString().charAt(0).toUpperCase()}</span>
+                            <span style="font-weight:600;">${user.fullName || user.username}</span>
                         </div>
                     </td>
-                    <td>${user.email}</td>
+                    <td style="color:var(--muted);">${user.email || '—'}</td>
+                    <td><span class="role-badge ${user.role === 'admin' ? 'role-admin' : 'role-user'}">${user.role}</span></td>
+                    <td style="color:var(--muted);font-size:13px;">${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</td>
                     <td>
-                        <span class="role-badge ${user.role === 'admin' ? 'role-admin' : 'role-user'}">
-                            ${user.role}
-                        </span>
-                    </td>
-                    <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <button onclick="deleteUserAccount(${user.id})" class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                <i class="bi bi-trash"></i> Delete
-                            </button>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            ${user.role !== 'admin' ? `<button class="btn btn-primary" onclick="promoteToAdmin(${user.id}, '${user.username || user.fullName}')"><i class="bi bi-arrow-up-circle"></i> Promote</button>` : ''}
+                            ${user.role !== 'admin' ? `<button class="btn btn-danger" onclick="deleteUserAccount(${user.id})"><i class="bi bi-trash"></i> Delete</button>` : ''}
                         </div>
                     </td>
                 </tr>
             `).join('');
         }
 
-        async function promoteToAdmin(userId) {
-            if (confirm('Are you sure you want to promote this user to admin?')) {
+        async function promoteToAdmin(userId, username) {
+            if (confirm(`Promote "${username}" to Admin? They will gain full administrator access.`)) {
                 const result = await updateUserRole(userId, 'admin');
                 if (result.success) {
                     showToast(result.message, 'success');
@@ -422,7 +684,7 @@
         }
 
         async function deleteUserAccount(userId) {
-            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            if (confirm('Delete this user? This action cannot be undone.')) {
                 if (typeof window.deleteUser === 'function') {
                     const result = await window.deleteUser(userId);
                     if (result.success) {
@@ -440,64 +702,34 @@
             }
         }
 
-        // Profile form submission
+        // Profile form
         document.getElementById('profileForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value.trim();
-
-            if (!fullName || !email) {
-                showToast('Please fill in all fields', 'error');
-                return;
-            }
-
+            if (!fullName || !email) { showToast('Please fill in all fields', 'error'); return; }
             const result = await updateUserProfile({ fullName, email });
-            if (result.success) {
-                showToast(result.message, 'success');
-            } else {
-                showToast(result.message, 'error');
-            }
+            showToast(result.message, result.success ? 'success' : 'error');
         });
 
-        // Password form submission
+        // Password form
         document.getElementById('passwordForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                showToast('Please fill in all password fields', 'error');
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-                showToast('New passwords do not match', 'error');
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                showToast('Password must be at least 6 characters', 'error');
-                return;
-            }
-
+            if (!currentPassword || !newPassword || !confirmPassword) { showToast('Please fill in all password fields', 'error'); return; }
+            if (newPassword !== confirmPassword) { showToast('New passwords do not match', 'error'); return; }
+            if (newPassword.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
             const result = await changePassword(currentPassword, newPassword);
-            if (result.success) {
-                showToast(result.message, 'success');
-                document.getElementById('passwordForm').reset();
-            } else {
-                showToast(result.message, 'error');
-            }
+            showToast(result.message, result.success ? 'success' : 'error');
+            if (result.success) document.getElementById('passwordForm').reset();
         });
 
         async function loadSystemStats() {
             const [users, equipment, borrowings, bookings] = await Promise.all([
-                getAllUsers(),
-                getEquipment(),
-                getAllBorrowings(),
-                getCourtBookings()
+                getAllUsers(), getEquipment(), getAllBorrowings(), getCourtBookings()
             ]);
-
             document.getElementById('statTotalUsers').textContent = users.length;
             document.getElementById('statRegularUsers').textContent = users.filter(u => u.role === 'user').length;
             document.getElementById('statAdmins').textContent = users.filter(u => u.role === 'admin').length;
@@ -507,7 +739,6 @@
             document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
         }
 
-        // Initialize
         async function init() {
             await loadUsers();
             await loadSystemStats();
