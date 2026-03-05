@@ -20,6 +20,100 @@
             --bg: #f0fdf4;
         }
 
+        [data-theme="dark"] {
+            --green: #10b981;
+            --green-dark: #059669;
+            --green-light: #14532d;
+            --bg: #0f172a;
+        }
+
+        [data-theme="dark"] body {
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .top-nav {
+            background: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+        }
+
+        [data-theme="dark"] .bottom-nav {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .bottom-nav .bnav-item {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .list-item {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .stat-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .welcome-banner {
+            background: linear-gradient(135deg, #064e3b, #065f46);
+        }
+
+        [data-theme="dark"] .section-title {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .nav-brand span {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .user-info-block .uname {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: #263244;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .calendar-day {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .tab-btn {
+            color: #94a3b8;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .tab-btn.active {
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        .btn-dark-toggle {
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 1.5px solid #d1d5db;
+            background: transparent;
+            color: #6b7280;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .btn-dark-toggle:hover {
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
@@ -833,6 +927,8 @@
                     <div class="urole" id="userRole">Resident</div>
                 </div>
                 <div class="avatar" id="userAvatar">U</div>
+                <button class="btn-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
+                    title="Toggle Dark Mode">🌙</button>
                 <button class="btn-nav" onclick="window.location.href='user-settings.html'">⚙ Settings</button>
                 <button class="btn-nav-danger" onclick="logoutUser()">Logout</button>
             </div>
@@ -983,6 +1079,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/darkmode.js"></script>
     <script>
         function showToast(message, type = 'success') {
             const t = document.getElementById('toast');

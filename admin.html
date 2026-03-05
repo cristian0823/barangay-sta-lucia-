@@ -42,6 +42,109 @@
             --primary-dark: #059669;
             --white: #fff;
             --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --dark: #1a2e1f;
+        }
+
+        /* ── DARK MODE ── */
+        [data-theme="dark"] {
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: #334155;
+            --surface: #1e293b;
+            --bg: #0f172a;
+            --white: #1e293b;
+            --green-50: #0d2818;
+            --green-100: #14532d;
+            --green-200: #166534;
+            --dark: #f1f5f9;
+            --warning-bg: #1c1a0a;
+            --warning-border: #713f12;
+            --warning-text: #fde68a;
+            --danger-bg: #1c0a0a;
+            --danger-border: #7f1d1d;
+        }
+
+        [data-theme="dark"] .dashboard-header {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .sidebar {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .section-container,
+        [data-theme="dark"] .court-booking-card,
+        [data-theme="dark"] .modal-content {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .stat-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] table th {
+            background: #0d2818;
+            color: #6ee7b7;
+        }
+
+        [data-theme="dark"] table td {
+            border-color: #334155;
+            color: var(--text);
+        }
+
+        [data-theme="dark"] table tr:hover td {
+            background: #0d2818;
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: #263244;
+            color: var(--text);
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .sidebar-btn {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .sidebar-btn:hover,
+        [data-theme="dark"] .sidebar-btn.active {
+            background: #0d2818;
+            color: #6ee7b7;
+        }
+
+        [data-theme="dark"] .event-item {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .modal {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        [data-theme="dark"] .welcome-banner.admin-banner {
+            background: linear-gradient(135deg, #064e3b, #065f46);
+        }
+
+        .admin-dark-toggle {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 8px;
+            padding: 7px 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background .2s;
+            color: #1a2e1f;
+            line-height: 1;
+        }
+
+        .admin-dark-toggle:hover {
+            background: rgba(255, 255, 255, .25);
         }
 
         body {
@@ -1086,6 +1189,7 @@
                 <div class="notification-badge" id="notificationBadge" data-count="0" onclick="showSection('requests')">
                     🔔</div>
                 <div class="user-avatar" id="userAvatar">A</div>
+                <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
                 <button class="logout-btn" onclick="window.location.href='admin-settings.html'">⚙️ Settings</button>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
             </div>
@@ -1693,6 +1797,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/darkmode.js"></script>
     <script>
         if (!requireAuth()) window.location.href = 'login.html';
         if (!requireAdmin()) window.location.href = 'home.html';

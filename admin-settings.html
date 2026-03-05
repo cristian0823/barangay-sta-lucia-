@@ -20,6 +20,66 @@
             --white: #ffffff;
         }
 
+        [data-theme="dark"] {
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: #334155;
+            --bg: #0f172a;
+            --white: #1e293b;
+            --green-50: #0d2818;
+            --green-light: #14532d;
+        }
+
+        [data-theme="dark"] aside {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .data-table th {
+            background: #0d2818;
+        }
+
+        [data-theme="dark"] .data-table tr:hover td {
+            background: #0d2818;
+        }
+
+        [data-theme="dark"] .form-group input {
+            background: #263244;
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .stat-item {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .card {
+            background: #1e293b;
+        }
+
+        .dark-mode-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all .2s;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .dark-mode-toggle:hover {
+            background: var(--green-50);
+            color: var(--green-dark);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -432,7 +492,10 @@
             </button>
         </nav>
         <div class="sidebar-footer">
-            <a href="admin.html" class="sidebar-btn">
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+                <span style="font-size:18px;">🌙</span> Toggle Dark Mode
+            </button>
+            <a href="admin.html" class="sidebar-btn" style="margin-top:4px;">
                 <i class="bi bi-arrow-left"></i> Back to Dashboard
             </a>
         </div>
@@ -611,6 +674,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/darkmode.js"></script>
     <script>
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');

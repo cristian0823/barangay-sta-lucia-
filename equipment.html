@@ -19,6 +19,56 @@
             --white: #ffffff;
         }
 
+        [data-theme="dark"] {
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: #334155;
+            --bg: #0f172a;
+            --white: #1e293b;
+            --green-50: #0d2818;
+            --green-light: #14532d;
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] textarea {
+            background: #263244;
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .equip-card {
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .progress-bar {
+            background: #334155;
+        }
+
+        [data-theme="dark"] .modal {
+            background: #1e293b;
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .modal-equip-info {
+            background: #0d2818;
+            border-color: #14532d;
+        }
+
+        .dark-mode-toggle {
+            background: rgba(255, 255, 255, .15);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: background .2s;
+            color: white;
+            line-height: 1;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, .25);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -602,6 +652,7 @@
             <a href="equipment.html" class="active">Equipment</a>
             <a href="concerns.html">Concerns</a>
             <a href="court-scheduling.html">Booking</a>
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
             <a href="#" id="logoutBtn">Logout</a>
         </div>
     </nav>
@@ -692,6 +743,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/darkmode.js"></script>
     <script>
         // Auth check
         const currentUser = getCurrentUser();
