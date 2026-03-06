@@ -26,6 +26,77 @@
         .booking-card:hover {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
+        /* Dark Mode Overrides for Tailwind classes */
+        [data-theme="dark"] body {
+            background: #022c22;
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .bg-white {
+            background-color: #064e3b;
+            color: #f1f5f9;
+            border: 1px solid #14532d;
+        }
+
+        [data-theme="dark"] .text-gray-800,
+        [data-theme="dark"] .text-gray-700,
+        [data-theme="dark"] .text-gray-600,
+        [data-theme="dark"] .text-gray-500 {
+            color: #a7f3d0;
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background-color: #0d2818;
+            color: #f1f5f9;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .calendar-day.bg-green-100 {
+            background-color: #0d2818;
+            color: #6ee7b7;
+        }
+
+        [data-theme="dark"] .calendar-day.bg-purple-100 {
+            background-color: #1e1b4b;
+            color: #c084fc;
+        }
+
+        [data-theme="dark"] .calendar-day.bg-red-100 {
+            background-color: #450a0a;
+            color: #fca5a5;
+        }
+
+        [data-theme="dark"] .bg-gray-200 {
+            background-color: #14532d;
+            color: #6ed7b7;
+        }
+
+        [data-theme="dark"] .bg-gray-50 {
+            background-color: #0d2818;
+        }
+
+        .dark-mode-toggle {
+            background: rgba(255, 255, 255, .15);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 10px;
+            width: 44px;
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background .2s;
+            color: white;
+            line-height: 1;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, .25);
+        }
     </style>
 </head>
 
@@ -38,13 +109,15 @@
                     <img src="barangay.jpg" alt="Barangay Logo" class="w-10 h-10 rounded-full border-2 border-white">
                     <span class="text-xl font-bold">Barangay Management</span>
                 </div>
-                <ul class="flex space-x-6">
+                <ul class="flex space-x-6 items-center">
                     <li><a href="home.html" class="hover:text-blue-200 transition">Home</a></li>
                     <li><a href="equipment.html" class="hover:text-blue-200 transition">Equipment</a></li>
                     <li><a href="concerns.html" class="hover:text-blue-200 transition">Concerns</a></li>
                     <li><a href="court-scheduling.html" class="text-yellow-400 font-semibold">Venue Reservation</a></li>
                     <li id="adminLink" class="hidden"><a href="admin.html"
                             class="hover:text-blue-200 transition">Admin</a></li>
+                    <li><button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+                    </li>
                     <li><a href="#" id="logoutBtn" class="hover:text-red-300 transition">Logout</a></li>
                 </ul>
             </div>
@@ -256,6 +329,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/darkmode.js"></script>
     <script>
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
