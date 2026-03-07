@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Dashboard - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Styles & Dark Mode Definitions */
+        :root {
+            --bg-color: #f0fdf4;
+            --sidebar-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --panel-bg: #ffffff;
+            --border-color: #e5e7eb;
+
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --nav-hover-bg: #ecfdf5;
+            --nav-active-bg: #d1fae5;
+            --nav-active-text: #065f46;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #022c22;
+            --sidebar-bg: #064e3b;
+            --text-main: #f1f5f9;
+            --text-muted: #9ca3af;
+            --panel-bg: #064e3b;
+            --border-color: #14532d;
+
+            --primary: #10b981;
+            --nav-hover-bg: #14532d;
+            --nav-active-bg: #065f46;
+            --nav-active-text: #a7f3d0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            overflow: hidden;
+            /* Prevent body scroll, let content scroll */
+        }
+
+        .content-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Nav Link Styling */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--nav-hover-bg);
+            color: var(--primary);
+        }
+
+        .sidebar-link.active {
+            background-color: var(--nav-active-bg);
+            color: var(--nav-active-text);
+        }
+
+        /* Glassmorphism adjustments for cards */
+        .glass-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Forms */
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background-color: #0d2818;
+            color: #f1f5f9;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .bg-white {
+            background-color: #064e3b !important;
+        }
+
+        [data-theme="dark"] .text-gray-800 {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .text-gray-600 {
+            color: #cbd5e1 !important;
+        }
+
+        [data-theme="dark"] .bg-gray-50 {
+            background-color: #022c22 !important;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen w-full">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 h-full flex flex-col justify-between border-r shadow-lg z-20"
+        style="background-color: var(--sidebar-bg); border-color: var(--border-color);">
+        <div>
+            <!-- Header/Logo -->
+            <div class="p-6 border-b" style="border-color: var(--border-color);">
+                <div class="flex items-center gap-3">
+                    <img src="barangay.jpg" alt="Logo"
+                        class="w-10 h-10 rounded-xl border-2 border-emerald-500 shadow-sm">
+                    <div>
+                        <h1 class="font-bold text-sm tracking-tight" style="color: var(--text-main);">Barangay Sta.
+                            Lucia</h1>
+                        <p class="text-xs font-semibold text-emerald-500">Resident Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 mt-2 h-full overflow-y-auto">
+                <a onclick="showPanel('dashboard')" id="nav-dashboard" class="sidebar-link active">
+                    <span class="text-xl mr-3">🏠</span> Dashboard Overview
+                </a>
+                <a onclick="showPanel('equipment')" id="nav-equipment" class="sidebar-link">
+                    <span class="text-xl mr-3">📦</span> Equipment Borrowing
+                </a>
+                <a onclick="showPanel('concerns')" id="nav-concerns" class="sidebar-link">
+                    <span class="text-xl mr-3">💬</span> Send a Concern
+                </a>
+                <a onclick="showPanel('booking')" id="nav-booking" class="sidebar-link">
+                    <span class="text-xl mr-3">📅</span> Book a Court
+                </a>
+                <a onclick="showPanel('events')" id="nav-events" class="sidebar-link">
+                    <span class="text-xl mr-3">🎉</span> Court Events
+                </a>
+
+                <div class="mt-8 mb-2 px-4 text-xs font-bold tracking-wider uppercase"
+                    style="color: var(--text-muted);">Settings</div>
+                <button onclick="toggleDarkMode()" class="sidebar-link w-full text-left">
+                    <span class="text-xl mr-3">🌙</span> Toggle Dark Mode
+                </button>
+            </nav>
+        </div>
+
+        <!-- User Profile Bottom -->
+        <div class="p-4 border-t" style="border-color: var(--border-color);">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold shadow-md">
+                        <span id="userInitial">U</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold truncate w-24" id="sidebarUserName"
+                            style="color: var(--text-main);">User</p>
+                        <p class="text-xs" style="color: var(--text-muted);">Resident</p>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+                    title="Logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- RIGHT CONTENT AREA -->
+    <main class="flex-1 h-full overflow-y-auto relative" style="background-color: var(--bg-color);">
+
+        <!-- Mobile Header (Visible only on small screens) -->
+        <header class="md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm sticky top-0 z-10"
+            style="background-color: var(--sidebar-bg); border-color: var(--border-color);">
+            <div class="flex items-center gap-2">
+                <img src="barangay.jpg" alt="Logo" class="w-8 h-8 rounded-lg">
+                <h1 class="font-bold text-sm">Sta. Lucia Portal</h1>
+            </div>
+            <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="p-2 border rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </button>
+        </header>
+
+        <div class="p-6 md:p-10 max-w-7xl mx-auto">
+
+            <!-- PANEL 1: DASHBOARD OVERVIEW -->
+            <div id="panel-dashboard" class="content-panel active">
+                <div
+                    class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-3xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-extrabold mb-2">Welcome back, <span id="welcomeName">Resident</span>!
+                            👋</h2>
+                        <p class="text-emerald-100 max-w-lg text-lg">Your central hub for barangay services. Here's a
+                            quick overview of your current requests and bookings.</p>
+                    </div>
+                    <!-- Decorative background shapes -->
+                    <div
+                        class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-emerald-500 opacity-20 blur-3xl">
+                    </div>
+                    <div class="absolute bottom-0 right-40 w-60 h-60 rounded-full bg-teal-400 opacity-20 blur-2xl">
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">At a Glance</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-6 flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-3xl shadow-sm">
+                            📦
+                        </div>
+                        <div>
+                            <p class="text-3xl font-black text-gray-800" id="stat-equipment">0</p>
+                            <p class="text-sm font-semibold text-gray-500">Active Borrowings</p>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl shadow-sm">
+                            💬
+                        </div>
+                        <div>
+                            <p class="text-3xl font-black text-gray-800" id="stat-concerns">0</p>
+                            <p class="text-sm font-semibold text-gray-500">Pending Concerns</p>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-3xl shadow-sm">
+                            📅
+                        </div>
+                        <div>
+                            <p class="text-3xl font-black text-gray-800" id="stat-bookings">0</p>
+                            <p class="text-sm font-semibold text-gray-500">Upcoming Bookings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: EQUIPMENT BORROWING -->
+            <div id="panel-equipment" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="text-3xl font-extrabold text-emerald-600 mb-2">📦 Equipment Borrowing</h2>
+                    <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Available Equipment List -->
+                    <div class="glass-card p-6">
+                        <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">Available Items</h3>
+                        <div id="equipmentList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Items rendered via JS -->
+                            <p class="text-gray-500 italic">Loading equipment...</p>
+                        </div>
+                    </div>
+
+                    <!-- My Borrowings List -->
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold" style="color: var(--text-main);">My Borrowing History</h3>
+                        </div>
+                        <div id="myBorrowingsList" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                            <!-- Rendered via JS -->
+                            <p class="text-gray-500 italic">No borrowing history yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 3: CONCERNS & FEEDBACK -->
+            <div id="panel-concerns" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="text-3xl font-extrabold text-amber-500 mb-2">💬 Sent a Concern</h2>
+                    <p style="color: var(--text-muted);">Report issues, give feedback, or request assistance securely.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Submit Form -->
+                    <div class="lg:col-span-1 glass-card p-6 h-fit">
+                        <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">New Report</h3>
+                        <form id="concernForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-1"
+                                    style="color: var(--text-muted);">Title</label>
+                                <input type="text" id="concernTitle" required
+                                    class="w-full border-2 rounded-lg px-3 py-2 focus:border-emerald-500 focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1"
+                                    style="color: var(--text-muted);">Category</label>
+                                <select id="concernCategory" required
+                                    class="w-full border-2 rounded-lg px-3 py-2 border-gray-200">
+                                    <option value="infrastructure">Infrastructure & Roads</option>
+                                    <option value="cleanliness">Waste & Cleanliness</option>
+                                    <option value="security">Safety & Security</option>
+                                    <option value="noise">Noise Complaint</option>
+                                    <option value="suggestion">General Suggestion</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Specific
+                                    Location (Optional)</label>
+                                <input type="text" id="concernLocation"
+                                    class="w-full border-2 rounded-lg px-3 py-2 border-gray-200"
+                                    placeholder="e.g. Purok 4, near intersection">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1"
+                                    style="color: var(--text-muted);">Details</label>
+                                <textarea id="concernDescription" required
+                                    class="w-full border-2 rounded-lg px-3 py-2 h-24 resize-none border-gray-200"></textarea>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition transform hover:scale-[1.02]">
+                                Submit Report
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- My Concerns History -->
+                    <div class="lg:col-span-2 glass-card p-6">
+                        <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">My Submitted Concerns</h3>
+                        <div id="myConcernsList" class="space-y-4">
+                            <p class="text-gray-500 italic">Loading concerns...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 4: COURT BOOKING -->
+            <div id="panel-booking" class="content-panel">
+                <div class="mb-8 border-b pb-6 flex justify-between items-end flex-wrap gap-4"
+                    style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-blue-600 mb-2">📅 Court Booking</h2>
+                        <p style="color: var(--text-muted);">Reserve the basketball court or multi-purpose hall.</p>
+                    </div>
+                    <!-- Venue Selector -->
+                    <div class="bg-gray-100 p-1 rounded-xl flex shadow-inner">
+                        <button onclick="switchVenue('basketball')" id="sel-basketball"
+                            class="px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition">🏀
+                            Basketball Court</button>
+                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose"
+                            class="px-5 py-2 rounded-lg font-bold text-sm text-gray-500 hover:text-gray-800 transition">🏢
+                            Multi-Purpose Hall</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Calendar -->
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 id="calendarMonthTitle" class="text-xl font-bold" style="color: var(--text-main);">Month
+                            </h2>
+                            <div class="flex space-x-2">
+                                <button onclick="changeBookingMonth(-1)"
+                                    class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm font-bold transition">←</button>
+                                <button onclick="changeBookingMonth(1)"
+                                    class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm font-bold transition">→</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 mb-2">
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
+                        </div>
+                        <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1"></div>
+
+                        <!-- Legend -->
+                        <div class="flex justify-center flex-wrap gap-4 mt-6 text-xs font-semibold text-gray-500">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded-sm mr-1"></div>
+                                Available
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-purple-100 border border-purple-300 rounded-sm mr-1"></div>Brgy
+                                Event
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-red-100 border border-red-300 rounded-sm mr-1"></div>Booked
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Form -->
+                    <div class="glass-card p-6 flex flex-col justify-center">
+                        <h2 id="bookingFormHeading" class="text-2xl font-bold mb-6 text-center"
+                            style="color: var(--text-main);">Select a Date in the Calendar</h2>
+
+                        <form id="userBookingForm" class="hidden space-y-4">
+                            <input type="hidden" id="bookingDateInput">
+                            <input type="hidden" id="bookingVenueInput" value="basketball">
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Start
+                                        Time</label>
+                                    <input type="time" id="bookingTimeInput" required
+                                        class="w-full border-2 rounded-lg px-3 py-2 focus:border-blue-500 border-gray-200">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">End
+                                        Time</label>
+                                    <input type="time" id="bookingEndTimeInput" required
+                                        class="w-full border-2 rounded-lg px-3 py-2 focus:border-blue-500 border-gray-200">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1"
+                                    style="color: var(--text-muted);">Purpose</label>
+                                <textarea id="bookingPurposeInput" required
+                                    class="w-full border-2 rounded-lg px-3 py-2 h-20 resize-none border-gray-200"></textarea>
+                            </div>
+
+                            <div id="bookingConflictWarning"></div>
+
+                            <button type="submit" id="submitBookingBtn"
+                                class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition transform">
+                                Confirm Booking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- My Bookings History under calendar -->
+                <div class="glass-card p-6">
+                    <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">My Reservations</h3>
+                    <div id="myReservationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <p class="text-gray-500 italic">Loading reservations...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 5: COURT EVENTS -->
+            <div id="panel-events" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2">🎉 Upcoming Court Events</h2>
+                    <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
+                </div>
+
+                <div id="upcomingEventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Event Cards Rendered Here -->
+                    <p class="text-gray-500 italic col-span-full">Loading events...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Borrow Modal (for Equipment Panel) -->
+    <div id="borrowModal"
+        class="fixed inset-0 bg-black/50 z-[999] hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-2xl shadow-2xl relative">
+            <button onclick="document.getElementById('borrowModal').classList.add('hidden')"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+            <h3 class="text-xl font-bold mb-4" id="borrowModalTitle">Borrow Item</h3>
+            <form id="borrowForm" class="space-y-4">
+                <input type="hidden" id="borrowEquipmentId">
+                <input type="hidden" id="borrowEquipmentName">
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">Quantity Needed</label>
+                    <input type="number" id="borrowQty" min="1" required
+                        class="w-full border-2 rounded-lg px-3 py-2 border-gray-200">
+                    <p id="borrowMaxHelp" class="text-xs text-gray-500 mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">Date Needed</label>
+                    <input type="date" id="borrowDate" required
+                        class="w-full border-2 rounded-lg px-3 py-2 border-gray-200">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">Purpose</label>
+                    <textarea id="borrowPurpose" required
+                        class="w-full border-2 rounded-lg px-3 py-2 border-gray-200 resize-none h-20"></textarea>
+                </div>
+                <button type="submit"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow">Submit
+                    Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- UI Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/darkmode.js"></script>
+    <script>
+        // Check Authentication immediately
+        const user = getCurrentUser();
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize user info in UI
+        document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
+        document.getElementById('welcomeName').textContent = user.name || user.email.split('@')[0];
+        document.getElementById('userInitial').textContent = (user.name || user.email)[0].toUpperCase();
+
+        // Single Page Routing Logic
+        function showPanel(panelId) {
+            // Hide all panels
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            // Remove active from all nav links
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+
+            // Show targeted panel
+            document.getElementById(`panel-${panelId}`).classList.add('active');
+
+            // Highlight nav link (skip for settings/theme toggles which don't have ids starting with nav-)
+            const navLink = document.getElementById(`nav-${panelId}`);
+            if (navLink) navLink.classList.add('active');
+
+            // Trigger specific data loads based on panel to ensure fresh data
+            switch (panelId) {
+                case 'dashboard':
+                    loadDashboardStats();
+                    break;
+                case 'equipment':
+                    loadEquipmentView();
+                    break;
+                case 'concerns':
+                    loadConcernsView();
+                    break;
+                case 'booking':
+                    loadBookingView();
+                    break;
+                case 'events':
+                    loadEventsView();
+                    break;
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            logoutUser();
+        });
+
+        // ==========================================
+        // GLOBAL VARIABLES
+        // ==========================================
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let selectedDate = null;
+        let currentEquipId = null;
+        let selectedVenue = 'basketball';
+
+        // Helper: Custom Toast
+        function showToast(message, type = 'success') {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                document.body.appendChild(toast);
+            }
+            const colors = {
+                success: 'bg-emerald-500',
+                error: 'bg-red-500'
+            };
+            toast.className = `fixed bottom-4 right-4 ${colors[type] || 'bg-gray-800'} text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 z-[9999] opacity-0 transform translate-y-10`;
+            toast.textContent = message;
+
+            // Trigger reflow
+            void toast.offsetWidth;
+
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 3000);
+        }
+
+        // ==========================================
+        // 1. DASHBOARD OVERVIEW LOADERS
+        // ==========================================
+        async function loadDashboardStats() {
+            try {
+                const eqReqs = await getMyBorrowings();
+                const activeEq = eqReqs ? eqReqs.filter(b => b.status === 'pending' || b.status === 'approved').length : 0;
+                document.getElementById('stat-equipment').textContent = activeEq;
+
+                const concerns = await getMyConcerns();
+                const pendingConcerns = concerns ? concerns.filter(c => c.status === 'pending').length : 0;
+                document.getElementById('stat-concerns').textContent = pendingConcerns;
+
+                const bookingsRaw = await getCourtBookings();
+                const myBookings = bookingsRaw ? bookingsRaw.filter(b => b.userId === user.id && b.status !== 'cancelled') : [];
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const upcomingB = myBookings.filter(b => new Date(b.date) >= today).length;
+                document.getElementById('stat-bookings').textContent = upcomingB;
+            } catch (e) {
+                console.error("Error loading stats", e);
+            }
+        }
+
+        // ==========================================
+        // 2. EQUIPMENT VIEW LOADERS
+        // ==========================================
+        async function loadEquipmentView() {
+            const list = await getEquipment();
+            const grid = document.getElementById('equipmentList');
+            if (!list || list.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-6 text-center text-gray-500">No equipment available right now.</div>';
+            } else {
+                grid.innerHTML = list.map(item => {
+                    const pct = Math.round((item.available / item.quantity) * 100);
+                    let color = 'bg-emerald-500';
+                    if (pct < 50) color = 'bg-amber-500';
+                    if (pct < 25) color = 'bg-red-500';
+                    const ok = item.available > 0;
+
+                    return `
+                    <div class="border rounded-xl p-4 transition hover:border-emerald-300 bg-gray-50 dark:bg-gray-800" style="border-color: var(--border-color);">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-3xl">${item.icon}</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded-full ${ok ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">${item.available} / ${item.quantity} Left</span>
+                        </div>
+                        <h4 class="font-bold mb-1" style="color: var(--text-main);">${item.name}</h4>
+                        <p class="text-xs mb-3 h-8 overflow-hidden" style="color: var(--text-muted);">${item.description || ''}</p>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                            <div class="${color} h-1.5 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                        
+                        <button onclick="${ok ? `openBorrowModal(${item.id})` : ''}" class="w-full py-2 rounded-lg text-sm font-bold transition ${ok ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 cursor-pointer' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}" ${!ok ? 'disabled' : ''}>
+                            ${ok ? 'Borrow Request' : 'Out of Stock'}
+                        </button>
+                    </div>`;
+                }).join('');
+            }
+
+            // Also load User's history
+            loadMyBorrowingsList();
+        }
+
+        async function loadMyBorrowingsList() {
+            const list = await getMyBorrowings();
+            const container = document.getElementById('myBorrowingsList');
+            if (!list || list.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 italic py-4">You have not borrowed anything yet.</p>';
+                return;
+            }
+
+            const sorted = [...list].sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
+            container.innerHTML = sorted.map(b => {
+                let statusBadge = '';
+                if (b.status === 'pending') statusBadge = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-md text-xs font-bold">⏳ Pending</span>';
+                if (b.status === 'approved') statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-xs font-bold">✅ Approved</span>';
+                if (b.status === 'rejected') statusBadge = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded-md text-xs font-bold">❌ Rejected</span>';
+                if (b.status === 'returned') statusBadge = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-xs font-bold">📦 Returned</span>';
+
+                return `
+                <div class="border rounded-xl p-4 shadow-sm mb-3" style="background-color: var(--panel-bg); border-color: var(--border-color);">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-bold" style="color: var(--text-main);">${b.equipment} <span class="text-gray-500 font-normal">x${b.quantity}</span></h4>
+                            <p class="text-xs" style="color: var(--text-muted);">${formatDate(b.borrowDate)} to ${formatDate(b.returnDate)}</p>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    ${b.status === 'pending' ? `<button onclick="cancelEqRequest(${b.id})" class="text-xs text-red-500 hover:text-red-700 font-semibold mt-2">Cancel Request</button>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        async function openBorrowModal(equipId) {
+            const list = await getEquipment();
+            const item = list.find(e => e.id === equipId);
+            if (!item) return;
+            currentEquipId = equipId;
+
+            document.getElementById('borrowModalTitle').innerHTML = `Borrow ${item.name} ${item.icon}`;
+            document.getElementById('borrowEquipmentId').value = equipId;
+            document.getElementById('borrowEquipmentName').value = item.name;
+            document.getElementById('borrowMaxHelp').textContent = `Maximum quantity you can borrow is ${item.available}`;
+            document.getElementById('borrowQty').max = item.available;
+            document.getElementById('borrowQty').value = 1;
+            document.getElementById('borrowPurpose').value = '';
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('borrowDate').min = todayStr;
+            document.getElementById('borrowDate').value = todayStr;
+
+            document.getElementById('borrowModal').classList.remove('hidden');
+        }
+
+        document.getElementById('borrowForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
+            const qty = parseInt(document.getElementById('borrowQty').value);
+            const purpose = document.getElementById('borrowPurpose').value;
+            const borrowDate = document.getElementById('borrowDate').value;
+            const returnDate = document.getElementById('borrowDate').value; // Single date logic
+
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = 'Submitting...';
+
+            const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, purpose);
+            if (result.success) {
+                showToast(result.message, 'success');
+                document.getElementById('borrowModal').classList.add('hidden');
+                await loadEquipmentView();
+                await loadDashboardStats();
+            } else {
+                showToast(result.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = 'Submit Request';
+        });
+
+        async function cancelEqRequest(id) {
+            if (!confirm("Are you sure you want to cancel this equipment request?")) return;
+            const res = await cancelBorrowingRequest(id);
+            if (res.success) {
+                showToast(res.message, 'success');
+                loadEquipmentView();
+                loadDashboardStats();
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // 3. CONCERNS VIEW LOADERS
+        // ==========================================
+        async function loadConcernsView() {
+            const concerns = await getMyConcerns();
+            const container = document.getElementById('myConcernsList');
+
+            if (!concerns || concerns.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 italic py-4">You haven't submitted any concerns yet.</p>`;
+                return;
+            }
+
+            const sorted = [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            container.innerHTML = sorted.map(c => {
+                let statusBadge = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-md text-xs font-bold border border-amber-200">⏳ Pending</span>';
+                if (c.status === 'in-progress') statusBadge = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-xs font-bold border border-blue-200">🔄 In Progress</span>';
+                if (c.status === 'resolved') statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-xs font-bold border border-emerald-200">✅ Resolved</span>';
+                if (c.status === 'rejected') statusBadge = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded-md text-xs font-bold border border-red-200">❌ Rejected</span>';
+
+                return `
+                <div class="border rounded-xl p-5 shadow-sm transition hover:shadow-md" style="background-color: var(--panel-bg); border-color: var(--border-color);">
+                    <div class="flex justify-between items-start mb-3 border-b pb-3" style="border-color: var(--border-color);">
+                        <div>
+                            <h4 class="font-bold text-lg" style="color: var(--text-main);">${c.title}</h4>
+                            <div class="flex items-center gap-3 text-xs mt-1" style="color: var(--text-muted);">
+                                <span class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-700 dark:text-gray-300">${c.category}</span>
+                                <span>📅 ${formatDate(c.createdAt)}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            ${statusBadge}
+                            ${c.status === 'pending' ? `<button onclick="deleteMyConcern(${c.id})" class="text-xs text-red-500 hover:text-red-700 font-semibold bg-red-50 px-2 py-1 rounded">Delete</button>` : ''}
+                        </div>
+                    </div>
+                    <p class="text-sm mb-3 leading-relaxed" style="color: var(--text-main);">${c.description}</p>
+                    ${c.address ? `<p class="text-xs mb-3" style="color: var(--text-muted);">📍 Location: ${c.address}</p>` : ''}
+                    
+                    ${c.response ? `
+                    <div class="bg-emerald-50 dark:bg-[#0d2818] border-l-4 border-emerald-500 p-3 rounded-r-lg mt-3">
+                        <p class="text-xs font-bold text-emerald-700 mb-1">🏛️ Barangay Admin Response:</p>
+                        <p class="text-sm text-emerald-800">${c.response}</p>
+                    </div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        document.getElementById('concernForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = 'Submitting...';
+
+            const cat = document.getElementById('concernCategory').value;
+            const title = document.getElementById('concernTitle').value;
+            const desc = document.getElementById('concernDescription').value;
+            const loc = document.getElementById('concernLocation').value;
+
+            const res = await submitConcern(cat, title, desc, loc);
+            if (res.success) {
+                showToast('Concern successfully reported!', 'success');
+                this.reset();
+                await loadConcernsView();
+                await loadDashboardStats();
+            } else {
+                showToast(res.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = 'Submit Report';
+        });
+
+        async function deleteMyConcern(id) {
+            if (!confirm("Delete this concern?")) return;
+            const res = await deleteConcern(id);
+            if (res.success) {
+                showToast('Concern deleted');
+                loadConcernsView();
+                loadDashboardStats();
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // 4. BOOKING VIEW LOADERS (Calendar)
+        // ==========================================
+        function switchVenue(venue) {
+            selectedVenue = venue;
+            document.getElementById('sel-basketball').className = venue === 'basketball' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition' : 'px-5 py-2 rounded-lg font-bold text-sm text-gray-500 hover:text-gray-800 transition';
+            document.getElementById('sel-multipurpose').className = venue === 'multipurpose' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition' : 'px-5 py-2 rounded-lg font-bold text-sm text-gray-500 hover:text-gray-800 transition';
+
+            document.getElementById('bookingVenueInput').value = venue;
+            loadBookingView();
+        }
+
+        async function changeBookingMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth > 11) {
+                currentMonth = 0; currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11; currentYear--;
+            }
+            await loadBookingView();
+        }
+
+        async function loadBookingView() {
+            const grid = document.getElementById('bookingCalendarGrid');
+            const monthTitle = document.getElementById('calendarMonthTitle');
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            monthTitle.textContent = `${months[currentMonth]} ${currentYear}`;
+
+            const bookings = await getCourtBookings();
+            const events = await getEvents();
+            const approvedEvents = events.filter(e => e.status === 'approved');
+
+            const eventDates = {};
+            approvedEvents.forEach(e => { eventDates[e.date] = e; });
+
+            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue);
+            const bookedDates = venueBookings.map(b => b.date);
+
+            grid.innerHTML = '';
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dateObj = new Date(currentYear, currentMonth, day);
+                const hasEvent = eventDates[dateStr];
+
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'p-3 rounded-lg text-center cursor-pointer font-bold text-sm transition transform hover:scale-105 ';
+
+                if (dateObj < today) {
+                    dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed';
+                } else if (hasEvent) {
+                    dayDiv.className += 'bg-purple-100 text-purple-700 border-2 border-purple-300';
+                    dayDiv.title = `Event: ${hasEvent.title}`;
+                } else if (bookedDates.includes(dateStr)) {
+                    dayDiv.className += 'bg-red-100 text-red-700 border-2 border-red-300';
+                } else {
+                    dayDiv.className += 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200 dark:bg-emerald-900 dark:text-emerald-300 dark:border-emerald-700';
+                }
+
+                if (dateObj.getTime() === today.getTime()) {
+                    dayDiv.className += ' ring-2 ring-emerald-500 ring-offset-2';
+                }
+                if (selectedDate === dateStr) {
+                    dayDiv.className = dayDiv.className.replace('bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-200 bg-emerald-900 text-emerald-300 border-emerald-700 hover:bg-emerald-800', '');
+                    dayDiv.className += ' bg-blue-600 text-white shadow-md hover:scale-105';
+                }
+
+                dayDiv.textContent = day;
+                dayDiv.onclick = () => selectBookingDate(dateStr, hasEvent);
+                grid.appendChild(dayDiv);
+            }
+
+            // Render My Reservations list underneath
+            const myContainer = document.getElementById('myReservationsList');
+            const myBookings = bookings.filter(b => b.userId === user.id);
+            if (myBookings.length === 0) {
+                myContainer.innerHTML = '<p class="text-gray-500 italic py-4 col-span-full">You have no reservations.</p>';
+            } else {
+                myBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                myContainer.innerHTML = myBookings.map(b => {
+                    const statusClass = b.status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800';
+                    const statusText = b.status === 'cancelled' ? 'Cancelled' : 'Booked';
+                    return `
+                    <div class="border rounded-xl p-4 transition shadow-sm ${b.status === 'cancelled' ? 'opacity-60' : ''}" style="background-color: var(--panel-bg); border-color: var(--border-color);">
+                        <div class="flex justify-between mb-2 border-b pb-2" style="border-color: var(--border-color);">
+                            <h4 class="font-bold" style="color: var(--text-main);">📅 ${formatDate(b.date)}</h4>
+                            <span class="px-2 py-0.5 rounded text-xs font-bold ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="text-xs mb-1" style="color: var(--text-muted);">⏰ ${b.time} - ${b.end_time || ''}</p>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 font-bold mb-2">🏢 ${b.venueName}</p>
+                        <p class="text-xs italic" style="color: var(--text-muted);">Purpose: ${b.purpose}</p>
+                        ${b.status !== 'cancelled' ? `<button onclick="cancelMyReservation(${b.id})" class="mt-3 w-full py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded transition">Cancel Reservation</button>` : ''}
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        async function selectBookingDate(dateStr, eventOnDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
+
+            selectedDate = dateStr;
+            await loadBookingView(); // re-render calendar selections
+
+            document.getElementById('bookingFormHeading').innerHTML = `Book for <span class="text-blue-600">${formatDate(dateStr)}</span>`;
+            document.getElementById('userBookingForm').classList.remove('hidden');
+            document.getElementById('bookingDateInput').value = dateStr;
+
+            const submitBtn = document.getElementById('submitBookingBtn');
+            const warnBox = document.getElementById('bookingConflictWarning');
+
+            if (eventOnDate) {
+                warnBox.innerHTML = `
+                    <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded text-red-800 text-sm mb-4">
+                        <p class="font-bold">⛔ Unavailable</p>
+                        <p>There is an official barangay event: <strong>${eventOnDate.title}</strong></p>
+                        <p class="mt-1">You cannot book the court on this date to prevent conflicts.</p>
+                    </div>`;
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-500');
+                submitBtn.classList.remove('bg-gradient-to-r', 'from-blue-500', 'to-blue-600');
+                submitBtn.innerHTML = '🚫 Unavailable';
+            } else {
+                warnBox.innerHTML = '';
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-500');
+                submitBtn.classList.add('bg-gradient-to-r', 'from-blue-500', 'to-blue-600');
+                submitBtn.innerHTML = 'Confirm Booking';
+            }
+        }
+
+        document.getElementById('userBookingForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBookingBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Processing...';
+
+            const bookingData = {
+                date: document.getElementById('bookingDateInput').value,
+                time: document.getElementById('bookingTimeInput').value,
+                end_time: document.getElementById('bookingEndTimeInput').value,
+                purpose: document.getElementById('bookingPurposeInput').value,
+                venue: document.getElementById('bookingVenueInput').value,
+                venueName: document.getElementById('bookingVenueInput').value === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'
+            };
+
+            const result = await bookCourt(bookingData);
+            if (result.success) {
+                showToast(result.message, 'success');
+                this.reset();
+                this.classList.add('hidden');
+                document.getElementById('bookingFormHeading').innerHTML = 'Select a Date in the Calendar';
+                selectedDate = null;
+                await loadBookingView();
+                await loadDashboardStats();
+            } else {
+                showToast(result.message, 'error');
+            }
+            btn.disabled = false;
+            btn.innerHTML = 'Confirm Booking';
+        });
+
+        async function cancelMyReservation(id) {
+            if (!confirm("Are you sure you want to cancel this reservation?")) return;
+            const res = await cancelCourtBooking(id);
+            if (res.success) {
+                showToast("Reservation cancelled", 'success');
+                loadBookingView();
+                loadDashboardStats();
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // 5. COURT EVENTS LOADERS
+        // ==========================================
+        async function loadEventsView() {
+            const container = document.getElementById('upcomingEventsContainer');
+            const eventsRaw = await getEvents();
+            const events = eventsRaw.filter(e => e.status === 'approved');
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const upcoming = events.filter(e => new Date(e.date) >= today);
+
+            if (upcoming.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-10 text-center"><p class="text-gray-500">No upcoming events are currently scheduled.</p></div>';
+                return;
+            }
+
+            upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
+            container.innerHTML = upcoming.map(e => {
+                const timeStr = e.end_time ? `${e.time} - ${e.end_time}` : e.time;
+                return `
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-white text-purple-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span>
+                    </div>
+                    <h3 class="text-2xl font-black mb-1 line-clamp-2">${e.title}</h3>
+                    <p class="text-indigo-100 font-medium mb-4 text-sm flex items-center gap-1">📍 ${e.location}</p>
+                    
+                    <div class="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">📅</span>
+                            <span class="font-bold">${formatDate(e.date)}</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">⏰</span>
+                            <span class="font-bold">${timeStr}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">👤</span>
+                            <span class="text-sm">By ${e.organizer}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Initialize Default View
+        showPanel('dashboard');
+    </script>
+</body>
+
+</html>
