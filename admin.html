@@ -1728,7 +1728,11 @@
                     <label for="concernResponse">Response</label>
                     <textarea id="concernResponse" placeholder="Enter your response..." rows="3"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Response</button>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Response</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('concernModal')">Cancel / Back</button>
+                </div>
             </form>
         </div>
     </div>
@@ -1766,7 +1770,11 @@
                     <label for="eventOrganizer">Organizer</label>
                     <input type="text" id="eventOrganizer" placeholder="Organizer name" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('eventModal')">Cancel / Back</button>
+                </div>
             </form>
         </div>
     </div>
@@ -1794,7 +1802,11 @@
                     <label for="equipQuantity">Quantity</label>
                     <input type="number" id="equipQuantity" min="1" value="1" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('addEquipmentModal')">Cancel / Back</button>
+                </div>
             </form>
         </div>
     </div>
@@ -1833,7 +1845,11 @@
                     <input type="checkbox" id="editEquipArchived" style="width: 16px; margin: 0;">
                     <label for="editEquipArchived" style="margin: 0;">Archive this equipment</label>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('editEquipmentModal')">Cancel / Back</button>
+                </div>
             </form>
         </div>
     </div>
@@ -2526,12 +2542,13 @@
                     </div>
                 `;
                 document.getElementById('concernModal').classList.add('active');
+                history.pushState({ modal: 'concernModal' }, '', '#concernModal');
             }
         }
 
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', function (e) {
-                if (e.target === this) this.classList.remove('active');
+                if (e.target === this) closeModal(this.id);
             });
         });
 
@@ -2581,6 +2598,7 @@
             document.getElementById('eventForm').reset();
             document.getElementById('eventDate').min = new Date().toISOString().split('T')[0];
             document.getElementById('eventModal').classList.add('active');
+            history.pushState({ modal: 'eventModal' }, '', '#eventModal');
         }
 
         document.getElementById('eventForm').addEventListener('submit', async function (e) {
@@ -2663,6 +2681,7 @@
         function openAddEquipmentModal() {
             document.getElementById('addEquipmentForm').reset();
             document.getElementById('addEquipmentModal').classList.add('active');
+            history.pushState({ modal: 'addEquipmentModal' }, '', '#addEquipmentModal');
         }
 
         document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
@@ -2699,6 +2718,7 @@
             document.getElementById('editEquipArchived').checked = equipment.isArchived || false;
 
             document.getElementById('editEquipmentModal').classList.add('active');
+            history.pushState({ modal: 'editEquipmentModal' }, '', '#editEquipmentModal');
         }
 
         document.getElementById('editEquipmentForm').addEventListener('submit', async function (e) {
@@ -2724,8 +2744,25 @@
         });
 
         function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                if (window.location.hash === '#' + modalId) {
+                    history.back();
+                }
+            }
         }
+
+        window.addEventListener('popstate', function () {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if ('#' + modal.id !== window.location.hash) {
+                    modal.classList.remove('active');
+                }
+            });
+            if (window.location.hash && document.getElementById(window.location.hash.substring(1))) {
+                document.getElementById(window.location.hash.substring(1)).classList.add('active');
+            }
+        });
 
         // ==========================================
         // REPORT GENERATION & EXPORT
