@@ -1041,6 +1041,25 @@ async function createEvent(eventData) {
     }
 }
 
+async function editEvent(eventId, eventData) {
+    const supabaseAvailable = await isSupabaseAvailable();
+
+    if (supabaseAvailable) {
+        const { error } = await supabase.from('events').update(eventData).eq('id', eventId);
+        if (!error) await logActivity('Event Updated', `Updated event: ${eventData.title}`);
+        return { success: !error, message: error ? error.message : 'Event updated successfully' };
+    } else {
+        const events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+        const index = events.findIndex(e => e.id === eventId);
+        if (index === -1) return { success: false, message: 'Event not found' };
+
+        events[index] = { ...events[index], ...eventData };
+        localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
+        logActivity('Event Updated', `Updated event: ${eventData.title}`);
+        return { success: true, message: 'Event updated successfully' };
+    }
+}
+
 async function updateEventStatus(eventId, status) {
     const supabaseAvailable = await isSupabaseAvailable();
 

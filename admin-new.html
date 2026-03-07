@@ -1477,9 +1477,19 @@
                                 </form>
                                 <div id="adminBookingMessage" class="mt-4"></div>
 
-                                <!-- All Bookings List -->
-                                <h3 class="text-lg font-bold text-gray-800 mt-6 mb-3">📋 All Bookings</h3>
-                                <div id="adminAllBookingsList" class="space-y-2 max-h-64 overflow-y-auto"></div>
+                                <!-- All Bookings & Events List Container -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-800 mb-3 block">📋 Court Bookings</h3>
+                                        <div id="adminAllBookingsList" class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-800 mb-3 block">🎉 Barangay Events</h3>
+                                        <div id="adminAllEventsList" class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1503,11 +1513,41 @@
                     <div class="form-group"><label>Start Time</label><input type="time" id="eventTime" required></div>
                     <div class="form-group"><label>End Time</label><input type="time" id="eventEndTime"></div>
                 </div>
-                <div class="form-group"><label>Location</label><input type="text" id="eventLocation"></div>
+                <div class="form-group"><label>End Time</label><input type="time" id="eventEndTime"></div>
+        </div>
+        <div class="form-group"><label>Location</label><input type="text" id="eventLocation"></div>
+        <div class="form-row" style="margin-top: 16px;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+            <button type="button" class="btn btn-danger" style="width: 100%;" onclick="closeModal('eventModal')">Cancel
+                / Back</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Court Event</h3><button class="modal-close"
+                    onclick="closeModal('editEventModal')">&times;</button>
+            </div>
+            <form id="editEventForm">
+                <input type="hidden" id="editEventId">
+                <div class="form-group"><label>Event Title</label><input type="text" id="editEventTitle" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="editEventDate" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Start Time</label><input type="time" id="editEventTime" required>
+                    </div>
+                    <div class="form-group"><label>End Time</label><input type="time" id="editEventEndTime"></div>
+                </div>
+                <div class="form-group"><label>Location</label><input type="text" id="editEventLocation"></div>
                 <div class="form-row" style="margin-top: 16px;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
                     <button type="button" class="btn btn-danger" style="width: 100%;"
-                        onclick="closeModal('eventModal')">Cancel / Back</button>
+                        onclick="closeModal('editEventModal')">Cancel / Back</button>
                 </div>
             </form>
         </div>
@@ -1844,6 +1884,54 @@
             }
         });
 
+        async function openEditEventModal(eventId) {
+            const events = await getEvents();
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                document.getElementById('editEventId').value = eventId;
+                document.getElementById('editEventTitle').value = event.title;
+                document.getElementById('editEventDate').value = event.date;
+                document.getElementById('editEventTime').value = event.time;
+                document.getElementById('editEventEndTime').value = event.end_time || '';
+                document.getElementById('editEventLocation').value = event.location || '';
+
+                document.getElementById('editEventModal').classList.add('active');
+                history.pushState({ modal: 'editEventModal' }, '', '#editEventModal');
+            }
+        }
+
+        document.getElementById('editEventForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const eventId = parseInt(document.getElementById('editEventId').value);
+            const result = await editEvent(eventId, {
+                title: document.getElementById('editEventTitle').value,
+                date: document.getElementById('editEventDate').value,
+                time: document.getElementById('editEventTime').value,
+                end_time: document.getElementById('editEventEndTime').value || null,
+                location: document.getElementById('editEventLocation').value || 'TBD'
+            });
+
+            if (result.success !== false) {
+                alert('Event updated successfully!');
+                closeModal('editEventModal');
+                await loadEvents();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        });
+
+        async function handleDeleteEvent(id) {
+            if (confirm('Delete this event?')) {
+                const result = await deleteEvent(id);
+                if (result.success !== false) {
+                    alert('Event deleted successfully');
+                    await loadEvents();
+                } else {
+                    alert(result.message || 'Failed to delete event');
+                }
+            }
+        }
+
         // Approve Request
         async function approveRequest(id) {
             if (confirm('Approve this equipment request?')) {
@@ -2031,6 +2119,30 @@
                 }
 
                 grid.appendChild(dayElement);
+            }
+
+            // Render Events List
+            const eventsListContainer = document.getElementById('adminAllEventsList');
+            if (approvedEvents.length === 0) {
+                eventsListContainer.innerHTML = '<div class="text-gray-500 text-sm italic py-2">No upcoming events.</div>';
+            } else {
+                // Sort by date (ascending)
+                const sortedEvents = [...approvedEvents].sort((a, b) => new Date(a.date) - new Date(b.date));
+                eventsListContainer.innerHTML = sortedEvents.map(e => `
+                    <div class="border rounded-lg p-3 hover:bg-gray-50 transition border-l-4 border-purple-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-gray-800">${e.title}</h4>
+                                <p class="text-xs text-gray-500 mt-1">🕒 ${e.date} | ${e.time}${e.end_time ? ' - ' + e.end_time : ''}</p>
+                                <p class="text-xs text-gray-500">📍 ${e.location}</p>
+                            </div>
+                            <div class="flex gap-1 flex-col">
+                                <button onclick="openEditEventModal(${e.id})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-2 rounded transition">Edit</button>
+                                <button onclick="handleDeleteEvent(${e.id})" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded transition">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
 

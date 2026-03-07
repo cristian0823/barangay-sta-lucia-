@@ -1779,6 +1779,49 @@
         </div>
     </div>
 
+    <div class="modal" id="editEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Court Event</h3>
+                <button class="modal-close" onclick="closeModal('editEventModal')">&times;</button>
+            </div>
+            <form id="editEventForm">
+                <input type="hidden" id="editEventId">
+                <div class="form-group">
+                    <label for="editEventTitle">Event Title</label>
+                    <input type="text" id="editEventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEventDate">Date</label>
+                    <input type="date" id="editEventDate" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editEventTime">Start Time</label>
+                        <input type="time" id="editEventTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEventEndTime">End Time</label>
+                        <input type="time" id="editEventEndTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editEventLocation">Location</label>
+                    <input type="text" id="editEventLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEventOrganizer">Organizer</label>
+                    <input type="text" id="editEventOrganizer" required>
+                </div>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('editEventModal')">Cancel / Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="modal" id="addEquipmentModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2587,8 +2630,12 @@
                         <div class="event-time">${e.date} - ${e.time}${e.end_time ? ' to ' + e.end_time : ''}</div>
                         ${e.status === 'pending' ? `
                             <button class="btn btn-smaller btn-primary" onclick="approveEvent(${e.id})">Approve</button>
-                            <button class="btn btn-smaller btn-danger" onclick="deleteEvent(${e.id})">Delete</button>
-                        ` : getStatusBadge(e.status)}
+                            <button class="btn btn-smaller btn-danger" onclick="handleDeleteEvent(${e.id})">Delete</button>
+                        ` : `
+                            ${getStatusBadge(e.status)}
+                            <button class="btn btn-smaller btn-secondary" onclick="openEditEventModal(${e.id})" style="margin-left: 8px;">Edit</button>
+                            <button class="btn btn-smaller btn-danger" onclick="handleDeleteEvent(${e.id})" style="margin-left: 4px;">Delete</button>
+                        `}
                     </div>
                 </div>
             `).join('');
@@ -2618,6 +2665,44 @@
             }
         });
 
+        async function openEditEventModal(eventId) {
+            const events = await getEvents();
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                document.getElementById('editEventId').value = eventId;
+                document.getElementById('editEventTitle').value = event.title;
+                document.getElementById('editEventDate').value = event.date;
+                document.getElementById('editEventTime').value = event.time;
+                document.getElementById('editEventEndTime').value = event.end_time || '';
+                document.getElementById('editEventLocation').value = event.location || '';
+                document.getElementById('editEventOrganizer').value = event.organizer || '';
+
+                document.getElementById('editEventModal').classList.add('active');
+                history.pushState({ modal: 'editEventModal' }, '', '#editEventModal');
+            }
+        }
+
+        document.getElementById('editEventForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const eventId = parseInt(document.getElementById('editEventId').value);
+            const result = await editEvent(eventId, {
+                title: document.getElementById('editEventTitle').value,
+                date: document.getElementById('editEventDate').value,
+                time: document.getElementById('editEventTime').value,
+                end_time: document.getElementById('editEventEndTime').value,
+                location: document.getElementById('editEventLocation').value,
+                organizer: document.getElementById('editEventOrganizer').value
+            });
+
+            if (result.success !== false) {
+                showAlert('Event updated successfully', 'success');
+                closeModal('editEventModal');
+                await loadEvents();
+            } else {
+                showAlert(result.message || 'Error updating event', 'error');
+            }
+        });
+
         async function approveEvent(id) {
             if (await updateEventStatus(id, 'approved')) {
                 showAlert('Event approved', 'success');
@@ -2626,20 +2711,14 @@
             }
         }
 
-        async function deleteEvent(id) {
+        async function handleDeleteEvent(id) {
             if (confirm('Delete this event?')) {
-                if (typeof window.deleteEvent === 'function') {
-                    const result = await window.deleteEvent(id);
-                    if (result.success) {
-                        showAlert('Event deleted', 'success');
-                        await loadEvents();
-                    } else {
-                        showAlert(result.message, 'error');
-                    }
-                } else {
-                    await supabase.from('events').delete().eq('id', id);
+                const result = await deleteEvent(id);
+                if (result.success !== false) { // Handle both explicit false and undefined success cases
                     showAlert('Event deleted', 'success');
                     await loadEvents();
+                } else {
+                    showAlert(result.message || 'Failed to delete event', 'error');
                 }
             }
         }
