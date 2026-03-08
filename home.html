@@ -1285,53 +1285,85 @@
         </div>
     </div>
 
-    <!-- Court Booking Modal -->
+    <!-- Premium Court Booking Modal -->
     <div class="modal-overlay" id="bookingModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="bookingDateTitle" style="font-size: 20px; font-weight: 800; color: var(--primary-900);">Book
-                    Date</h3>
-                <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+        <div class="modal-content" style="padding: 0;">
+            <div
+                style="background: linear-gradient(135deg, var(--primary-600), var(--primary-800)); padding: 32px 32px 24px; color: white; position: relative;">
+                <button class="modal-close" onclick="closeBookingModal()"
+                    style="color: white; top: 16px; right: 16px; background: rgba(255,255,255,0.2); width: 32px; height: 32px; border-radius: 50%;">&times;</button>
+                <div
+                    style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; backdrop-filter: blur(4px);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 2v4" />
+                        <path d="M16 2v4" />
+                        <rect width="18" height="18" x="3" y="4" rx="2" />
+                        <path d="M3 10h18" />
+                        <path d="M8 14h.01" />
+                        <path d="M12 14h.01" />
+                        <path d="M16 14h.01" />
+                        <path d="M8 18h.01" />
+                        <path d="M12 18h.01" />
+                        <path d="M16 18h.01" />
+                    </svg>
+                </div>
+                <h3 id="bookingDateTitle" style="font-size: 24px; font-weight: 800; margin-bottom: 4px; color: white;">
+                    Book Court</h3>
+                <p style="font-size: 14px; opacity: 0.9; font-weight: 500;">Secure your preferred schedule instantly.
+                </p>
             </div>
-            <div id="bookingMsg"></div>
-            <form id="courtBookForm" class="concern-form">
-                <input type="hidden" id="cbDate">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Start Time</label>
-                        <select id="cbStartTime" class="form-control" required>
-                            <option value="">-- Choose --</option>
-                            <option value="6:00 AM">6:00 AM</option>
-                            <option value="8:00 AM">8:00 AM</option>
-                            <option value="10:00 AM">10:00 AM</option>
-                            <option value="12:00 PM">12:00 PM</option>
-                            <option value="2:00 PM">2:00 PM</option>
-                            <option value="4:00 PM">4:00 PM</option>
-                            <option value="6:00 PM">6:00 PM</option>
-                            <option value="8:00 PM">8:00 PM</option>
-                        </select>
+
+            <div style="padding: 32px;">
+                <div id="bookingMsg"></div>
+                <form id="courtBookForm" class="concern-form"
+                    style="padding: 0; border: none; box-shadow: none; background: transparent;">
+                    <input type="hidden" id="cbDate">
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Reserved By</label>
+                        <input type="text" id="cbName" class="form-control" required placeholder="Full Name">
                     </div>
-                    <div class="form-group">
-                        <label>End Time</label>
-                        <select id="cbEndTime" class="form-control" required>
-                            <option value="">-- Choose --</option>
-                            <option value="8:00 AM">8:00 AM</option>
-                            <option value="10:00 AM">10:00 AM</option>
-                            <option value="12:00 PM">12:00 PM</option>
-                            <option value="2:00 PM">2:00 PM</option>
-                            <option value="4:00 PM">4:00 PM</option>
-                            <option value="6:00 PM">6:00 PM</option>
-                            <option value="8:00 PM">8:00 PM</option>
-                            <option value="10:00 PM">10:00 PM</option>
-                        </select>
+
+                    <div class="form-grid" style="gap: 16px;">
+                        <div class="form-group">
+                            <label>Start Time</label>
+                            <select id="cbStartTime" class="form-control" required>
+                                <option value="">-- Choose --</option>
+                                <option value="6:00 AM">6:00 AM</option>
+                                <option value="8:00 AM">8:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="2:00 PM">2:00 PM</option>
+                                <option value="4:00 PM">4:00 PM</option>
+                                <option value="6:00 PM">6:00 PM</option>
+                                <option value="8:00 PM">8:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>End Time</label>
+                            <select id="cbEndTime" class="form-control" required>
+                                <option value="">-- Choose --</option>
+                                <option value="8:00 AM">8:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="2:00 PM">2:00 PM</option>
+                                <option value="4:00 PM">4:00 PM</option>
+                                <option value="6:00 PM">6:00 PM</option>
+                                <option value="8:00 PM">8:00 PM</option>
+                                <option value="10:00 PM">10:00 PM</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Purpose</label>
-                    <input type="text" id="cbPurpose" class="form-control" required placeholder="e.g. Liga Practice">
-                </div>
-                <button type="submit" class="btn-submit" id="cbSubmitBtn" style="width: 100%;">Submit Booking</button>
-            </form>
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label>Purpose of Booking</label>
+                        <input type="text" id="cbPurpose" class="form-control" required
+                            placeholder="e.g. Liga Practice or Birthday Setup">
+                    </div>
+                    <button type="submit" class="btn-submit" id="cbSubmitBtn"
+                        style="width: 100%; margin-top: 8px;">Confirm Booking</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1521,8 +1553,16 @@
             const evt = allEvents.find(e => e.status === 'approved' && e.date === dateStr);
 
             document.getElementById('bookingModal').classList.add('active');
-            document.getElementById('bookingDateTitle').textContent = 'Book for ' + dateStr;
+
+            // Format date string beautifully (e.g. March 12, 2026)
+            const dateFmt = new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('bookingDateTitle').textContent = dateFmt;
             document.getElementById('cbDate').value = dateStr;
+
+            // Auto-fill the Name field
+            if (window.user && window.user.fullName) {
+                document.getElementById('cbName').value = window.user.fullName;
+            }
 
             const btn = document.getElementById('cbSubmitBtn');
             const msg = document.getElementById('bookingMsg');
@@ -1553,6 +1593,7 @@
             const end_time = document.getElementById('cbEndTime').value;
             const purpose = document.getElementById('cbPurpose').value;
             const venue = document.getElementById('currentVenue').value;
+            const bookedForName = document.getElementById('cbName').value || user.fullName;
 
             const startTimeObj = new Date(`1970-01-01T${time}`);
             const endTimeObj = new Date(`1970-01-01T${end_time}`);
@@ -1562,7 +1603,7 @@
             }
 
             const result = await bookCourt({
-                user_id: user.id, username: user.username,
+                user_id: user.id, username: bookedForName,
                 date, time, end_time, venue, purpose, status: 'pending'
             });
 
