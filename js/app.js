@@ -230,7 +230,10 @@ async function loginUser(username, password, rememberMe = false) {
     // Local fallback authentication (executes if Supabase is unavailable OR if Supabase login fails)
     initializeLocalUsers();
     const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
-    const user = users.find(u => u.username === username && u.password === password);
+
+    // Map legacy 'admin' handle to 'admin1' to prevent lockout
+    const searchUsername = username === 'admin' ? 'admin1' : username;
+    const user = users.find(u => u.username === searchUsername && u.password === password);
 
     if (user) {
         const sessionData = {
