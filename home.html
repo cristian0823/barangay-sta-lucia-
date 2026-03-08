@@ -1655,10 +1655,18 @@
             c.innerHTML = equipment.map(item => {
                 const pct = Math.round((item.available / item.quantity) * 100);
                 const fc = pct > 50 ? 'pf-green' : pct > 25 ? 'pf-yellow' : 'pf-red';
+
+                let iconHtml = item.icon;
+                if (item.name === 'Tables') {
+                    iconHtml = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-500);"><path d="M4 6v14"/><path d="M20 6v14"/><path d="M2 6h20v4H2z"/></svg>';
+                } else if (item.name === 'Ladder') {
+                    iconHtml = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-500);"><path d="M6 3v18"/><path d="M18 3v18"/><path d="M6 7h12"/><path d="M6 12h12"/><path d="M6 17h12"/></svg>';
+                }
+
                 return `<div class="equip-card">
                     <div class="equip-top">
                         <div class="equip-left">
-                            <span class="equip-emoji">${item.icon}</span>
+                            <span class="equip-emoji">${iconHtml}</span>
                             <div><div class="equip-name">${item.name}</div><div class="equip-desc">${item.description}</div></div>
                         </div>
                         <span class="equip-count">${item.available}/${item.quantity}</span>
