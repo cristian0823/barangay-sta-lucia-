@@ -1010,6 +1010,55 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Toast & Dark Mode */
+        .btn-dark-toggle {
+            padding: 7px 12px;
+            width: 44px;
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 9px;
+            border: 1.5px solid #d1d5db;
+            background: transparent;
+            color: #6b7280;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .btn-dark-toggle:hover {
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateY(80px);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        #toast.success {
+            background: #10b981;
+            color: #fff;
+        }
+
+        #toast.error {
+            background: #ef4444;
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -1031,6 +1080,8 @@
                 </div>
                 <div class="user-avatar" id="userAvatar">A</div>
             </div>
+            <button class="btn-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
+                title="Toggle Dark Mode">🌙</button>
             <button class="btn" onclick="window.location.href='admin-settings.html'">⚙️ Settings</button>
             <button class="btn" onclick="logoutUser()">Logout</button>
         </div>
@@ -1085,6 +1136,11 @@
             <button class="nav-item" data-panel="court-events">
                 <div class="nav-icon">📅</div>
                 <span>Court Events</span>
+            </button>
+
+            <button class="nav-item" data-panel="activity-log">
+                <div class="nav-icon">📝</div>
+                <span>Activity Log</span>
             </button>
         </aside>
 
@@ -1494,7 +1550,53 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- ACTIVITY LOG PANEL -->
+                <div id="activity-log" class="content-panel">
+                    <div class="panel-header">
+                        <h1>📝 Activity Log</h1>
+                        <p>Track administrator and system activities across the platform</p>
+                    </div>
+
+                    <div class="section-container">
+                        <div class="section-header"
+                            style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+                            <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600; color: #1f2937;">System
+                                Activities</h3>
+                            <button class="btn" style="background:#e5e7eb; color:#374151; font-weight: 600;"
+                                onclick="loadActivityLog()">🔄 Refresh</button>
+                        </div>
+                        <div class="section-content" style="padding: 0;">
+                            <div class="table-responsive">
+                                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr
+                                            style="background: #f9fafb; border-bottom: 2px solid #e5e7eb; text-align: left;">
+                                            <th
+                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
+                                                Date &amp; Time</th>
+                                            <th
+                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
+                                                Admin</th>
+                                            <th
+                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
+                                                Action</th>
+                                            <th
+                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
+                                                Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activityLogTable"></tbody>
+                                </table>
+                                <div id="noActivityLog" class="empty-state"
+                                    style="display:none; text-align:center; padding: 40px;">
+                                    <div style="font-size:40px; margin-bottom:12px;">📝</div>
+                                    <p style="color: #6b7280;">No activity recorded yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </main>
     </div>
 
@@ -1595,6 +1697,8 @@
         </div>
     </div>
 
+    <div id="toast"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
@@ -1612,6 +1716,11 @@
                 // Show the selected panel
                 const panelId = this.getAttribute('data-panel');
                 document.getElementById(panelId).classList.add('active');
+
+                // Trigger data fetch for activity log
+                if (panelId === 'activity-log' && typeof loadActivityLog === 'function') {
+                    loadActivityLog();
+                }
             });
         });
 
@@ -1875,12 +1984,12 @@
 
             const result = await createEvent(eventData);
             if (result.success) {
-                alert('Event created successfully!');
+                showToast('Event created successfully!', 'success');
                 closeModal('eventModal');
                 document.getElementById('eventForm').reset();
                 await loadEvents();
             } else {
-                alert('Error: ' + result.message);
+                showToast('Error: ' + result.message, 'error');
             }
         });
 
@@ -1912,11 +2021,11 @@
             });
 
             if (result.success !== false) {
-                alert('Event updated successfully!');
+                showToast('Event updated successfully!', 'success');
                 closeModal('editEventModal');
                 await loadEvents();
             } else {
-                alert('Error: ' + result.message);
+                showToast('Error: ' + result.message, 'error');
             }
         });
 
@@ -1924,10 +2033,10 @@
             if (confirm('Delete this event?')) {
                 const result = await deleteEvent(id);
                 if (result.success !== false) {
-                    alert('Event deleted successfully');
+                    showToast('Event deleted successfully', 'success');
                     await loadEvents();
                 } else {
-                    alert(result.message || 'Failed to delete event');
+                    showToast(result.message || 'Failed to delete event', 'error');
                 }
             }
         }
@@ -2189,6 +2298,94 @@
             document.getElementById('adminSidebarEventEndTime').value = '';
             document.getElementById('adminSidebarEventOrganizer').value = '';
         }
+
+        function showToast(message, type = 'success') {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.className = type;
+            t.textContent = message;
+            t.style.transform = 'translateY(0)';
+            setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
+        }
+
+        // Sidebar Booking Form Handler
+        document.getElementById('adminBookingForm')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const date = document.getElementById('adminBookingDate').value;
+            const time = document.getElementById('adminBookingTime').value;
+            const end_time = document.getElementById('adminBookingEndTime').value;
+            const purpose = document.getElementById('adminBookingPurpose').value;
+
+            if (!date || !time || !end_time || !purpose) {
+                showToast("Please fill all booking fields.", "error");
+                return;
+            }
+
+            const startTimeObj = new Date(`1970-01-01T${time}`);
+            const endTimeObj = new Date(`1970-01-01T${end_time}`);
+            if (endTimeObj <= startTimeObj) {
+                showToast('End time must be after start time', 'error');
+                return;
+            }
+
+            const venue = document.getElementById('adminSelectedVenue') ? document.getElementById('adminSelectedVenue').value : 'basketball';
+
+            const result = await bookCourt({
+                user_id: window.currentUser ? window.currentUser.id : Date.now(),
+                username: window.currentUser ? window.currentUser.username : 'admin',
+                date,
+                time,
+                end_time,
+                venue,
+                purpose,
+                status: 'approved'
+            });
+
+            if (result.success) {
+                showToast("Booking created successfully!", "success");
+                adminHideBookingForm();
+                if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                if (typeof renderAdminAllBookings === 'function') renderAdminAllBookings();
+                if (typeof loadAllData === 'function') loadAllData();
+            } else {
+                showToast(result.message || "Error creating booking", "error");
+            }
+        });
+
+        // Sidebar Event Form Handler
+        document.getElementById('adminSidebarEventForm')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const title = document.getElementById('adminSidebarEventTitle').value;
+            const date = document.getElementById('adminSidebarEventDate').value;
+            const time = document.getElementById('adminSidebarEventTime').value;
+            const end_time = document.getElementById('adminSidebarEventEndTime').value;
+            const location = document.getElementById('adminSidebarEventLocation') ? document.getElementById('adminSidebarEventLocation').value : 'Barangay Multi-Purpose Hall';
+            const organizer = document.getElementById('adminSidebarEventOrganizer') ? document.getElementById('adminSidebarEventOrganizer').value : 'Barangay Office';
+
+            if (!title || !date || !time) {
+                showToast("Please fill all required event fields.", "error");
+                return;
+            }
+
+            const result = await createEvent({
+                title,
+                date,
+                time,
+                end_time,
+                location,
+                organizer,
+                status: 'approved'
+            });
+
+            if (result.success) {
+                showToast("Event created successfully!", "success");
+                adminHideEventForm();
+                if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                if (typeof loadAllData === 'function') loadAllData();
+            } else {
+                showToast(result.message || "Error creating event", "error");
+            }
+        });
 
         // Update quick stats in sidebar
         async function updateQuickStats(data) {

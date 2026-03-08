@@ -213,6 +213,10 @@ async function loginUser(username, password, rememberMe = false) {
             } else {
                 sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
             }
+
+            // Log the activity
+            logActivity('Login', `User logged in: ${sessionData.username}`);
+
             return { success: true, user: sessionData };
         }
 
@@ -238,6 +242,10 @@ async function loginUser(username, password, rememberMe = false) {
             } else {
                 sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
             }
+
+            // Log the activity
+            logActivity('Login', `User logged in: ${sessionData.username}`);
+
             return { success: true, user: sessionData };
         }
     }
@@ -919,6 +927,7 @@ async function approveCourtBooking(bookingId) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('court_bookings').update({ status: 'approved' }).eq('id', bookingId);
+        if (!error) await logActivity('Booking Approved', `Approved court booking ID: ${bookingId}`);
         return { success: !error, message: error ? error.message : 'Court booking approved' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -926,6 +935,7 @@ async function approveCourtBooking(bookingId) {
         if (index === -1) return { success: false, message: 'Booking not found' };
         bookings[index].status = 'approved';
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        logActivity('Booking Approved', `Approved court booking ID: ${bookingId}`);
         return { success: true, message: 'Court booking approved' };
     }
 }
@@ -936,6 +946,7 @@ async function rejectCourtBooking(bookingId) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { error } = await supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+        if (!error) await logActivity('Booking Rejected', `Rejected court booking ID: ${bookingId}`);
         return { success: !error, message: error ? error.message : 'Court booking rejected and cancelled' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -943,6 +954,7 @@ async function rejectCourtBooking(bookingId) {
         if (index === -1) return { success: false, message: 'Booking not found' };
         bookings[index].status = 'cancelled';
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        logActivity('Booking Rejected', `Rejected court booking ID: ${bookingId}`);
         return { success: true, message: 'Court booking rejected and cancelled' };
     }
 }
@@ -986,6 +998,7 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
 
     if (supabaseAvailable) {
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
+        if (!error) await logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status}`);
         return !error;
     } else {
         const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
@@ -995,6 +1008,7 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
         concerns[index].response = response;
         if (assignedTo !== undefined) concerns[index].assignedTo = assignedTo;
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
+        logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status}`);
         return true;
     }
 }
@@ -1080,6 +1094,7 @@ async function addEquipment(payload) {
 
     if (supabaseAvailable) {
         const { error } = await supabase.from('equipment').insert([payload]);
+        if (!error) await logActivity('Equipment Added', `Added equipment: ${payload.name} (Qty: ${payload.quantity})`);
         return { success: !error, message: error ? error.message : 'Equipment added' };
     } else {
         initializeLocalEquipment();
@@ -1090,6 +1105,7 @@ async function addEquipment(payload) {
         };
         equipment.push(newEquipment);
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        logActivity('Equipment Added', `Added equipment: ${payload.name} (Qty: ${payload.quantity})`);
         return { success: true, message: 'Equipment added' };
     }
 }

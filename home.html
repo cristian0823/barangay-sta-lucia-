@@ -1,127 +1,1017 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard - Barangay Sta. Lucia</title>
+    <title>Admin Dashboard - Barangay Sta. Lucia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-xl: #047857;
+            --primary-50: #f0fdf4;
+            --primary-100: #dcfce7;
+            --primary-200: #bbf7d0;
+            --text: #1a2e1f;
+            --text-secondary: #4b5563;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --surface: #fff;
+            --bg: #f0fdf4;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --warning-bg: #fffbeb;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --transition: all 0.25s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --green: #10b981;
-            --green-dark: #059669;
-            --green-light: #d1fae5;
-            --bg: #f0fdf4;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
         }
 
-        [data-theme="dark"] {
-            --green: #10b981;
-            --green-dark: #059669;
-            --green-light: #14532d;
-            --bg: #022c22;
+        /* HEADER */
+        .dashboard-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--primary-200);
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
         }
 
-        [data-theme="dark"] body {
-            background: #022c22;
-            color: #f1f5f9;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        [data-theme="dark"] .top-nav {
-            background: #064e3b;
-            border-color: #14532d;
-            box-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+        .header-logo {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-200);
+            object-fit: cover;
         }
 
-        [data-theme="dark"] .bottom-nav {
-            background: #064e3b;
-            border-color: #14532d;
+        .header-brand {
+            display: flex;
+            flex-direction: column;
         }
 
-        [data-theme="dark"] .bottom-nav .bnav-item {
-            color: #a7f3d0;
+        .header-brand .brand {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-xl);
         }
 
-        [data-theme="dark"] .card,
-        [data-theme="dark"] .list-item {
-            background: #064e3b;
-            border-color: #14532d;
+        .header-brand .subtitle {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
-        [data-theme="dark"] .stat-card {
-            background: #064e3b;
-            border-color: #14532d;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        [data-theme="dark"] .action-card {
-            background: #064e3b;
-            border-color: #14532d;
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 16px;
+            border-right: 1px solid var(--border);
         }
 
-        [data-theme="dark"] .action-card h4 {
-            color: #f1f5f9;
+        .user-info {
+            text-align: right;
         }
 
-        [data-theme="dark"] .action-card p {
-            color: #a7f3d0;
+        .user-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
         }
 
-        [data-theme="dark"] .panel {
-            background: #064e3b;
-            border-color: #14532d;
+        .user-role {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        [data-theme="dark"] .panel-header {
-            border-color: #14532d;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            border: 3px solid var(--primary-200);
         }
 
-        [data-theme="dark"] .panel-header h3 {
-            color: #f1f5f9;
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-family: inherit;
         }
 
-        [data-theme="dark"] .welcome-banner {
-            background: linear-gradient(135deg, #064e3b, #065f46);
+        .btn:hover {
+            border-color: var(--primary-200);
+            color: var(--primary-xl);
         }
 
-        [data-theme="dark"] .section-title {
-            color: #f1f5f9;
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        [data-theme="dark"] .nav-brand span {
-            color: #f1f5f9;
+        .btn-primary:hover {
+            background: var(--primary-dark);
         }
 
-        [data-theme="dark"] .user-info-block .uname {
-            color: #f1f5f9;
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #fecaca;
         }
 
-        [data-theme="dark"] input,
-        [data-theme="dark"] select,
-        [data-theme="dark"] textarea {
-            background: #0d2818;
-            color: #f1f5f9;
-            border-color: #14532d;
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
         }
 
-        [data-theme="dark"] .calendar-day {
-            color: #f1f5f9;
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
         }
 
-        [data-theme="dark"] .tab-btn {
-            color: #a7f3d0;
-            border-color: #14532d;
+        /* MAIN LAYOUT - Sidebar + Content */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
         }
 
-        [data-theme="dark"] .tab-btn.active {
-            color: #10b981;
-            border-color: #10b981;
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
         }
 
+        .sidebar-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-50);
+            color: var(--primary-xl);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-item.active .nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: var(--primary-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover .nav-icon {
+            background: var(--primary-200);
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex: 1;
+            padding: 28px;
+            overflow-y: auto;
+        }
+
+        /* CONTENT PANELS */
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            margin-bottom: 24px;
+        }
+
+        .panel-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-xl);
+            margin-bottom: 6px;
+        }
+
+        .panel-header p {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-200);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: var(--primary-50);
+            border: 1.5px solid var(--primary-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-content h3 {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-xl);
+        }
+
+        /* SECTION CARDS */
+        .section-container {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, var(--surface), var(--primary-50));
+        }
+
+        .section-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-xl);
+        }
+
+        .section-content {
+            padding: 20px 24px;
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            background: var(--bg);
+        }
+
+        tr:hover td {
+            background: var(--primary-50);
+        }
+
+        /* STATUS */
+        .status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-returned {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .card-body p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .card-body strong {
+            color: var(--text);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* FORMS */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-xl);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        /* Calendar styles */
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+
+        .calendar-day.booked {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .calendar-day.today {
+            border: 3px solid #22c55e;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Advanced Calendar styles */
+        .calendar-container {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(16, 185, 129, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--primary-200);
+        }
+
+        .calendar-month-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary-xl);
+            background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
+            padding: 14px 28px;
+            border-radius: 16px;
+            box-shadow:
+                inset 0 2px 4px rgba(255, 255, 255, 0.8),
+                0 4px 12px rgba(16, 185, 129, 0.2);
+            border: 2px solid var(--primary-200);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calendar-nav button {
+            padding: 12px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calendar-nav .prev-btn {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            box-shadow:
+                0 6px 20px rgba(14, 165, 233, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-nav .next-btn {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            box-shadow:
+                0 6px 20px rgba(14, 165, 233, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-nav button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow:
+                0 10px 30px rgba(14, 165, 233, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 800;
+            color: var(--primary-xl);
+            font-size: 12px;
+            padding: 14px 0;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
+            border-radius: 12px;
+            border: 2px solid var(--primary-200);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+        }
+
+        .calendar-day {
+            aspect-ratio: 1.1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10px;
+            padding: 12px 8px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+            font-weight: 700;
+            color: #374151;
+            background: linear-gradient(145deg, #ffffff, #f3f4f6);
+            border: 2px solid transparent;
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-day::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+            transition: var(--transition);
+        }
+
+        .calendar-day:hover {
+            transform: translateY(-4px) scale(1.05);
+            border-color: var(--primary-300);
+            box-shadow:
+                0 12px 32px rgba(16, 185, 129, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .calendar-day:hover::before {
+            background: var(--primary);
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .calendar-day.empty:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: transparent;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .calendar-day.today .day-number {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day.has-event {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-color: #8b5cf6;
+        }
+
+        .calendar-day.has-event .event-dot {
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            margin-top: 4px;
+        }
+
+        .calendar-day.has-booking {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #ef4444;
+        }
+
+        .calendar-day.has-booking .booking-dot {
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            margin-top: 4px;
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 3px solid #3b82f6;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .day-number {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .event-dot,
+        .booking-dot {
+            display: none;
+        }
+
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .calendar-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .calendar-legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .venue-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .venue-btn {
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            border: 3px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .venue-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .venue-btn:hover:not(.active) {
+            border-color: var(--primary-200);
+            color: var(--primary-xl);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .form-toggle {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .form-toggle button {
+            flex: 1;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-toggle .booking-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .form-toggle .booking-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .form-toggle .event-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+
+        .form-toggle .event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Two column layout for events */
+        .events-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        @media (max-width: 1024px) {
+            .events-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Quick Stats for sidebar */
+        .quick-stats {
+            background: linear-gradient(135deg, var(--primary-xl), #065f46);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quick-stats h3 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .quick-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .quick-stat:last-child {
+            border-bottom: none;
+        }
+
+        .quick-stat span {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+        }
+
+        .quick-stat strong {
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 0 16px;
+                height: auto;
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .header-left,
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .user-menu {
+                border-right: none;
+                padding-right: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+                padding: 16px;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Toast & Dark Mode */
         .btn-dark-toggle {
             padding: 7px 12px;
             width: 44px;
@@ -145,129 +1035,29 @@
             color: #374151;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: #1a2e1f;
-            min-height: 100vh;
-        }
-
-        /* NAV */
-        .top-nav {
-            background: #fff;
-            border-bottom: 1px solid #e7f3ec;
-            box-shadow: 0 1px 6px rgba(16, 185, 129, 0.08);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-inner {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 64px;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-brand img {
-            width: 36px;
-            height: 36px;
-            border-radius: 9px;
-            border: 1.5px solid var(--green-light);
-            object-fit: cover;
-        }
-
-        .nav-brand span {
-            font-weight: 700;
-            font-size: 15px;
-            color: #064e3b;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-info-block {
-            text-align: right;
-        }
-
-        .user-info-block .uname {
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            padding: 12px 20px;
+            border-radius: 12px;
             font-size: 14px;
-            font-weight: 700;
-            color: #064e3b;
-        }
-
-        .user-info-block .urole {
-            font-size: 11px;
-            color: var(--green);
             font-weight: 600;
+            transform: translateY(80px);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
-        .avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #10b981, #059669);
+        #toast.success {
+            background: #10b981;
             color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 16px;
-            border: 2px solid var(--green-light);
         }
 
-        .btn-nav {
-            padding: 7px 16px;
-            border-radius: 9px;
-            border: 1.5px solid #d1d5db;
-            background: transparent;
-            color: #6b7280;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .btn-nav:hover {
-            border-color: #9ca3af;
-            color: #374151;
-        }
-
-        .btn-nav-danger {
-            padding: 7px 16px;
-            border-radius: 9px;
-            border: 1.5px solid #fca5a5;
-            background: transparent;
-            color: #dc2626;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .btn-nav-danger:hover {
-            background: #fef2f2;
-        }
-
-        /* MAIN */
-        main {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 28px 24px 80px;
+        #toast.error {
+            background: #ef4444;
+            color: #fff;
         }
 
         /* WELCOME BANNER */
@@ -734,506 +1524,444 @@
             pointer-events: none;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
-
-        #toast.success {
-            background: #10b981;
-            color: #fff;
-        }
-
-        #toast.error {
-            background: #ef4444;
-            color: #fff;
-        }
-
-        /* ── RESPONSIVE ─────────────────────────────── */
-        @media (max-width: 1024px) {
-            .actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-
-            /* Layout */
-            main {
-                padding: 14px 14px 76px;
-            }
-
-            /* Top Nav */
-            .nav-inner {
-                padding: 0 14px;
-                height: 56px;
-            }
-
-            .user-info-block {
-                display: none;
-            }
-
-            .btn-nav {
-                display: none;
-            }
-
-            .btn-nav-danger {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            .nav-brand span {
-                font-size: 13px;
-            }
-
-            /* Welcome banner */
-            .welcome-banner {
-                padding: 16px 18px;
-                border-radius: 14px;
-                margin-bottom: 16px;
-            }
-
-            .welcome-icon {
-                display: none;
-            }
-
-            .welcome-text h2 {
-                font-size: 17px;
-            }
-
-            .welcome-text p {
-                font-size: 12px;
-            }
-
-            /* Stats row */
-            .stats-row {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-                margin-bottom: 16px;
-            }
-
-            .stat-card {
-                padding: 12px 8px;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-                text-align: center;
-                border-radius: 12px;
-            }
-
-            .stat-icon-box {
-                width: 34px;
-                height: 34px;
-                font-size: 16px;
-                border-radius: 10px;
-            }
-
-            .stat-val {
-                font-size: 20px;
-            }
-
-            .stat-lbl {
-                font-size: 9px;
-            }
-
-            /* Quick actions */
-            .sec-title {
-                font-size: 14px;
-                margin-bottom: 10px;
-            }
-
-            .actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                margin-bottom: 16px;
-            }
-
-            .action-card {
-                padding: 16px 10px;
-                border-radius: 14px;
-            }
-
-            .ac-icon {
-                font-size: 26px;
-                margin-bottom: 6px;
-            }
-
-            .action-card h4 {
-                font-size: 12px;
-                margin-bottom: 3px;
-            }
-
-            .action-card p {
-                font-size: 10px;
-            }
-
-            /* Panels */
-            .panel {
-                padding: 14px;
-                border-radius: 14px;
-            }
-
-            .panel-header h3 {
-                font-size: 14px;
-            }
-
-            /* Equipment grid */
-            .equip-grid {
-                grid-template-columns: 1fr;
-            }
-
-            /* Concern form */
-            .concern-form .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-submit {
-                width: 100%;
-                padding: 13px;
-            }
-        }
-
-        /* ── BOTTOM NAV BAR (mobile only) ─────────────── */
-        .bottom-nav {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .bottom-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: #fff;
-                border-top: 1.5px solid #e7f3ec;
-                box-shadow: 0 -2px 16px rgba(16, 185, 129, 0.1);
-                z-index: 200;
-                padding: 6px 0 env(safe-area-inset-bottom, 6px);
-            }
-
-            .bottom-nav a,
-            .bottom-nav button {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 3px;
-                background: none;
-                border: none;
-                font-family: inherit;
-                font-size: 10px;
-                font-weight: 600;
-                color: #9ca3af;
-                text-decoration: none;
-                cursor: pointer;
-                padding: 6px 4px;
-                transition: color 0.2s;
-                min-height: 50px;
-            }
-
-            .bottom-nav a.active,
-            .bottom-nav a:active,
-            .bottom-nav button:active {
-                color: #10b981;
-            }
-
-            .bottom-nav .bn-icon {
-                font-size: 22px;
-                line-height: 1;
-            }
-        }
     </style>
 </head>
 
 <body>
-
-    <!-- Navigation -->
-    <nav class="top-nav">
-        <div class="nav-inner">
-            <div class="nav-brand">
-                <img src="barangay.jpg" alt="Barangay Logo">
-                <span>Barangay Services</span>
-            </div>
-            <div class="nav-right">
-                <div class="user-info-block">
-                    <div class="uname" id="userName">Loading...</div>
-                    <div class="urole" id="userRole">Resident</div>
-                </div>
-                <div class="avatar" id="userAvatar">U</div>
-                <button class="btn-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
-                    title="Toggle Dark Mode">🌙</button>
-                <button class="btn-nav" onclick="window.location.href='user-settings.html'">⚙ Settings</button>
-                <button class="btn-nav-danger" onclick="logoutUser()">Logout</button>
+    <!-- Header with Logo -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="barangay.jpg" alt="Logo" class="header-logo">
+            <div class="header-brand">
+                <span class="brand">Barangay Services</span>
+                <span class="subtitle">User Dashboard</span>
             </div>
         </div>
-    </nav>
-
-    <main>
-        <!-- Welcome Banner -->
-        <div class="welcome-banner">
-            <div class="welcome-text">
-                <h2>👋 Welcome, <span id="welcomeName">User</span>!</h2>
-                <p>Here's your dashboard — access all barangay services from here.</p>
+        <div class="header-right">
+            <div class="user-menu">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole">Resident</span>
+                </div>
+                <div class="user-avatar" id="userAvatar">U</div>
             </div>
-            <div class="welcome-icon">🏠</div>
+            <button class="btn-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
+                title="Toggle Dark Mode">🌙</button>
+            <button class="btn" onclick="window.location.href='user-settings.html'">⚙️ Settings</button>
+            <button class="btn" onclick="logoutUser()">Logout</button>
         </div>
+    </header>
 
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-icon-box sib-blue">📦</div>
-                <div>
-                    <div class="stat-val" id="myRequestsCount">0</div>
-                    <div class="stat-lbl">My Requests</div>
+    <div class="dashboard-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <h3>📊 Quick Overview</h3>
+                <div class="quick-stat">
+                    <span>My Requests</span>
+                    <strong id="myRequestsCount">0</strong>
+                </div>
+                <div class="quick-stat">
+                    <span>My Concerns</span>
+                    <strong id="myConcernsCount">0</strong>
+                </div>
+                <div class="quick-stat">
+                    <span>Approved</span>
+                    <strong id="approvedCount">0</strong>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon-box sib-green">📋</div>
-                <div>
-                    <div class="stat-val" id="myConcernsCount">0</div>
-                    <div class="stat-lbl">My Concerns</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon-box sib-amber">✅</div>
-                <div>
-                    <div class="stat-val" id="approvedCount">0</div>
-                    <div class="stat-lbl">Approved</div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <p class="sec-title">Quick Actions</p>
-        <div class="actions-grid">
-            <a href="equipment.html" class="action-card">
-                <span class="ac-icon">🪑</span>
-                <h4>Borrow Equipment</h4>
-                <p>Request chairs, tables and more</p>
-            </a>
-            <div class="action-card" onclick="showPanel('concerns')">
-                <span class="ac-icon">📋</span>
-                <h4>Submit Concern</h4>
-                <p>Report community issues</p>
-            </div>
-            <a href="court-scheduling.html" class="action-card">
-                <span class="ac-icon">🏀</span>
-                <h4>Basketball Court</h4>
-                <p>Book the court for games</p>
-            </a>
-            <div class="action-card" onclick="showPanel('my-borrowings')">
-                <span class="ac-icon">📦</span>
-                <h4>My Borrowings</h4>
-                <p>Track your requests</p>
-            </div>
-        </div>
+            <div class="sidebar-title">Menu</div>
 
-        <!-- Available Equipment Panel -->
-        <div class="panel" id="equipment-panel">
-            <div class="panel-header">
-                <h3>🏃 Available Equipment</h3>
-            </div>
-            <div id="equipmentList" class="equip-grid"></div>
-        </div>
+            <button class="nav-item active" data-panel="dashboard-overview">
+                <div class="nav-icon">ðŸ </div>
+                <span>Dashboard</span>
+            </button>
 
-        <!-- Concerns Panel -->
-        <div class="panel hidden" id="concerns-panel">
-            <div class="panel-header">
-                <h3>📋 Submit a Concern</h3>
-            </div>
-            <form id="concernForm" class="concern-form" style="max-width: 680px;">
-                <div class="fg">
-                    <label>Your Address</label>
-                    <input type="text" id="concernAddress" required placeholder="e.g., Block 5, Lot 10, Sta. Lucia">
-                </div>
-                <div class="form-grid">
-                    <div class="fg">
-                        <label>Category</label>
-                        <select id="concernCategory" required>
-                            <option value="">Select a category...</option>
-                            <option value="infrastructure">🏗️ Infrastructure</option>
-                            <option value="sanitation">🧹 Sanitation</option>
-                            <option value="security">👮 Security</option>
-                            <option value="noise">🔊 Noise</option>
-                            <option value="other">📝 Other</option>
-                        </select>
+            <button class="nav-item" data-panel="equipment-panel">
+                <div class="nav-icon">🪑</div>
+                <span>Borrow Equipment</span>
+            </button>
+
+            <button class="nav-item" data-panel="concerns-panel">
+                <div class="nav-icon">📋</div>
+                <span>Submit Concern</span>
+            </button>
+
+            <button class="nav-item" onclick="window.location.href='court-scheduling.html'">
+                <div class="nav-icon">ðŸ€</div>
+                <span>Court Bookings</span>
+            </button>
+
+            <button class="nav-item" data-panel="my-borrowings-panel">
+                <div class="nav-icon">📦</div>
+                <span>My Borrowings</span>
+            </button>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <!-- DASHBOARD PANEL -->
+            <div id="dashboard-overview" class="content-panel active">
+                <div class="welcome-banner">
+                    <div class="welcome-text">
+                        <h2>👋 Welcome, <span id="welcomeName">User</span>!</h2>
+                        <p>Here's your dashboard — access all barangay services from here.</p>
                     </div>
-                    <div class="fg">
-                        <label>Title / Subject</label>
-                        <input type="text" id="concernTitle" required placeholder="Brief title of your concern">
+                    <div class="welcome-icon">🏠</div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon-box sib-blue">📦</div>
+                        <div>
+                            <div class="stat-val" id="myRequestsCount">0</div>
+                            <div class="stat-lbl">My Requests</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-box sib-green">📋</div>
+                        <div>
+                            <div class="stat-val" id="myConcernsCount">0</div>
+                            <div class="stat-lbl">My Concerns</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-box sib-amber">✅</div>
+                        <div>
+                            <div class="stat-val" id="approvedCount">0</div>
+                            <div class="stat-lbl">Approved</div>
+                        </div>
                     </div>
                 </div>
-                <div class="fg">
-                    <label>Detailed Description</label>
-                    <textarea id="concernDescription" required
-                        placeholder="Please describe your concern in detail..."></textarea>
+
+                <p class="sec-title">Quick Actions</p>
+                <div class="actions-grid">
+                    <a href="equipment.html" class="action-card">
+                        <span class="ac-icon">🪑</span>
+                        <h4>Borrow Equipment</h4>
+                        <p>Request chairs, tables and more</p>
+                    </a>
+                    <div class="action-card" onclick="showPanel('concerns-panel')">
+                        <span class="ac-icon">📋</span>
+                        <h4>Submit Concern</h4>
+                        <p>Report community issues</p>
+                    </div>
+                    <a href="court-scheduling.html" class="action-card">
+                        <span class="ac-icon">🏀</span>
+                        <h4>Basketball Court</h4>
+                        <p>Book the court for games</p>
+                    </a>
+                    <div class="action-card" onclick="showPanel('my-borrowings-panel')">
+                        <span class="ac-icon">📦</span>
+                        <h4>My Borrowings</h4>
+                        <p>Track your requests</p>
+                    </div>
                 </div>
-                <button type="submit" class="btn-submit">Submit Concern →</button>
+            </div>
+
+            <!-- EQUIPMENT PANEL -->
+            <div id="equipment-panel" class="content-panel">
+                <div class="panel-header"
+                    style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">🏃 Available Equipment</h3>
+                </div>
+                <div id="equipmentList" class="equip-grid"></div>
+            </div>
+
+            <!-- CONCERNS PANEL -->
+            <div id="concerns-panel" class="content-panel">
+                <div class="panel-header"
+                    style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">📋 Submit a Concern</h3>
+                </div>
+                <form id="concernForm" class="concern-form" style="max-width: 680px;">
+                    <div class="fg">
+                        <label>Your Address</label>
+                        <input type="text" id="concernAddress" required placeholder="e.g., Block 5, Lot 10, Sta. Lucia">
+                    </div>
+                    <div class="form-grid">
+                        <div class="fg">
+                            <label>Category</label>
+                            <select id="concernCategory" required>
+                                <option value="">Select a category...</option>
+                                <option value="infrastructure">🏗️ Infrastructure</option>
+                                <option value="sanitation">🧹 Sanitation</option>
+                                <option value="security">👮 Security</option>
+                                <option value="noise">🔊 Noise</option>
+                                <option value="other">📝 Other</option>
+                            </select>
+                        </div>
+                        <div class="fg">
+                            <label>Title / Subject</label>
+                            <input type="text" id="concernTitle" required placeholder="Brief title of your concern">
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label>Detailed Description</label>
+                        <textarea id="concernDescription" required
+                            placeholder="Please describe your concern in detail..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Submit Concern →</button>
+                </form>
+
+                <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
+                    <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">My Submitted
+                        Concerns</h4>
+                    <div id="myConcernsList"></div>
+                </div>
+            </div>
+
+            <!-- MY BORROWINGS PANEL -->
+            <div id="my-borrowings-panel" class="content-panel">
+                <div class="panel-header"
+                    style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">📦 My Borrowings</h3>
+                </div>
+                <div id="myBorrowingsList"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Court Event</h3><button class="modal-close" onclick="closeModal('eventModal')">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group"><label>Event Title</label><input type="text" id="eventTitle" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="eventDate" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Start Time</label><input type="time" id="eventTime" required></div>
+                    <div class="form-group"><label>End Time</label><input type="time" id="eventEndTime"></div>
+                </div>
+                <div class="form-group"><label>End Time</label><input type="time" id="eventEndTime"></div>
+        </div>
+        <div class="form-group"><label>Location</label><input type="text" id="eventLocation"></div>
+        <div class="form-row" style="margin-top: 16px;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
+            <button type="button" class="btn btn-danger" style="width: 100%;" onclick="closeModal('eventModal')">Cancel
+                / Back</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Court Event</h3><button class="modal-close"
+                    onclick="closeModal('editEventModal')">&times;</button>
+            </div>
+            <form id="editEventForm">
+                <input type="hidden" id="editEventId">
+                <div class="form-group"><label>Event Title</label><input type="text" id="editEventTitle" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="editEventDate" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Start Time</label><input type="time" id="editEventTime" required>
+                    </div>
+                    <div class="form-group"><label>End Time</label><input type="time" id="editEventEndTime"></div>
+                </div>
+                <div class="form-group"><label>Location</label><input type="text" id="editEventLocation"></div>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('editEventModal')">Cancel / Back</button>
+                </div>
             </form>
-
-            <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
-                <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">My Submitted
-                    Concerns</h4>
-                <div id="myConcernsList"></div>
-            </div>
         </div>
+    </div>
 
-        <!-- My Borrowings Panel -->
-        <div class="panel hidden" id="my-borrowings-panel">
-            <div class="panel-header">
-                <h3>📦 My Borrowings</h3>
+    <!-- Equipment Modal -->
+    <div id="addEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Equipment</h3><button class="modal-close"
+                    onclick="closeModal('addEquipmentModal')">&times;</button>
             </div>
-            <div id="myBorrowingsList"></div>
+            <form id="addEquipmentForm">
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="equipName" required></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="equipQty" required></div>
+                </div>
+                <div class="form-group"><label>Icon</label><input type="text" id="equipIcon" value="📦"></div>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('addEquipmentModal')">Cancel / Back</button>
+                </div>
+            </form>
         </div>
-    </main>
+    </div>
 
-    <!-- Bottom Navigation Bar (mobile only) -->
-    <nav class="bottom-nav">
-        <a href="equipment.html">
-            <span class="bn-icon">🪑</span>
-            Borrow
-        </a>
-        <button onclick="showPanel('concerns')">
-            <span class="bn-icon">📋</span>
-            Concern
-        </button>
-        <a href="court-scheduling.html">
-            <span class="bn-icon">🏀</span>
-            Court
-        </a>
-        <button onclick="showPanel('my-borrowings')">
-            <span class="bn-icon">📦</span>
-            My Items
-        </button>
-    </nav>
+    <!-- Concern Modal -->
+    <div id="concernModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Respond to Concern</h3><button class="modal-close"
+                    onclick="closeModal('concernModal')">&times;</button>
+            </div>
+            <form id="concernResponseForm">
+                <input type="hidden" id="concernId">
+                <div class="form-group"><label>Response</label><textarea id="concernResponse" rows="4"
+                        required></textarea></div>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Response</button>
+                    <button type="button" class="btn btn-danger" style="width: 100%;"
+                        onclick="closeModal('concernModal')">Cancel / Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/darkmode.js"></script>
-    <script>
-        function showToast(message, type = 'success') {
-            const t = document.getElementById('toast');
-            t.className = type; t.textContent = message;
-            t.style.transform = 'translateY(0)';
-            setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
-        }
+    function showToast(message, type = 'success') {
+    const t = document.getElementById('toast');
+    t.className = type; t.textContent = message;
+    t.style.transform = 'translateY(0)';
+    setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
+    }
 
-        const user = getCurrentUser();
-        if (!user) window.location.href = 'login.html';
+    const user = getCurrentUser();
+    if (!user) window.location.href = 'login.html';
 
-        document.getElementById('userName').textContent = user.fullName;
-        document.getElementById('welcomeName').textContent = user.fullName.split(' ')[0];
-        document.getElementById('userAvatar').textContent = user.avatar || user.fullName.charAt(0);
-        if (user.role === 'admin') document.getElementById('userRole').textContent = 'Administrator';
+    document.getElementById('userName').textContent = user.fullName;
+    document.getElementById('welcomeName').textContent = user.fullName.split(' ')[0];
+    document.getElementById('userAvatar').textContent = user.avatar || user.fullName.charAt(0);
+    if (user.role === 'admin') document.getElementById('userRole').textContent = 'Administrator';
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await Promise.all([
-                loadEquipment(),
-                loadMyConcerns(),
-                loadMyBorrowings(),
-                updateStats()
-            ]);
-        });
+    document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([
+    loadEquipment(),
+    loadMyConcerns(),
+    loadMyBorrowings(),
+    updateStats()
+    ]);
+    });
 
-        function showPanel(name) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`${name}-panel`).classList.remove('hidden');
-            window.scrollTo({ top: 200, behavior: 'smooth' });
-        }
+    function showPanel(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`${name}-panel`).classList.remove('hidden');
+    window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
 
-        async function loadEquipment() {
-            const equipment = await getEquipment();
-            const c = document.getElementById('equipmentList');
-            if (!equipment.length) { c.innerHTML = '<div class="empty-state"><span>📦</span><p>No equipment available.</p></div>'; return; }
-            c.innerHTML = equipment.map(item => {
-                const pct = Math.round((item.available / item.quantity) * 100);
-                const fc = pct > 50 ? 'pf-green' : pct > 25 ? 'pf-yellow' : 'pf-red';
-                return `<div class="equip-card">
-                    <div class="equip-top">
-                        <div class="equip-left">
-                            <span class="equip-emoji">${item.icon}</span>
-                            <div><div class="equip-name">${item.name}</div><div class="equip-desc">${item.description}</div></div>
-                        </div>
-                        <span class="equip-count">${item.available}/${item.quantity}</span>
-                    </div>
-                    <div class="progress"><div class="progress-fill ${fc}" style="width:${pct}%"></div></div>
-                    <button class="btn-borrow" onclick="requestEquipment(${item.id})">+ Request to Borrow</button>
-                </div>`;
-            }).join('');
-        }
+    async function loadEquipment() {
+    const equipment = await getEquipment();
+    const c = document.getElementById('equipmentList');
+    if (!equipment.length) { c.innerHTML = '<div class="empty-state"><span>📦</span>
+        <p>No equipment available.</p>
+    </div>'; return; }
+    c.innerHTML = equipment.map(item => {
+    const pct = Math.round((item.available / item.quantity) * 100);
+    const fc = pct > 50 ? 'pf-green' : pct > 25 ? 'pf-yellow' : 'pf-red';
+    return `<div class="equip-card">
+        <div class="equip-top">
+            <div class="equip-left">
+                <span class="equip-emoji">${item.icon}</span>
+                <div>
+                    <div class="equip-name">${item.name}</div>
+                    <div class="equip-desc">${item.description}</div>
+                </div>
+            </div>
+            <span class="equip-count">${item.available}/${item.quantity}</span>
+        </div>
+        <div class="progress">
+            <div class="progress-fill ${fc}" style="width:${pct}%"></div>
+        </div>
+        <button class="btn-borrow" onclick="requestEquipment(${item.id})">+ Request to Borrow</button>
+    </div>`;
+    }).join('');
+    }
 
-        async function requestEquipment(equipmentId) {
-            const qty = prompt('How many do you need?', '1');
-            if (!qty || parseInt(qty) <= 0) return;
-            const equipment = await getEquipment();
-            const item = equipment.find(e => e.id === equipmentId);
-            if (!item || item.available < parseInt(qty)) { showToast('Not enough items available.', 'error'); return; }
-            const purpose = prompt('What is the purpose of borrowing?');
-            if (!purpose) return;
-            const today = new Date().toISOString().split('T')[0];
-            const returnDate = prompt('Return date (YYYY-MM-DD):', today);
-            if (!returnDate) return;
-            const result = await borrowEquipment(equipmentId, parseInt(qty), today, returnDate, purpose);
-            if (result.success) { showToast('✅ ' + result.message, 'success'); await loadEquipment(); await updateStats(); }
-            else showToast(result.message, 'error');
-        }
-
-        async function loadMyConcerns() {
-            const concerns = await getMyConcerns();
-            const c = document.getElementById('myConcernsList');
-            if (!concerns.length) { c.innerHTML = '<div class="empty-state"><span>📋</span><p>No concerns submitted yet.</p></div>'; return; }
-            concerns.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    async function requestEquipment(equipmentId) {
+    const qty = prompt('How many do you need?', '1');
+    if (!qty || parseInt(qty) <= 0) return; const equipment=await getEquipment(); const item=equipment.find(e=> e.id ===
+        equipmentId);
+        if (!item || item.available < parseInt(qty)) { showToast('Not enough items available.', 'error' ); return; }
+            const purpose=prompt('What is the purpose of borrowing?'); if (!purpose) return; const today=new
+            Date().toISOString().split('T')[0]; const returnDate=prompt('Return date (YYYY-MM-DD):', today); if
+            (!returnDate) return; const result=await borrowEquipment(equipmentId, parseInt(qty), today, returnDate,
+            purpose); if (result.success) { showToast('✅ ' + result.message, ' success'); await loadEquipment(); await
+            updateStats(); } else showToast(result.message, 'error' ); } async function loadMyConcerns() { const
+            concerns=await getMyConcerns(); const c=document.getElementById('myConcernsList'); if (!concerns.length) {
+            c.innerHTML='<div class="empty-state"><span>📋</span><p>No concerns submitted yet.</p></div>' ; return; }
+            concerns.sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt));
             c.innerHTML = concerns.map(concern => {
-                const bc = { pending: 'badge-pending', resolved: 'badge-approved', rejected: 'badge-rejected' }[concern.status] || 'badge-pending';
-                return `<div class="list-item">
-                    <div class="li-header">
-                        <div><div class="li-title">${concern.title}</div><div class="li-meta">${concern.category} • ${formatDate(concern.createdAt)} • 📍 ${concern.address || 'N/A'}</div></div>
-                        <span class="badge ${bc}">${concern.status}</span>
+            const bc = { pending: 'badge-pending', resolved: 'badge-approved', rejected: 'badge-rejected'
+            }[concern.status] || 'badge-pending';
+            return `<div class="list-item">
+                <div class="li-header">
+                    <div>
+                        <div class="li-title">${concern.title}</div>
+                        <div class="li-meta">${concern.category} • ${formatDate(concern.createdAt)} • ðŸ“
+                            ${concern.address || 'N/A'}</div>
                     </div>
-                    <div class="li-body">${concern.description}</div>
-                    ${concern.response ? `<div class="li-response"><strong>Admin Response:</strong> ${concern.response}</div>` : ''}
-                </div>`;
+                    <span class="badge ${bc}">${concern.status}</span>
+                </div>
+                <div class="li-body">${concern.description}</div>
+                ${concern.response ? `<div class="li-response"><strong>Admin Response:</strong> ${concern.response}
+                </div>` : ''}
+            </div>`;
             }).join('');
-        }
+            }
 
-        document.getElementById('concernForm').addEventListener('submit', async function (e) {
+            document.getElementById('concernForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const result = await submitConcern(
-                document.getElementById('concernCategory').value,
-                document.getElementById('concernTitle').value,
-                document.getElementById('concernDescription').value,
-                document.getElementById('concernAddress').value
+            document.getElementById('concernCategory').value,
+            document.getElementById('concernTitle').value,
+            document.getElementById('concernDescription').value,
+            document.getElementById('concernAddress').value
             );
-            if (result.success) { showToast('✅ ' + result.message, 'success'); this.reset(); await loadMyConcerns(); await updateStats(); }
+            if (result.success) { showToast('✅ ' + result.message, 'success'); this.reset(); await loadMyConcerns();
+            await updateStats(); }
             else showToast(result.message, 'error');
-        });
+            });
 
-        async function loadMyBorrowings() {
+            async function loadMyBorrowings() {
             const borrowings = await getMyBorrowings();
             const c = document.getElementById('myBorrowingsList');
-            if (!borrowings.length) { c.innerHTML = '<div class="empty-state"><span>📦</span><p>No borrowings yet. Request some equipment!</p></div>'; return; }
+            if (!borrowings.length) { c.innerHTML = '<div class="empty-state"><span>📦</span>
+                <p>No borrowings yet. Request some equipment!</p>
+            </div>'; return; }
             borrowings.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
             c.innerHTML = borrowings.map(b => {
-                const bc = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected', returned: 'badge-returned' }[b.status] || 'badge-pending';
-                return `<div class="list-item">
-                    <div class="li-header">
-                        <div><div class="li-title">${b.equipment}</div><div class="li-meta">Qty: ${b.quantity} • ${formatDate(b.borrowDate)} → ${formatDate(b.returnDate)}</div></div>
-                        <span class="badge ${bc}">${b.status}</span>
+            const bc = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected', returned:
+            'badge-returned' }[b.status] || 'badge-pending';
+            return `<div class="list-item">
+                <div class="li-header">
+                    <div>
+                        <div class="li-title">${b.equipment}</div>
+                        <div class="li-meta">Qty: ${b.quantity} • ${formatDate(b.borrowDate)} →
+                            ${formatDate(b.returnDate)}</div>
                     </div>
-                    <div class="li-body"><strong>Purpose:</strong> ${b.purpose}</div>
-                </div>`;
+                    <span class="badge ${bc}">${b.status}</span>
+                </div>
+                <div class="li-body"><strong>Purpose:</strong> ${b.purpose}</div>
+            </div>`;
             }).join('');
-        }
+            }
 
-        async function updateStats() {
+            async function updateStats() {
             const concerns = await getMyConcerns();
             const borrowings = await getMyBorrowings();
             document.getElementById('myRequestsCount').textContent = borrowings.length;
             document.getElementById('myConcernsCount').textContent = concerns.length;
-            document.getElementById('approvedCount').textContent = borrowings.filter(b => b.status === 'approved').length;
-        }
-    </script>
+            document.getElementById('approvedCount').textContent = borrowings.filter(b => b.status ===
+            'approved').length;
+            }
+            </script>
 </body>
 
 </html>
