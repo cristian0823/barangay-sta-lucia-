@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Barangay Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
+    <link rel="stylesheet" href="css/premium-dashboard.css">
+    <style type="text/disabled">
         :root {
             --primary-50: #ecfdf5;
             --primary-100: #d1fae5;
@@ -1186,7 +1187,7 @@
                 </div>
                 <div id="myBorrowingsList"></div>
             </div>
-        
+
             <!-- COURT BOOKINGS PANEL -->
             <div id="court-bookings-panel" class="content-panel">
                 <div class="panel-header"
@@ -1195,8 +1196,10 @@
                 </div>
 
                 <div class="venue-toggle">
-                    <button class="venue-btn active" id="vb-basketball" onclick="switchVenue('basketball')">🏀 Basketball Court</button>
-                    <button class="venue-btn" id="vb-multipurpose" onclick="switchVenue('multipurpose')">🏢 Multi-Purpose Hall</button>
+                    <button class="venue-btn active" id="vb-basketball" onclick="switchVenue('basketball')">🏀
+                        Basketball Court</button>
+                    <button class="venue-btn" id="vb-multipurpose" onclick="switchVenue('multipurpose')">🏢
+                        Multi-Purpose Hall</button>
                 </div>
                 <input type="hidden" id="currentVenue" value="basketball">
 
@@ -1209,22 +1212,38 @@
                 </div>
 
                 <div class="calendar-grid">
-                    <div class="cal-header">Sun</div><div class="cal-header">Mon</div><div class="cal-header">Tue</div>
-                    <div class="cal-header">Wed</div><div class="cal-header">Thu</div><div class="cal-header">Fri</div><div class="cal-header">Sat</div>
+                    <div class="cal-header">Sun</div>
+                    <div class="cal-header">Mon</div>
+                    <div class="cal-header">Tue</div>
+                    <div class="cal-header">Wed</div>
+                    <div class="cal-header">Thu</div>
+                    <div class="cal-header">Fri</div>
+                    <div class="cal-header">Sat</div>
                 </div>
                 <div class="calendar-grid" id="mainCalGrid"></div>
 
-                <div style="display: flex; gap: 16px; font-size: 12px; font-weight: 600; color: var(--muted); justify-content: center; margin-bottom: 24px;">
-                    <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 12px; height: 12px; background: var(--primary-100); border-radius: 4px;"></div> Available</div>
-                    <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 12px; height: 12px; background: var(--danger-bg); border-radius: 4px;"></div> Booked</div>
-                    <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 12px; height: 12px; background: #f3e8ff; border-radius: 4px;"></div> Event</div>
+                <div
+                    style="display: flex; gap: 16px; font-size: 12px; font-weight: 600; color: var(--muted); justify-content: center; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <div style="width: 12px; height: 12px; background: var(--primary-100); border-radius: 4px;">
+                        </div> Available
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <div style="width: 12px; height: 12px; background: var(--danger-bg); border-radius: 4px;"></div>
+                        Booked
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <div style="width: 12px; height: 12px; background: #f3e8ff; border-radius: 4px;"></div> Event
+                    </div>
                 </div>
 
                 <!-- Booking Form Wrapper -->
-                <div id="bookingFormWrapper" style="display: none; background: #fafafa; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;">
-                    <h3 id="bookingDateTitle" style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Book for Date</h3>
+                <div id="bookingFormWrapper"
+                    style="display: none; background: #fafafa; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;">
+                    <h3 id="bookingDateTitle" style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Book for
+                        Date</h3>
                     <div id="bookingMsg"></div>
-                    
+
                     <form id="courtBookForm" class="concern-form">
                         <input type="hidden" id="cbDate">
                         <div class="form-grid">
@@ -1259,30 +1278,36 @@
                         </div>
                         <div class="form-group">
                             <label>Purpose</label>
-                            <input type="text" id="cbPurpose" class="form-control" required placeholder="e.g. Liga Practice">
+                            <input type="text" id="cbPurpose" class="form-control" required
+                                placeholder="e.g. Liga Practice">
                         </div>
                         <div style="display: flex; gap: 8px;">
-                            <button type="submit" class="btn-submit" id="cbSubmitBtn" style="flex: 1;">Submit Booking</button>
-                            <button type="button" class="btn" style="flex: 1;" onclick="document.getElementById('bookingFormWrapper').style.display='none'">Cancel</button>
+                            <button type="submit" class="btn-submit" id="cbSubmitBtn" style="flex: 1;">Submit
+                                Booking</button>
+                            <button type="button" class="btn" style="flex: 1;"
+                                onclick="document.getElementById('bookingFormWrapper').style.display='none'">Cancel</button>
                         </div>
                     </form>
                 </div>
 
                 <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
-                    <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">🎉 Upcoming Events</h4>
-                    <div id="upcomingEventsList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"></div>
+                    <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">🎉 Upcoming
+                        Events</h4>
+                    <div id="upcomingEventsList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    </div>
                 </div>
             </div>
 
         </main>
     </div>
 
-    
+
     <!-- Equipment Borrow Modal -->
     <div class="modal-overlay" id="equipModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-size: 20px; font-weight: 800; color: var(--primary-900);">Borrow <span id="emName">Item</span></h3>
+                <h3 style="font-size: 20px; font-weight: 800; color: var(--primary-900);">Borrow <span
+                        id="emName">Item</span></h3>
                 <button class="modal-close" onclick="closeEquipModal()">&times;</button>
             </div>
             <form id="equipForm" class="concern-form">
@@ -1358,46 +1383,46 @@
         document.getElementById('userAvatar').textContent = user.avatar || user.fullName.charAt(0);
         if (user.role === 'admin') document.getElementById('userRole').textContent = 'Administrator';
 
-        
+
 
         // --- EQUIPMENT MODAL LOGIC ---
         let currentEquipMax = 0;
-        
+
         // Expose a new function, old requestEquipment will just call this
-        window.openEquipModal = async function(equipmentId) {
+        window.openEquipModal = async function (equipmentId) {
             const equipment = await getEquipment();
             const item = equipment.find(e => e.id === equipmentId);
             if (!item || item.available <= 0) {
                 showToast('Item currently unavailable', 'error');
                 return;
             }
-            
+
             document.getElementById('emId').value = item.id;
             document.getElementById('emName').textContent = item.name;
             document.getElementById('emMax').textContent = item.available;
             document.getElementById('emQty').max = item.available;
             document.getElementById('emQty').value = 1;
-            
+
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('emReturnDate').value = tomorrow.toISOString().split('T')[0];
-            
+
             document.getElementById('equipModal').classList.add('active');
         };
-        
+
         function closeEquipModal() {
             document.getElementById('equipModal').classList.remove('active');
             document.getElementById('equipForm').reset();
         }
-        
-        document.getElementById('equipForm').addEventListener('submit', async function(e) {
+
+        document.getElementById('equipForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const id = parseInt(document.getElementById('emId').value);
             const qty = parseInt(document.getElementById('emQty').value);
             const purpose = document.getElementById('emPurpose').value;
             const rDate = document.getElementById('emReturnDate').value;
             const today = new Date().toISOString().split('T')[0];
-            
+
             const result = await borrowEquipment(id, qty, today, rDate, purpose);
             if (result.success) {
                 showToast('✅ ' + result.message, 'success');
@@ -1415,7 +1440,7 @@
         // --- COURT BOOKING LOGIC ---
         let calMonth = new Date().getMonth();
         let calYear = new Date().getFullYear();
-        
+
         function switchVenue(v) {
             document.getElementById('currentVenue').value = v;
             document.getElementById('vb-basketball').classList.remove('active');
@@ -1423,46 +1448,46 @@
             document.getElementById('vb-' + v).classList.add('active');
             renderCal();
         }
-        
+
         async function changeCalMonth(dir) {
             calMonth += dir;
-            if(calMonth > 11) { calMonth = 0; calYear++; }
-            if(calMonth < 0) { calMonth = 11; calYear--; }
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            if (calMonth < 0) { calMonth = 11; calYear--; }
             await renderCal();
         }
-        
+
         async function renderCal() {
             const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             document.getElementById('calMonthDisplay').textContent = months[calMonth] + ' ' + calYear;
-            
+
             const grid = document.getElementById('mainCalGrid');
             grid.innerHTML = '';
-            
+
             const venue = document.getElementById('currentVenue').value;
             const allBookings = await getCourtBookings();
             const allEventsRaw = await getEvents();
-            
+
             const venueBookings = allBookings.filter(b => b.venue === venue && b.status !== 'cancelled').map(b => b.date);
             const events = allEventsRaw.filter(e => e.status === 'approved');
             const eventMap = {};
             events.forEach(e => eventMap[e.date] = e);
-            
+
             const firstDay = new Date(calYear, calMonth, 1).getDay();
             const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
             const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            for(let i=0; i<firstDay; i++) {
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < firstDay; i++) {
                 grid.innerHTML += '<div></div>';
             }
-            
-            for(let d=1; d<=daysInMonth; d++) {
-                const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const dateObj = new Date(calYear, calMonth, d);
-                
+
                 let cls = 'cal-day available';
                 let txt = '';
-                
+
                 if (dateObj < today) {
                     cls = 'cal-day past';
                 } else if (eventMap[dateStr]) {
@@ -1472,31 +1497,31 @@
                     cls = 'cal-day booked';
                     txt = '<div class="cal-badge">Booked</div>';
                 }
-                
+
                 if (dateObj.getTime() === today.getTime() && !cls.includes('past')) {
                     cls += ' today';
                 }
-                
+
                 grid.innerHTML += `<div class="${cls}" onclick="openBookingForm('${dateStr}')">${d}${txt}</div>`;
             }
         }
-        
-        window.openBookingForm = async function(dateStr) {
+
+        window.openBookingForm = async function (dateStr) {
             const today = new Date();
-            today.setHours(0,0,0,0);
-            if(new Date(dateStr) < today) return;
-            
+            today.setHours(0, 0, 0, 0);
+            if (new Date(dateStr) < today) return;
+
             const allEvents = await getEvents();
             const evt = allEvents.find(e => e.status === 'approved' && e.date === dateStr);
-            
+
             document.getElementById('bookingFormWrapper').style.display = 'block';
             document.getElementById('bookingDateTitle').textContent = 'Book for ' + dateStr;
             document.getElementById('cbDate').value = dateStr;
-            
+
             const btn = document.getElementById('cbSubmitBtn');
             const msg = document.getElementById('bookingMsg');
-            
-            if(evt) {
+
+            if (evt) {
                 msg.innerHTML = `<div style="padding: 12px; background: var(--danger-bg); color: var(--danger); border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
                     <strong>⛔ Court Blocked:</strong> An official event (${evt.title}) is scheduled for this day.
                 </div>`;
@@ -1508,8 +1533,8 @@
                 btn.style.opacity = '1';
             }
         }
-        
-        document.getElementById('courtBookForm').addEventListener('submit', async function(e) {
+
+        document.getElementById('courtBookForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const venue = document.getElementById('currentVenue').value;
             const data = {
@@ -1520,9 +1545,9 @@
                 venue: venue,
                 venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'
             };
-            
+
             const res = await bookCourt(data);
-            if(res.success) {
+            if (res.success) {
                 showToast('✅ ' + res.message, 'success');
                 document.getElementById('bookingFormWrapper').style.display = 'none';
                 this.reset();
@@ -1532,19 +1557,19 @@
                 showToast(res.message, 'error');
             }
         });
-        
-        
+
+
         async function loadMyCourtBookings() {
             const allBookings = await getCourtBookings();
             const userBookings = allBookings.filter(b => b.userId === user.id);
             const c = document.getElementById('myCourtBookingsList');
-            
-            if(userBookings.length === 0) {
+
+            if (userBookings.length === 0) {
                 c.innerHTML = '<div class="empty-state"><span>🏟️</span><p>No court bookings yet.</p></div>';
                 return;
             }
-            
-            userBookings.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            userBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
             c.innerHTML = userBookings.map(b => {
                 const bc = b.status === 'cancelled' ? 'badge-rejected' : 'badge-approved';
                 return `
@@ -1566,11 +1591,11 @@
                 `;
             }).join('');
         }
-        
-        window.cancelCb = async function(id) {
-            if(!confirm('Are you sure you want to cancel this booking?')) return;
+
+        window.cancelCb = async function (id) {
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
             const res = await cancelCourtBooking(id);
-            if(res.success) {
+            if (res.success) {
                 showToast('✅ ' + res.message, 'success');
                 await loadMyCourtBookings();
                 await renderCal();
@@ -1581,11 +1606,11 @@
 
         async function loadUpcomingEvents() {
             const allEvents = await getEvents();
-            const evts = allEvents.filter(e => e.status === 'approved' && new Date(e.date) >= new Date(new Date().setHours(0,0,0,0)));
-            evts.sort((a,b) => new Date(a.date) - new Date(b.date));
-            
+            const evts = allEvents.filter(e => e.status === 'approved' && new Date(e.date) >= new Date(new Date().setHours(0, 0, 0, 0)));
+            evts.sort((a, b) => new Date(a.date) - new Date(b.date));
+
             const c = document.getElementById('upcomingEventsList');
-            if(evts.length === 0) {
+            if (evts.length === 0) {
                 c.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><span>🎉</span><p>No upcoming events.</p></div>';
                 return;
             }
@@ -1602,14 +1627,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await renderCal();
-            await loadUpcomingEvents();
-            await loadMyCourtBookings();
-            await Promise.all([
-                loadEquipment(),
-                loadMyConcerns(),
-                loadMyBorrowings()
-            ]);
+            console.log("Dashboard initializing...");
+
+            try { await renderCal(); } catch (e) { console.error("Calendar fail:", e); }
+            try { await loadUpcomingEvents(); } catch (e) { console.error("Events fail:", e); }
+            try { await loadMyCourtBookings(); } catch (e) { console.error("Bookings fail:", e); }
+
+            // Do not use Promise.all so if one fails, the others still succeed
+            try { await loadEquipment(); } catch (e) { console.error("Equip fail:", e); }
+            try { await loadMyConcerns(); } catch (e) { console.error("Concerns fail:", e); }
+            try { await loadMyBorrowings(); } catch (e) { console.error("Borrowings fail:", e); }
+
+            console.log("Dashboard initialization complete.");
         });
 
         async function loadEquipment() {
@@ -1633,7 +1662,7 @@
             }).join('');
         }
 
-        
+
 
         async function loadMyConcerns() {
             const concerns = await getMyConcerns();
