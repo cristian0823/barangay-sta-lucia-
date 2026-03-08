@@ -439,10 +439,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
     }
 }
 
-async function addEquipment(payload) {
-    const { error } = await supabase.from('equipment').insert([payload]);
-    return { success: !error, message: error ? error.message : 'Equipment added' };
-}
+
 
 async function getMyBorrowings() {
     const user = getCurrentUser();
@@ -727,22 +724,7 @@ async function getEvents() {
     }
 }
 
-async function createEvent(eventData) {
-    const { error } = await supabase.from('events').insert([eventData]);
-    return { success: !error, message: error ? error.message : 'Event created successfully' };
-}
 
-async function updateEventStatus(eventId, status) {
-    const { error } = await supabase.from('events').update({ status }).eq('id', eventId);
-    return !error;
-}
-
-async function deleteEvent(eventId) {
-    if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    const { error } = await supabase.from('events').delete().eq('id', eventId);
-    if (!error) await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
-    return { success: !error, message: error ? error.message : 'Event deleted successfully' };
-}
 
 // Court Bookings
 async function getCourtBookings() {
