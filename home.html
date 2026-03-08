@@ -1244,58 +1244,7 @@
                     <div id="myCourtBookingsList"></div>
                 </div>
 
-                <!-- Booking Form Wrapper -->
-                <div id="bookingFormWrapper"
-                    style="display: none; background: #fafafa; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;">
-                    <h3 id="bookingDateTitle" style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Book for
-                        Date</h3>
-                    <div id="bookingMsg"></div>
 
-                    <form id="courtBookForm" class="concern-form">
-                        <input type="hidden" id="cbDate">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Start Time</label>
-                                <select id="cbStartTime" class="form-control" required>
-                                    <option value="">-- Choose --</option>
-                                    <option value="6:00 AM">6:00 AM</option>
-                                    <option value="8:00 AM">8:00 AM</option>
-                                    <option value="10:00 AM">10:00 AM</option>
-                                    <option value="12:00 PM">12:00 PM</option>
-                                    <option value="2:00 PM">2:00 PM</option>
-                                    <option value="4:00 PM">4:00 PM</option>
-                                    <option value="6:00 PM">6:00 PM</option>
-                                    <option value="8:00 PM">8:00 PM</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>End Time</label>
-                                <select id="cbEndTime" class="form-control" required>
-                                    <option value="">-- Choose --</option>
-                                    <option value="8:00 AM">8:00 AM</option>
-                                    <option value="10:00 AM">10:00 AM</option>
-                                    <option value="12:00 PM">12:00 PM</option>
-                                    <option value="2:00 PM">2:00 PM</option>
-                                    <option value="4:00 PM">4:00 PM</option>
-                                    <option value="6:00 PM">6:00 PM</option>
-                                    <option value="8:00 PM">8:00 PM</option>
-                                    <option value="10:00 PM">10:00 PM</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Purpose</label>
-                            <input type="text" id="cbPurpose" class="form-control" required
-                                placeholder="e.g. Liga Practice">
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="submit" class="btn-submit" id="cbSubmitBtn" style="flex: 1;">Submit
-                                Booking</button>
-                            <button type="button" class="btn" style="flex: 1;"
-                                onclick="document.getElementById('bookingFormWrapper').style.display='none'">Cancel</button>
-                        </div>
-                    </form>
-                </div>
 
                 <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
                     <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">🎉 Upcoming
@@ -1332,6 +1281,56 @@
                     <input type="date" id="emReturnDate" class="form-control" required>
                 </div>
                 <button type="submit" class="btn-submit" style="width: 100%;">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Court Booking Modal -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="bookingDateTitle" style="font-size: 20px; font-weight: 800; color: var(--primary-900);">Book
+                    Date</h3>
+                <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+            </div>
+            <div id="bookingMsg"></div>
+            <form id="courtBookForm" class="concern-form">
+                <input type="hidden" id="cbDate">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <select id="cbStartTime" class="form-control" required>
+                            <option value="">-- Choose --</option>
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="8:00 PM">8:00 PM</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <select id="cbEndTime" class="form-control" required>
+                            <option value="">-- Choose --</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="8:00 PM">8:00 PM</option>
+                            <option value="10:00 PM">10:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Purpose</label>
+                    <input type="text" id="cbPurpose" class="form-control" required placeholder="e.g. Liga Practice">
+                </div>
+                <button type="submit" class="btn-submit" id="cbSubmitBtn" style="width: 100%;">Submit Booking</button>
             </form>
         </div>
     </div>
@@ -1521,7 +1520,7 @@
             const allEvents = await getEvents();
             const evt = allEvents.find(e => e.status === 'approved' && e.date === dateStr);
 
-            document.getElementById('bookingFormWrapper').style.display = 'block';
+            document.getElementById('bookingModal').classList.add('active');
             document.getElementById('bookingDateTitle').textContent = 'Book for ' + dateStr;
             document.getElementById('cbDate').value = dateStr;
 
@@ -1541,27 +1540,39 @@
             }
         }
 
+        window.closeBookingModal = function () {
+            document.getElementById('bookingModal').classList.remove('active');
+            document.getElementById('courtBookForm').reset();
+            document.getElementById('bookingMsg').innerHTML = '';
+        };
+
         document.getElementById('courtBookForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const date = document.getElementById('cbDate').value;
+            const time = document.getElementById('cbStartTime').value;
+            const end_time = document.getElementById('cbEndTime').value;
+            const purpose = document.getElementById('cbPurpose').value;
             const venue = document.getElementById('currentVenue').value;
-            const data = {
-                date: document.getElementById('cbDate').value,
-                time: document.getElementById('cbStartTime').value,
-                end_time: document.getElementById('cbEndTime').value,
-                purpose: document.getElementById('cbPurpose').value,
-                venue: venue,
-                venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'
-            };
 
-            const res = await bookCourt(data);
-            if (res.success) {
-                showToast('✅ ' + res.message, 'success');
-                document.getElementById('bookingFormWrapper').style.display = 'none';
-                this.reset();
+            const startTimeObj = new Date(`1970-01-01T${time}`);
+            const endTimeObj = new Date(`1970-01-01T${end_time}`);
+            if (endTimeObj <= startTimeObj) {
+                showToast('End time must be after start time', 'error');
+                return;
+            }
+
+            const result = await bookCourt({
+                user_id: user.id, username: user.username,
+                date, time, end_time, venue, purpose, status: 'pending'
+            });
+
+            if (result.success) {
+                showToast('✅ ' + result.message, 'success');
+                closeBookingModal();
                 await renderCal();
                 await loadMyCourtBookings();
             } else {
-                showToast(res.message, 'error');
+                showToast(result.message, 'error');
             }
         });
 
