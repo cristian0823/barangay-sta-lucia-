@@ -221,33 +221,34 @@ async function loginUser(username, password, rememberMe = false) {
         }
 
         if (error) {
-            console.error("Login Error:", error);
-            alert("Login Error: " + error.message);
+            console.error("Supabase Login Error:", error);
         }
-    } else {
-        // Local fallback authentication
-        initializeLocalUsers();
-        const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
-        const user = users.find(u => u.username === username && u.password === password);
 
-        if (user) {
-            const sessionData = {
-                ...user,
-                role: user.role || (username === 'admin' ? 'admin' : 'user'),
-                loginTime: new Date().toISOString()
-            };
+        console.warn("User not found in remote Supabase. Attempting local storage fallback...");
+    }
 
-            if (rememberMe) {
-                localStorage.setItem('currentUser', JSON.stringify(sessionData));
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
-            }
+    // Local fallback authentication (executes if Supabase is unavailable OR if Supabase login fails)
+    initializeLocalUsers();
+    const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
+    const user = users.find(u => u.username === username && u.password === password);
 
-            // Log the activity
-            logActivity('Login', `User logged in: ${sessionData.username}`);
+    if (user) {
+        const sessionData = {
+            ...user,
+            role: user.role || (username === 'admin' || username === 'admin1' || username === 'admin2' ? 'admin' : 'user'),
+            loginTime: new Date().toISOString()
+        };
 
-            return { success: true, user: sessionData };
+        if (rememberMe) {
+            localStorage.setItem('currentUser', JSON.stringify(sessionData));
+        } else {
+            sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
         }
+
+        // Log the activity
+        logActivity('Login', `Local User logged in: ${sessionData.username}`);
+
+        return { success: true, user: sessionData };
     }
 
     return { success: false, message: 'Invalid username or password' };
