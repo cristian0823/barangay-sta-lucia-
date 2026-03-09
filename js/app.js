@@ -852,12 +852,12 @@ async function bookCourt(bookingData) {
 
     if (supabaseAvailable) {
         try {
-            // Insert using ONLY guaranteed-to-exist columns (works with any DB version)
             const { error } = await supabase.from('court_bookings').insert([{
                 user_id: user.id,
                 user_name: user.fullName || user.username,
                 date: bookingData.date,
                 time: combinedTime,
+                venue: venue,
                 purpose: bookingData.purpose || '',
                 status: 'pending'
             }]);

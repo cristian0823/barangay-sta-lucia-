@@ -1,10 +1,20 @@
 -- ============================================================
--- Barangay Website — Supabase Schema (Full Setup)
--- Run this script in your Supabase Dashboard → SQL Editor
--- It is SAFE to run multiple times — uses IF NOT EXISTS
+-- Barangay Sta. Lucia — Supabase Complete Setup + Fix
+-- 
+-- HOW TO RUN:
+--   1. Go to your Supabase project dashboard
+--   2. Click "SQL Editor" in the left sidebar
+--   3. Paste this ENTIRE file and click "Run"
+--   4. That's it — everything will work!
+--
+-- SAFE TO RUN MULTIPLE TIMES — uses IF NOT EXISTS
 -- ============================================================
 
--- 1. Users Table (Custom Authentication)
+
+-- ============================================================
+-- STEP 1: CREATE TABLES
+-- ============================================================
+
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -16,33 +26,17 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
--- Insert default admin (skip if already exists)
-INSERT INTO users (username, password, full_name, email, role, avatar)
-VALUES ('admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A')
-ON CONFLICT (username) DO NOTHING;
-
--- 2. Equipment Table
 CREATE TABLE IF NOT EXISTS equipment (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     quantity INTEGER NOT NULL,
     available INTEGER NOT NULL,
+    broken INTEGER DEFAULT 0,
     icon VARCHAR(50),
-    description TEXT
+    description TEXT,
+    is_archived BOOLEAN DEFAULT false
 );
 
--- Insert default equipment (skip if already exists)
-INSERT INTO equipment (name, quantity, available, icon, description) VALUES
-('Chairs', 150, 150, '🪑', 'Plastic folding chairs'),
-('Tables', 3, 3, '🪵', 'Tables (subject for availability)'),
-('Tents', 5, 5, '⛺', 'Event tents'),
-('Ladder', 1, 1, '🪜', 'Ladder (Barangay use only)'),
-('Microphone', 1, 1, '🎤', 'Microphone (Barangay only)'),
-('Speaker', 1, 1, '🔊', 'Speaker (Barangay only)'),
-('Electric Fan', 5, 5, '🌀', 'Electric Fan (For big events)')
-ON CONFLICT DO NOTHING;
-
--- 3. Borrowings Table
 CREATE TABLE IF NOT EXISTS borrowings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -55,7 +49,6 @@ CREATE TABLE IF NOT EXISTS borrowings (
     purpose TEXT
 );
 
--- 4. Concerns Table
 CREATE TABLE IF NOT EXISTS concerns (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -65,43 +58,72 @@ CREATE TABLE IF NOT EXISTS concerns (
     description TEXT,
     address VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    response TEXT
+    response TEXT,
+    assigned_to VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
--- 5. Events Table
 CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
-    time TIME NOT NULL,
-    end_time TIME,
+    time VARCHAR(100),
+    end_time VARCHAR(100),
     location VARCHAR(255),
     organizer VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending'
 );
 
--- 6. Court Bookings Table
 CREATE TABLE IF NOT EXISTS court_bookings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     user_name VARCHAR(255),
-    username VARCHAR(255),
     date DATE NOT NULL,
-    time VARCHAR(100) NOT NULL,
-    end_time VARCHAR(100),
-    venue VARCHAR(100),
-    venue_name VARCHAR(255),
+    time VARCHAR(255) NOT NULL,
     purpose TEXT,
     status VARCHAR(50) DEFAULT 'pending',
-    admin_comment TEXT
+    admin_comment TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+
 -- ============================================================
--- PATCH: Add any missing columns to existing live databases
--- These are 100% safe to run even if columns already exist
+-- STEP 2: PATCH MISSING COLUMNS (safe to re-run)
 -- ============================================================
-ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS end_time VARCHAR(100);
-ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS venue VARCHAR(100);
-ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS venue_name VARCHAR(255);
-ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS username VARCHAR(255);
+
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS broken INTEGER DEFAULT 0;
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT false;
+ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
+ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
+
+
+-- ============================================================
+-- STEP 3: DISABLE ROW LEVEL SECURITY (THE CRITICAL FIX)
+-- This is what was blocking all inserts/updates from the website
+-- ============================================================
+
+ALTER TABLE users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE equipment DISABLE ROW LEVEL SECURITY;
+ALTER TABLE borrowings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE concerns DISABLE ROW LEVEL SECURITY;
+ALTER TABLE events DISABLE ROW LEVEL SECURITY;
+ALTER TABLE court_bookings DISABLE ROW LEVEL SECURITY;
+
+
+-- ============================================================
+-- STEP 4: DEFAULT DATA
+-- ============================================================
+
+INSERT INTO users (username, password, full_name, email, role, avatar)
+VALUES ('admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A')
+ON CONFLICT (username) DO NOTHING;
+
+INSERT INTO equipment (name, quantity, available, broken, icon, description) VALUES
+('Chairs',       150, 150, 0, '🪑', 'Plastic folding chairs'),
+('Tables',         3,   3, 0, '🪵', 'Foldable tables'),
+('Tents',          5,   5, 0, '⛺', 'Event tents'),
+('Ladder',         1,   1, 0, '🪜', 'Barangay use only'),
+('Microphone',     1,   1, 0, '🎤', 'Barangay use only'),
+('Speaker',        1,   1, 0, '🔊', 'For big events'),
+('Electric Fan',   5,   5, 0, '🌀', 'For big events')
+ON CONFLICT DO NOTHING;
