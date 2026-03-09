@@ -1648,7 +1648,7 @@
 
         async function loadMyCourtBookings() {
             const allBookings = await getCourtBookings();
-            const userBookings = allBookings.filter(b => b.userId === user.id);
+            const userBookings = allBookings.filter(b => String(b.userId) === String(user.id) || String(b.user_id) === String(user.id));
             const c = document.getElementById('myCourtBookingsList');
 
             if (userBookings.length === 0) {
@@ -1658,18 +1658,31 @@
 
             userBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
             c.innerHTML = userBookings.map(b => {
-                const bc = b.status === 'cancelled' ? 'badge-rejected' : 'badge-approved';
+                const statusClasses = {
+                    pending: 'badge-pending',
+                    approved: 'badge-approved',
+                    booked: 'badge-approved',
+                    rejected: 'badge-rejected',
+                    cancelled: 'badge-rejected'
+                };
+                const bc = statusClasses[b.status] || 'badge-pending';
+                const venueName = b.venueName || 'Basketball Court';
+                const timeDisplay = b.timeRange || b.time || '';
+                const adminNote = b.admin_comment
+                    ? `<div class="li-response" style="margin-top:8px;"><strong>Admin:</strong> ${b.admin_comment}</div>`
+                    : '';
                 return `
                     <div class="list-item">
                         <div class="li-header">
                             <div>
-                                <div class="li-title">${b.venueName || b.venue}</div>
-                                <div class="li-meta">📅 ${formatDate(b.date)} • ⏰ ${b.time} ${b.end_time ? '- ' + b.end_time : ''}</div>
+                                <div class="li-title">🏀 ${venueName}</div>
+                                <div class="li-meta">📅 ${formatDate(b.date)} • ⏰ ${timeDisplay}</div>
                             </div>
                             <span class="badge ${bc}">${b.status}</span>
                         </div>
-                        <div class="li-body"><strong>Purpose:</strong> ${b.purpose}</div>
-                        ${b.status !== 'cancelled' ? `
+                        <div class="li-body"><strong>Purpose:</strong> ${b.purpose || '—'}</div>
+                        ${adminNote}
+                        ${b.status !== 'cancelled' && b.status !== 'rejected' ? `
                         <div style="margin-top: 10px;">
                             <button class="btn" onclick="cancelCb(${b.id})" style="color: var(--danger); border-color: var(--danger-bg); background: var(--danger-bg); padding: 4px 10px; font-size: 11px;">Cancel Booking</button>
                         </div>

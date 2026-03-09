@@ -3117,8 +3117,9 @@
                 const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
                 const statusBadge = `<span style="padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; background:${sc.bg}; color:${sc.color};">${b.status}</span>`;
 
-                const venue = b.venueName || b.venue_name || b.venue || '—';
-                const timeStr = b.time + (b.end_time ? ' – ' + b.end_time : '');
+                const venue = b.venueName || '—';
+                const timeStr = b.timeRange || b.time || '—';
+
                 const residentName = b.userName || b.user_name || b.username || 'Unknown';
                 const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
 

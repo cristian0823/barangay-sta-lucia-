@@ -787,41 +787,53 @@ async function getEvents() {
 
 
 // Court Bookings
+function parseBookingTime(timeStr) {
+    // Handles both new format "Basketball Court | 8:00 AM – 10:00 AM"
+    // and old plain format "8:00 AM"
+    if (!timeStr) return { venueName: 'Basketball Court', timeRange: '' };
+    if (timeStr.includes(' | ')) {
+        const [venue, times] = timeStr.split(' | ');
+        return { venueName: venue.trim(), timeRange: times.trim() };
+    }
+    return { venueName: 'Basketball Court', timeRange: timeStr };
+}
+
 async function getCourtBookings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('court_bookings').select('*').order('date', { ascending: true });
-        // Only fall back to localStorage on actual error, not on empty results
+        const { data, error } = await supabase.from('court_bookings').select('*').order('date', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
-            return localData.map(item => ({
-                ...item,
-                venueName: item.venue || item.venueName || 'Basketball Court',
-                userName: item.userName || item.user_name || 'Unknown'
-            }));
+            return localData.map(item => {
+                const parsed = parseBookingTime(item.time);
+                return { ...item, venueName: item.venueName || parsed.venueName, timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown' };
+            });
         }
-        return (data || []).map(item => ({
-            ...item,
-            id: item.id,
-            userId: item.user_id,
-            userName: item.user_name || item.username || 'Unknown',
-            venueName: item.venue_name || item.venue || 'Basketball Court',
-            date: item.date,
-            time: item.time,
-            end_time: item.end_time || '',
-            purpose: item.purpose || '',
-            status: item.status || 'pending',
-            admin_comment: item.admin_comment || ''
-        }));
+        return (data || []).map(item => {
+            const parsed = parseBookingTime(item.time);
+            return {
+                ...item,
+                id: item.id,
+                userId: item.user_id,
+                userName: item.user_name || item.username || 'Unknown',
+                venueName: item.venue_name || item.venue || parsed.venueName,
+                timeRange: parsed.timeRange || item.time,
+                date: item.date,
+                time: item.time,
+                purpose: item.purpose || '',
+                status: item.status || 'pending',
+                admin_comment: item.admin_comment || ''
+            };
+        });
     } else {
         const data = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
-        return data.map(item => ({
-            ...item,
-            venueName: item.venue || item.venueName || 'Basketball Court',
-            userName: item.userName || item.user_name || 'Unknown'
-        }));
+        return data.map(item => {
+            const parsed = parseBookingTime(item.time);
+            return { ...item, venueName: item.venueName || parsed.venueName, timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown' };
+        });
     }
 }
+
 
 async function bookCourt(bookingData) {
     const user = getCurrentUser();
@@ -829,22 +841,26 @@ async function bookCourt(bookingData) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     const venue = bookingData.venue || 'basketball';
+    const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+
+    // Encode venue + time range into a single string so we don't need optional columns
+    const startTime = bookingData.time || '';
+    const endTime = bookingData.end_time || '';
+    const combinedTime = endTime
+        ? `${venueLabel} | ${startTime} – ${endTime}`
+        : `${venueLabel} | ${startTime}`;
 
     if (supabaseAvailable) {
         try {
-            // Build insert payload using only guaranteed-to-exist columns
-            const payload = {
+            // Insert using ONLY guaranteed-to-exist columns (works with any DB version)
+            const { error } = await supabase.from('court_bookings').insert([{
                 user_id: user.id,
                 user_name: user.fullName || user.username,
                 date: bookingData.date,
-                time: bookingData.time,
-                end_time: bookingData.end_time || null,
-                purpose: bookingData.purpose,
-                venue: venue,
+                time: combinedTime,
+                purpose: bookingData.purpose || '',
                 status: 'pending'
-            };
-
-            const { error } = await supabase.from('court_bookings').insert([payload]);
+            }]);
 
             if (error) throw error;
             return { success: true, message: 'Venue booked successfully!' };
@@ -853,33 +869,22 @@ async function bookCourt(bookingData) {
             return { success: false, message: 'Booking failed: ' + err.message };
         }
     }
-    // Local fallback
+
+    // Local fallback (offline mode)
     const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
-    const existing = bookings.find(b =>
-        b.date === bookingData.date &&
-        b.time === bookingData.time &&
-        b.venue === venue &&
-        b.status !== 'cancelled'
-    );
-
-    if (existing) {
-        return { success: false, message: 'This venue is already booked for this date and time' };
-    }
-
     const newBooking = {
         id: Date.now(),
         userId: user.id,
         userName: user.fullName || user.username,
         date: bookingData.date,
-        time: bookingData.time,
-        end_time: bookingData.end_time,
-        purpose: bookingData.purpose,
-        venue: venue,
-        status: 'booked'
+        time: combinedTime,
+        venueName: venueLabel,
+        purpose: bookingData.purpose || '',
+        status: 'pending'
     };
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-    return { success: true, message: 'Venue booked successfully!' };
+    return { success: true, message: 'Venue booked (offline mode)' };
 }
 
 
