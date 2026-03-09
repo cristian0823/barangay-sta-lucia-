@@ -1323,25 +1323,57 @@
                 <div class="section-header">
                     <div>
                         <h3>🏀 Court Bookings Management</h3>
-                        <p style="margin-top: 5px; color: #666;">View and manage basketball court bookings. Reply to
-                            users
-                            if there's an unexpected event.</p>
+                        <p style="margin-top: 5px; font-size: 13px; color: var(--muted);">Review, approve or reject
+                            resident court booking requests.</p>
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-small btn-light" onclick="generateBookingsCSV()">📊 Export CSV</button>
-                        <button class="btn btn-small btn-light"
-                            onclick="printReport('Court Bookings Report', getCourtBookings(), ['id', 'userName', 'venueName', 'date', 'time', 'purpose', 'status'])">🖨️
-                            Print</button>
-                    </div>
+                    <button class="btn btn-small btn-light" onclick="loadAdminBookings()">🔄 Refresh</button>
                 </div>
                 <div class="section-content" style="padding: 0;">
-                    <div id="courtBookingsList" class="court-bookings-grid"></div>
-                    <div id="noCourtBookings" class="empty-state">
-                        <div class="empty-state-icon">🏀</div>
-                        <p>No court bookings</p>
+                    <div class="admin-tables">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Resident</th>
+                                    <th>Venue</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courtBookingsTable"></tbody>
+                        </table>
+                        <div id="noCourtBookings" class="empty-state" style="display:none;">
+                            <div class="empty-state-icon">🏀</div>
+                            <p>No court bookings yet</p>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Reject Reason Modal -->
+            <div id="rejectReasonModal"
+                style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9000; align-items:center; justify-content:center;">
+                <div
+                    style="background:#fff; border-radius:16px; padding:28px; width:90%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+                    <h3 style="font-size:18px; font-weight:800; color:#111; margin-bottom:6px;">❌ Reject Booking</h3>
+                    <p style="font-size:13px; color:#6b7280; margin-bottom:18px;">Please provide a reason so the
+                        resident knows why their booking was rejected.</p>
+                    <textarea id="rejectReasonText" rows="4"
+                        placeholder="e.g. The venue is reserved for a barangay event on this date."
+                        style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
+                        onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'"></textarea>
+                    <div style="display:flex; gap:10px; margin-top:16px;">
+                        <button onclick="closeRejectModal()"
+                            style="flex:1; padding:11px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff;">Cancel</button>
+                        <button onclick="confirmReject()"
+                            style="flex:1; padding:11px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;">Confirm
+                            Reject</button>
+                    </div>
+                </div>
+            </div>
+
 
             <div id="concerns-section" class="section-container" style="display: none;">
                 <div class="section-header">
@@ -3052,6 +3084,117 @@
             </body></html>`);
             w.document.close();
         }
+
+        // ==========================================
+        // COURT BOOKINGS ADMIN MANAGEMENT
+        // ==========================================
+
+        let _rejectBookingId = null;
+
+        async function loadAdminBookings() {
+            const tbody = document.getElementById('courtBookingsTable');
+            const empty = document.getElementById('noCourtBookings');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
+
+            const allBookings = await getCourtBookings();
+            allBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (!allBookings.length) {
+                tbody.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            tbody.innerHTML = allBookings.map(b => {
+                const statusColors = {
+                    pending: { bg: '#fef9c3', color: '#854d0e' },
+                    approved: { bg: '#dcfce7', color: '#166534' },
+                    booked: { bg: '#dcfce7', color: '#166534' },
+                    rejected: { bg: '#fee2e2', color: '#991b1b' },
+                    cancelled: { bg: '#f1f5f9', color: '#475569' }
+                };
+                const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
+                const statusBadge = `<span style="padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; background:${sc.bg}; color:${sc.color};">${b.status}</span>`;
+
+                const venue = b.venueName || b.venue_name || b.venue || '—';
+                const timeStr = b.time + (b.end_time ? ' – ' + b.end_time : '');
+                const residentName = b.userName || b.user_name || b.username || 'Unknown';
+                const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
+
+                const isPending = b.status === 'pending' || b.status === 'booked';
+                const actions = isPending ? `
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <button onclick="approveAdminBooking(${b.id})"
+                            style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✅ Approve</button>
+                        <button onclick="openRejectModal(${b.id})"
+                            style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">❌ Reject</button>
+                    </div>` : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
+
+                return `<tr>
+                    <td><strong>${residentName}</strong></td>
+                    <td>${venue}</td>
+                    <td>${b.date}</td>
+                    <td>${timeStr}</td>
+                    <td>${b.purpose || '—'}${adminComment}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actions}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function approveAdminBooking(bookingId) {
+            if (!confirm('Approve this booking?')) return;
+            try {
+                const { error } = await supabase.from('court_bookings')
+                    .update({ status: 'approved', admin_comment: null })
+                    .eq('id', bookingId);
+                if (error) throw error;
+                showAlert('✅ Booking approved!', 'success');
+                await loadAdminBookings();
+            } catch (e) {
+                showAlert('Error: ' + e.message, 'error');
+            }
+        }
+
+        function openRejectModal(bookingId) {
+            _rejectBookingId = bookingId;
+            document.getElementById('rejectReasonText').value = '';
+            const modal = document.getElementById('rejectReasonModal');
+            modal.style.display = 'flex';
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectReasonModal').style.display = 'none';
+            _rejectBookingId = null;
+        }
+
+        async function confirmReject() {
+            const reason = document.getElementById('rejectReasonText').value.trim();
+            if (!reason) {
+                alert('Please enter a reason for rejection.');
+                return;
+            }
+            try {
+                const { error } = await supabase.from('court_bookings')
+                    .update({ status: 'rejected', admin_comment: reason })
+                    .eq('id', _rejectBookingId);
+                if (error) throw error;
+                closeRejectModal();
+                showAlert('❌ Booking rejected.', 'success');
+                await loadAdminBookings();
+            } catch (e) {
+                showAlert('Error: ' + e.message, 'error');
+            }
+        }
+
+        // Auto-load bookings when the Court Bookings tab is opened
+        const _origSwitchSection = window.switchSection;
+        window.switchSection = function (name, btn) {
+            if (_origSwitchSection) _origSwitchSection(name, btn);
+            if (name === 'court-bookings') loadAdminBookings();
+        };
+
     </script>
 </body>
 
