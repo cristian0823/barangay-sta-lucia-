@@ -103,4 +103,5 @@ CREATE TABLE IF NOT EXISTS court_bookings (
 -- ============================================================
 ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS end_time VARCHAR(100);
 ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS venue VARCHAR(100);
+ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS venue_name VARCHAR(255);
 ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS username VARCHAR(255);

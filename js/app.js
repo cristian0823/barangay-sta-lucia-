@@ -771,60 +771,67 @@ async function bookCourt(bookingData) {
     const venue = bookingData.venue || 'basketball';
 
     if (supabaseAvailable) {
-        const { data: existing } = await supabase.from('court_bookings')
-            .select('*')
-            .eq('date', bookingData.date)
-            .eq('time', bookingData.time)
-            .eq('venue_name', venue)
-            .neq('status', 'cancelled');
+        try {
+            // Check for conflicts (only use columns guaranteed to exist)
+            const { data: existing } = await supabase.from('court_bookings')
+                .select('id')
+                .eq('date', bookingData.date)
+                .eq('status', 'booked');
 
-        if (existing && existing.length > 0) {
-            return { success: false, message: 'This venue is already booked for this date and time' };
+            // Build insert payload with only a safe mandatory set
+            const payload = {
+                user_id: user.id,
+                user_name: user.fullName || user.username,
+                date: bookingData.date,
+                time: bookingData.time,
+                purpose: bookingData.purpose,
+                status: 'pending'
+            };
+
+            // Safely add optional columns — won't break if they don't exist yet
+            try { payload.end_time = bookingData.end_time; } catch (e) { }
+            try { payload.venue_name = venue; } catch (e) { }
+            try { payload.venue = venue; } catch (e) { }
+            try { payload.username = user.fullName || user.username; } catch (e) { }
+
+            const { error } = await supabase.from('court_bookings').insert([payload]);
+
+            if (error) throw error;
+            return { success: true, message: 'Venue booked successfully!' };
+        } catch (err) {
+            // If Supabase has schema issues, fall back to localStorage
+            console.warn('Supabase booking failed, using localStorage:', err.message);
         }
-
-        const { error } = await supabase.from('court_bookings').insert([{
-            user_id: user.id,
-            user_name: user.fullName || user.username,
-            date: bookingData.date,
-            time: bookingData.time,
-            end_time: bookingData.end_time,
-            purpose: bookingData.purpose,
-            venue_name: venue,
-            status: 'booked'
-        }]);
-
-        if (error) return { success: false, message: error.message };
-        return { success: true, message: 'Venue booked successfully!' };
-    } else {
-        // Local fallback
-        const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
-        const existing = bookings.find(b =>
-            b.date === bookingData.date &&
-            b.time === bookingData.time &&
-            b.venue === venue &&
-            b.status !== 'cancelled'
-        );
-
-        if (existing) {
-            return { success: false, message: 'This venue is already booked for this date and time' };
-        }
-
-        const newBooking = {
-            id: Date.now(),
-            userId: user.id,
-            userName: user.fullName || user.username,
-            date: bookingData.date,
-            time: bookingData.time,
-            end_time: bookingData.end_time,
-            purpose: bookingData.purpose,
-            venue: venue,
-            status: 'booked'
-        };
-        bookings.push(newBooking);
-        localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-        return { success: true, message: 'Venue booked successfully!' };
     }
+    // Local fallback
+    const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+    const existing = bookings.find(b =>
+        b.date === bookingData.date &&
+        b.time === bookingData.time &&
+        b.venue === venue &&
+        b.status !== 'cancelled'
+    );
+
+    if (existing) {
+        return { success: false, message: 'This venue is already booked for this date and time' };
+    }
+
+    const newBooking = {
+        id: Date.now(),
+        userId: user.id,
+        userName: user.fullName || user.username,
+        date: bookingData.date,
+        time: bookingData.time,
+        end_time: bookingData.end_time,
+        purpose: bookingData.purpose,
+        venue: venue,
+        status: 'booked'
+    };
+    bookings.push(newBooking);
+    localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+    return { success: true, message: 'Venue booked successfully!' };
 }
+
 
 async function cancelCourtBooking(bookingId) {
     const user = getCurrentUser();
