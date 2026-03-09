@@ -1,7 +1,11 @@
--- Run this script in your Supabase SQL Editor
+-- ============================================================
+-- Barangay Website — Supabase Schema (Full Setup)
+-- Run this script in your Supabase Dashboard → SQL Editor
+-- It is SAFE to run multiple times — uses IF NOT EXISTS
+-- ============================================================
 
 -- 1. Users Table (Custom Authentication)
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -12,12 +16,13 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
--- Insert default admin
+-- Insert default admin (skip if already exists)
 INSERT INTO users (username, password, full_name, email, role, avatar)
-VALUES ('admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A');
+VALUES ('admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A')
+ON CONFLICT (username) DO NOTHING;
 
 -- 2. Equipment Table
-CREATE TABLE equipment (
+CREATE TABLE IF NOT EXISTS equipment (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     quantity INTEGER NOT NULL,
@@ -26,7 +31,7 @@ CREATE TABLE equipment (
     description TEXT
 );
 
--- Insert default equipment
+-- Insert default equipment (skip if already exists)
 INSERT INTO equipment (name, quantity, available, icon, description) VALUES
 ('Chairs', 150, 150, '🪑', 'Plastic folding chairs'),
 ('Tables', 3, 3, '🪵', 'Tables (subject for availability)'),
@@ -34,10 +39,11 @@ INSERT INTO equipment (name, quantity, available, icon, description) VALUES
 ('Ladder', 1, 1, '🪜', 'Ladder (Barangay use only)'),
 ('Microphone', 1, 1, '🎤', 'Microphone (Barangay only)'),
 ('Speaker', 1, 1, '🔊', 'Speaker (Barangay only)'),
-('Electric Fan', 5, 5, '🌀', 'Electric Fan (For big events)');
+('Electric Fan', 5, 5, '🌀', 'Electric Fan (For big events)')
+ON CONFLICT DO NOTHING;
 
 -- 3. Borrowings Table
-CREATE TABLE borrowings (
+CREATE TABLE IF NOT EXISTS borrowings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     user_name VARCHAR(255),
@@ -50,7 +56,7 @@ CREATE TABLE borrowings (
 );
 
 -- 4. Concerns Table
-CREATE TABLE concerns (
+CREATE TABLE IF NOT EXISTS concerns (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     user_name VARCHAR(255),
@@ -64,7 +70,7 @@ CREATE TABLE concerns (
 );
 
 -- 5. Events Table
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
@@ -76,22 +82,24 @@ CREATE TABLE events (
 );
 
 -- 6. Court Bookings Table
-CREATE TABLE court_bookings (
+CREATE TABLE IF NOT EXISTS court_bookings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     user_name VARCHAR(255),
+    username VARCHAR(255),
     date DATE NOT NULL,
     time VARCHAR(100) NOT NULL,
     end_time VARCHAR(100),
-    purpose TEXT,
+    venue VARCHAR(100),
     venue_name VARCHAR(255),
+    purpose TEXT,
     status VARCHAR(50) DEFAULT 'pending',
     admin_comment TEXT
 );
 
 -- ============================================================
--- PATCH: Run these if your live database was set up before
--- these columns were added. Safe to run multiple times.
+-- PATCH: Add any missing columns to existing live databases
+-- These are 100% safe to run even if columns already exist
 -- ============================================================
 ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS end_time VARCHAR(100);
 ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS venue VARCHAR(100);
