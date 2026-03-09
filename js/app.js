@@ -832,35 +832,25 @@ async function bookCourt(bookingData) {
 
     if (supabaseAvailable) {
         try {
-            // Check for conflicts (only use columns guaranteed to exist)
-            const { data: existing } = await supabase.from('court_bookings')
-                .select('id')
-                .eq('date', bookingData.date)
-                .eq('status', 'booked');
-
-            // Build insert payload with only a safe mandatory set
+            // Build insert payload using only guaranteed-to-exist columns
             const payload = {
                 user_id: user.id,
                 user_name: user.fullName || user.username,
                 date: bookingData.date,
                 time: bookingData.time,
+                end_time: bookingData.end_time || null,
                 purpose: bookingData.purpose,
+                venue: venue,
                 status: 'pending'
             };
-
-            // Safely add optional columns — won't break if they don't exist yet
-            try { payload.end_time = bookingData.end_time; } catch (e) { }
-            try { payload.venue_name = venue; } catch (e) { }
-            try { payload.venue = venue; } catch (e) { }
-            try { payload.username = user.fullName || user.username; } catch (e) { }
 
             const { error } = await supabase.from('court_bookings').insert([payload]);
 
             if (error) throw error;
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
-            // If Supabase has schema issues, fall back to localStorage
-            console.warn('Supabase booking failed, using localStorage:', err.message);
+            console.error('Supabase booking error:', err.message);
+            return { success: false, message: 'Booking failed: ' + err.message };
         }
     }
     // Local fallback
