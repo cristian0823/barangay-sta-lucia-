@@ -20,46 +20,140 @@
             --white: #ffffff;
         }
 
+        /* ── DARK MODE ── */
         [data-theme="dark"] {
             --text: #f1f5f9;
-            --muted: #94a3b8;
-            --border: #334155;
-            --bg: #0f172a;
-            --white: #1e293b;
+            --muted: #a7f3d0;
+            --border: #14532d;
+            --surface: #064e3b;
+            --bg: #022c22;
+            --white: #064e3b;
             --green-50: #0d2818;
-            --green-light: #14532d;
+            --green-100: #14532d;
+            --green-200: #166534;
+            --dark: #f1f5f9;
+            --warning-bg: #1c1a0a;
+            --warning-border: #713f12;
+            --warning-text: #fde68a;
+            --danger-bg: #1c0a0a;
+            --danger-border: #7f1d1d;
         }
 
-        [data-theme="dark"] aside {
-            background: #1e293b;
-            border-color: #334155;
+        [data-theme="dark"] .dashboard-header {
+            background: #064e3b;
+            border-color: #14532d;
         }
 
-        [data-theme="dark"] .data-table th {
+        [data-theme="dark"] .sidebar {
+            background: #064e3b;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .section-container,
+        [data-theme="dark"] .court-booking-card,
+        [data-theme="dark"] .modal-content {
+            background: #064e3b;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .stat-card {
+            background: #064e3b;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] table th {
             background: #0d2818;
+            color: #6ee7b7;
         }
 
-        [data-theme="dark"] .data-table tr:hover td {
-            background: #0d2818;
-        }
-
-        [data-theme="dark"] .form-group input {
-            background: #263244;
+        [data-theme="dark"] table td {
+            border-color: #14532d;
             color: var(--text);
-            border-color: var(--border);
         }
 
-        [data-theme="dark"] .stat-item {
-            background: #1e293b;
+        [data-theme="dark"] table tr:hover td {
+            background: #0d2818;
         }
 
-        [data-theme="dark"] .card {
-            background: #1e293b;
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: #0d2818;
+            color: var(--text);
+            border-color: #14532d;
         }
 
-        .dark-mode-toggle {
-            display: none;
-            /* Replaced by dashboard header icon if needed, or simply skipped since it syncs */
+        [data-theme="dark"] .bg-white.rounded-xl,
+        [data-theme="dark"] .bg-white.rounded-2xl {
+            background-color: #064e3b;
+            color: #f1f5f9;
+            border: 1px solid #14532d;
+        }
+
+        [data-theme="dark"] .text-gray-800,
+        [data-theme="dark"] .text-gray-700,
+        [data-theme="dark"] .text-gray-600,
+        [data-theme="dark"] .text-gray-500 {
+            color: #a7f3d0;
+        }
+
+        [data-theme="dark"] .calendar-day.bg-green-100 {
+            background-color: #0d2818;
+            color: #6ee7b7;
+        }
+
+        [data-theme="dark"] .calendar-day.bg-purple-100 {
+            background-color: #1e1b4b;
+            color: #c084fc;
+        }
+
+        [data-theme="dark"] .calendar-day.bg-red-100 {
+            background-color: #450a0a;
+            color: #fca5a5;
+        }
+
+        [data-theme="dark"] .bg-gray-200 {
+            background-color: #14532d;
+            color: #6ed7b7;
+        }
+
+        [data-theme="dark"] .bg-gray-50 {
+            background-color: #0d2818;
+        }
+
+        [data-theme="dark"] .sidebar-btn {
+            color: #a7f3d0;
+        }
+
+        [data-theme="dark"] .sidebar-btn:hover,
+        [data-theme="dark"] .sidebar-btn.active {
+            background: #0d2818;
+            color: #6ee7b7;
+        }
+
+        [data-theme="dark"] .event-item {
+            background: #064e3b;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .dashboard-header,
+        [data-theme="dark"] .sidebar-nav,
+        [data-theme="dark"] .stat-card {
+            background: #064e3b;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .modal {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        [data-theme="dark"] .stat-icon {
+            background: #0d2818;
+            border-color: #14532d;
+        }
+
+        [data-theme="dark"] .welcome-banner.admin-banner {
+            background: linear-gradient(135deg, #064e3b, #065f46);
         }
 
         * {
@@ -75,10 +169,10 @@
             min-height: 100vh;
         }
 
-        /* ── HEADER ── */
+        /* HEADER */
         .dashboard-header {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
+            background: #fff;
+            border-bottom: 1px solid var(--green-200);
             padding: 0 32px;
             display: flex;
             justify-content: space-between;
@@ -88,11 +182,6 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 1px 6px rgba(16, 185, 129, 0.08);
-        }
-
-        [data-theme="dark"] .dashboard-header {
-            background: #1e293b;
-            border-color: #334155;
         }
 
         .dashboard-nav {
@@ -111,14 +200,14 @@
             width: 38px;
             height: 38px;
             border-radius: 10px;
-            border: 1.5px solid var(--green-light);
+            border: 1.5px solid var(--green-200);
             object-fit: cover;
         }
 
         .dashboard-logo span {
             font-size: 15px;
             font-weight: 700;
-            color: var(--green);
+            color: var(--green-xl);
         }
 
         .user-menu {
@@ -146,7 +235,7 @@
             text-transform: capitalize;
         }
 
-        .user-avatar-top {
+        .user-avatar {
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -157,7 +246,30 @@
             justify-content: center;
             font-weight: 800;
             font-size: 14px;
-            border: 2px solid var(--green-light);
+            border: 2px solid var(--green-200);
+        }
+
+        .admin-dark-toggle {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 8px;
+            padding: 7px 12px;
+            width: 44px;
+            height: 36px;
+            box-sizing: border-box;
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background .2s;
+            color: #1a2e1f;
+            line-height: 1;
+        }
+
+        .admin-dark-toggle:hover {
+            background: rgba(255, 255, 255, .25);
         }
 
         .logout-btn {
@@ -167,21 +279,33 @@
             font-family: inherit;
             font-size: 13px;
             font-weight: 600;
-            transition: all .2s;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             height: 36px;
             box-sizing: border-box;
+        }
+
+        .logout-btn:first-of-type {
             border: 1.5px solid var(--border);
             background: transparent;
             color: var(--muted);
-            text-decoration: none;
         }
 
-        .logout-btn:hover {
+        .logout-btn:first-of-type:hover {
             border-color: #9ca3af;
             color: var(--text);
+        }
+
+        .logout-btn:last-of-type {
+            border: 1.5px solid var(--danger-border);
+            background: transparent;
+            color: var(--danger);
+        }
+
+        .logout-btn:last-of-type:hover {
+            background: var(--danger-bg);
         }
 
         .dashboard-content {
@@ -190,22 +314,17 @@
             padding: 28px 32px 80px;
         }
 
-        /* ── HORIZONTAL TABS ── */
+        /* NAV TABS */
         .sidebar-nav {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
             margin-bottom: 22px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
             padding: 6px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] .sidebar-nav {
-            background: #1e293b;
-            border-color: #334155;
+            box-shadow: var(--shadow-sm);
         }
 
         .sidebar-btn {
@@ -217,7 +336,7 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all .2s;
+            transition: var(--transition);
             font-family: inherit;
             display: flex;
             align-items: center;
@@ -227,17 +346,14 @@
         }
 
         .sidebar-btn:hover {
-            color: var(--green);
+            color: var(--green-xl);
             background: var(--green-50);
         }
 
         .sidebar-btn.active {
-            background: var(--green);
-            color: white;
-        }
-
-        .sidebar-btn.active:hover {
-            background: var(--green-dark);
+            background: var(--green-50);
+            color: var(--green-xl);
+            border: 1.5px solid var(--green-200);
         }
 
         h1.section-title {
@@ -529,20 +645,30 @@
     <!-- Header to match admin.html -->
     <header class="dashboard-header">
         <div class="dashboard-nav">
+            <!-- Mobile hamburger (hidden on desktop, just here for structure) -->
+            <button class="hamburger-btn" style="display:none;" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
             <div class="dashboard-logo">
                 <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
                 <span>Admin Dashboard</span>
             </div>
         </div>
-        <div class="user-menu">
+        <div class="user-menu" style="display:flex; align-items:center; gap:12px;">
             <div class="user-info">
                 <span class="user-name" id="topUserName">Administrator</span>
                 <span class="user-role">Official</span>
             </div>
-            <div class="user-avatar-top" id="topUserAvatar">A</div>
+            <!-- Notification badge (hidden in settings but needed for layout consistency) -->
+            <div class="notification-badge" style="visibility:hidden;">🔔</div>
+            <div class="user-avatar" id="topUserAvatar">A</div>
             <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
                 title="Toggle Dark Mode">🌙</button>
-            <a class="logout-btn" href="admin.html"><i class="bi bi-arrow-left" style="margin-right: 5px;"></i> Back</a>
+            <!-- REPLACED SETTINGS BUTTON WITH BACK BUTTON USING SAME STYLE -->
+            <a class="logout-btn" href="admin.html" style="text-decoration:none;"><i class="bi bi-arrow-left"
+                    style="margin-right: 5px;"></i> Back</a>
+            <button class="logout-btn" style="visibility:hidden;">Logout</button>
+            <!-- Hidden spacer to keep width identical -->
         </div>
     </header>
 
