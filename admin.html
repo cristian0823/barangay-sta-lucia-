@@ -1280,18 +1280,32 @@
             </div>
 
             <div class="sidebar-nav">
+                <button class="sidebar-btn active" onclick="switchSection('overview', this)">🌍 Overview</button>
                 <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">🏀 Court Bookings</button>
-                <button class="sidebar-btn active" onclick="switchSection('requests', this)">📦 Equipment
-                    Requests</button>
+                <button class="sidebar-btn" onclick="switchSection('requests', this)">📦 Equipment Requests</button>
                 <button class="sidebar-btn" onclick="switchSection('concerns', this)">📋 Concerns</button>
                 <button class="sidebar-btn" onclick="switchSection('events', this)">📅 Court Events</button>
                 <button class="sidebar-btn" onclick="switchSection('equipment', this)">🪑 Equipment</button>
                 <button class="sidebar-btn" onclick="switchSection('users', this)">👥 Users</button>
                 <button class="sidebar-btn" onclick="switchSection('reports', this)">📊 Reports</button>
-                <button class="sidebar-btn" onclick="switchSection('activity-log', this)">📝 Activity Log</button>
+                <button class="sidebar-btn" onclick="switchSection('activity-log', this)">📝 Actions Log</button>
             </div>
 
-            <div id="requests-section" class="section-container">
+            <!-- Overview Section (Real-Time Feed) -->
+            <div id="overview-section" class="section-container">
+                <div class="section-header">
+                    <h3>Live Barangay Activity Feed</h3>
+                </div>
+                <div class="section-content" style="padding: 16px;">
+                    <div id="liveActivityFeed" style="display:flex;flex-direction:column;gap:12px;">
+                        <div style="text-align:center;padding:30px;color:var(--muted);"><i class="bi bi-arrow-repeat"
+                                style="font-size:24px;display:inline-block;animation:spin 1s linear infinite;"></i><br>Loading
+                            live feed...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="requests-section" class="section-container" style="display: none;">
                 <div class="section-header">
                     <h3>Equipment Borrowing Requests</h3>
                 </div>
@@ -2682,6 +2696,11 @@
 
         document.getElementById('eventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
             const result = await createEvent({
                 title: document.getElementById('eventTitle').value,
                 date: document.getElementById('eventDate').value,
@@ -2690,6 +2709,10 @@
                 location: document.getElementById('eventLocation').value,
                 organizer: document.getElementById('eventOrganizer').value
             });
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
             if (result.success) {
                 showAlert('Event created', 'success');
                 closeModal('eventModal');
@@ -2716,6 +2739,11 @@
 
         document.getElementById('editEventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
             const eventId = parseInt(document.getElementById('editEventId').value);
             const result = await editEvent(eventId, {
                 title: document.getElementById('editEventTitle').value,
@@ -2725,6 +2753,9 @@
                 location: document.getElementById('editEventLocation').value,
                 organizer: document.getElementById('editEventOrganizer').value
             });
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
 
             if (result.success !== false) {
                 showAlert('Event updated successfully', 'success');
@@ -2797,6 +2828,11 @@
 
         document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
             const result = await addEquipment({
                 name: document.getElementById('equipName').value,
                 icon: document.getElementById('equipIcon').value,
@@ -2806,6 +2842,9 @@
                 broken: 0,
                 is_archived: false
             });
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
 
             if (result.success) {
                 showAlert('Equipment added', 'success');
@@ -2834,6 +2873,11 @@
 
         document.getElementById('editEquipmentForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
             const id = parseInt(document.getElementById('editEquipId').value);
             const updates = {
                 name: document.getElementById('editEquipName').value,
@@ -2845,6 +2889,10 @@
             };
 
             const result = await updateEquipment(id, updates);
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
             if (result.success) {
                 showAlert('Equipment updated', 'success');
                 closeModal('editEquipmentModal');
@@ -3189,13 +3237,112 @@
             }
         }
 
-        // Auto-load bookings when the Court Bookings tab is opened
+        let _overviewRefreshTimer = null;
+
+        async function loadOverview() {
+            // Update top stat cards
+            const [users, equipment, borrowings, bookings, concerns] = await Promise.all([
+                getAllUsers(), getEquipment(), getAllBorrowings(), getCourtBookings(), getAllConcerns()
+            ]);
+
+            const pendingReqs = borrowings.filter(b => b.status === 'pending').length;
+            const pendingCons = concerns.filter(c => c.status === 'pending').length;
+            const upcEvents = bookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
+
+            const reqEl = document.getElementById('pendingRequests');
+            if (reqEl) reqEl.textContent = pendingReqs;
+            const conEl = document.getElementById('pendingConcerns');
+            if (conEl) conEl.textContent = pendingCons;
+            const evtEl = document.getElementById('upcomingEvents');
+            if (evtEl) evtEl.textContent = upcEvents;
+            const usrEl = document.getElementById('totalUsers');
+            if (usrEl) usrEl.textContent = users.length;
+
+            // Build Live Feed
+            const feedContainer = document.getElementById('liveActivityFeed');
+            if (!feedContainer) return;
+
+            let feedItems = [];
+
+            borrowings.forEach(b => {
+                feedItems.push({
+                    type: 'borrowing',
+                    title: `${b.user_name || 'A user'} requested to borrow ${b.quantity}x ${b.equipment}`,
+                    subtitle: `Status: <span style="font-weight:600;text-transform:uppercase;font-size:10px;">${b.status}</span> | For: ${b.purpose || 'Unspecified'}`,
+                    date: new Date(b.created_at || b.borrow_date || new Date()), // Fallback to borrow_date
+                    icon: '📦',
+                    color: '#f59e0b'
+                });
+            });
+
+            concerns.forEach(c => {
+                feedItems.push({
+                    type: 'concern',
+                    title: `${c.userName || 'A user'} submitted a new concern: ${c.title || c.category}`,
+                    subtitle: `Status: <span style="font-weight:600;text-transform:uppercase;font-size:10px;">${c.status}</span> | Location: ${c.address || 'Unspecified'}`,
+                    date: new Date(c.createdAt || new Date()),
+                    icon: '📋',
+                    color: '#ef4444'
+                });
+            });
+
+            bookings.forEach(b => {
+                feedItems.push({
+                    type: 'booking',
+                    title: `${b.username || b.userName || b.user_name || 'A user'} booked ${b.venueName || b.venue_name || b.venue || 'the court'}`,
+                    subtitle: `Status: <span style="font-weight:600;text-transform:uppercase;font-size:10px;">${b.status}</span> | Date: ${b.date}`,
+                    date: new Date(b.created_at || b.date || new Date()),
+                    icon: '🏀',
+                    color: '#3b82f6'
+                });
+            });
+
+            feedItems.sort((a, b) => b.date - a.date);
+            const topFeed = feedItems.slice(0, 20);
+
+            if (topFeed.length === 0) {
+                feedContainer.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);"><i class="bi bi-inbox" style="font-size:24px;opacity:0.5;display:block;margin-bottom:8px;"></i>No recent activity found.</div>';
+            } else {
+                feedContainer.innerHTML = topFeed.map(item => `
+                    <div style="display:flex;gap:14px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff;align-items:center;transition:all 0.2s;">
+                        <div style="width:42px;height:42px;border-radius:12px;background:${item.color}15;color:${item.color};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
+                            ${item.icon}
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;line-height:1.3;">${item.title}</div>
+                            <div style="font-size:12px;color:var(--muted);">${item.subtitle}</div>
+                        </div>
+                        <div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;background:var(--bg);padding:4px 8px;border-radius:6px;">
+                            ${item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Auto-refresh every 30 seconds if tab is active
+            if (_overviewRefreshTimer) clearInterval(_overviewRefreshTimer);
+            _overviewRefreshTimer = setInterval(() => {
+                const sect = document.getElementById('overview-section');
+                if (sect && (sect.style.display !== 'none')) {
+                    loadOverview();
+                }
+            }, 30000);
+        }
+
+        // Auto-load sections when tabs are clicked
         const _origSwitchSection = window.switchSection;
         window.switchSection = function (name, btn) {
             if (_origSwitchSection) _origSwitchSection(name, btn);
+            if (name === 'overview') loadOverview();
             if (name === 'court-bookings') loadAdminBookings();
             if (name === 'concerns') loadConcerns();
+            if (name === 'equipment') loadEquipment();
         };
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOverview();
+        });
 
         // ==========================================
         // CONCERNS ADMIN MANAGEMENT

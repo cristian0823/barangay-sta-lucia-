@@ -1658,27 +1658,33 @@
 
             userBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
             c.innerHTML = userBookings.map(b => {
-                const statusClasses = {
-                    pending: 'badge-pending',
-                    approved: 'badge-approved',
-                    booked: 'badge-approved',
-                    rejected: 'badge-rejected',
-                    cancelled: 'badge-rejected'
-                };
-                const bc = statusClasses[b.status] || 'badge-pending';
                 const venueName = b.venueName || 'Basketball Court';
                 const timeDisplay = b.timeRange || b.time || '';
                 const adminNote = b.admin_comment
                     ? `<div class="li-response" style="margin-top:8px;"><strong>Admin:</strong> ${b.admin_comment}</div>`
                     : '';
+
+                let step = 1;
+                if (b.status === 'approved' || b.status === 'booked') step = 2;
+                if (b.status === 'rejected' || b.status === 'cancelled') step = -1;
+
+                const trackerHtml = `
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:6px 12px;border-radius:20px;">
+                    <span style="color:${step >= 1 ? '#10b981' : 'inherit'}">${step >= 1 ? '✓' : '○'} Submitted</span>
+                    <span style="color:#cbd5e1">➔</span>
+                    ${step === -1 ? `<span style="color:#ef4444">❌ ${b.status}</span>` : `<span style="color:${step >= 2 ? '#10b981' : 'inherit'}">${step >= 2 ? '✅ Approved' : '⏳ Reviewing'}</span>`}
+                </div>`;
+
                 return `
                     <div class="list-item">
-                        <div class="li-header">
-                            <div>
-                                <div class="li-title">🏀 ${venueName}</div>
-                                <div class="li-meta">📅 ${formatDate(b.date)} • ⏰ ${timeDisplay}</div>
+                        <div class="li-header" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                            <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;">
+                                <div>
+                                    <div class="li-title">🏀 ${venueName}</div>
+                                    <div class="li-meta">📅 ${formatDate(b.date)} • ⏰ ${timeDisplay}</div>
+                                </div>
+                                ${trackerHtml}
                             </div>
-                            <span class="badge ${bc}">${b.status}</span>
                         </div>
                         <div class="li-body"><strong>Purpose:</strong> ${b.purpose || '—'}</div>
                         ${adminNote}
@@ -1778,11 +1784,29 @@
             if (!concerns.length) { c.innerHTML = '<div class="empty-state"><span>📋</span><p>No concerns submitted yet.</p></div>'; return; }
             concerns.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             c.innerHTML = concerns.map(concern => {
-                const bc = { pending: 'badge-pending', resolved: 'badge-approved', rejected: 'badge-rejected' }[concern.status] || 'badge-pending';
+                let step = 1;
+                let s = concern.status || 'pending';
+                if (s === 'in-progress') step = 2;
+                if (s === 'resolved' || s === 'closed') step = 3;
+                if (s === 'rejected' || s === 'cancelled') step = -1;
+
+                const trackerHtml = `
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:6px 12px;border-radius:20px;">
+                    <span style="color:${step >= 1 ? '#10b981' : 'inherit'}">${step >= 1 ? '✓' : '○'} Submitted</span>
+                    <span style="color:#cbd5e1">➔</span>
+                    ${step === -1 ? `<span style="color:#ef4444">❌ ${s}</span>` : `
+                    <span style="color:${step >= 2 ? '#3b82f6' : 'inherit'}">${step >= 2 ? '🔧 Fixing' : '⏳ Reviewing'}</span>
+                    <span style="color:#cbd5e1">➔</span>
+                    <span style="color:${step >= 3 ? '#10b981' : 'inherit'}">${step >= 3 ? '✅ Resolved' : '○ Resolved'}</span>
+                    `}
+                </div>`;
+
                 return `<div class="list-item">
-                    <div class="li-header">
-                        <div><div class="li-title">${concern.title}</div><div class="li-meta">${concern.category} • ${formatDate(concern.createdAt)} • 📍 ${concern.address || 'N/A'}</div></div>
-                        <span class="badge ${bc}">${concern.status}</span>
+                    <div class="li-header" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                        <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;">
+                            <div><div class="li-title">${concern.title}</div><div class="li-meta">${concern.category} • ${formatDate(concern.createdAt)} • 📍 ${concern.address || 'N/A'}</div></div>
+                            ${trackerHtml}
+                        </div>
                     </div>
                     <div class="li-body">${concern.description}</div>
                     ${concern.response ? `<div class="li-response"><strong>Admin Response:</strong> ${concern.response}</div>` : ''}
@@ -1808,11 +1832,29 @@
             if (!borrowings.length) { c.innerHTML = '<div class="empty-state"><span>📦</span><p>No borrowings yet. Request some equipment!</p></div>'; return; }
             borrowings.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
             c.innerHTML = borrowings.map(b => {
-                const bc = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected', returned: 'badge-returned' }[b.status] || 'badge-pending';
+                let step = 1;
+                let s = b.status || 'pending';
+                if (s === 'approved') step = 2;
+                if (s === 'returned') step = 3;
+                if (s === 'rejected' || s === 'cancelled') step = -1;
+
+                const trackerHtml = `
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:6px 12px;border-radius:20px;">
+                    <span style="color:${step >= 1 ? '#10b981' : 'inherit'}">${step >= 1 ? '✓' : '○'} Req</span>
+                    <span style="color:#cbd5e1">➔</span>
+                    ${step === -1 ? `<span style="color:#ef4444">❌ ${s}</span>` : `
+                    <span style="color:${step >= 2 ? '#3b82f6' : 'inherit'}">${step >= 2 ? '👍 Appr.' : '⏳ Rev'}</span>
+                    <span style="color:#cbd5e1">➔</span>
+                    <span style="color:${step >= 3 ? '#10b981' : 'inherit'}">${step >= 3 ? '✅ Returned' : '○ Rtn'}</span>
+                    `}
+                </div>`;
+
                 return `<div class="list-item">
-                    <div class="li-header">
-                        <div><div class="li-title">${b.equipment}</div><div class="li-meta">Qty: ${b.quantity} • ${formatDate(b.borrowDate)} → ${formatDate(b.returnDate)}</div></div>
-                        <span class="badge ${bc}">${b.status}</span>
+                    <div class="li-header" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                        <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;">
+                            <div><div class="li-title">${b.equipment}</div><div class="li-meta">Qty: ${b.quantity} • ${formatDate(b.borrowDate)} → ${formatDate(b.returnDate)}</div></div>
+                            ${trackerHtml}
+                        </div>
                     </div>
                     <div class="li-body"><strong>Purpose:</strong> ${b.purpose}</div>
                 </div>`;

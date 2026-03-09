@@ -86,6 +86,14 @@ CREATE TABLE IF NOT EXISTS court_bookings (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+CREATE TABLE IF NOT EXISTS activity_log (
+    id SERIAL PRIMARY KEY,
+    admin_username VARCHAR(255),
+    action VARCHAR(255),
+    details TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
 
 -- ============================================================
 -- STEP 2: PATCH MISSING COLUMNS (safe to re-run)
@@ -95,6 +103,8 @@ ALTER TABLE equipment ADD COLUMN IF NOT EXISTS broken INTEGER DEFAULT 0;
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT false;
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
 
 
 -- ============================================================

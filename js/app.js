@@ -391,6 +391,41 @@ async function updateEquipment(id, updates) {
     }
 }
 
+async function addEquipment(equipmentData) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const payload = {
+            name: equipmentData.name,
+            icon: equipmentData.icon || '📦',
+            description: equipmentData.description || '',
+            quantity: equipmentData.quantity || 1,
+            available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
+            broken: equipmentData.broken || 0,
+            is_archived: equipmentData.is_archived || false
+        };
+        const { error } = await supabase.from('equipment').insert([payload]);
+        if (error) return { success: false, message: error.message };
+        return { success: true, message: 'Equipment added successfully' };
+    } else {
+        initializeLocalEquipment();
+        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
+        const newId = equipment.length > 0 ? Math.max(...equipment.map(e => e.id)) + 1 : 1;
+        const newEq = {
+            id: newId,
+            name: equipmentData.name,
+            icon: equipmentData.icon || '📦',
+            description: equipmentData.description || '',
+            quantity: equipmentData.quantity || 1,
+            available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
+            broken: equipmentData.broken || 0,
+            isArchived: equipmentData.is_archived || false
+        };
+        equipment.push(newEq);
+        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        return { success: true, message: 'Equipment added successfully' };
+    }
+}
+
 async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, purpose) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
@@ -1223,6 +1258,8 @@ async function updateUserProfile(updates) {
     const payload = {};
     if (updates.fullName) payload.full_name = updates.fullName;
     if (updates.email) payload.email = updates.email;
+    if (updates.phone) payload.contact_number = updates.phone;
+    if (updates.address) payload.address = updates.address;
 
     if (supabaseAvailable) {
         const { error } = await supabase.from('users').update(payload).eq('id', user.id);
@@ -1237,6 +1274,8 @@ async function updateUserProfile(updates) {
             users[index].avatar = updates.fullName.charAt(0).toUpperCase();
         }
         if (updates.email) users[index].email = updates.email;
+        if (updates.phone) users[index].contact_number = updates.phone;
+        if (updates.address) users[index].address = updates.address;
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
     }
 
