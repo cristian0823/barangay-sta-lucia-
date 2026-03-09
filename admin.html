@@ -176,6 +176,8 @@
             border-radius: 8px;
             padding: 7px 12px;
             width: 44px;
+            height: 36px;
+            box-sizing: border-box;
             text-align: center;
             display: inline-flex;
             justify-content: center;
@@ -286,6 +288,11 @@
             font-size: 13px;
             font-weight: 600;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            box-sizing: border-box;
         }
 
         .logout-btn:first-of-type {
@@ -1225,12 +1232,13 @@
                     <span>Admin Dashboard</span>
                 </div>
             </div>
-            <div class="user-menu">
+            <div class="user-menu" style="display:flex; align-items:center; gap:12px;">
                 <div class="user-info">
                     <span class="user-name" id="userName">Administrator</span>
                     <span class="user-role">Official</span>
                 </div>
-                <div class="notification-badge" id="notificationBadge" data-count="0" onclick="showSection('requests')">
+                <div class="notification-badge" id="notificationBadge" data-count="0"
+                    onclick="switchSection('requests', null)">
                     🔔</div>
                 <div class="user-avatar" id="userAvatar">A</div>
                 <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
