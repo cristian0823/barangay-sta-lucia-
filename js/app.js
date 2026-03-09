@@ -624,8 +624,22 @@ async function getMyConcerns() {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data } = await supabase.from('concerns').select('*').eq('user_id', user.id).order('id', { ascending: false });
-        return mapRecords(data);
+        const { data, error } = await supabase.from('concerns').select('*').eq('user_id', user.id).order('id', { ascending: false });
+        if (error || !data) return [];
+        return data.map(item => ({
+            ...item,
+            id: item.id,
+            userId: item.user_id,
+            userName: item.user_name || item.username || 'Unknown',
+            category: item.category || '',
+            title: item.title || '',
+            description: item.description || '',
+            address: item.address || '',
+            status: item.status || 'pending',
+            response: item.response || '',
+            assignedTo: item.assigned_to || '',
+            createdAt: item.created_at || new Date().toISOString()
+        }));
     } else {
         const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
         return concerns.filter(c => c.userId === user.id).map(item => ({
@@ -640,16 +654,28 @@ async function getAllConcerns() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('concerns').select('*').order('id', { ascending: false });
-        // If error or no data, use localStorage
-        if (error || !data || data.length === 0) {
-            const data = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
-            return data.map(item => ({
+        if (error) {
+            const localData = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
+            return localData.map(item => ({
                 ...item,
                 userName: item.userName || item.user_name || 'Unknown',
                 createdAt: item.createdAt || item.created_at || new Date().toISOString()
             }));
         }
-        return mapRecords(data);
+        return (data || []).map(item => ({
+            ...item,
+            id: item.id,
+            userId: item.user_id,
+            userName: item.user_name || item.username || 'Unknown',
+            category: item.category || '',
+            title: item.title || '',
+            description: item.description || '',
+            address: item.address || '',
+            status: item.status || 'pending',
+            response: item.response || '',
+            assignedTo: item.assigned_to || '',
+            createdAt: item.created_at || new Date().toISOString()
+        }));
     } else {
         const data = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
         return data.map(item => ({

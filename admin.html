@@ -3193,9 +3193,155 @@
         window.switchSection = function (name, btn) {
             if (_origSwitchSection) _origSwitchSection(name, btn);
             if (name === 'court-bookings') loadAdminBookings();
+            if (name === 'concerns') loadConcerns();
         };
 
+        // ==========================================
+        // CONCERNS ADMIN MANAGEMENT
+        // ==========================================
+
+        let _currentConcernId = null;
+
+        async function loadConcerns() {
+            const tbody = document.getElementById('concernsTable');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
+
+            const concerns = await getAllConcerns();
+
+            if (!concerns.length) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">📋 No concerns submitted yet</td></tr>';
+                return;
+            }
+
+            const statusColors = {
+                pending: { bg: '#fef9c3', color: '#854d0e' },
+                'in-progress': { bg: '#dbeafe', color: '#1e40af' },
+                resolved: { bg: '#dcfce7', color: '#166534' },
+                closed: { bg: '#f1f5f9', color: '#475569' }
+            };
+
+            tbody.innerHTML = concerns.map(c => {
+                const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#374151' };
+                const badge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${c.status}</span>`;
+                const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;">✅ Replied</div>` : '';
+                return `<tr>
+                    <td><strong>${c.userName || '—'}</strong></td>
+                    <td>${c.address || '—'}</td>
+                    <td>${c.category || '—'}</td>
+                    <td>${c.title || '—'}${responseNote}</td>
+                    <td>${c.assignedTo || '<span style="color:#9ca3af;">Unassigned</span>'}</td>
+                    <td>${date}</td>
+                    <td>${badge}</td>
+                    <td>
+                        <button onclick="openConcernRespond(${c.id})"
+                            style="padding:6px 12px;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">📝 Respond</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function openConcernRespond(concernId) {
+            _currentConcernId = concernId;
+            document.getElementById('adminConcernId').value = concernId;
+            document.getElementById('adminConcernStatus').value = 'in-progress';
+            document.getElementById('adminConcernAssignee').value = '';
+            document.getElementById('adminConcernResponse').value = '';
+            document.getElementById('adminConcernModal').style.display = 'flex';
+        }
+
+        function closeAdminConcernModal() {
+            document.getElementById('adminConcernModal').style.display = 'none';
+            _currentConcernId = null;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('adminConcernResponseForm');
+            if (form) {
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const id = parseInt(document.getElementById('adminConcernId').value);
+                    const status = document.getElementById('adminConcernStatus').value;
+                    const assignee = document.getElementById('adminConcernAssignee').value.trim();
+                    const response = document.getElementById('adminConcernResponse').value.trim();
+
+                    if (!response) {
+                        alert('Please write a response.');
+                        return;
+                    }
+
+                    const ok = await updateConcernStatus(id, status, response, assignee);
+                    if (ok) {
+                        showAlert('✅ Response sent!', 'success');
+                        closeAdminConcernModal();
+                        await loadConcerns();
+                    } else {
+                        showAlert('Error sending response', 'error');
+                    }
+                });
+            }
+        });
+
     </script>
+
+    <!-- Admin Concern Respond Modal -->
+    <div id="adminConcernModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9000; align-items:center; justify-content:center; padding:16px;">
+        <div
+            style="background:#fff; border-radius:18px; padding:28px; width:100%; max-width:500px; box-shadow:0 24px 60px rgba(0,0,0,0.2); max-height:90vh; overflow-y:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="font-size:18px; font-weight:800; color:#111;">📋 Respond to Concern</h3>
+                <button onclick="closeAdminConcernModal()"
+                    style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">✕</button>
+            </div>
+            <form id="adminConcernResponseForm">
+                <input type="hidden" id="adminConcernId">
+
+                <div style="margin-bottom:14px;">
+                    <label
+                        style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Assign
+                        To (Officer/Tanod)</label>
+                    <input type="text" id="adminConcernAssignee" placeholder="e.g. Tanod Juan dela Cruz"
+                        style="width:100%; padding:10px 12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; box-sizing:border-box; outline:none;"
+                        onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#d1d5db'">
+                </div>
+
+                <div style="margin-bottom:14px;">
+                    <label
+                        style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Update
+                        Status</label>
+                    <select id="adminConcernStatus" required
+                        style="width:100%; padding:10px 12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; box-sizing:border-box; outline:none; background:#fff;"
+                        onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#d1d5db'">
+                        <option value="pending">⏳ Pending</option>
+                        <option value="in-progress">🔄 In Progress</option>
+                        <option value="resolved">✅ Resolved</option>
+                        <option value="closed">🔒 Closed</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label
+                        style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Response
+                        / Reply *</label>
+                    <textarea id="adminConcernResponse" rows="5" required
+                        placeholder="Write your official response to this concern..."
+                        style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
+                        onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#d1d5db'"></textarea>
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <button type="button" onclick="closeAdminConcernModal()"
+                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
+                    <button type="submit"
+                        style="flex:2; padding:12px; background:linear-gradient(135deg,#059669,#047857); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">📤
+                        Send Response</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 
 </html>
