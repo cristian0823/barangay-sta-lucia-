@@ -459,8 +459,20 @@ async function getMyBorrowings() {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data } = await supabase.from('borrowings').select('*').eq('user_id', user.id).order('id', { ascending: false });
-        return mapRecords(data);
+        const { data, error } = await supabase.from('borrowings').select('*').eq('user_id', user.id).order('id', { ascending: false });
+        if (error || !data) return [];
+        return data.map(item => ({
+            ...item,
+            id: item.id,
+            userId: item.user_id,
+            userName: item.user_name || item.username || 'Unknown',
+            equipment: item.equipment || 'Unknown Equipment',
+            quantity: item.quantity,
+            borrowDate: item.borrow_date || item.borrowDate || '',
+            returnDate: item.return_date || item.returnDate || '',
+            purpose: item.purpose || '',
+            status: item.status || 'pending'
+        }));
     } else {
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
         return borrowings.filter(b => b.userId === user.id).map(item => ({
@@ -477,10 +489,9 @@ async function getAllBorrowings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('borrowings').select('*').order('id', { ascending: false });
-        // If error or no data, use localStorage
-        if (error || !data || data.length === 0) {
-            const data = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
-            return data.map(item => ({
+        if (error) {
+            const localData = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+            return localData.map(item => ({
                 ...item,
                 userName: item.userName || item.user_name || 'Unknown',
                 equipment: item.equipment || 'Unknown Equipment',
@@ -488,7 +499,18 @@ async function getAllBorrowings() {
                 returnDate: item.returnDate || item.return_date || ''
             }));
         }
-        return mapRecords(data);
+        return (data || []).map(item => ({
+            ...item,
+            id: item.id,
+            userId: item.user_id,
+            userName: item.user_name || item.username || 'Unknown',
+            equipment: item.equipment || 'Unknown Equipment',
+            quantity: item.quantity,
+            borrowDate: item.borrow_date || item.borrowDate || '',
+            returnDate: item.return_date || item.returnDate || '',
+            purpose: item.purpose || '',
+            status: item.status || 'pending'
+        }));
     } else {
         const data = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
         return data.map(item => ({
