@@ -58,26 +58,8 @@
         }
 
         .dark-mode-toggle {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 14px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--muted);
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all .2s;
-            text-align: left;
-            font-family: inherit;
-        }
-
-        .dark-mode-toggle:hover {
-            background: var(--green-50);
-            color: var(--green-dark);
+            display: none;
+            /* Replaced by dashboard header icon if needed, or simply skipped since it syncs */
         }
 
         * {
@@ -91,98 +73,171 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            display: flex;
         }
 
-        /* ── SIDEBAR ── */
-        aside {
-            width: 240px;
-            flex-shrink: 0;
+        /* ── HEADER ── */
+        .dashboard-header {
             background: var(--white);
-            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
             position: sticky;
             top: 0;
-            height: 100vh;
+            z-index: 100;
+            box-shadow: 0 1px 6px rgba(16, 185, 129, 0.08);
         }
 
-        .sidebar-brand {
-            padding: 20px 18px;
-            border-bottom: 1px solid var(--border);
+        [data-theme="dark"] .dashboard-header {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .dashboard-logo {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .sidebar-brand img {
+        .logo-image {
             width: 38px;
             height: 38px;
-            border-radius: 50%;
+            border-radius: 10px;
+            border: 1.5px solid var(--green-light);
+            object-fit: cover;
         }
 
-        .sidebar-brand h2 {
+        .dashboard-logo span {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
             font-size: 14px;
             font-weight: 700;
             color: var(--text);
         }
 
-        .sidebar-brand p {
-            font-size: 12px;
-            color: var(--muted);
+        .user-role {
+            font-size: 11px;
+            color: var(--green);
+            font-weight: 600;
+            text-transform: capitalize;
         }
 
-        .sidebar-nav {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            flex: 1;
-        }
-
-        .sidebar-btn {
+        .user-avatar-top {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
             display: flex;
             align-items: center;
-            gap: 10px;
-            width: 100%;
-            padding: 11px 14px;
-            border: none;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            border: 2px solid var(--green-light);
+        }
+
+        .logout-btn {
+            padding: 7px 15px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            box-sizing: border-box;
+            border: 1.5px solid var(--border);
             background: transparent;
             color: var(--muted);
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all .2s;
-            text-align: left;
             text-decoration: none;
         }
 
+        .logout-btn:hover {
+            border-color: #9ca3af;
+            color: var(--text);
+        }
+
+        .dashboard-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 32px 80px;
+        }
+
+        /* ── HORIZONTAL TABS ── */
+        .sidebar-nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .sidebar-nav {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .sidebar-btn {
+            padding: 9px 18px;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            width: auto;
+        }
+
         .sidebar-btn:hover {
+            color: var(--green);
             background: var(--green-50);
-            color: var(--green-dark);
         }
 
         .sidebar-btn.active {
             background: var(--green);
             color: white;
-            font-weight: 600;
         }
 
         .sidebar-btn.active:hover {
             background: var(--green-dark);
-        }
-
-        .sidebar-footer {
-            padding: 12px;
-            border-top: 1px solid var(--border);
-        }
-
-        /* ── MAIN CONTENT ── */
-        main {
-            flex: 1;
-            padding: 32px;
-            overflow-y: auto;
         }
 
         h1.section-title {
@@ -471,15 +526,26 @@
 </head>
 
 <body>
-    <!-- Sidebar -->
-    <aside>
-        <div class="sidebar-brand">
-            <img src="barangay.jpg" alt="Logo">
-            <div>
-                <h2>Admin Settings</h2>
-                <p>Management Console</p>
+    <!-- Header to match admin.html -->
+    <header class="dashboard-header">
+        <div class="dashboard-nav">
+            <div class="dashboard-logo">
+                <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
+                <span>Admin Dashboard</span>
             </div>
         </div>
+        <div class="user-menu">
+            <div class="user-info">
+                <span class="user-name" id="topUserName">Administrator</span>
+                <span class="user-role">Official</span>
+            </div>
+            <div class="user-avatar-top" id="topUserAvatar">A</div>
+            <a class="logout-btn" href="admin.html"><i class="bi bi-arrow-left" style="margin-right: 5px;"></i> Back</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
         <nav class="sidebar-nav">
             <button onclick="showSection('users')" id="usersBtn" class="sidebar-btn active">
                 <i class="bi bi-people-fill"></i> User Management
@@ -491,15 +557,7 @@
                 <i class="bi bi-gear-fill"></i> System Info
             </button>
         </nav>
-        <div class="sidebar-footer">
-            <a href="admin.html" class="sidebar-btn" style="margin-top:4px;">
-                <i class="bi bi-arrow-left"></i> Back to Dashboard
-            </a>
-        </div>
-    </aside>
 
-    <!-- Main Content -->
-    <main>
         <div id="toast"></div>
 
         <!-- User Management Section -->
@@ -666,7 +724,7 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div> <!-- End Dashboard Content -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
