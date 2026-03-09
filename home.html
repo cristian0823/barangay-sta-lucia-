@@ -1624,14 +1624,12 @@
                 return;
             }
 
-            // Combine time into single string so no extra column is needed
-            const combinedTime = `${startTime} - ${endTime}`;
-
             const result = await bookCourt({
                 user_id: user.id,
                 username: bookedForName,
                 date,
-                time: combinedTime,
+                time: startTime,
+                end_time: endTime,
                 venue,
                 purpose,
                 status: 'pending'
