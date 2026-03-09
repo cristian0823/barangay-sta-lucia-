@@ -752,7 +752,19 @@ async function getCourtBookings() {
                 userName: item.userName || item.user_name || 'Unknown'
             }));
         }
-        return mapRecords(data || []);
+        return (data || []).map(item => ({
+            ...item,
+            id: item.id,
+            userId: item.user_id,
+            userName: item.user_name || item.username || 'Unknown',
+            venueName: item.venue_name || item.venue || 'Basketball Court',
+            date: item.date,
+            time: item.time,
+            end_time: item.end_time || '',
+            purpose: item.purpose || '',
+            status: item.status || 'pending',
+            admin_comment: item.admin_comment || ''
+        }));
     } else {
         const data = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         return data.map(item => ({
