@@ -88,3 +88,11 @@ CREATE TABLE court_bookings (
     status VARCHAR(50) DEFAULT 'pending',
     admin_comment TEXT
 );
+
+-- ============================================================
+-- PATCH: Run these if your live database was set up before
+-- these columns were added. Safe to run multiple times.
+-- ============================================================
+ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS end_time VARCHAR(100);
+ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS venue VARCHAR(100);
+ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS username VARCHAR(255);
