@@ -2055,8 +2055,7 @@
             let result;
             if (editId) {
                 // If editId exists, we update
-                payload.id = editId;
-                result = await updateEquipment(payload);
+                result = await updateEquipment(editId, payload);
                 // Activity log
                 logActivity(`Updated equipment ${payload.name}`, `Set total to ${payload.quantity} and broken to ${payload.broken}`);
             } else {
