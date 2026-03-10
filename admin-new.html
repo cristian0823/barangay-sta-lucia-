@@ -1948,14 +1948,16 @@
             <form id="addEquipmentForm">
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="equipName" required></div>
-                    <div class="form-group"><label>Quantity</label><input type="number" id="equipQty" required></div>
-                </div>
-                <div class="form-group"><label>Icon</label><input type="text" id="equipIcon" value="📦"></div>
-                <div class="form-row" style="margin-top: 16px;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
-                    <button type="button" class="btn btn-danger" style="width: 100%;"
-                        onclick="closeModal('addEquipmentModal')">Cancel / Back</button>
-                </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Quantity</label><input type="number" id="equipQty" required>
+                        </div>
+                        <div class="form-group"><label>Broken</label><input type="number" id="equipBroken" value="0"
+                                required></div>
+                    </div>
+                    <div class="form-group"><label>Icon</label><input type="text" id="equipIcon" value="📦"></div>
+                    <div class="form-row" style="margin-top: 16px;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Equipment</button>
+                    </div>
             </form>
         </div>
     </div>
@@ -2010,7 +2012,6 @@
             });
         });
 
-        // Prepopulate profile settings
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const user = getCurrentUser();
@@ -2023,6 +2024,54 @@
                     if (un) un.value = user.username || '';
                 }
             }, 600);
+        });
+
+        // Add Equipment Form Logic
+        document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
+            const editId = this.dataset.editId;
+            const payload = {
+                name: document.getElementById('equipName').value,
+                icon: document.getElementById('equipIcon').value,
+                quantity: parseInt(document.getElementById('equipQty').value),
+                broken: parseInt(document.getElementById('equipBroken').value) || 0,
+                is_archived: false
+            };
+
+            // Calculate available based on quantity, broken, and currently loaned items
+            const currAvailable = payload.quantity - payload.broken;
+            payload.available = currAvailable > 0 ? currAvailable : 0; // Simplified calculation for now
+
+            let result;
+            if (editId) {
+                // If editId exists, we update
+                payload.id = editId;
+                result = await updateEquipment(payload);
+                // Activity log
+                logActivity(`Updated equipment ${payload.name}`, `Set total to ${payload.quantity} and broken to ${payload.broken}`);
+            } else {
+                // Otherwise we insert
+                result = await addEquipment(payload);
+                // Activity log
+                logActivity(`Created new equipment ${payload.name}`, `Added ${payload.quantity} items`);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
+            if (result.success) {
+                showAlert(editId ? 'Equipment updated successfully' : 'Equipment added successfully', 'success');
+                closeModal('addEquipmentModal');
+                await loadEquipment();
+                await loadStats(); // Refresh stats for total items
+            } else {
+                showAlert(result.message || 'Failed to save equipment', 'error');
+            }
         });
 
         // Modal functionality
@@ -2049,6 +2098,12 @@
         function openAddEquipmentModal() {
             document.getElementById('addEquipmentForm').reset();
             delete document.getElementById('addEquipmentForm').dataset.editId;
+            document.getElementById('equipBroken').value = 0;
+
+            // Reset header text back to add mode
+            document.querySelector('#addEquipmentModal .modal-header h3').innerText = 'Add Equipment';
+            document.querySelector('#addEquipmentForm button[type="submit"]').innerText = 'Save Equipment';
+
             document.getElementById('addEquipmentModal').classList.add('active');
             history.pushState({ modal: 'addEquipmentModal' }, '', '#addEquipmentModal');
         }
@@ -2078,6 +2133,7 @@
             await Promise.all([loadStats(), loadEquipment(), loadRequests(), loadBookings(), loadConcerns(), loadEvents()]);
             await renderAdminCalendar();
             await renderAdminAllBookings();
+            await loadActivityLog();
         }
 
         // Load Stats for dashboard
@@ -2410,9 +2466,16 @@
             if (item) {
                 document.getElementById('equipName').value = item.name;
                 document.getElementById('equipQty').value = item.quantity;
+                document.getElementById('equipBroken').value = item.broken || 0;
                 document.getElementById('equipIcon').value = item.icon;
+
                 // Store the ID for editing
                 document.getElementById('addEquipmentForm').dataset.editId = equipmentId;
+
+                // Update header text to reflect editing mode
+                document.querySelector('#addEquipmentModal .modal-header h3').innerText = 'Edit Equipment';
+                document.querySelector('#addEquipmentForm button[type="submit"]').innerText = 'Update Equipment';
+
                 document.getElementById('addEquipmentModal').classList.add('active');
                 history.pushState({ modal: 'addEquipmentModal' }, '', '#addEquipmentModal');
             }
@@ -2787,7 +2850,43 @@
             document.getElementById('lastUpdatedInfo').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
+        async function loadActivityLog() {
+            const tbody = document.getElementById('activityLogTable');
+            const emptyState = document.getElementById('noActivityLog');
+            if (!tbody) return;
 
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+            try {
+                const logs = await getActivityLog();
+                if (logs.length === 0) {
+                    tbody.innerHTML = '';
+                    if (emptyState) emptyState.style.display = 'block';
+                    return;
+                }
+
+                if (emptyState) emptyState.style.display = 'none';
+
+                tbody.innerHTML = logs.map(log => {
+                    const dt = new Date(log.createdAt);
+                    const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                    const actionColor = log.action.includes('Deleted') ? '#dc2626' :
+                        log.action.includes('Created') || log.action.includes('Approved') ? '#16a34a' :
+                            log.action.includes('Rejected') ? '#b91c1c' : '#374151';
+
+                    return `<tr>
+                        <td><span style="font-size:13px;">${dateStr}</span><br><span style="font-size:11px;color:#9ca3af;">${timeStr}</span></td>
+                        <td><strong>${log.adminUsername}</strong></td>
+                        <td><span style="color:${actionColor};font-weight:600;">${log.action}</span></td>
+                        <td><span style="color:#6b7280;font-size:13px;">${log.details || ''}</span></td>
+                    </tr>`;
+                }).join('');
+            } catch (error) {
+                console.error("Error loading activity log:", error);
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#ef4444;">Error loading logs</td></tr>';
+            }
+        }
     </script>
 </body>
 
