@@ -1014,6 +1014,119 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+
+            /* Aggressive Mobile Table Stacking for Activity Log */
+            .activity-log-table,
+            .activity-log-table thead,
+            .activity-log-table tbody,
+            .activity-log-table th,
+            .activity-log-table td,
+            .activity-log-table tr {
+                display: block;
+            }
+
+            .activity-log-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .activity-log-table tr {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 12px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .activity-log-table td {
+                border: none;
+                border-bottom: 1px solid #f3f4f6;
+                position: relative;
+                padding-left: 120px !important;
+                min-height: 48px;
+            }
+
+            .activity-log-table td:before {
+                position: absolute;
+                top: 12px;
+                left: 16px;
+                width: 90px;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: 600;
+                color: #6b7280;
+                font-size: 12px;
+                text-transform: uppercase;
+            }
+        }
+
+        /* Activity Log Styling */
+        .date-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .date-main {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .time-sub {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .admin-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-icon {
+            background: var(--primary-100);
+            color: var(--primary-700);
+            padding: 4px;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .badge-muted {
+            background: #f3f4f6;
+            color: #4b5563;
         }
 
         /* Toast & Dark Mode */
@@ -1566,17 +1679,17 @@
                         <p>Track administrator and system activities across the platform</p>
                     </div>
 
-                    <div class="section-container">
-                        <div class="section-header"
-                            style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
-                            <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600; color: #1f2937;">System
-                                Activities</h3>
-                            <button class="btn" style="background:#e5e7eb; color:#374151; font-weight: 600;"
-                                onclick="loadActivityLog()">🔄 Refresh</button>
-                        </div>
-                        <div class="section-content" style="padding: 0;">
+                    <div class="section-content">
+                        <div class="premium-card">
+                            <div class="section-header"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600; color: #1f2937;">System
+                                    Activities</h3>
+                                <button class="btn btn-primary btn-sm" onclick="loadActivityLog()">🔄 Refresh</button>
+                            </div>
                             <div class="table-responsive">
-                                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                                <table class="data-table activity-log-table"
+                                    style="width: 100%; border-collapse: collapse;">
                                     <thead>
                                         <tr
                                             style="background: #f9fafb; border-bottom: 2px solid #e5e7eb; text-align: left;">
@@ -2876,15 +2989,20 @@
                     const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-                    const actionColor = log.action.includes('Deleted') ? '#dc2626' :
-                        log.action.includes('Created') || log.action.includes('Approved') ? '#16a34a' :
-                            log.action.includes('Rejected') ? '#b91c1c' : '#374151';
+                    let badgeClass = 'badge-muted'; // Default styling
+                    if (log.action.includes('Deleted') || log.action.includes('Rejected')) {
+                        badgeClass = 'badge-danger';
+                    } else if (log.action.includes('Created') || log.action.includes('Approved') || log.action.includes('Confirmed')) {
+                        badgeClass = 'badge-success';
+                    } else if (log.action.includes('Updated')) {
+                        badgeClass = 'badge-primary';
+                    }
 
                     return `<tr>
-                        <td><span style="font-size:13px;">${dateStr}</span><br><span style="font-size:11px;color:#9ca3af;">${timeStr}</span></td>
-                        <td><strong>${log.adminUsername}</strong></td>
-                        <td><span style="color:${actionColor};font-weight:600;">${log.action}</span></td>
-                        <td><span style="color:#6b7280;font-size:13px;">${log.details || ''}</span></td>
+                        <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
+                        <td data-label="Admin"><div class="admin-cell"><span class="admin-icon">👤</span> <strong>${log.adminUsername}</strong></div></td>
+                        <td data-label="Action"><span class="status-badge ${badgeClass}">${log.action}</span></td>
+                        <td data-label="Details"><span class="text-xs text-gray-500">${log.details || ''}</span></td>
                     </tr>`;
                 }).join('');
             } catch (error) {
