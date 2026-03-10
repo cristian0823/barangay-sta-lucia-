@@ -552,11 +552,16 @@
         }
 
         .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
+            background: none !important;
+            border: none !important;
+            outline: none !important;
+            font-size: 26px;
             cursor: pointer;
             color: var(--muted);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Calendar styles */
@@ -2076,6 +2081,7 @@
 
         // Modal functionality
         function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
             if (modal) {
                 modal.classList.remove('active');
                 if (window.location.hash === '#' + modalId) {
