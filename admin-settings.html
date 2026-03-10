@@ -4,163 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Settings - Barangay Management System</title>
+    <title>Admin Settings - Barangay Sta. Lucia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root {
-            --green: #059669;
-            --green-dark: #047857;
-            --green-light: #d1fae5;
-            --green-50: #f0fdf4;
-            --text: #1f2937;
-            --muted: #6b7280;
-            --border: #e5e7eb;
-            --bg: #f4f6f9;
-            --white: #ffffff;
-        }
-
-        /* ── DARK MODE ── */
-        [data-theme="dark"] {
-            --text: #f1f5f9;
-            --muted: #a7f3d0;
-            --border: #14532d;
-            --surface: #064e3b;
-            --bg: #022c22;
-            --white: #064e3b;
-            --green-50: #0d2818;
-            --green-100: #14532d;
-            --green-200: #166534;
-            --dark: #f1f5f9;
-            --warning-bg: #1c1a0a;
-            --warning-border: #713f12;
-            --warning-text: #fde68a;
-            --danger-bg: #1c0a0a;
-            --danger-border: #7f1d1d;
-        }
-
-        [data-theme="dark"] .dashboard-header {
-            background: #064e3b;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .sidebar {
-            background: #064e3b;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .section-container,
-        [data-theme="dark"] .court-booking-card,
-        [data-theme="dark"] .modal-content {
-            background: #064e3b;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .stat-card {
-            background: #064e3b;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] table th {
-            background: #0d2818;
-            color: #6ee7b7;
-        }
-
-        [data-theme="dark"] table td {
-            border-color: #14532d;
-            color: var(--text);
-        }
-
-        [data-theme="dark"] table tr:hover td {
-            background: #0d2818;
-        }
-
-        [data-theme="dark"] input,
-        [data-theme="dark"] select,
-        [data-theme="dark"] textarea {
-            background: #0d2818;
-            color: var(--text);
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .bg-white.rounded-xl,
-        [data-theme="dark"] .bg-white.rounded-2xl {
-            background-color: #064e3b;
-            color: #f1f5f9;
-            border: 1px solid #14532d;
-        }
-
-        [data-theme="dark"] .text-gray-800,
-        [data-theme="dark"] .text-gray-700,
-        [data-theme="dark"] .text-gray-600,
-        [data-theme="dark"] .text-gray-500 {
-            color: #a7f3d0;
-        }
-
-        [data-theme="dark"] .calendar-day.bg-green-100 {
-            background-color: #0d2818;
-            color: #6ee7b7;
-        }
-
-        [data-theme="dark"] .calendar-day.bg-purple-100 {
-            background-color: #1e1b4b;
-            color: #c084fc;
-        }
-
-        [data-theme="dark"] .calendar-day.bg-red-100 {
-            background-color: #450a0a;
-            color: #fca5a5;
-        }
-
-        [data-theme="dark"] .bg-gray-200 {
-            background-color: #14532d;
-            color: #6ed7b7;
-        }
-
-        [data-theme="dark"] .bg-gray-50 {
-            background-color: #0d2818;
-        }
-
-        [data-theme="dark"] .sidebar-btn {
-            color: #a7f3d0;
-        }
-
-        [data-theme="dark"] .sidebar-btn:hover,
-        [data-theme="dark"] .sidebar-btn.active {
-            background: #0d2818;
-            color: #6ee7b7;
-        }
-
-        [data-theme="dark"] .event-item {
-            background: #064e3b;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .dashboard-header,
-        [data-theme="dark"] .sidebar-nav,
-        [data-theme="dark"] .stat-card {
-            background: #064e3b;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .modal {
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        [data-theme="dark"] .stat-icon {
-            background: #0d2818;
-            border-color: #14532d;
-        }
-
-        [data-theme="dark"] .welcome-banner.admin-banner {
-            background: linear-gradient(135deg, #064e3b, #065f46);
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --green: #10b981;
+            --green-dark: #059669;
+            --green-xl: #047857;
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-200: #bbf7d0;
+            --green-light: #d1fae5;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f4f6f9;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            --transition: all 0.25s ease;
+            --radius-md: 14px;
+            --radius-lg: 18px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
         }
 
         body {
@@ -169,10 +43,10 @@
             min-height: 100vh;
         }
 
-        /* HEADER */
+        /* ── HEADER ── */
         .dashboard-header {
             background: #fff;
-            border-bottom: 1px solid var(--green-200);
+            border-bottom: 1.5px solid var(--green-200);
             padding: 0 32px;
             display: flex;
             justify-content: space-between;
@@ -187,7 +61,7 @@
         .dashboard-nav {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
         }
 
         .dashboard-logo {
@@ -197,8 +71,8 @@
         }
 
         .logo-image {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             border: 1.5px solid var(--green-200);
             object-fit: cover;
@@ -249,30 +123,7 @@
             border: 2px solid var(--green-200);
         }
 
-        .admin-dark-toggle {
-            background: rgba(255, 255, 255, .1);
-            border: 1px solid rgba(255, 255, 255, .2);
-            border-radius: 8px;
-            padding: 7px 12px;
-            width: 44px;
-            height: 36px;
-            box-sizing: border-box;
-            text-align: center;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background .2s;
-            color: #1a2e1f;
-            line-height: 1;
-        }
-
-        .admin-dark-toggle:hover {
-            background: rgba(255, 255, 255, .25);
-        }
-
-        .logout-btn {
+        .back-btn {
             padding: 7px 15px;
             border-radius: 9px;
             cursor: pointer;
@@ -282,67 +133,88 @@
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            justify-content: center;
+            gap: 6px;
             height: 36px;
-            box-sizing: border-box;
-        }
-
-        .logout-btn:first-of-type {
             border: 1.5px solid var(--border);
             background: transparent;
             color: var(--muted);
+            text-decoration: none;
         }
 
-        .logout-btn:first-of-type:hover {
+        .back-btn:hover {
             border-color: #9ca3af;
             color: var(--text);
         }
 
-        .logout-btn:last-of-type {
-            border: 1.5px solid var(--danger-border);
-            background: transparent;
-            color: var(--danger);
-        }
-
-        .logout-btn:last-of-type:hover {
-            background: var(--danger-bg);
-        }
-
-        .dashboard-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 28px 32px 80px;
-        }
-
-        /* NAV TABS */
-        .sidebar-nav {
+        /* ── LAYOUT ── */
+        .admin-body-layout {
             display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 22px;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* ── LEFT SIDEBAR ── */
+        .left-sidebar {
+            width: 240px;
+            flex-shrink: 0;
             background: #fff;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 6px;
-            box-shadow: var(--shadow-sm);
+            border-right: 1.5px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+            z-index: 90;
+        }
+
+        .left-sidebar-top {
+            padding: 18px 14px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .left-sidebar-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            padding: 0 6px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .left-sidebar-nav {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
         }
 
         .sidebar-btn {
-            padding: 9px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 12px;
             border-radius: 10px;
-            background: transparent;
             border: none;
-            color: var(--muted);
-            font-size: 14px;
+            background: transparent;
+            color: #4b5563;
+            font-size: 13.5px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            text-align: left;
             text-decoration: none;
-            width: auto;
+        }
+
+        .sidebar-btn .nav-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
         }
 
         .sidebar-btn:hover {
@@ -353,28 +225,78 @@
         .sidebar-btn.active {
             background: var(--green-50);
             color: var(--green-xl);
-            border: 1.5px solid var(--green-200);
+            border-left: 3px solid var(--green);
+            padding-left: 9px;
         }
 
-        h1.section-title {
+        .left-sidebar-footer {
+            padding: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            overflow: auto;
+        }
+
+        .page-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 28px 32px 80px;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding: 24px 28px;
+            background: linear-gradient(135deg, #047857, #065f46);
+            border-radius: 18px;
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(5, 150, 105, 0.22);
+        }
+
+        .page-header-icon {
+            font-size: 44px;
+            opacity: 0.9;
+        }
+
+        .page-header h1 {
             font-size: 22px;
             font-weight: 800;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
         }
 
-        p.section-sub {
-            font-size: 14px;
+        .page-header p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .section-sub {
+            font-size: 13px;
             color: var(--muted);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         /* ── CARD ── */
         .card {
-            background: var(--white);
+            background: #fff;
             border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
-            margin-bottom: 24px;
+            border: 1.5px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
             overflow: hidden;
         }
 
@@ -384,34 +306,45 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: var(--green-50);
         }
 
         .card-header h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
+            color: var(--green-xl);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-body {
             padding: 22px;
         }
 
-        /* ── STAT GRID ── */
+        /* ── STATS GRID ── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
 
         .stat-item {
-            background: var(--white);
+            background: #fff;
             border-radius: 14px;
             padding: 18px;
-            border: 1px solid var(--border);
+            border: 1.5px solid var(--border);
             display: flex;
             align-items: center;
             gap: 14px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            border-color: var(--green-200);
+            transform: translateY(-2px);
         }
 
         .stat-item-icon {
@@ -429,6 +362,7 @@
             font-size: 26px;
             font-weight: 800;
             line-height: 1;
+            color: var(--text);
         }
 
         .stat-item-label {
@@ -447,19 +381,20 @@
             text-align: left;
             padding: 11px 16px;
             background: var(--green-50);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            color: var(--green-dark);
+            color: var(--green-xl);
             border-bottom: 2px solid var(--green-light);
             text-transform: uppercase;
             letter-spacing: .04em;
         }
 
         .data-table td {
-            padding: 12px 16px;
+            padding: 13px 16px;
             border-bottom: 1px solid var(--border);
             font-size: 14px;
             color: var(--text);
+            vertical-align: middle;
         }
 
         .data-table tr:last-child td {
@@ -471,17 +406,18 @@
         }
 
         .avatar {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             background: var(--green-light);
-            color: var(--green-dark);
+            color: var(--green-xl);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 13px;
-            margin-right: 8px;
+            margin-right: 10px;
+            flex-shrink: 0;
         }
 
         /* ── ROLE BADGE ── */
@@ -514,6 +450,9 @@
             cursor: pointer;
             transition: all .2s;
             font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn-primary {
@@ -526,9 +465,9 @@
         }
 
         .btn-danger {
-            background: #fef2f2;
+            background: var(--danger-bg);
             color: #b91c1c;
-            border: 1px solid #fecaca;
+            border: 1px solid var(--danger-border);
         }
 
         .btn-danger:hover {
@@ -546,6 +485,8 @@
             cursor: pointer;
             transition: all .2s;
             box-shadow: 0 4px 12px rgba(5, 150, 105, .25);
+            font-family: inherit;
+            width: 100%;
         }
 
         .btn-submit:hover {
@@ -583,13 +524,14 @@
             font-size: 14px;
             font-family: inherit;
             transition: border-color .2s;
-            background: #fff;
+            background: #fafafa;
+            outline: none;
         }
 
         .form-group input:focus {
-            outline: none;
             border-color: var(--green);
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .form-group input:disabled {
@@ -597,12 +539,25 @@
             color: var(--muted);
         }
 
+        /* Profile grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* ── TOAST ── */
         #toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 12px 22px;
+            padding: 13px 22px;
             border-radius: 12px;
             color: white;
             font-weight: 600;
@@ -638,226 +593,303 @@
         .hidden {
             display: none !important;
         }
+
+        /* Users count badge */
+        .count-badge {
+            background: var(--green-50);
+            border: 1px solid var(--green-light);
+            color: var(--green-dark);
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 0 12px;
+                height: 56px;
+            }
+
+            .dashboard-logo span,
+            .user-info {
+                display: none;
+            }
+
+            .left-sidebar {
+                display: none;
+            }
+
+            .page-content {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            .page-header-icon {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header to match admin.html -->
+    <!-- HEADER -->
     <header class="dashboard-header">
         <div class="dashboard-nav">
-            <!-- Mobile hamburger (hidden on desktop, just here for structure) -->
-            <button class="hamburger-btn" style="display:none;" aria-label="Menu">
-                <span></span><span></span><span></span>
-            </button>
             <div class="dashboard-logo">
                 <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
-                <span>Admin Dashboard</span>
+                <span>Admin Settings</span>
             </div>
         </div>
-        <div class="user-menu" style="display:flex; align-items:center; gap:12px;">
+        <div class="user-menu">
             <div class="user-info">
                 <span class="user-name" id="topUserName">Administrator</span>
                 <span class="user-role">Official</span>
             </div>
-            <!-- Notification badge (hidden in settings but needed for layout consistency) -->
-            <div class="notification-badge" style="visibility:hidden;">🔔</div>
             <div class="user-avatar" id="topUserAvatar">A</div>
-            <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
-                title="Toggle Dark Mode">🌙</button>
-            <!-- REPLACED SETTINGS BUTTON WITH BACK BUTTON USING SAME STYLE -->
-            <a class="logout-btn" href="admin.html" style="text-decoration:none;"><i class="bi bi-arrow-left"
-                    style="margin-right: 5px;"></i> Back</a>
-            <button class="logout-btn" style="visibility:hidden;">Logout</button>
-            <!-- Hidden spacer to keep width identical -->
+            <a class="back-btn" href="admin.html">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="dashboard-content">
-        <nav class="sidebar-nav">
-            <button onclick="showSection('users')" id="usersBtn" class="sidebar-btn active">
-                <i class="bi bi-people-fill"></i> User Management
-            </button>
-            <button onclick="showSection('profile')" id="profileBtn" class="sidebar-btn">
-                <i class="bi bi-person-fill"></i> My Profile
-            </button>
-            <button onclick="showSection('system')" id="systemBtn" class="sidebar-btn">
-                <i class="bi bi-gear-fill"></i> System Info
-            </button>
-        </nav>
-
-        <div id="toast"></div>
-
-        <!-- User Management Section -->
-        <div id="users-section">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <div>
-                    <h1 class="section-title">User Management</h1>
-                    <p class="section-sub" style="margin-bottom:0;">Manage registered users and their roles</p>
-                </div>
-                <span
-                    style="background:var(--green-50);border:1px solid var(--green-light);color:var(--green-dark);padding:6px 16px;border-radius:10px;font-size:13px;font-weight:700;">
-                    <i class="bi bi-people"></i> <span id="totalUsers">0</span> Users
-                </span>
+    <div class="admin-body-layout">
+        <!-- LEFT SIDEBAR -->
+        <aside class="left-sidebar">
+            <div class="left-sidebar-top">
+                <span class="left-sidebar-label">Settings</span>
             </div>
-            <div class="card">
-                <div style="overflow-x:auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Joined</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTable"></tbody>
-                    </table>
-                    <div id="noUsers" class="empty-state hidden">
-                        <i class="bi bi-people" style="font-size:36px;"></i>
-                        <p>No users found</p>
-                    </div>
-                </div>
+            <nav class="left-sidebar-nav">
+                <button class="sidebar-btn active" onclick="showSection('users')" id="usersBtn">
+                    <span class="nav-icon"><i class="bi bi-people-fill"></i></span> User Management
+                </button>
+                <button class="sidebar-btn" onclick="showSection('profile')" id="profileBtn">
+                    <span class="nav-icon"><i class="bi bi-person-fill"></i></span> My Profile
+                </button>
+                <button class="sidebar-btn" onclick="showSection('system')" id="systemBtn">
+                    <span class="nav-icon"><i class="bi bi-bar-chart-fill"></i></span> System Info
+                </button>
+            </nav>
+            <div class="left-sidebar-footer">
+                <button class="sidebar-btn" onclick="window.location.href='admin.html'" style="color: var(--muted);">
+                    <span class="nav-icon"><i class="bi bi-arrow-left-circle"></i></span> Back to Dashboard
+                </button>
             </div>
-        </div>
+        </aside>
 
-        <!-- Profile Section -->
-        <div id="profile-section" class="hidden">
-            <h1 class="section-title">My Profile</h1>
-            <p class="section-sub">Update your account information and change your password</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="bi bi-person-circle"></i> Profile Information</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="profileForm">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" id="fullName">
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" id="email">
-                            </div>
-                            <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" id="username" disabled>
-                            </div>
-                            <button type="submit" class="btn-submit">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="bi bi-key-fill"></i> Change Password</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="passwordForm">
-                            <div class="form-group">
-                                <label>Current Password</label>
-                                <input type="password" id="currentPassword">
-                            </div>
-                            <div class="form-group">
-                                <label>New Password</label>
-                                <input type="password" id="newPassword">
-                            </div>
-                            <div class="form-group">
-                                <label>Confirm New Password</label>
-                                <input type="password" id="confirmPassword">
-                            </div>
-                            <button type="submit" class="btn-submit blue">Change Password</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="page-content">
+                <div id="toast"></div>
 
-        <!-- System Info Section -->
-        <div id="system-section" class="hidden">
-            <h1 class="section-title">System Information</h1>
-            <p class="section-sub">Overview of all system data and statistics</p>
-
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-item-icon" style="background:#dbeafe;"><i class="bi bi-people"
-                            style="color:#1d4ed8;"></i></div>
-                    <div>
-                        <div class="stat-item-value" id="statTotalUsers">0</div>
-                        <div class="stat-item-label">Total Users</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-item-icon" style="background:var(--green-light);"><i class="bi bi-person-check"
-                            style="color:var(--green-dark);"></i></div>
-                    <div>
-                        <div class="stat-item-value" id="statRegularUsers">0</div>
-                        <div class="stat-item-label">Regular Users</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-item-icon" style="background:#f5f3ff;"><i class="bi bi-shield-check"
-                            style="color:#7c3aed;"></i></div>
-                    <div>
-                        <div class="stat-item-value" id="statAdmins">0</div>
-                        <div class="stat-item-label">Administrators</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-item-icon" style="background:#fef3c7;"><i class="bi bi-box-seam"
-                            style="color:#d97706;"></i></div>
-                    <div>
-                        <div class="stat-item-value" id="statEquipment">0</div>
-                        <div class="stat-item-label">Equipment Items</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-item-icon" style="background:#fef2f2;"><i class="bi bi-exclamation-triangle"
-                            style="color:#dc2626;"></i></div>
-                    <div>
-                        <div class="stat-item-value" id="statPending">0</div>
-                        <div class="stat-item-label">Pending Requests</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-item-icon" style="background:#eff6ff;"><i class="bi bi-calendar-check"
-                            style="color:#1d4ed8;"></i></div>
-                    <div>
-                        <div class="stat-item-value" id="statBookings">0</div>
-                        <div class="stat-item-label">Court Bookings</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>System Details</h3>
-                </div>
-                <div class="card-body">
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:14px;">
+                <!-- ── USER MANAGEMENT ── -->
+                <div id="users-section">
+                    <div class="page-header">
+                        <div class="page-header-icon">👥</div>
                         <div>
-                            <p style="color:var(--muted);font-size:12px;margin-bottom:4px;">Version</p>
-                            <p style="font-weight:600;">Barangay Management System v1.0</p>
+                            <h1>User Management</h1>
+                            <p>Manage all registered residents and administrators</p>
                         </div>
-                        <div>
-                            <p style="color:var(--muted);font-size:12px;margin-bottom:4px;">Backend</p>
-                            <p style="font-weight:600;">Supabase + localStorage</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="bi bi-people"></i> Registered Users</h3>
+                            <span class="count-badge"><i class="bi bi-people"></i> <span id="totalUsers">0</span>
+                                Users</span>
                         </div>
-                        <div>
-                            <p style="color:var(--muted);font-size:12px;margin-bottom:4px;">Last Updated</p>
-                            <p style="font-weight:600;" id="lastUpdated">—</p>
+                        <div style="overflow-x:auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable"></tbody>
+                            </table>
+                            <div id="noUsers" class="empty-state hidden">
+                                <i class="bi bi-people" style="font-size:36px;opacity:0.3;"></i>
+                                <p style="margin-top:8px;">No users found</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- ── MY PROFILE ── -->
+                <div id="profile-section" class="hidden">
+                    <div class="page-header">
+                        <div class="page-header-icon">👤</div>
+                        <div>
+                            <h1>My Profile</h1>
+                            <p>Update your account information and change your password</p>
+                        </div>
+                    </div>
+                    <div class="profile-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="bi bi-person-circle"></i> Profile Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="profileForm">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="fullName" placeholder="Your full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" id="email" placeholder="your@email.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" id="username" disabled>
+                                    </div>
+                                    <button type="submit" class="btn-submit">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="bi bi-key-fill"></i> Change Password</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="passwordForm">
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        <input type="password" id="currentPassword" placeholder="••••••••">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <input type="password" id="newPassword" placeholder="••••••••">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm New Password</label>
+                                        <input type="password" id="confirmPassword" placeholder="••••••••">
+                                    </div>
+                                    <button type="submit" class="btn-submit blue">Change Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── SYSTEM INFO ── -->
+                <div id="system-section" class="hidden">
+                    <div class="page-header">
+                        <div class="page-header-icon">📊</div>
+                        <div>
+                            <h1>System Information</h1>
+                            <p>Overview of all system data and statistics</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-item-icon" style="background:#dbeafe;"><i class="bi bi-people"
+                                    style="color:#1d4ed8;"></i></div>
+                            <div>
+                                <div class="stat-item-value" id="statTotalUsers">0</div>
+                                <div class="stat-item-label">Total Users</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item-icon" style="background:var(--green-light);"><i
+                                    class="bi bi-person-check" style="color:var(--green-dark);"></i></div>
+                            <div>
+                                <div class="stat-item-value" id="statRegularUsers">0</div>
+                                <div class="stat-item-label">Regular Users</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item-icon" style="background:#f5f3ff;"><i class="bi bi-shield-check"
+                                    style="color:#7c3aed;"></i></div>
+                            <div>
+                                <div class="stat-item-value" id="statAdmins">0</div>
+                                <div class="stat-item-label">Administrators</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item-icon" style="background:#fef3c7;"><i class="bi bi-box-seam"
+                                    style="color:#d97706;"></i></div>
+                            <div>
+                                <div class="stat-item-value" id="statEquipment">0</div>
+                                <div class="stat-item-label">Equipment Items</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item-icon" style="background:#fef2f2;"><i
+                                    class="bi bi-exclamation-triangle" style="color:#dc2626;"></i></div>
+                            <div>
+                                <div class="stat-item-value" id="statPending">0</div>
+                                <div class="stat-item-label">Pending Requests</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item-icon" style="background:#eff6ff;"><i class="bi bi-calendar-check"
+                                    style="color:#1d4ed8;"></i></div>
+                            <div>
+                                <div class="stat-item-value" id="statBookings">0</div>
+                                <div class="stat-item-label">Court Bookings</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="bi bi-info-circle"></i> System Details</h3>
+                        </div>
+                        <div class="card-body">
+                            <div
+                                style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:20px;font-size:14px;">
+                                <div>
+                                    <p
+                                        style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
+                                        Version</p>
+                                    <p style="font-weight:700;">BMS v1.0</p>
+                                    <p style="color:var(--muted);font-size:12px;">Barangay Management System</p>
+                                </div>
+                                <div>
+                                    <p
+                                        style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
+                                        Backend</p>
+                                    <p style="font-weight:700;">Supabase</p>
+                                    <p style="color:var(--muted);font-size:12px;">PostgreSQL + Real-time</p>
+                                </div>
+                                <div>
+                                    <p
+                                        style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
+                                        Barangay</p>
+                                    <p style="font-weight:700;">Sta. Lucia</p>
+                                    <p style="color:var(--muted);font-size:12px;">Novaliches, Quezon City</p>
+                                </div>
+                                <div>
+                                    <p
+                                        style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
+                                        Last Refreshed</p>
+                                    <p style="font-weight:700;" id="lastUpdated">—</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </div>
-    </div> <!-- End Dashboard Content -->
+        </div><!-- end .main-content -->
+    </div><!-- end .admin-body-layout -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/darkmode.js"></script>
     <script>
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
@@ -867,11 +899,13 @@
         }
 
         // Auth check
-        if (!requireAuth()) { }
-        if (!requireAdmin()) { }
+        if (!requireAuth()) window.location.href = 'login.html';
+        if (!requireAdmin()) window.location.href = 'home.html';
 
         const currentUser = getCurrentUser();
         if (currentUser) {
+            document.getElementById('topUserName').textContent = currentUser.fullName || currentUser.username;
+            document.getElementById('topUserAvatar').textContent = currentUser.avatar || (currentUser.fullName || 'A').charAt(0).toUpperCase();
             document.getElementById('fullName').value = currentUser.fullName || '';
             document.getElementById('email').value = currentUser.email || '';
             document.getElementById('username').value = currentUser.username || '';
