@@ -2102,6 +2102,29 @@
         </div>
     </div>
 
+    <!-- Reject Booking Modal -->
+    <div id="rejectBookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reject Court Booking</h3>
+                <button class="modal-close" onclick="closeModal('rejectBookingModal')">&times;</button>
+            </div>
+            <form id="rejectBookingForm">
+                <input type="hidden" id="rejectBookingId">
+                <div class="form-group">
+                    <label>Reason for Rejection</label>
+                    <textarea id="rejectBookingReason" rows="4"
+                        placeholder="e.g., Court is under maintenance, Prior event scheduled..." required></textarea>
+                </div>
+                <div class="form-row" style="margin-top: 16px;">
+                    <button type="submit" class="btn btn-danger" style="width: 100%;">Reject Booking</button>
+                    <button type="button" class="btn btn-primary" style="width: 100%;"
+                        onclick="closeModal('rejectBookingModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2560,22 +2583,44 @@
         // Approve Booking
         async function approveBooking(id) {
             if (confirm('Approve this court booking?')) {
-                const result = await updateBookingStatus(id, 'approved');
-                if (result.success) {
+                const result = await updateCourtBookingStatus(id, 'approved');
+                if (result) {
+                    showToast('Booking approved successfully', 'success');
                     await loadAllData();
+                } else {
+                    showToast('Failed to approve booking', 'error');
                 }
             }
         }
 
-        // Reject Booking
-        async function rejectBooking(id) {
-            if (confirm('Reject this court booking?')) {
-                const result = await updateBookingStatus(id, 'cancelled');
-                if (result.success) {
-                    await loadAllData();
-                }
-            }
+        // Reject Booking (Opens Modal instead of simple confirm)
+        function rejectBooking(id) {
+            document.getElementById('rejectBookingId').value = id;
+            document.getElementById('rejectBookingReason').value = '';
+            document.getElementById('rejectBookingModal').classList.add('active');
+            history.pushState({ modal: 'rejectBookingModal' }, '', '#rejectBookingModal');
         }
+
+        // Handle the submission of the Rejection Modal
+        document.getElementById('rejectBookingForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const id = document.getElementById('rejectBookingId').value;
+            const reason = document.getElementById('rejectBookingReason').value;
+
+            // First, add the admin's commented reason to the database
+            await addAdminComment(id, reason);
+
+            // Second, formally cancel the booking
+            const result = await rejectCourtBooking(id);
+
+            if (result.success) {
+                showToast('Booking rejected successfully', 'success');
+                closeModal('rejectBookingModal');
+                await loadAllData();
+            } else {
+                showToast('Failed to reject booking: ' + result.message, 'error');
+            }
+        });
 
         // Open Concern Modal
         async function openConcernModal(concernId) {

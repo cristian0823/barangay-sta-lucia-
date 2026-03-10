@@ -1592,16 +1592,16 @@
             const msg = document.getElementById('bookingMsg');
 
             if (evt) {
-                msg.innerHTML = `<div style="padding: 12px; background: var(--danger-bg); color: var(--danger); border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
-                    <strong>⛔ Court Blocked:</strong> An official event (${evt.title}) is scheduled for this day.
+                msg.innerHTML = `<div style="padding: 12px; background: #fffbeb; color: #b45309; border-radius: 8px; margin-bottom: 16px; font-size: 13px; border: 1.5px solid #fde68a;">
+                    <strong>⚠️ Heads Up:</strong> An official event (${evt.title}) is scheduled for this day. You may still submit your request, but it is unlikely to be approved.
                 </div>`;
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
             } else {
                 msg.innerHTML = '';
-                btn.disabled = false;
-                btn.style.opacity = '1';
             }
+
+            // Allow submission regardless of overlapping events
+            btn.disabled = false;
+            btn.style.opacity = '1';
         }
 
         window.closeBookingModal = function () {
