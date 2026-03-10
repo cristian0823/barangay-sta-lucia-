@@ -1941,59 +1941,108 @@
                         </div>
                     </div>
 
-                    <!-- ── MY PROFILE ── -->
+                    <!-- ── MY PROFILE (PREMIUM) ── -->
                     <div id="profile-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>👤 My Profile</h3>
-                            <span style="font-size:13px;color:var(--muted);">Update your account information and change
-                                your password</span>
+                        <div class="section-header"
+                            style="margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
+                            <h3
+                                style="font-size: 28px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-person-badge" style="color: var(--primary);"></i> My Profile
+                            </h3>
+                            <span style="font-size: 14px; color: var(--muted); font-weight: 500;">Manage your personal
+                                information and security settings seamlessly.</span>
                         </div>
                         <div class="section-content">
-                            <div class="profile-grid" style="display: gird; grid-template-columns: 1fr 1fr; gap: 22px;">
-                                <div class="card" style="margin-bottom: 0;">
-                                    <div class="card-header">
-                                        <h3><i class="bi bi-person-circle"></i> Profile Information</h3>
+                            <div class="profile-grid"
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+                                <!-- Profile Card -->
+                                <div class="premium-card"
+                                    style="background: #fff; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                                    <div
+                                        style="background: linear-gradient(135deg, var(--green-light), #ecfdf5); padding: 25px 30px; border-bottom: 1px solid var(--border);">
+                                        <h3
+                                            style="margin: 0; font-size: 18px; font-weight: 700; color: var(--green-dark);">
+                                            <i class="bi bi-person-lines-fill"></i> Personal Details</h3>
                                     </div>
-                                    <div class="card-body">
+                                    <div style="padding: 30px;">
                                         <form id="profileForm">
-                                            <div class="form-group">
-                                                <label>Full Name</label>
-                                                <input type="text" id="fullName" placeholder="Your full name">
+                                            <div class="form-group" style="margin-bottom: 20px;">
+                                                <label
+                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Full
+                                                    Name</label>
+                                                <input type="text" id="fullName" placeholder="Your full name"
+                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
+                                                    onfocus="this.style.borderColor='var(--primary)'"
+                                                    onblur="this.style.borderColor='var(--border)'">
                                             </div>
-                                            <div class="form-group">
-                                                <label>Email Address</label>
-                                                <input type="email" id="email" placeholder="your@email.com">
+                                            <div class="form-group" style="margin-bottom: 20px;">
+                                                <label
+                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Email
+                                                    Address</label>
+                                                <input type="email" id="email" placeholder="your@email.com"
+                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
+                                                    onfocus="this.style.borderColor='var(--primary)'"
+                                                    onblur="this.style.borderColor='var(--border)'">
                                             </div>
-                                            <div class="form-group">
-                                                <label>Username</label>
-                                                <input type="text" id="username" disabled>
+                                            <div class="form-group" style="margin-bottom: 30px;">
+                                                <label
+                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
+                                                <input type="text" id="username" disabled
+                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; background: #f9fafb; color: var(--muted); cursor: not-allowed; box-sizing: border-box;">
                                             </div>
-                                            <button type="submit" class="btn btn-primary"
-                                                style="width: 100%; padding: 10px;">Save Changes</button>
+                                            <button type="submit"
+                                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, var(--green-base), var(--green-dark)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);"
+                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)'"
+                                                onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 14px rgba(16, 185, 129, 0.4)'">
+                                                Update Profile <i class="bi bi-arrow-right-short"></i>
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
-                                <div class="card" style="margin-bottom: 0;">
-                                    <div class="card-header">
-                                        <h3><i class="bi bi-key-fill"></i> Change Password</h3>
+
+                                <!-- Password Card -->
+                                <div class="premium-card"
+                                    style="background: #fff; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                                    <div
+                                        style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding: 25px 30px; border-bottom: 1px solid var(--border);">
+                                        <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #1e3a8a;"><i
+                                                class="bi bi-shield-lock-fill"></i> Security Settings</h3>
                                     </div>
-                                    <div class="card-body">
+                                    <div style="padding: 30px;">
                                         <form id="passwordForm">
-                                            <div class="form-group">
-                                                <label>Current Password</label>
-                                                <input type="password" id="currentPassword" placeholder="••••••••">
+                                            <div class="form-group" style="margin-bottom: 20px;">
+                                                <label
+                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Current
+                                                    Password</label>
+                                                <input type="password" id="currentPassword" placeholder="••••••••"
+                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
+                                                    onfocus="this.style.borderColor='#3b82f6'"
+                                                    onblur="this.style.borderColor='var(--border)'">
                                             </div>
-                                            <div class="form-group">
-                                                <label>New Password</label>
-                                                <input type="password" id="newPassword" placeholder="••••••••">
+                                            <div class="form-group" style="margin-bottom: 20px;">
+                                                <label
+                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">New
+                                                    Password</label>
+                                                <input type="password" id="newPassword" placeholder="••••••••"
+                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
+                                                    onfocus="this.style.borderColor='#3b82f6'"
+                                                    onblur="this.style.borderColor='var(--border)'">
                                             </div>
-                                            <div class="form-group">
-                                                <label>Confirm New Password</label>
-                                                <input type="password" id="confirmPassword" placeholder="••••••••">
+                                            <div class="form-group" style="margin-bottom: 30px;">
+                                                <label
+                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Confirm
+                                                    New Password</label>
+                                                <input type="password" id="confirmPassword" placeholder="••••••••"
+                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
+                                                    onfocus="this.style.borderColor='#3b82f6'"
+                                                    onblur="this.style.borderColor='var(--border)'">
                                             </div>
-                                            <button type="submit" class="btn btn-primary"
-                                                style="width: 100%; padding: 10px; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">Change
-                                                Password</button>
+                                            <button type="submit"
+                                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);"
+                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5)'"
+                                                onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 14px rgba(59, 130, 246, 0.4)'">
+                                                Update Password <i class="bi bi-shield-check"></i>
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
@@ -2001,127 +2050,172 @@
                         </div>
                     </div>
 
-                    <!-- ── SYSTEM INFO ── -->
+                    <!-- ── SYSTEM INFO (PREMIUM) ── -->
                     <div id="system-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>📊 System Information</h3>
-                            <span style="font-size:13px;color:var(--muted);">Overview of all system data and
-                                statistics</span>
+                        <div class="section-header"
+                            style="margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
+                            <h3
+                                style="font-size: 28px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-hdd-network" style="color: #6366f1;"></i> System Analytics
+                            </h3>
+                            <span style="font-size: 14px; color: var(--muted); font-weight: 500;">Real-time overview of
+                                platform statistics and infrastructure details.</span>
                         </div>
                         <div class="section-content">
-                            <div class="stats-grid" style="margin-bottom: 20px;">
-                                <div class="stat-item"
-                                    style="background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;">
-                                    <div class="stat-item-icon"
-                                        style="background:#dbeafe; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
-                                        <i class="bi bi-people" style="color:#1d4ed8;"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-item-value" id="statTotalUsers"
-                                            style="font-size:26px; font-weight:800;">0</div>
-                                        <div class="stat-item-label" style="font-size:12px; color:var(--muted);">Total
-                                            Users</div>
-                                    </div>
-                                </div>
-                                <div class="stat-item"
-                                    style="background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;">
-                                    <div class="stat-item-icon"
-                                        style="background:var(--green-light); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
-                                        <i class="bi bi-person-check" style="color:var(--green-dark);"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-item-value" id="statRegularUsers"
-                                            style="font-size:26px; font-weight:800;">0</div>
-                                        <div class="stat-item-label" style="font-size:12px; color:var(--muted);">Regular
-                                            Users</div>
-                                    </div>
-                                </div>
-                                <div class="stat-item"
-                                    style="background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;">
-                                    <div class="stat-item-icon"
-                                        style="background:#f5f3ff; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
-                                        <i class="bi bi-shield-check" style="color:#7c3aed;"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-item-value" id="statAdmins"
-                                            style="font-size:26px; font-weight:800;">0</div>
-                                        <div class="stat-item-label" style="font-size:12px; color:var(--muted);">
-                                            Administrators</div>
-                                    </div>
-                                </div>
-                                <div class="stat-item"
-                                    style="background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;">
-                                    <div class="stat-item-icon"
-                                        style="background:#fef3c7; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
-                                        <i class="bi bi-box-seam" style="color:#d97706;"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-item-value" id="statEquipmentAdminInfo"
-                                            style="font-size:26px; font-weight:800;">0</div>
-                                        <div class="stat-item-label" style="font-size:12px; color:var(--muted);">
-                                            Equipment Items</div>
-                                    </div>
-                                </div>
-                                <div class="stat-item"
-                                    style="background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;">
-                                    <div class="stat-item-icon"
-                                        style="background:#fef2f2; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
-                                        <i class="bi bi-exclamation-triangle" style="color:#dc2626;"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-item-value" id="statPendingAdminInfo"
-                                            style="font-size:26px; font-weight:800;">0</div>
-                                        <div class="stat-item-label" style="font-size:12px; color:var(--muted);">Pending
-                                            Req.</div>
-                                    </div>
-                                </div>
-                                <div class="stat-item"
-                                    style="background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;">
-                                    <div class="stat-item-icon"
-                                        style="background:#eff6ff; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
-                                        <i class="bi bi-calendar-check" style="color:#1d4ed8;"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-item-value" id="statBookingsAdminInfo"
-                                            style="font-size:26px; font-weight:800;">0</div>
-                                        <div class="stat-item-label" style="font-size:12px; color:var(--muted);">Court
-                                            Bookings</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card" style="margin-bottom: 0;">
-                                <div class="card-header">
-                                    <h3><i class="bi bi-info-circle"></i> System Details</h3>
-                                </div>
-                                <div class="card-body">
+                            <!-- Premium Stats Grid -->
+                            <div
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px;">
+
+                                <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-5px)'"
+                                    onmouseout="this.style.transform='none'">
                                     <div
-                                        style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:20px;font-size:14px;">
+                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
+                                        <i class="bi bi-people-fill"></i></div>
+                                    <div
+                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
+                                        Total Users</div>
+                                    <div id="statTotalUsers" style="font-size: 42px; font-weight: 800; line-height: 1;">
+                                        0</div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-5px)'"
+                                    onmouseout="this.style.transform='none'">
+                                    <div
+                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
+                                        <i class="bi bi-person-check-fill"></i></div>
+                                    <div
+                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
+                                        Regular Users</div>
+                                    <div id="statRegularUsers"
+                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-5px)'"
+                                    onmouseout="this.style.transform='none'">
+                                    <div
+                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
+                                        <i class="bi bi-shield-lock-fill"></i></div>
+                                    <div
+                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
+                                        Administrators</div>
+                                    <div id="statAdmins" style="font-size: 42px; font-weight: 800; line-height: 1;">0
+                                    </div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-5px)'"
+                                    onmouseout="this.style.transform='none'">
+                                    <div
+                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
+                                        <i class="bi bi-box-seam-fill"></i></div>
+                                    <div
+                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
+                                        Equipment Items</div>
+                                    <div id="statEquipmentAdminInfo"
+                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-5px)'"
+                                    onmouseout="this.style.transform='none'">
+                                    <div
+                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
+                                        <i class="bi bi-exclamation-triangle-fill"></i></div>
+                                    <div
+                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
+                                        Pending Req.</div>
+                                    <div id="statPendingAdminInfo"
+                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-5px)'"
+                                    onmouseout="this.style.transform='none'">
+                                    <div
+                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
+                                        <i class="bi bi-calendar-event-fill"></i></div>
+                                    <div
+                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
+                                        Court Bookings</div>
+                                    <div id="statBookingsAdminInfo"
+                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
+                                </div>
+
+                            </div>
+
+                            <!-- System Infrastructure Panel -->
+                            <div
+                                style="background: #fff; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid var(--border);">
+                                <div
+                                    style="background: #f8fafc; padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text);"><i
+                                            class="bi bi-cpu" style="margin-right: 8px;"></i> System Infrastructure</h3>
+                                    <span
+                                        style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🟢
+                                        All Systems Operational</span>
+                                </div>
+                                <div
+                                    style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; align-items: center;">
+                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
+                                        <div
+                                            style="background: #e0e7ff; color: #4338ca; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                                            <i class="bi bi-box"></i></div>
                                         <div>
                                             <p
-                                                style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
+                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                                                 Version</p>
-                                            <p style="font-weight:700;">BMS v1.0</p>
-                                            <p style="color:var(--muted);font-size:12px;">Barangay Management System</p>
+                                            <p
+                                                style="font-weight: 800; font-size: 16px; margin: 0; color: var(--text);">
+                                                BMS v1.0</p>
+                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Core
+                                                Engine</p>
                                         </div>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
+                                        <div
+                                            style="background: #dcfce7; color: #15803d; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                                            <i class="bi bi-database"></i></div>
                                         <div>
                                             <p
-                                                style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
+                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                                                 Backend</p>
-                                            <p style="font-weight:700;">Supabase</p>
-                                            <p style="color:var(--muted);font-size:12px;">PostgreSQL + Real-time</p>
+                                            <p
+                                                style="font-weight: 800; font-size: 16px; margin: 0; color: var(--text);">
+                                                Supabase</p>
+                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">PostgreSQL
+                                                + Auth</p>
                                         </div>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
+                                        <div
+                                            style="background: #fae8ff; color: #c026d3; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                                            <i class="bi bi-geo-alt"></i></div>
                                         <div>
                                             <p
-                                                style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
-                                                Barangay</p>
-                                            <p style="font-weight:700;">Sta. Lucia</p>
-                                            <p style="color:var(--muted);font-size:12px;">Novaliches, Quezon City</p>
+                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                                                Location</p>
+                                            <p
+                                                style="font-weight: 800; font-size: 16px; margin: 0; color: var(--text);">
+                                                Sta. Lucia</p>
+                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Quezon
+                                                City</p>
                                         </div>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
+                                        <div
+                                            style="background: #f1f5f9; color: #475569; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                                            <i class="bi bi-clock-history"></i></div>
                                         <div>
                                             <p
-                                                style="color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600;text-transform:uppercase;">
-                                                Last Refreshed</p>
-                                            <p style="font-weight:700;" id="lastUpdatedInfo">—</p>
+                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                                                Last Sync</p>
+                                            <p style="font-weight: 800; font-size: 15px; margin: 0; color: var(--text);"
+                                                id="lastUpdatedInfo">—</p>
+                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">
+                                                Auto-refreshed</p>
                                         </div>
                                     </div>
                                 </div>
