@@ -457,7 +457,118 @@
             font-weight: 600;
         }
 
+        /* ── QUICK ACTION CARDS ── */
+        .quick-action-card {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--qa-color, #10b981);
+        }
+
+        .quick-action-card:hover {
+            border-color: var(--qa-color, #10b981);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .qa-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .qa-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .qa-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .qa-arrow {
+            font-size: 20px;
+            color: var(--qa-color, #10b981);
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            transition: transform 0.2s;
+        }
+
+        .quick-action-card:hover .qa-arrow {
+            transform: translateX(3px);
+        }
+
+        /* ── STATUS ROWS ── */
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .status-label {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pill.green {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-pill.yellow {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .status-pill.red {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
         .status-pending {
+
             background: #fffbeb;
             color: #d97706;
             border: 1px solid #fde68a;
@@ -1206,37 +1317,51 @@
             <!-- MAIN CONTENT -->
             <div class="main-content">
                 <main class="dashboard-content">
-                    <div class="welcome-banner admin-banner">
+                    <div class="welcome-banner admin-banner" style="position:relative;overflow:hidden;">
                         <div class="welcome-content">
-                            <h2>Admin Dashboard</h2>
-                            <p>Manage barangay services and monitor activities</p>
+                            <h2 id="welcomeGreeting">Good morning, Admin</h2>
+                            <p id="welcomeDateStr">Loading date...</p>
                         </div>
-                        <div class="welcome-icon">⚙️</div>
+                        <div style="text-align:right;">
+                            <div style="font-size:28px;font-weight:800;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums;"
+                                id="welcomeTime">--:--</div>
+                            <div
+                                style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:1px;text-transform:uppercase;">
+                                Barangay Sta. Lucia</div>
+                        </div>
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">📦</div>
+                        <div class="stat-card"
+                            onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])"
+                            style="cursor:pointer;border-left:4px solid #f59e0b;">
+                            <div class="stat-icon" style="background:#fffbeb;border-color:#fde68a;">📦</div>
                             <div class="stat-content">
                                 <h3>Pending Requests</h3>
-                                <div class="stat-value" id="pendingRequests">0</div>
+                                <div class="stat-value" id="pendingRequests" style="color:#d97706;">0</div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">📋</div>
+                        <div class="stat-card"
+                            onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])"
+                            style="cursor:pointer;border-left:4px solid #ef4444;">
+                            <div class="stat-icon" style="background:#fef2f2;border-color:#fecaca;">📋</div>
                             <div class="stat-content">
                                 <h3>Pending Concerns</h3>
-                                <div class="stat-value" id="pendingConcerns">0</div>
+                                <div class="stat-value" id="pendingConcerns" style="color:#dc2626;">0</div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🏀</div>
+                        <div class="stat-card"
+                            onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])"
+                            style="cursor:pointer;border-left:4px solid #3b82f6;">
+                            <div class="stat-icon" style="background:#eff6ff;border-color:#bfdbfe;">🏀</div>
                             <div class="stat-content">
-                                <h3>Upcoming Events</h3>
-                                <div class="stat-value" id="upcomingEvents">0</div>
+                                <h3>Active Bookings</h3>
+                                <div class="stat-value" id="upcomingEvents" style="color:#2563eb;">0</div>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card"
+                            onclick="switchSection('users', document.querySelectorAll('.sidebar-btn')[6])"
+                            style="cursor:pointer;border-left:4px solid #10b981;">
                             <div class="stat-icon">👥</div>
                             <div class="stat-content">
                                 <h3>Total Users</h3>
@@ -1246,17 +1371,102 @@
                     </div>
 
 
-                    <!-- Overview Section (Real-Time Feed) -->
-                    <div id="overview-section" class="section-container">
-                        <div class="section-header">
-                            <h3>Live Barangay Activity Feed</h3>
+                    <!-- Overview Section - Digital Dashboard -->
+                    <div id="overview-section">
+                        <!-- Quick Actions -->
+                        <div
+                            style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;">
+                            <button
+                                onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])"
+                                class="quick-action-card" style="--qa-color:#3b82f6;">
+                                <div class="qa-icon">🏀</div>
+                                <div class="qa-label">Court Bookings</div>
+                                <div class="qa-sub">Review &amp; approve</div>
+                                <i class="bi bi-arrow-right-short qa-arrow"></i>
+                            </button>
+                            <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])"
+                                class="quick-action-card" style="--qa-color:#f59e0b;">
+                                <div class="qa-icon">📦</div>
+                                <div class="qa-label">Equipment Requests</div>
+                                <div class="qa-sub">Manage borrowings</div>
+                                <i class="bi bi-arrow-right-short qa-arrow"></i>
+                            </button>
+                            <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])"
+                                class="quick-action-card" style="--qa-color:#ef4444;">
+                                <div class="qa-icon">📋</div>
+                                <div class="qa-label">Citizen Concerns</div>
+                                <div class="qa-sub">Respond to reports</div>
+                                <i class="bi bi-arrow-right-short qa-arrow"></i>
+                            </button>
+                            <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[4])"
+                                class="quick-action-card" style="--qa-color:#8b5cf6;">
+                                <div class="qa-icon">📅</div>
+                                <div class="qa-label">Court Events</div>
+                                <div class="qa-sub">Schedule &amp; manage</div>
+                                <i class="bi bi-arrow-right-short qa-arrow"></i>
+                            </button>
                         </div>
-                        <div class="section-content" style="padding: 16px;">
-                            <div id="liveActivityFeed" style="display:flex;flex-direction:column;gap:12px;">
-                                <div style="text-align:center;padding:30px;color:var(--muted);"><i
-                                        class="bi bi-arrow-repeat"
-                                        style="font-size:24px;display:inline-block;animation:spin 1s linear infinite;"></i><br>Loading
-                                    live feed...</div>
+
+                        <!-- Status Overview Grid -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <!-- System Status -->
+                            <div class="section-container" style="margin-bottom:0;">
+                                <div class="section-header">
+                                    <h3><i class="bi bi-cpu" style="margin-right:6px;"></i>System Status</h3>
+                                    <span
+                                        style="font-size:11px;background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;">●
+                                        ONLINE</span>
+                                </div>
+                                <div class="section-content" style="display:flex;flex-direction:column;gap:14px;">
+                                    <div class="status-row">
+                                        <span class="status-label"><i class="bi bi-database"></i> Database</span>
+                                        <span class="status-pill green">Connected</span>
+                                    </div>
+                                    <div class="status-row">
+                                        <span class="status-label"><i class="bi bi-shield-check"></i> Auth
+                                            Service</span>
+                                        <span class="status-pill green">Active</span>
+                                    </div>
+                                    <div class="status-row">
+                                        <span class="status-label"><i class="bi bi-globe"></i> Vercel Deploy</span>
+                                        <span class="status-pill green">Live</span>
+                                    </div>
+                                    <div class="status-row">
+                                        <span class="status-label"><i class="bi bi-calendar-check"></i> Today's
+                                            Date</span>
+                                        <span style="font-size:13px;font-weight:600;color:var(--text);"
+                                            id="todayDate">—</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Stats Panel -->
+                            <div class="section-container" style="margin-bottom:0;">
+                                <div class="section-header">
+                                    <h3><i class="bi bi-bar-chart-line" style="margin-right:6px;"></i>At a Glance</h3>
+                                </div>
+                                <div class="section-content" style="display:flex;flex-direction:column;gap:14px;">
+                                    <div class="status-row">
+                                        <span class="status-label">📦 Equipment Requests</span>
+                                        <span id="glancePendingReqs"
+                                            style="font-weight:700;font-size:13px;color:#d97706;">—</span>
+                                    </div>
+                                    <div class="status-row">
+                                        <span class="status-label">📋 Open Concerns</span>
+                                        <span id="glancePendingCons"
+                                            style="font-weight:700;font-size:13px;color:#dc2626;">—</span>
+                                    </div>
+                                    <div class="status-row">
+                                        <span class="status-label">🏀 Court Bookings</span>
+                                        <span id="glanceBookings"
+                                            style="font-weight:700;font-size:13px;color:#2563eb;">—</span>
+                                    </div>
+                                    <div class="status-row">
+                                        <span class="status-label">👥 Registered Users</span>
+                                        <span id="glanceUsers"
+                                            style="font-weight:700;font-size:13px;color:#059669;">—</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3212,98 +3422,50 @@
                     showAlert('Error: ' + e.message, 'error');
                 }
             }
-
-            let _overviewRefreshTimer = null;
+            // ── WELCOME CLOCK & GREETING ──
+            function initWelcomeClock() {
+                const greetEl = document.getElementById('welcomeGreeting');
+                const dateEl = document.getElementById('welcomeDateStr');
+                const timeEl = document.getElementById('welcomeTime');
+                const today = document.getElementById('todayDate');
+                function tick() {
+                    const now = new Date();
+                    const h = now.getHours();
+                    const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+                    const user = getCurrentUser();
+                    const name = user?.fullName || user?.username || 'Admin';
+                    if (greetEl) greetEl.textContent = greet + ', ' + name;
+                    const ds = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+                    if (dateEl) dateEl.textContent = ds;
+                    if (today) today.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                }
+                tick();
+                setInterval(tick, 1000);
+            }
 
             async function loadOverview() {
-                // Update top stat cards
-                const [users, equipment, borrowings, bookings, concerns] = await Promise.all([
-                    getAllUsers(), getEquipment(), getAllBorrowings(), getCourtBookings(), getAllConcerns()
+                const [users, borrowings, bookings, concerns] = await Promise.all([
+                    getAllUsers(), getAllBorrowings(), getCourtBookings(), getAllConcerns()
                 ]);
 
                 const pendingReqs = borrowings.filter(b => b.status === 'pending').length;
                 const pendingCons = concerns.filter(c => c.status === 'pending').length;
-                const upcEvents = bookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
+                const activeBooks = bookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
 
-                const reqEl = document.getElementById('pendingRequests');
-                if (reqEl) reqEl.textContent = pendingReqs;
-                const conEl = document.getElementById('pendingConcerns');
-                if (conEl) conEl.textContent = pendingCons;
-                const evtEl = document.getElementById('upcomingEvents');
-                if (evtEl) evtEl.textContent = upcEvents;
-                const usrEl = document.getElementById('totalUsers');
-                if (usrEl) usrEl.textContent = users.length;
+                const el = (id) => document.getElementById(id);
+                if (el('pendingRequests')) el('pendingRequests').textContent = pendingReqs;
+                if (el('pendingConcerns')) el('pendingConcerns').textContent = pendingCons;
+                if (el('upcomingEvents')) el('upcomingEvents').textContent = activeBooks;
+                if (el('totalUsers')) el('totalUsers').textContent = users.length;
 
-                // Build Live Feed
-                const feedContainer = document.getElementById('liveActivityFeed');
-                if (!feedContainer) return;
-
-                let feedItems = [];
-
-                borrowings.forEach(b => {
-                    feedItems.push({
-                        type: 'borrowing',
-                        title: `${b.user_name || 'A user'} requested to borrow ${b.quantity}x ${b.equipment}`,
-                        subtitle: `Status: <span style="font-weight:600;text-transform:uppercase;font-size:10px;">${b.status}</span> | For: ${b.purpose || 'Unspecified'}`,
-                        date: new Date(b.created_at || b.borrow_date || new Date()), // Fallback to borrow_date
-                        icon: '📦',
-                        color: '#f59e0b'
-                    });
-                });
-
-                concerns.forEach(c => {
-                    feedItems.push({
-                        type: 'concern',
-                        title: `${c.userName || 'A user'} submitted a new concern: ${c.title || c.category}`,
-                        subtitle: `Status: <span style="font-weight:600;text-transform:uppercase;font-size:10px;">${c.status}</span> | Location: ${c.address || 'Unspecified'}`,
-                        date: new Date(c.createdAt || new Date()),
-                        icon: '📋',
-                        color: '#ef4444'
-                    });
-                });
-
-                bookings.forEach(b => {
-                    feedItems.push({
-                        type: 'booking',
-                        title: `${b.username || b.userName || b.user_name || 'A user'} booked ${b.venueName || b.venue_name || b.venue || 'the court'}`,
-                        subtitle: `Status: <span style="font-weight:600;text-transform:uppercase;font-size:10px;">${b.status}</span> | Date: ${b.date}`,
-                        date: new Date(b.created_at || b.date || new Date()),
-                        icon: '🏀',
-                        color: '#3b82f6'
-                    });
-                });
-
-                feedItems.sort((a, b) => b.date - a.date);
-                const topFeed = feedItems.slice(0, 20);
-
-                if (topFeed.length === 0) {
-                    feedContainer.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);"><i class="bi bi-inbox" style="font-size:24px;opacity:0.5;display:block;margin-bottom:8px;"></i>No recent activity found.</div>';
-                } else {
-                    feedContainer.innerHTML = topFeed.map(item => `
-                    <div style="display:flex;gap:14px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff;align-items:center;transition:all 0.2s;">
-                        <div style="width:42px;height:42px;border-radius:12px;background:${item.color}15;color:${item.color};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
-                            ${item.icon}
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;line-height:1.3;">${item.title}</div>
-                            <div style="font-size:12px;color:var(--muted);">${item.subtitle}</div>
-                        </div>
-                        <div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;background:var(--bg);padding:4px 8px;border-radius:6px;">
-                            ${item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </div>
-                    </div>
-                `).join('');
-                }
-
-                // Auto-refresh every 30 seconds if tab is active
-                if (_overviewRefreshTimer) clearInterval(_overviewRefreshTimer);
-                _overviewRefreshTimer = setInterval(() => {
-                    const sect = document.getElementById('overview-section');
-                    if (sect && (sect.style.display !== 'none')) {
-                        loadOverview();
-                    }
-                }, 30000);
+                // At a Glance panel
+                if (el('glancePendingReqs')) el('glancePendingReqs').textContent = pendingReqs + ' pending';
+                if (el('glancePendingCons')) el('glancePendingCons').textContent = pendingCons + ' open';
+                if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks + ' active';
+                if (el('glanceUsers')) el('glanceUsers').textContent = users.length + ' registered';
             }
+
 
             // Auto-load sections when tabs are clicked
             const _origSwitchSection = window.switchSection;
@@ -3317,6 +3479,7 @@
 
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
+                initWelcomeClock();
                 loadOverview();
             });
 
