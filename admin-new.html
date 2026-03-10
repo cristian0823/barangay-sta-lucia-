@@ -1080,7 +1080,7 @@
                 </div>
                 <div class="user-avatar" id="userAvatar">A</div>
             </div>
-            <button class="btn" onclick="document.querySelector('[data-panel=\'profile-section\']').click()">⚙️
+            <button class="btn" onclick="if(window.switchTab) switchTab('profile-section');">⚙️
                 Settings</button>
             <button class="btn" onclick="logoutUser()">Logout</button>
         </div>
@@ -1994,30 +1994,47 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // Navigation functionality
+        // Tab switching logic
+        window.switchTab = function (panelId) {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            const navItem = document.querySelector(`[data-panel="${panelId}"]`);
+            if (navItem) navItem.classList.add('active');
+
+            document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+            const panel = document.getElementById(panelId);
+            if (panel) panel.classList.add('active');
+
+            if (panelId === 'activity-log' && typeof loadActivityLog === 'function') {
+                loadActivityLog();
+            }
+            if (panelId === 'system-section' && typeof loadSystemStats === 'function') {
+                loadSystemStats();
+            }
+        };
+
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function () {
-                // Remove active class from all nav items
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                // Add active class to clicked item
-                this.classList.add('active');
-
-                // Hide all content panels
-                document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
-                // Show the selected panel
-                const panelId = this.getAttribute('data-panel');
-                document.getElementById(panelId).classList.add('active');
-
-                // Trigger data fetch for activity log
-                if (panelId === 'activity-log' && typeof loadActivityLog === 'function') {
-                    loadActivityLog();
-                }
+                window.switchTab(this.getAttribute('data-panel'));
             });
+        });
+
+        // Prepopulate profile settings
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const user = getCurrentUser();
+                if (user) {
+                    const fn = document.getElementById('fullName');
+                    const em = document.getElementById('email');
+                    const un = document.getElementById('username');
+                    if (fn) fn.value = user.fullName || '';
+                    if (em) em.value = user.email || '';
+                    if (un) un.value = user.username || '';
+                }
+            }, 600);
         });
 
         // Modal functionality
         function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
             if (modal) {
                 modal.classList.remove('active');
                 if (window.location.hash === '#' + modalId) {
@@ -2778,15 +2795,7 @@
             document.getElementById('lastUpdatedInfo').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Add to nav listener
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function () {
-                const panelId = this.getAttribute('data-panel');
-                if (panelId === 'system-section') {
-                    loadSystemStats();
-                }
-            });
-        });
+
     </script>
 </body>
 
