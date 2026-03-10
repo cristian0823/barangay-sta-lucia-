@@ -1735,6 +1735,33 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log("Dashboard initializing...");
 
+            // Tab Navigation Logic
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active tab button
+                    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Show correct panel
+                    const panelId = btn.getAttribute('data-panel');
+                    document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+                    document.getElementById(panelId).classList.add('active');
+
+                    // Auto-sync data based on tab clicked to emulate real-time
+                    if (panelId === 'court-bookings-panel') {
+                        loadUpcomingEvents();
+                        loadMyCourtBookings();
+                        renderCal();
+                    } else if (panelId === 'concerns-panel') {
+                        loadMyConcerns();
+                    } else if (panelId === 'equipment-panel') {
+                        loadEquipment();
+                    } else if (panelId === 'my-borrowings-panel') {
+                        loadMyBorrowings();
+                    }
+                });
+            });
+
             try { await renderCal(); } catch (e) { console.error("Calendar fail:", e); }
             try { await loadUpcomingEvents(); } catch (e) { console.error("Events fail:", e); }
             try { await loadMyCourtBookings(); } catch (e) { console.error("Bookings fail:", e); }
