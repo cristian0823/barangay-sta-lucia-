@@ -1369,14 +1369,19 @@ async function logActivity(action, details) {
     const supabaseAvailable = await isSupabaseAvailable().catch(() => false);
     if (supabaseAvailable) {
         try {
-            await supabase.from('activity_log').insert([{
+            const { error } = await supabase.from('activity_log').insert([{
                 admin_username: adminUsername,
                 action: action,
                 details: details,
                 created_at: timestamp
             }]);
+            
+            if (error) {
+                console.warn('Supabase activity log error, falling back to local', error);
+                _saveActivityLocal(adminUsername, action, details, timestamp);
+            }
         } catch (e) {
-            // Silently fall back to local if table doesn't exist yet
+            // Fall back to local if API completely fails
             _saveActivityLocal(adminUsername, action, details, timestamp);
         }
     } else {
@@ -1402,7 +1407,10 @@ async function getActivityLog() {
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(200);
-            if (!error && data && data.length > 0) {
+            
+            if (error) throw error; // Trigger fallback
+            
+            if (data && data.length > 0) {
                 return data.map(r => ({
                     id: r.id,
                     adminUsername: r.admin_username,
@@ -1411,7 +1419,9 @@ async function getActivityLog() {
                     createdAt: r.created_at
                 }));
             }
-        } catch (e) { /* fall through */ }
+        } catch (e) { 
+            console.warn('Activity Log: Table not found or error, using local fallback.', e.message);
+        }
     }
     // Fall back to localStorage
     return JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
