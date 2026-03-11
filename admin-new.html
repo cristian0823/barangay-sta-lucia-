@@ -512,6 +512,132 @@
             font-family: inherit;
         }
 
+        /* PREMIUM ACTIVITY LOG STYLES */
+        .premium-card {
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .activity-log-table th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 16px 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .activity-log-table td {
+            padding: 16px 24px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .activity-log-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .date-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .date-main {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .time-sub {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .admin-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-icon {
+            background: #e2e8f0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-primary {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-muted {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Responsive Mobile Cards for tables */
+        @media (max-width: 768px) {
+            .activity-log-table thead {
+                display: none;
+            }
+
+            .activity-log-table tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 4px solid #f1f5f9;
+            }
+
+            .activity-log-table td {
+                display: flex;
+                flex-direction: column;
+                padding: 8px 0;
+                border: none;
+            }
+
+            .activity-log-table td::before {
+                content: attr(data-label);
+                font-size: 11px;
+                text-transform: uppercase;
+                color: #64748b;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+        }
+
         /* MODAL */
         .modal {
             display: none;
@@ -1684,29 +1810,20 @@
                     <div class="section-content">
                         <div class="premium-card">
                             <div class="section-header"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600; color: #1f2937;">System
-                                    Activities</h3>
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
+                                <h3
+                                    style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--primary-dark);">
+                                    System Activities</h3>
                                 <button class="btn btn-primary btn-sm" onclick="loadActivityLog()">🔄 Refresh</button>
                             </div>
-                            <div class="table-responsive">
-                                <table class="data-table activity-log-table"
-                                    style="width: 100%; border-collapse: collapse;">
+                            <div class="table-responsive" style="overflow-x: auto;">
+                                <table class="activity-log-table" style="width: 100%; border-collapse: collapse;">
                                     <thead>
-                                        <tr
-                                            style="background: #f9fafb; border-bottom: 2px solid #e5e7eb; text-align: left;">
-                                            <th
-                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
-                                                Date &amp; Time</th>
-                                            <th
-                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
-                                                Admin</th>
-                                            <th
-                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
-                                                Action</th>
-                                            <th
-                                                style="padding: 12px 24px; color: #6b7280; font-size: 0.75rem; text-transform: uppercase;">
-                                                Details</th>
+                                        <tr>
+                                            <th>Date &amp; Time</th>
+                                            <th>Admin</th>
+                                            <th>Action</th>
+                                            <th>Details</th>
                                         </tr>
                                     </thead>
                                     <tbody id="activityLogTable"></tbody>
@@ -2074,7 +2191,17 @@
                         <div class="form-group"><label>Broken</label><input type="number" id="equipBroken" value="0"
                                 required></div>
                     </div>
-                    <div class="form-group"><label>Icon</label><input type="text" id="equipIcon" value="📦"></div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="equipCategory" required
+                            style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; background: #fff;">
+                            <option value="Furniture">Furniture</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Supplies">Supplies</option>
+                            <option value="Vehicles">Vehicles</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                     <div class="form-row" style="margin-top: 16px;">
                         <button type="submit" class="btn btn-primary" style="width: 100%;">Save Equipment</button>
                     </div>
@@ -2190,7 +2317,7 @@
             const editId = this.dataset.editId;
             const payload = {
                 name: document.getElementById('equipName').value,
-                icon: document.getElementById('equipIcon').value,
+                category: document.getElementById('equipCategory').value,
                 quantity: parseInt(document.getElementById('equipQty').value),
                 broken: parseInt(document.getElementById('equipBroken').value) || 0,
                 is_archived: false
@@ -2360,7 +2487,12 @@
 
             container.innerHTML = equipment.map(e => `
                 <tr>
-                    <td><strong>${e.icon} ${e.name}</strong></td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                            <strong>${e.name}</strong>
+                            <span style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: var(--primary-50); color: var(--primary-dark); font-weight: 600;">${e.category || 'General'}</span>
+                        </div>
+                    </td>
                     <td>${e.quantity}</td>
                     <td>${e.available}</td>
                     <td>${e.broken || 0}</td>
@@ -2642,7 +2774,7 @@
                 document.getElementById('equipName').value = item.name;
                 document.getElementById('equipQty').value = item.quantity;
                 document.getElementById('equipBroken').value = item.broken || 0;
-                document.getElementById('equipIcon').value = item.icon;
+                document.getElementById('equipCategory').value = item.category || 'Other';
 
                 // Store the ID for editing
                 document.getElementById('addEquipmentForm').dataset.editId = equipmentId;

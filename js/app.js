@@ -358,7 +358,7 @@ async function updateEquipment(id, updates) {
             available: newAvailable
         };
         if (updates.name !== undefined) payload.name = updates.name;
-        if (updates.icon !== undefined) payload.icon = updates.icon;
+        if (updates.category !== undefined) payload.category = updates.category;
         if (updates.description !== undefined) payload.description = updates.description;
         if (updates.isArchived !== undefined) payload.is_archived = updates.isArchived;
 
@@ -382,7 +382,7 @@ async function updateEquipment(id, updates) {
         item.available = item.available + diffQty - diffBroken;
 
         if (updates.name !== undefined) item.name = updates.name;
-        if (updates.icon !== undefined) item.icon = updates.icon;
+        if (updates.category !== undefined) item.category = updates.category;
         if (updates.description !== undefined) item.description = updates.description;
         if (updates.isArchived !== undefined) item.isArchived = updates.isArchived;
 
@@ -396,7 +396,7 @@ async function addEquipment(equipmentData) {
     if (supabaseAvailable) {
         const payload = {
             name: equipmentData.name,
-            icon: equipmentData.icon || '📦',
+            category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
@@ -413,7 +413,7 @@ async function addEquipment(equipmentData) {
         const newEq = {
             id: newId,
             name: equipmentData.name,
-            icon: equipmentData.icon || '📦',
+            category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
