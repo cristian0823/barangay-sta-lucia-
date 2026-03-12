@@ -1197,6 +1197,95 @@
             }
         }
 
+        /* PREMIUM ACTIVITY LOG STYLES */
+        .premium-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .activity-log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-log-table th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 16px 24px;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .activity-log-table td {
+            padding: 16px 24px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .activity-log-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .date-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .date-main {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .time-sub {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .admin-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-icon {
+            background: #e2e8f0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-primary { background: #e0e7ff; color: #3730a3; }
+        .badge-muted { background: #f1f5f9; color: #475569; }
+
+
         /* Calendar styles like user dashboard */
         .calendar-day:hover {
             transform: scale(1.05);
@@ -1914,15 +2003,15 @@
                         </div>
                     </div>
 
-                    <!-- Activity Log Section -->
+                    <!-- Activity Log Section (Premium) -->
                     <div id="activity-log-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>📝 Activity Log</h3>
-                            <button class="btn btn-small btn-light" onclick="loadActivityLog()">🔄 Refresh</button>
-                        </div>
-                        <div class="section-content" style="padding: 0;">
-                            <div class="admin-tables">
-                                <table class="data-table">
+                        <div class="premium-card">
+                            <div class="section-header" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
+                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--green-xl);">System Activities</h3>
+                                <button class="btn btn-primary btn-small" onclick="loadActivityLog()">🔄 Refresh</button>
+                            </div>
+                            <div class="admin-tables" style="overflow-x: auto; padding: 0;">
+                                <table class="activity-log-table">
                                     <thead>
                                         <tr>
                                             <th>Date &amp; Time</th>
@@ -1933,9 +2022,9 @@
                                     </thead>
                                     <tbody id="activityLogTable"></tbody>
                                 </table>
-                                <div id="noActivityLog" class="empty-state">
-                                    <div class="empty-state-icon">📝</div>
-                                    <p>No activity recorded yet</p>
+                                <div id="noActivityLog" class="empty-state" style="display:none; text-align:center; padding: 40px;">
+                                    <div style="font-size:40px; margin-bottom:12px;">📝</div>
+                                    <p style="color: #6b7280;">No activity recorded yet</p>
                                 </div>
                             </div>
                         </div>
@@ -2792,15 +2881,22 @@
                     const dt = new Date(log.createdAt);
                     const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    const actionColor = log.action.includes('Deleted') ? '#dc2626' :
-                        log.action.includes('Created') ? '#16a34a' :
-                            log.action.includes('Registered') ? '#2563eb' : '#374151';
+
+                    let badgeClass = 'badge-muted'; 
+                    if (log.action.includes('Deleted') || log.action.includes('Rejected')) {
+                        badgeClass = 'badge-danger';
+                    } else if (log.action.includes('Created') || log.action.includes('Approved') || log.action.includes('Confirmed') || log.action.includes('Registered')) {
+                        badgeClass = 'badge-success';
+                    } else if (log.action.includes('Updated')) {
+                        badgeClass = 'badge-primary';
+                    }
+
                     return `<tr>
-                    <td><span style="font-size:13px;">${dateStr}</span><br><span style="font-size:11px;color:#9ca3af;">${timeStr}</span></td>
-                    <td><strong>${log.adminUsername}</strong></td>
-                    <td><span style="color:${actionColor};font-weight:600;">${log.action}</span></td>
-                    <td style="font-size:13px;color:#6b7280;">${log.details}</td>
-                </tr>`;
+                        <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
+                        <td data-label="Admin"><div class="admin-cell"><span class="admin-icon">👤</span> <strong>${log.adminUsername}</strong></div></td>
+                        <td data-label="Action"><span class="status-badge ${badgeClass}">${log.action}</span></td>
+                        <td data-label="Details"><span style="font-size:12px; color:#6b7280;">${log.details || ''}</span></td>
+                    </tr>`;
                 }).join('');
             }
 

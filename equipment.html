@@ -453,11 +453,13 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, .5);
+            background: rgba(0, 0, 0, .65);
+            backdrop-filter: blur(6px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            padding: 16px;
         }
 
         .modal-overlay.open {
@@ -466,115 +468,232 @@
 
         .modal {
             background: var(--white);
-            border-radius: 20px;
-            padding: 28px;
+            border-radius: 28px;
             width: 100%;
-            max-width: 440px;
-            margin: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
-            animation: slideUp .25s ease;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, .3);
+            animation: modalSlideIn .35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes slideUp {
+        @keyframes modalSlideIn {
             from {
-                transform: translateY(20px);
+                transform: translateY(30px) scale(0.95);
                 opacity: 0;
             }
-
             to {
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
                 opacity: 1;
             }
         }
 
         .modal-header {
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: white;
+            padding: 20px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
-
-        .modal-header h3 {
-            font-size: 18px;
-            font-weight: 700;
+        .modal-header::before {
+            content: '';
+            position: absolute; top: -60%; right: -10%;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
         }
-
+        .modal-header-content { display: flex; align-items: center; gap: 14px; z-index: 1; }
+        .modal-header-icon {
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,.2); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+        }
+        .modal-header h3  { font-size: 19px; font-weight: 800; z-index: 1; }
+        .modal-header p   { font-size: 12px; opacity: .85; margin-top: 1px; }
         .modal-close {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--muted);
-            padding: 4px;
-            border-radius: 6px;
+            background: rgba(255,255,255,.15); border: none;
+            width: 34px; height: 34px; border-radius: 9px;
+            cursor: pointer; color: white; font-size: 17px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s; z-index: 1;
         }
+        .modal-close:hover { background: rgba(255,255,255,.3); transform: rotate(90deg); }
 
-        .modal-close:hover {
-            background: #f3f4f6;
+        /* Two-column body */
+        .modal-body {
+            display: flex; flex: 1; overflow-y: auto; min-height: 0;
         }
-
-        .modal-equip-info {
+        .modal-col-left {
+            width: 46%; padding: 22px;
+            border-right: 1.5px solid var(--border);
             background: var(--green-50);
-            border: 1px solid var(--green-light);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 18px;
+            display: flex; flex-direction: column; gap: 14px;
+            overflow-y: auto;
+        }
+        .modal-col-right {
+            flex: 1; padding: 22px;
+            display: flex; flex-direction: column;
+            overflow-y: auto;
         }
 
-        .form-group {
-            margin-bottom: 14px;
+        /* Equipment info strip inside modal */
+        .modal-equip-info {
+            background: white;
+            border: 1.5px solid #a7f3d0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        [data-theme="dark"] .modal-equip-info { background: #0d2818; border-color: #065f46; }
+        .modal-equip-icon {
+            width: 44px; height: 44px;
+            background: var(--green-light);
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+        }
+        .modal-equip-details h4 { font-size: 14px; font-weight: 700; color: var(--text); }
+        .modal-equip-details p  { font-size: 12px; color: var(--muted); margin-top: 1px; }
+        .modal-equip-badge {
+            margin-left: auto;
+            background: var(--green); color: white;
+            padding: 4px 11px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; white-space: nowrap;
         }
 
+        /* Calendar inside modal */
+        .borrow-calendar-wrap { flex: 1; }
+        .borrow-cal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px;
+        }
+        .borrow-cal-title { font-size: 14px; font-weight: 700; color: var(--text); }
+        .borrow-cal-nav { display: flex; gap: 5px; }
+        .borrow-cal-nav button {
+            width: 30px; height: 30px; border: 1.5px solid var(--border);
+            border-radius: 7px; background: white; cursor: pointer;
+            font-size: 13px; display: flex; align-items: center; justify-content: center;
+            transition: all .2s; color: var(--text);
+        }
+        .borrow-cal-nav button:hover { background: var(--green); color: white; border-color: var(--green); }
+        .borrow-cal-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+        }
+        .borrow-cal-day-name {
+            text-align: center; font-size: 10px; font-weight: 700;
+            color: var(--muted); padding: 3px 0;
+        }
+        .borrow-cal-day {
+            aspect-ratio: 1; border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: all .15s;
+            background: white; border: 1.5px solid #e5e7eb; color: var(--text);
+        }
+        .borrow-cal-day:hover:not(.past):not(.in-range-day) { background: var(--green); color: white; border-color: var(--green); transform: scale(1.07); }
+        .borrow-cal-day.past   { background: #f3f4f6; color: #9ca3af; cursor: not-allowed; border-color: #e5e7eb; }
+        .borrow-cal-day.today  { border-color: var(--green); box-shadow: 0 0 0 2px rgba(5,150,105,.25); }
+        .borrow-cal-day.start-day { background: var(--green);  color: white; border-color: var(--green-dark); }
+        .borrow-cal-day.end-day   { background: #0f766e; color: white; border-color: #0f766e; }
+        .borrow-cal-day.in-range-day { background: #d1fae5; border-color: #a7f3d0; color: #065f46; }
+        .borrow-cal-day.empty { border: none; background: none; cursor: default; }
+
+        /* Date range summary */
+        .date-range-summary {
+            background: white; border: 1.5px solid #a7f3d0;
+            border-radius: 12px; padding: 12px 14px;
+        }
+        [data-theme="dark"] .date-range-summary { background: #064e3b; border-color: #065f46; }
+        .drs-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--green); margin-bottom: 8px; }
+        .date-range-boxes { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: center; }
+        .date-box { background: var(--green-50); border: 1.5px solid #a7f3d0; border-radius: 9px; padding: 7px; text-align: center; }
+        [data-theme="dark"] .date-box { background: #0d2818; border-color: #065f46; }
+        .db-lbl  { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+        .db-val  { font-size: 13px; font-weight: 800; color: var(--green-dark); }
+        .db-year { font-size: 10px; color: var(--muted); }
+        .date-arrow { font-size: 14px; color: var(--muted); text-align: center; }
+        .date-range-tip {
+            font-size: 11px; color: var(--muted); margin-top: 7px;
+            padding: 5px 8px; background: var(--green-50); border-radius: 7px;
+        }
+
+        /* Calendar legend */
+        .cal-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px; font-weight: 600; color: var(--muted); }
+        .cal-legend-item { display: flex; align-items: center; gap: 4px; }
+        .cal-legend-dot  { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid; }
+
+        /* Form fields */
+        .form-group { margin-bottom: 14px; }
         .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+            color: var(--muted); margin-bottom: 6px;
         }
-
         .form-group input,
         .form-group textarea {
-            width: 100%;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color .2s;
+            width: 100%; border: 2px solid var(--border); border-radius: 11px;
+            padding: 11px 14px; font-size: 13px; font-family: inherit;
+            transition: all .25s; background: var(--white); color: var(--text);
         }
-
         .form-group input:focus,
         .form-group textarea:focus {
-            outline: none;
-            border-color: var(--green);
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
+            outline: none; border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(5,150,105,.1);
+        }
+        .form-group textarea { resize: none; min-height: 80px; }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: #9ca3af; }
+
+        /* Quantity stepper */
+        .qty-selector {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg); border-radius: 11px;
+            padding: 5px; border: 2px solid var(--border);
+        }
+        [data-theme="dark"] .qty-selector { background: #022c22; border-color: #065f46; }
+        .qty-btn {
+            width: 36px; height: 36px; border: none; border-radius: 8px;
+            background: white; color: var(--text); font-size: 19px; cursor: pointer;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
+        }
+        [data-theme="dark"] .qty-btn { background: #064e3b; }
+        .qty-btn:hover { background: var(--green); color: white; }
+        .qty-input {
+            flex: 1; text-align: center; border: none; background: transparent;
+            font-size: 17px; font-weight: 700; color: var(--text);
+        }
+        .qty-input:focus { outline: none; }
+        .available-note {
+            font-size: 11px; color: var(--green); margin-top: 5px;
+            font-weight: 600;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
+        /* Submit button */
         .btn-submit-modal {
-            width: 100%;
-            padding: 13px;
+            width: 100%; padding: 14px;
             background: linear-gradient(135deg, var(--green), var(--green-dark));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .2s;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, .25);
-            margin-top: 4px;
+            color: white; border: none; border-radius: 13px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            transition: all .3s; box-shadow: 0 4px 14px rgba(5,150,105,.3);
+            margin-top: auto;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn-submit-modal:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(5,150,105,.4); }
+        .btn-submit-modal:active { transform: translateY(0); }
+        .btn-submit-modal:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-        .btn-submit-modal:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(5, 150, 105, .35);
-        }
+        /* Dark overrides */
+        [data-theme="dark"] .modal-col-left { background: #0d2818; border-color: #065f46; }
+        [data-theme="dark"] .borrow-cal-day { background: #064e3b; border-color: #065f46; }
+        [data-theme="dark"] .borrow-cal-day.past { background: #1a1a1a; color: #4b5563; }
+        [data-theme="dark"] .borrow-cal-day.in-range-day { background: #14532d; color: #a7f3d0; }
+        [data-theme="dark"] .borrow-cal-nav button { background: #064e3b; border-color: #065f46; }
+        [data-theme="dark"] .date-range-tip { background: #064e3b; }
 
         /* ── EMPTY STATE ── */
         .empty-state {
@@ -642,6 +761,44 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+
+            .modal {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 24px 24px 0 0;
+                position: absolute;
+                bottom: 0;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .modal-header {
+                padding: 20px 24px;
+            }
+
+            .modal-body {
+                padding: 24px;
+            }
+
+            .modal-equip-info {
+                flex-wrap: wrap;
+            }
+
+            .modal-equip-badge {
+                width: 100%;
+                text-align: center;
+                margin-top: 10px;
+                margin-left: 0;
+            }
+
+            .qty-selector {
+                padding: 8px;
+            }
+
+            .qty-btn {
+                width: 44px;
+                height: 44px;
+            }
         }
     </style>
 </head>
@@ -708,38 +865,134 @@
         </div>
     </div>
 
-    <!-- Borrow Modal -->
+    <!-- Borrow Modal –– redesigned two-column with calendar -->
     <div class="modal-overlay" id="borrowModal">
         <div class="modal">
+
+            <!-- Header -->
             <div class="modal-header">
-                <h3>Request Equipment</h3>
+                <div class="modal-header-content">
+                    <div class="modal-header-icon">📦</div>
+                    <div>
+                        <h3 id="modalTitle">Borrow Equipment</h3>
+                        <p>Select dates from the calendar and fill in the details</p>
+                    </div>
+                </div>
                 <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
-            <div class="modal-equip-info" id="modalEquipInfo"></div>
-            <form id="borrowForm">
-                <input type="hidden" id="modalEquipId">
-                <div class="form-group">
-                    <label>Quantity</label>
-                    <input type="number" id="borrowQty" min="1" value="1" required>
-                    <p id="availableQtyNote" style="font-size:12px;color:var(--muted);margin-top:4px;"></p>
-                </div>
-                <div class="form-group">
-                    <label>Purpose</label>
-                    <textarea id="borrowPurpose" rows="3" placeholder="Describe the purpose of borrowing..."
-                        required></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label>Borrow Date</label>
-                        <input type="date" id="borrowDate" required>
+
+            <!-- Two-column body -->
+            <div class="modal-body">
+
+                <!-- LEFT: Calendar -->
+                <div class="modal-col-left">
+
+                    <!-- Equipment info strip -->
+                    <div class="modal-equip-info">
+                        <div class="modal-equip-icon" id="equipIcon">📦</div>
+                        <div class="modal-equip-details" id="equipDetails">
+                            <h4>Equipment Name</h4>
+                            <p>Loading...</p>
+                        </div>
+                        <div class="modal-equip-badge" id="equipBadge">0 available</div>
                     </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label>Return Date</label>
-                        <input type="date" id="returnDate" required>
+
+                    <!-- Calendar -->
+                    <div class="borrow-calendar-wrap">
+                        <div class="borrow-cal-header">
+                            <span class="borrow-cal-title" id="borrowCalTitle">Month Year</span>
+                            <div class="borrow-cal-nav">
+                                <button type="button" onclick="changeBorrowMonth(-1)">←</button>
+                                <button type="button" onclick="changeBorrowMonth(1)">→</button>
+                            </div>
+                        </div>
+                        <div class="borrow-cal-grid" id="borrowCalGrid">
+                            <!-- day names -->
+                            <div class="borrow-cal-day-name">Sun</div>
+                            <div class="borrow-cal-day-name">Mon</div>
+                            <div class="borrow-cal-day-name">Tue</div>
+                            <div class="borrow-cal-day-name">Wed</div>
+                            <div class="borrow-cal-day-name">Thu</div>
+                            <div class="borrow-cal-day-name">Fri</div>
+                            <div class="borrow-cal-day-name">Sat</div>
+                        </div>
+                    </div>
+
+                    <!-- Date range summary -->
+                    <div class="date-range-summary">
+                        <div class="drs-label">📅 Borrowing Period</div>
+                        <div class="date-range-boxes">
+                            <div class="date-box">
+                                <div class="db-lbl">📥 Borrow</div>
+                                <div class="db-val" id="drsStart">--</div>
+                                <div class="db-year" id="drsStartYear">Select</div>
+                            </div>
+                            <div class="date-arrow">→</div>
+                            <div class="date-box">
+                                <div class="db-lbl">📤 Return</div>
+                                <div class="db-val" id="drsEnd">--</div>
+                                <div class="db-year" id="drsEndYear">Select</div>
+                            </div>
+                        </div>
+                        <div class="date-range-tip" id="drsTip">Click a date to set your borrow start date</div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="cal-legend">
+                        <div class="cal-legend-item">
+                            <div class="cal-legend-dot" style="background:#059669;border-color:#047857;"></div> Start
+                        </div>
+                        <div class="cal-legend-item">
+                            <div class="cal-legend-dot" style="background:#0f766e;border-color:#0f766e;"></div> Return
+                        </div>
+                        <div class="cal-legend-item">
+                            <div class="cal-legend-dot" style="background:#d1fae5;border-color:#a7f3d0;"></div> Period
+                        </div>
                     </div>
                 </div>
-                <button type="submit" class="btn-submit-modal" style="margin-top:18px;">✅ Submit Request</button>
-            </form>
+
+                <!-- RIGHT: Form -->
+                <div class="modal-col-right">
+                    <form id="borrowForm" style="display:flex;flex-direction:column;height:100%;gap:0;">
+                        <input type="hidden" id="modalEquipId">
+                        <input type="hidden" id="borrowStartHidden">
+                        <input type="hidden" id="borrowEndHidden">
+
+                        <!-- Quantity -->
+                        <div class="form-group">
+                            <label>🔢 Quantity Needed</label>
+                            <div class="qty-selector">
+                                <button type="button" class="qty-btn" onclick="adjustQty(-1)">−</button>
+                                <input type="number" id="borrowQty" class="qty-input" min="1" value="1" required>
+                                <button type="button" class="qty-btn" onclick="adjustQty(1)">+</button>
+                            </div>
+                            <div class="available-note" id="availableQtyNote">✓ Available</div>
+                        </div>
+
+                        <!-- Full Name & Address -->
+                        <div class="form-group">
+                            <label>👤 Full Name</label>
+                            <input type="text" id="borrowerName" placeholder="e.g. Juan dela Cruz" required autocomplete="name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>🏠 Address / Purok</label>
+                            <input type="text" id="borrowerAddress" placeholder="e.g. Purok 3, Brgy. Sta. Lucia" required>
+                        </div>
+
+                        <!-- Purpose -->
+                        <div class="form-group" style="flex:1;display:flex;flex-direction:column;">
+                            <label>📋 Purpose of Borrowing</label>
+                            <textarea id="borrowPurpose" placeholder="Describe why you need this equipment, e.g. Community event, Birthday party..." required style="flex:1;"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit-modal" id="submitBorrowBtn" disabled>
+                            🚀 Submit Borrow Request
+                        </button>
+                    </form>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -767,8 +1020,111 @@
 
         let currentEquipId = null;
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('borrowDate').min = today;
-        document.getElementById('returnDate').min = today;
+
+        // ── Calendar state ──
+        let borrowCalMonth = new Date().getMonth();
+        let borrowCalYear  = new Date().getFullYear();
+        let borrowStartDate = null;
+        let borrowEndDate   = null;
+        let selectingStart  = true;
+
+        function changeBorrowMonth(d) {
+            borrowCalMonth += d;
+            if (borrowCalMonth > 11) { borrowCalMonth = 0; borrowCalYear++; }
+            if (borrowCalMonth < 0)  { borrowCalMonth = 11; borrowCalYear--; }
+            renderBorrowCal();
+        }
+
+        function renderBorrowCal() {
+            const months = ['January','February','March','April','May','June',
+                            'July','August','September','October','November','December'];
+            document.getElementById('borrowCalTitle').textContent = `${months[borrowCalMonth]} ${borrowCalYear}`;
+
+            const grid = document.getElementById('borrowCalGrid');
+            // Remove day cells (keep the 7 day-name headers)
+            const dayNames = Array.from(grid.querySelectorAll('.borrow-cal-day-name'));
+            grid.innerHTML = '';
+            dayNames.forEach(n => grid.appendChild(n));
+
+            const todayObj = new Date(); todayObj.setHours(0,0,0,0);
+            const firstDay = new Date(borrowCalYear, borrowCalMonth, 1).getDay();
+            const daysInMonth = new Date(borrowCalYear, borrowCalMonth + 1, 0).getDate();
+
+            // Empty cells before the 1st
+            for (let i = 0; i < firstDay; i++) {
+                const e = document.createElement('div');
+                e.className = 'borrow-cal-day empty';
+                grid.appendChild(e);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${borrowCalYear}-${String(borrowCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const dateObj = new Date(borrowCalYear, borrowCalMonth, d);
+                const div = document.createElement('div');
+                div.textContent = d;
+
+                if (dateObj < todayObj) {
+                    div.className = 'borrow-cal-day past';
+                } else {
+                    div.className = 'borrow-cal-day';
+                    if (dateObj.getTime() === todayObj.getTime()) div.classList.add('today');
+                    if (dateStr === borrowStartDate) div.classList.add('start-day');
+                    if (dateStr === borrowEndDate)   div.classList.add('end-day');
+                    if (borrowStartDate && borrowEndDate) {
+                        const s = new Date(borrowStartDate), e2 = new Date(borrowEndDate);
+                        if (dateObj > s && dateObj < e2) div.classList.add('in-range-day');
+                    }
+                    div.onclick = () => selectBorrowDate(dateStr);
+                }
+                grid.appendChild(div);
+            }
+        }
+
+        function selectBorrowDate(dateStr) {
+            const todayObj = new Date(); todayObj.setHours(0,0,0,0);
+            if (new Date(dateStr) < todayObj) return;
+
+            if (selectingStart) {
+                borrowStartDate = dateStr;
+                borrowEndDate   = null;
+                selectingStart  = false;
+                updateDRSummary();
+                document.getElementById('drsTip').textContent = 'Now click a date to set the return date';
+            } else {
+                if (new Date(dateStr) < new Date(borrowStartDate)) {
+                    showToast('Return date must be after borrow date', 'error');
+                    return;
+                }
+                borrowEndDate  = dateStr;
+                selectingStart = true;
+                updateDRSummary();
+            }
+            renderBorrowCal();
+            updateSubmitBtn();
+        }
+
+        function updateDRSummary() {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            if (borrowStartDate) {
+                const d = new Date(borrowStartDate + 'T00:00:00');
+                document.getElementById('drsStart').textContent = `${months[d.getMonth()]} ${d.getDate()}`;
+                document.getElementById('drsStartYear').textContent = d.getFullYear();
+                document.getElementById('borrowStartHidden').value = borrowStartDate;
+            }
+            if (borrowEndDate) {
+                const d = new Date(borrowEndDate + 'T00:00:00');
+                document.getElementById('drsEnd').textContent = `${months[d.getMonth()]} ${d.getDate()}`;
+                document.getElementById('drsEndYear').textContent = d.getFullYear();
+                document.getElementById('borrowEndHidden').value = borrowEndDate;
+                const days = Math.ceil((new Date(borrowEndDate) - new Date(borrowStartDate)) / 86400000) + 1;
+                document.getElementById('drsTip').innerHTML = `<strong style="color:var(--green)">${days} day${days>1?'s':''}</strong> borrowing period selected ✓`;
+            }
+        }
+
+        function updateSubmitBtn() {
+            const btn = document.getElementById('submitBorrowBtn');
+            btn.disabled = !(borrowStartDate && borrowEndDate);
+        }
 
         // Init
         (async function init() {
@@ -817,26 +1173,57 @@
             if (!item) return;
             currentEquipId = equipId;
             document.getElementById('modalEquipId').value = equipId;
-            document.getElementById('modalEquipInfo').innerHTML = `
-                <div style="display:flex;align-items:center;gap:12px;">
-                    <span style="font-size:32px;">${item.icon}</span>
-                    <div>
-                        <div style="font-weight:700;font-size:15px;">${item.name}</div>
-                        <div style="font-size:13px;color:var(--muted);">Available: ${item.available} / ${item.quantity}</div>
-                    </div>
-                </div>
+
+            // Equipment info
+            document.getElementById('modalTitle').textContent = `Borrow ${item.name}`;
+            document.getElementById('equipIcon').textContent = item.icon;
+            document.getElementById('equipDetails').innerHTML = `
+                <h4>${item.name}</h4>
+                <p>${item.description || 'Barangay equipment'}</p>
             `;
-            document.getElementById('availableQtyNote').textContent = `Maximum: ${item.available}`;
+            document.getElementById('equipBadge').textContent = `${item.available} available`;
+            document.getElementById('availableQtyNote').innerHTML = `✓ Maximum ${item.available} units available`;
             document.getElementById('borrowQty').max = item.available;
             document.getElementById('borrowQty').value = 1;
+
+            // Reset form fields
             document.getElementById('borrowPurpose').value = '';
-            document.getElementById('borrowDate').value = today;
-            document.getElementById('returnDate').value = today;
+            document.getElementById('borrowerName').value = '';
+            document.getElementById('borrowerAddress').value = '';
+
+            // Reset calendar
+            borrowStartDate = null;
+            borrowEndDate   = null;
+            selectingStart  = true;
+            borrowCalMonth  = new Date().getMonth();
+            borrowCalYear   = new Date().getFullYear();
+            document.getElementById('drsStart').textContent = '--';
+            document.getElementById('drsEnd').textContent   = '--';
+            document.getElementById('drsStartYear').textContent = 'Select';
+            document.getElementById('drsEndYear').textContent   = 'Select';
+            document.getElementById('drsTip').textContent = 'Click a date to set your borrow start date';
+            document.getElementById('borrowStartHidden').value = '';
+            document.getElementById('borrowEndHidden').value = '';
+            updateSubmitBtn();
+            renderBorrowCal();
+
             document.getElementById('borrowModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Adjust quantity
+        function adjustQty(delta) {
+            const input = document.getElementById('borrowQty');
+            const max = parseInt(input.max) || 1;
+            let val = parseInt(input.value) + delta;
+            if (val < 1) val = 1;
+            if (val > max) val = max;
+            input.value = val;
         }
 
         function closeModal() {
             document.getElementById('borrowModal').classList.remove('open');
+            document.body.style.overflow = '';
             currentEquipId = null;
         }
 
@@ -846,15 +1233,27 @@
         // Submit borrow form
         document.getElementById('borrowForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            const equipId = parseInt(document.getElementById('modalEquipId').value);
-            const qty = parseInt(document.getElementById('borrowQty').value);
-            const purpose = document.getElementById('borrowPurpose').value;
-            const borrowDate = document.getElementById('borrowDate').value;
-            const returnDate = document.getElementById('returnDate').value;
+            const equipId    = parseInt(document.getElementById('modalEquipId').value);
+            const qty        = parseInt(document.getElementById('borrowQty').value);
+            const purpose    = document.getElementById('borrowPurpose').value.trim();
+            const fullName   = document.getElementById('borrowerName').value.trim();
+            const address    = document.getElementById('borrowerAddress').value.trim();
+            const borrowDate = borrowStartDate;
+            const returnDate = borrowEndDate;
 
-            if (returnDate < borrowDate) { showToast('Return date must be after borrow date', 'error'); return; }
+            if (!borrowDate || !returnDate) {
+                showToast('Please select borrow and return dates on the calendar', 'error');
+                return;
+            }
+            if (!fullName)  { showToast('Please enter your full name', 'error'); return; }
+            if (!address)   { showToast('Please enter your address', 'error'); return; }
 
-            const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, purpose);
+            const btn = document.getElementById('submitBorrowBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const purposeFull = `${purpose} | Borrower: ${fullName} | Address: ${address}`;
+            const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, purposeFull);
             if (result.success) {
                 showToast(result.message, 'success');
                 closeModal();
@@ -864,6 +1263,8 @@
             } else {
                 showToast(result.message, 'error');
             }
+            btn.disabled = false;
+            btn.innerHTML = '🚀 Submit Borrow Request';
         });
 
         // Badge HTML
