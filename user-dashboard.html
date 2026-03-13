@@ -90,9 +90,9 @@
                 <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">🎉</div> Events
             </button>
             <div class="sidebar-title text-[12px] font-bold text-gray-500 uppercase tracking-widest px-3 mb-2 mt-6">Settings</div>
-            <a href="user-settings.html" style="text-decoration:none;" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-gray-100">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-gray-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-gray-200 text-black">⚙️</div> Profile Settings
-            </a>
+            <button onclick="showPanel('settings')" id="nav-settings" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-gray-100">
+                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-gray-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-gray-200">⚙️</div> Profile Settings
+            </button>
             <button onclick="toggleDarkMode()" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-gray-100 mt-2">
                 <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-gray-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-gray-200 text-black"><span class="dark-mode-toggle flex items-center justify-center w-[24px]">🌙</span></div> Dark Mode
             </button>
@@ -228,6 +228,90 @@
                 </div>
                 <div id="upcomingEventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><p class="text-gray-500 italic col-span-full">Loading events...</p></div>
             </div>
+
+            <!-- PANEL 6: SETTINGS -->
+            <div id="panel-settings" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="text-3xl font-extrabold text-gray-700 mb-2" style="color: var(--text-main);">⚙️ Profile Settings</h2>
+                    <p style="color: var(--text-muted);">Manage your personal information and account.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Sidebar Tabs -->
+                    <div class="lg:col-span-1 space-y-3">
+                        <div class="glass-card p-4 space-y-2">
+                            <button onclick="showSettingsTab('profile')" id="stab-profile" class="settings-tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all bg-emerald-500 text-white">
+                                👤 Profile Info
+                            </button>
+                            <button onclick="showSettingsTab('password')" id="stab-password" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50">
+                                🔑 Change Password
+                            </button>
+                            <button onclick="showSettingsTab('account')" id="stab-account" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50">
+                                🛡️ Account Info
+                            </button>
+                        </div>
+                        <!-- Quick Stats -->
+                        <div class="glass-card p-5">
+                            <h4 class="text-sm font-bold mb-3 text-gray-500 uppercase tracking-wider">My Activity</h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-emerald-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-emerald-600" id="s-statRequests">0</div><div class="text-xs text-gray-500 mt-1">Requests</div></div>
+                                <div class="bg-amber-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-amber-600" id="s-statConcerns">0</div><div class="text-xs text-gray-500 mt-1">Concerns</div></div>
+                                <div class="bg-blue-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-blue-600" id="s-statBookings">0</div><div class="text-xs text-gray-500 mt-1">Bookings</div></div>
+                                <div class="bg-purple-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-purple-600" id="s-statApproved">0</div><div class="text-xs text-gray-500 mt-1">Approved</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Main Settings Content -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Profile Tab -->
+                        <div id="stab-content-profile">
+                            <div class="glass-card p-6">
+                                <h3 class="text-lg font-bold mb-5 flex items-center gap-2" style="color: var(--text-main);">👤 Personal Information</h3>
+                                <form id="settingsProfileForm" class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Full Name</label><input type="text" id="s-fullName" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition"></div>
+                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Email</label><input type="email" id="s-email" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition"></div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Contact Number</label><input type="text" id="s-phone" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition" placeholder="09XX XXX XXXX"></div>
+                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Address / Location</label><input type="text" id="s-address" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition" placeholder="e.g. Block 5, Purok 3"></div>
+                                    </div>
+                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Username</label><input type="text" id="s-username" disabled class="w-full border-2 border-gray-100 bg-gray-50 rounded-xl px-4 py-3 text-gray-400 cursor-not-allowed"></div>
+                                    <button type="submit" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-md">✔ Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Password Tab -->
+                        <div id="stab-content-password" class="hidden">
+                            <div class="glass-card p-6">
+                                <h3 class="text-lg font-bold mb-5 flex items-center gap-2" style="color: var(--text-main);">🔑 Change Password</h3>
+                                <form id="settingsPasswordForm" class="space-y-4 max-w-md">
+                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Current Password</label><input type="password" id="s-currentPassword" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none transition" placeholder="Enter current password"></div>
+                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">New Password</label><input type="password" id="s-newPassword" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none transition" placeholder="Enter new password"></div>
+                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Confirm New Password</label><input type="password" id="s-confirmPassword" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none transition" placeholder="Confirm new password"></div>
+                                    <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-md">🔑 Change Password</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Account Tab -->
+                        <div id="stab-content-account" class="hidden">
+                            <div class="glass-card p-6 mb-6">
+                                <h3 class="text-lg font-bold mb-5 flex items-center gap-2" style="color: var(--text-main);">🛡️ Account Details</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl" style="background-color: var(--bg-color);"><span class="text-sm font-medium text-gray-500">Account Type</span><span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">👤 Resident</span></div>
+                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl" style="background-color: var(--bg-color);"><span class="text-sm font-medium text-gray-500">Status</span><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">✅ Active</span></div>
+                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl" style="background-color: var(--bg-color);"><span class="text-sm font-medium text-gray-500">Member Since</span><span class="font-bold text-gray-700" id="s-memberSince">-</span></div>
+                                </div>
+                            </div>
+                            <div class="glass-card p-6 border-red-200" style="border-color: #fecaca;">
+                                <h3 class="text-lg font-bold mb-2 text-red-600">⚠️ Danger Zone</h3>
+                                <p class="text-sm text-gray-500 mb-4">Once deleted, your account cannot be recovered.</p>
+                                <button onclick="deleteSettingsAccount()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md">🗑️ Delete My Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
     </div>
     </main>
@@ -375,6 +459,7 @@
                 case 'concerns': loadConcernsView(); break;
                 case 'booking': loadBookingView(); break;
                 case 'events': loadEventsView(); break;
+                case 'settings': loadSettingsView(); break;
             }
         }
 
@@ -798,6 +883,75 @@
                     '<div class="flex items-center gap-2"><span class="text-xl">👤</span><span class="text-sm">By ' + e.organizer + '</span></div>' +
                     '</div></div>';
             }).join('');
+        }
+
+
+        // ==========================================
+        // 6. SETTINGS PANEL
+        // ==========================================
+        function showSettingsTab(tab) {
+            ['profile','password','account'].forEach(t => {
+                document.getElementById('stab-content-' + t).classList.add('hidden');
+                const btn = document.getElementById('stab-' + t);
+                btn.className = 'settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50';
+            });
+            document.getElementById('stab-content-' + tab).classList.remove('hidden');
+            document.getElementById('stab-' + tab).className = 'settings-tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all bg-emerald-500 text-white';
+        }
+
+        async function loadSettingsView() {
+            // Fill profile fields
+            document.getElementById('s-fullName').value = user.full_name || user.fullName || user.name || '';
+            document.getElementById('s-email').value = user.email || '';
+            document.getElementById('s-username').value = user.username || '';
+            document.getElementById('s-phone').value = user.contact_number || user.phone || '';
+            document.getElementById('s-address').value = user.address || '';
+            if (user.createdAt) document.getElementById('s-memberSince').textContent = new Date(user.createdAt).toLocaleDateString();
+            // Load stats
+            try {
+                if (typeof getUserStats === 'function') {
+                    const stats = await getUserStats(user.id);
+                    if (stats) {
+                        document.getElementById('s-statRequests').textContent = stats.totalBorrowings || 0;
+                        document.getElementById('s-statConcerns').textContent = stats.totalConcerns || 0;
+                        document.getElementById('s-statBookings').textContent = stats.totalBookings || 0;
+                        document.getElementById('s-statApproved').textContent = stats.approvedBorrowings || 0;
+                    }
+                }
+            } catch(e) { console.error('Settings stats error', e); }
+        }
+
+        document.getElementById('settingsProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = 'Saving...';
+            const result = await updateUserProfile({
+                fullName: document.getElementById('s-fullName').value.trim(),
+                email: document.getElementById('s-email').value.trim(),
+                phone: document.getElementById('s-phone').value.trim(),
+                address: document.getElementById('s-address').value.trim()
+            });
+            btn.disabled = false; btn.innerHTML = '✔ Save Changes';
+            showToast(result.message, result.success ? 'success' : 'error');
+        });
+
+        document.getElementById('settingsPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const np = document.getElementById('s-newPassword').value;
+            const cp = document.getElementById('s-confirmPassword').value;
+            if (np !== cp) return showToast('Passwords do not match', 'error');
+            if (np.length < 6) return showToast('Password must be at least 6 characters', 'error');
+            const result = await changePassword(document.getElementById('s-currentPassword').value, np);
+            showToast(result.message, result.success ? 'success' : 'error');
+            if (result.success) this.reset();
+        });
+
+        async function deleteSettingsAccount() {
+            if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+            if (!confirm('Final warning: all your data will be permanently deleted.')) return;
+            if (typeof window.deleteUser === 'function') await window.deleteUser(user.id);
+            else await supabase.from('users').delete().eq('id', user.id);
+            logoutUser();
         }
 
         // Initialize
