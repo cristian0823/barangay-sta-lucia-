@@ -375,144 +375,6 @@
                 </div>
             </div>
 
-            <!-- REQUEST TO BORROW MODAL -->
-            <div id="borrowModal" class="fixed inset-0 z-[200] hidden">
-                <!-- Backdrop -->
-                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeBorrowModal()"></div>
-
-                <!-- Modal Content -->
-                <div
-                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[95vh] overflow-y-auto">
-                    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl mx-4 animate-[fadeIn_0.3s_ease]">
-                        <!-- Modal Header -->
-                        <div
-                            class="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-t-3xl p-6 text-white relative overflow-hidden">
-                            <div
-                                class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 rounded-full bg-white/10 blur-2xl">
-                            </div>
-                            <div class="absolute bottom-0 left-10 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
-                            <div class="relative z-10 flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-2xl font-extrabold">📝 Request to Borrow</h3>
-                                    <p class="text-emerald-100 text-sm mt-1">Fill in the details below to request
-                                        equipment</p>
-                                </div>
-                                <button onclick="closeBorrowModal()"
-                                    class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Modal Body -->
-                        <form id="borrowRequestForm" class="p-6 space-y-5">
-                            <!-- User Name -->
-                            <div
-                                class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-5 border border-gray-200 dark:border-gray-600">
-                                <label
-                                    class="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                                    <span
-                                        class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">👤</span>
-                                    Your Name
-                                </label>
-                                <input type="text" id="borrowerName" required
-                                    class="w-full border-2 border-gray-200 dark:border-gray-500 rounded-xl px-4 py-3.5 focus:border-emerald-500 focus:outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white font-semibold"
-                                    placeholder="Enter your full name">
-                            </div>
-
-                            <!-- Equipment Selection -->
-                            <div
-                                class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-2xl p-5 border border-emerald-200 dark:border-emerald-700">
-                                <label
-                                    class="block text-sm font-bold mb-3 text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
-                                    <span
-                                        class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">📦</span>
-                                    Select Equipment
-                                </label>
-                                <select id="borrowEquipSelect" required
-                                    class="w-full border-2 border-emerald-200 dark:border-emerald-600 rounded-xl px-4 py-3.5 focus:border-emerald-500 focus:outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white font-semibold">
-                                    <option value="">Choose equipment...</option>
-                                </select>
-                            </div>
-
-                            <!-- Date Selection -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div
-                                    class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl p-5 border border-blue-200 dark:border-blue-700">
-                                    <label
-                                        class="block text-sm font-bold mb-3 text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                                        <span
-                                            class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">📥</span>
-                                        Borrow Date
-                                    </label>
-                                    <input type="date" id="borrowDate" required
-                                        class="w-full border-2 border-blue-200 dark:border-blue-600 rounded-xl px-4 py-3.5 focus:border-blue-500 focus:outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white font-semibold">
-                                </div>
-                                <div
-                                    class="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 rounded-2xl p-5 border border-orange-200 dark:border-orange-700">
-                                    <label
-                                        class="block text-sm font-bold mb-3 text-orange-700 dark:text-orange-300 flex items-center gap-2">
-                                        <span
-                                            class="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-800 flex items-center justify-center text-orange-600 dark:text-orange-400">📤</span>
-                                        Return Date
-                                    </label>
-                                    <input type="date" id="returnDate" required
-                                        class="w-full border-2 border-orange-200 dark:border-orange-600 rounded-xl px-4 py-3.5 focus:border-orange-500 focus:outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white font-semibold">
-                                </div>
-                            </div>
-
-                            <!-- Quantity -->
-                            <div
-                                class="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 rounded-2xl p-5 border border-purple-200 dark:border-purple-700">
-                                <label
-                                    class="block text-sm font-bold mb-3 text-purple-700 dark:text-purple-300 flex items-center gap-2">
-                                    <span
-                                        class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-800 flex items-center justify-center text-purple-600 dark:text-purple-400">🔢</span>
-                                    Quantity Needed
-                                </label>
-                                <div class="relative">
-                                    <input type="number" id="borrowQty" min="1" value="1" required
-                                        class="w-full border-2 border-purple-200 dark:border-purple-600 rounded-xl px-4 py-3.5 focus:border-purple-500 focus:outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white font-semibold text-lg pl-12">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl">📦</span>
-                                </div>
-                                <p id="borrowMaxHelp"
-                                    class="text-xs text-orange-500 mt-2 font-medium flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    Max: 0 units available
-                                </p>
-                            </div>
-
-                            <!-- Purpose -->
-                            <div
-                                class="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/30 dark:to-rose-900/30 rounded-2xl p-5 border border-pink-200 dark:border-pink-700">
-                                <label
-                                    class="block text-sm font-bold mb-3 text-pink-700 dark:text-pink-300 flex items-center gap-2">
-                                    <span
-                                        class="w-8 h-8 rounded-lg bg-pink-100 dark:bg-pink-800 flex items-center justify-center text-pink-600 dark:text-pink-400">📝</span>
-                                    Purpose of Borrowing
-                                </label>
-                                <textarea id="borrowPurpose" required
-                                    class="w-full border-2 border-pink-200 dark:border-pink-600 rounded-xl px-4 py-3 h-28 resize-none focus:border-pink-500 focus:outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white text-sm font-medium"
-                                    placeholder="Describe why you need this equipment..."></textarea>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button type="submit"
-                                class="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-emerald-200 dark:shadow-emerald-900/30 transition transform hover:scale-[1.02] hover:shadow-xl flex items-center justify-center gap-3 text-lg">
-                                <span class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">✅</span>
-                                Submit Borrow Request
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <!-- PANEL 3: CONCERNS & FEEDBACK -->
             <div id="panel-concerns" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
@@ -701,7 +563,13 @@
 
     <!-- UI Scripts -->
 
-    <div class="p-6 border-b border-gray-100 dark:border-gray-700 bg-emerald-50/50 dark:bg-emerald-900/20">
+    <!-- Borrow Modal -->
+    <div id="borrowModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col mx-4 animate-[fadeIn_0.3s_ease]">
+            <button onclick="closeBorrowModal()" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition text-gray-700 dark:text-gray-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="p-6 border-b border-gray-100 dark:border-gray-700 bg-emerald-50/50 dark:bg-emerald-900/20">
         <h3 class="text-2xl font-extrabold text-gray-800 dark:text-white flex items-center gap-3" id="borrowModalTitle">
             Borrow Item
         </h3>
@@ -1236,124 +1104,92 @@
             const item = list.find(e => e.id === equipId);
             if (!item) return;
             
-            // Populate equipment dropdown
-            const select = document.getElementById('borrowEquipSelect');
-            select.innerHTML = list.map(e => `< option value = "${e.id}" ${ e.id === equipId ? 'selected' : '' }> ${ e.icon } ${ e.name } (${ e.available } available)</option > `).join('');
+            document.getElementById('borrowModalTitle').innerHTML = `Borrow ${item.name} ${item.icon}`;
+            document.getElementById('borrowEquipmentId').value = equipId;
+            document.getElementById('borrowEquipmentName').value = item.name;
             
-            // Set max quantity
             document.getElementById('borrowQty').max = item.available;
-            document.getElementById('borrowMaxHelp').innerHTML = `< svg class="w-3.5 h-3.5" fill = "none" stroke = "currentColor" viewBox = "0 0 24 24" > <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /></svg > Max: ${ item.available } units available`;
-            
-            // Reset form
             document.getElementById('borrowQty').value = 1;
-            document.getElementById('borrowPurpose').value = '';
-            document.getElementById('borrowDate').value = '';
-            document.getElementById('returnDate').value = '';
+            document.getElementById('borrowMaxHelp').innerHTML = `<svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Max: ${item.available} units available`;
             
-            // Show modal
+            document.getElementById('borrowPurpose').value = '';
+            borrowStartDate = null;
+            borrowReturnDate = null;
+            borrowDateSelectingStart = true;
+            
+            updateBorrowDateDisplays();
+            renderBorrowCalendar();
+            updateBorrowSubmitButton();
+            
             document.getElementById('borrowModal').classList.remove('hidden');
         }
         
-        // Open borrow modal without preselected equipment
-        async function openBorrowModal() {
-            const list = await getEquipment();
-            if (!list || list.length === 0) {
-                alert('No equipment available');
-                return;
-            }
-            
-            // Populate equipment dropdown
-            const select = document.getElementById('borrowEquipSelect');
-            select.innerHTML = '<option value="">Choose equipment...</option>' + 
-                list.map(e => `< option value = "${e.id}" > ${ e.icon } ${ e.name } (${ e.available } available)</option > `).join('');
-            
-            // Set default max
-            document.getElementById('borrowQty').max = 10;
-            document.getElementById('borrowMaxHelp').innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg> Select equipment to see max quantity';
-            
-            // Reset form
-            document.getElementById('borrowQty').value = 1;
-            document.getElementById('borrowPurpose').value = '';
-            document.getElementById('borrowDate').value = '';
-            document.getElementById('returnDate').value = '';
-            
-            // Show modal
-            document.getElementById('borrowModal').classList.remove('hidden');
+        function openBorrowModal() {
+            showToast('Please close this modal and click Borrow on a specific equipment card first', 'error');
         }
         
-        // Close borrow modal
         function closeBorrowModal() {
             document.getElementById('borrowModal').classList.add('hidden');
         }
         
-        // Update max quantity when equipment changes
-        document.getElementById('borrowEquipSelect')?.addEventListener('change', async function() {
-            const list = await getEquipment();
-            const item = list.find(e => e.id === parseInt(this.value));
-            if (item) {
-                document.getElementById('borrowQty').max = item.available;
-                document.getElementById('borrowMaxHelp').innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg> Max: ' + item.available + ' units available';
+        document.getElementById('borrowQty').addEventListener('input', updateBorrowSubmitButton);
+        document.getElementById('borrowPurpose').addEventListener('input', updateBorrowSubmitButton);
+        
+        function updateBorrowSubmitButton() {
+            const btn = document.getElementById('submitBorrowBtn');
+            const qty = document.getElementById('borrowQty').value;
+            const purpose = document.getElementById('borrowPurpose').value;
+            
+            if (borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '') {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
             }
-        });
+        }
 
         // Update the date displays in the form
         function updateBorrowDateDisplays() {
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             
-            const borrowDisplay = document.getElementById('borrowDateDisplay');
-            const returnDisplay = document.getElementById('returnDateDisplay');
+            const bDisp = document.getElementById('borrowDateDisplay');
+            const rDisp = document.getElementById('returnDateDisplay');
+            
+            const dpStartDay = document.getElementById('dispStartDateDay');
+            const dpStartMonth = document.getElementById('dispStartDateMonth');
+            const dpReturnDay = document.getElementById('dispReturnDateDay');
+            const dpReturnMonth = document.getElementById('dispReturnDateMonth');
+            const durText = document.getElementById('borrowDuration');
+            const rangeDisplay = document.getElementById('dateRangeDisplay');
             
             if (borrowStartDate) {
-                const date = new Date(borrowStartDate);
-                borrowDisplay.innerHTML = `
-            < div class="text-lg font-bold text-emerald-700 dark:text-emerald-300" > ${ months[date.getMonth()] } ${ date.getDate() }</div >
-                <div class="text-xs text-emerald-500 dark:text-emerald-400">${date.getFullYear()}</div>
-        `;
-                borrowDisplay.classList.add('border-emerald-400', 'bg-emerald-100', 'dark:bg-emerald-800');
+                const d = new Date(borrowStartDate);
+                bDisp.innerHTML = `<div class="text-lg font-bold text-emerald-700 dark:text-emerald-300">${fullMonths[d.getMonth()]} ${d.getDate()}</div><div class="text-xs text-emerald-500">${d.getFullYear()}</div>`;
+                bDisp.classList.add('border-emerald-400', 'bg-emerald-100');
+                if (dpStartDay) { dpStartDay.textContent = d.getDate(); dpStartMonth.textContent = months[d.getMonth()] + ' ' + d.getFullYear(); }
+                rangeDisplay.textContent = 'Now select a return date from the calendar';
             } else {
-                borrowDisplay.innerHTML = `
-            < div class="text-lg font-bold text-emerald-700 dark:text-emerald-300" > Select date</div >
-                <div class="text-xs text-emerald-500 dark:text-emerald-400">from calendar</div>
-        `;
+                bDisp.innerHTML = `<div class="text-lg font-bold text-emerald-700">Select date</div><div class="text-xs text-emerald-500">from calendar</div>`;
+                bDisp.classList.remove('border-emerald-400', 'bg-emerald-100');
+                if (dpStartDay) { dpStartDay.textContent = '--'; dpStartMonth.textContent = 'Select date'; }
+                rangeDisplay.textContent = 'Please select your borrowing dates from the calendar';
             }
             
             if (borrowReturnDate) {
-                const date = new Date(borrowReturnDate);
-                returnDisplay.innerHTML = `
-            < div class="text-lg font-bold text-teal-700 dark:text-teal-300" > ${ months[date.getMonth()] } ${ date.getDate() }</div >
-                <div class="text-xs text-teal-500 dark:text-teal-400">${date.getFullYear()}</div>
-        `;
-                returnDisplay.classList.add('border-teal-400', 'bg-teal-100', 'dark:bg-teal-800');
-            } else {
-                returnDisplay.innerHTML = `
-            < div class="text-lg font-bold text-teal-700 dark:text-teal-300" > Select date</div >
-                <div class="text-xs text-teal-500 dark:text-teal-400">from calendar</div>
-        `;
-            }
-            
-            // Update the date range display
-            updateDateRangeDisplay();
-        }
-
-        // Update the combined date range display
-        function updateDateRangeDisplay() {
-            const rangeDisplay = document.getElementById('dateRangeDisplay');
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            
-            if (borrowStartDate && borrowReturnDate) {
-                const start = new Date(borrowStartDate);
-                const end = new Date(borrowReturnDate);
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                const d = new Date(borrowReturnDate);
+                rDisp.innerHTML = `<div class="text-lg font-bold text-teal-700 dark:text-teal-300">${fullMonths[d.getMonth()]} ${d.getDate()}</div><div class="text-xs text-teal-500">${d.getFullYear()}</div>`;
+                rDisp.classList.add('border-teal-400', 'bg-teal-100');
+                if (dpReturnDay) { dpReturnDay.textContent = d.getDate(); dpReturnMonth.textContent = months[d.getMonth()] + ' ' + d.getFullYear(); }
                 
-                rangeDisplay.innerHTML = `
-            < span class="text-emerald-600 dark:text-emerald-400" >📅 ${ months[start.getMonth()] } ${ start.getDate() } → ${ months[end.getMonth()] } ${ end.getDate() }, ${ end.getFullYear() }</span >
-                <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">${diffDays} day${diffDays > 1 ? 's' : ''}</span>
-        `;
-            } else if (borrowStartDate) {
-                rangeDisplay.textContent = 'Now select a return date from the calendar';
+                const start = new Date(borrowStartDate);
+                const diffTime = Math.abs(d - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                durText.textContent = diffDays + (diffDays > 1 ? ' days' : ' day');
+                rangeDisplay.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400">📅 ${fullMonths[start.getMonth()]} ${start.getDate()} → ${fullMonths[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">${diffDays} day${diffDays > 1 ? 's' : ''}</span>`;
             } else {
-                rangeDisplay.textContent = 'Please select your borrowing dates from the calendar';
+                rDisp.innerHTML = `<div class="text-lg font-bold text-teal-700">Select date</div><div class="text-xs text-teal-500">from calendar</div>`;
+                rDisp.classList.remove('border-teal-400', 'bg-teal-100');
+                if (dpReturnDay) { dpReturnDay.textContent = '--'; dpReturnMonth.textContent = 'Select date'; durText.textContent = '0 days'; }
             }
         }
 
@@ -1443,42 +1279,6 @@
             updateInlineDateDisplays();
         }
 
-        // Update inline form date displays
-        function updateInlineDateDisplays() {
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            
-            const startDisplay = document.getElementById('inlineStartDateDisplay');
-            const returnDisplay = document.getElementById('inlineReturnDateDisplay');
-            const dateRangeDisplay = document.getElementById('borrowDateRangeDisplay');
-            const dateRangeText = document.getElementById('borrowDateRangeText');
-            
-            if (borrowStartDate) {
-                const start = new Date(borrowStartDate);
-                startDisplay.textContent = `${ months[start.getMonth()] } ${ start.getDate() }, ${ start.getFullYear() } `;
-                startDisplay.classList.add('border-emerald-500', 'text-emerald-700');
-            }
-            
-            if (borrowReturnDate) {
-                const end = new Date(borrowReturnDate);
-                returnDisplay.textContent = `${ months[end.getMonth()] } ${ end.getDate() }, ${ end.getFullYear() } `;
-                returnDisplay.classList.add('border-teal-500', 'text-teal-700');
-                
-                // Show date range
-                const start = new Date(borrowStartDate);
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                dateRangeText.innerHTML = `${ months[start.getMonth()] } ${ start.getDate() } → ${ months[end.getMonth()] } ${ end.getDate() }, ${ end.getFullYear() } <span class="ml-2 px-2 py-0.5 bg-teal-500 text-white rounded-lg text-xs">${diffDays} day${diffDays > 1 ? 's' : ''}</span>`;
-                dateRangeDisplay.classList.remove('hidden');
-            } else {
-                dateRangeDisplay.classList.add('hidden');
-            }
-            
-            // Show form if equipment selected
-            if (selectedEquipId && borrowStartDate && borrowReturnDate) {
-                document.getElementById('inlineBorrowForm').classList.remove('hidden');
-            }
-        }
-
         // Change borrow calendar month
         function changeBorrowMonth(delta) {
             currentMonth += delta;
@@ -1497,12 +1297,12 @@
             borrowDateSelectingStart = true;
         }
 
-        // Inline Borrow Form Handler
-        document.getElementById('inlineBorrowForm').addEventListener('submit', async function (e) {
+        // Borrow Form Handler
+        document.getElementById('borrowForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
-            const equipId = parseInt(document.getElementById('inlineEquipId').value);
-            const qty = parseInt(document.getElementById('inlineBorrowQty').value);
-            const purpose = document.getElementById('inlineBorrowPurpose').value;
+            const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
+            const qty = parseInt(document.getElementById('borrowQty').value);
+            const purpose = document.getElementById('borrowPurpose').value;
             const borrowDate = borrowStartDate;
             const returnDate = borrowReturnDate;
 
