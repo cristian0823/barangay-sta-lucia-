@@ -448,10 +448,16 @@
         }
 
         async function loadEquipmentView() {
-            const list = await getEquipment();
-            allEquipmentList = list;
-            renderEquipmentGrid(list);
-            loadMyBorrowingsList();
+            console.log('[DEBUG] loadEquipmentView called');
+            try {
+                const list = await getEquipment();
+                console.log('[DEBUG] getEquipment returned:', list);
+                allEquipmentList = list;
+                renderEquipmentGrid(list);
+                loadMyBorrowingsList();
+            } catch(err) {
+                console.error('[DEBUG] loadEquipmentView error:', err);
+            }
         }
 
         async function loadMyBorrowingsList() {
