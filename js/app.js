@@ -306,8 +306,9 @@ async function getEquipment() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('equipment').select('*').order('id', { ascending: true });
-        // Only fall back to localStorage on actual error, not on empty results
-        if (error) {
+        // Fall back to localStorage on error OR if Supabase returned empty data
+        if (error || !data || data.length === 0) {
+            console.log('[getEquipment] Supabase returned empty or error, falling back to localStorage');
             initializeLocalEquipment();
             const localData = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
             return localData.map(item => ({
@@ -320,7 +321,7 @@ async function getEquipment() {
                 broken: item.broken || 0
             }));
         }
-        return mapRecords(data || []);
+        return mapRecords(data);
     } else {
         initializeLocalEquipment();
         const data = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
