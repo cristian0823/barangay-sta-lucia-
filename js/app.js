@@ -306,11 +306,11 @@ async function getEquipment() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('equipment').select('*').order('id', { ascending: true });
-        // If error or no data, use localStorage
-        if (error || !data || data.length === 0) {
+        // Only fall back to localStorage on actual error, not on empty results
+        if (error) {
             initializeLocalEquipment();
-            const data = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
-            return data.map(item => ({
+            const localData = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+            return localData.map(item => ({
                 ...item,
                 name: item.name || 'Unknown',
                 icon: item.icon || '📦',
@@ -563,35 +563,38 @@ async function updateBorrowingStatus(borrowingId, status) {
 
     if (supabaseAvailable) {
         const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
-        if (!borrowing) return false;
+        if (!borrowing) return { success: false, message: 'Borrowing record not found' };
 
-        await supabase.from('borrowings').update({ status }).eq('id', borrowingId);
+        const { error } = await supabase.from('borrowings').update({ status }).eq('id', borrowingId);
+        if (error) return { success: false, message: error.message };
 
+        // Restore available stock on rejection or return
         if (status === 'rejected' || status === 'returned') {
             const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
             if (item) {
                 await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
             }
         }
-        return true;
+        return { success: true, message: `Status updated to ${status}` };
     } else {
         // Local fallback
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
         const index = borrowings.findIndex(b => b.id === borrowingId);
-        if (index === -1) return false;
+        if (index === -1) return { success: false, message: 'Borrowing record not found' };
 
         borrowings[index].status = status;
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
+        // Restore available stock on rejection or return
         if (status === 'rejected' || status === 'returned') {
-            const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
+            const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
             const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
             if (itemIndex !== -1) {
                 equipment[itemIndex].available += borrowings[index].quantity;
                 localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
             }
         }
-        return true;
+        return { success: true, message: `Status updated to ${status}` };
     }
 }
 

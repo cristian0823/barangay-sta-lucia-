@@ -2684,8 +2684,11 @@
             if (confirm('Approve this equipment request?')) {
                 const result = await updateBorrowingStatus(id, 'approved');
                 if (result.success) {
-                    await loadAllData();
+                    showToast('Request approved! Equipment count updated.', 'success');
+                } else {
+                    showToast(result.message || 'Failed to approve request', 'error');
                 }
+                await loadAllData();
             }
         }
 
@@ -2694,8 +2697,11 @@
             if (confirm('Reject this equipment request?')) {
                 const result = await updateBorrowingStatus(id, 'rejected');
                 if (result.success) {
-                    await loadAllData();
+                    showToast('Request rejected. Equipment quantity restored.', 'success');
+                } else {
+                    showToast(result.message || 'Failed to reject request', 'error');
                 }
+                await loadAllData();
             }
         }
 
@@ -2704,8 +2710,11 @@
             if (confirm('Mark this equipment as returned?')) {
                 const result = await updateBorrowingStatus(id, 'returned');
                 if (result.success) {
-                    await loadAllData();
+                    showToast('Equipment marked as returned. Quantity restored.', 'success');
+                } else {
+                    showToast(result.message || 'Failed to mark as returned', 'error');
                 }
+                await loadAllData();
             }
         }
 
