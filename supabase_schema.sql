@@ -141,3 +141,23 @@ INSERT INTO equipment (name, quantity, available, broken, icon, description) VAL
 ('Speaker',        1,   1, 0, '🔊', 'For big events'),
 ('Electric Fan',   5,   5, 0, '🌀', 'For big events')
 ON CONFLICT DO NOTHING;
+
+
+-- ============================================================
+-- STEP 5: DEDUPLICATE EQUIPMENT (safe to re-run)
+-- Removes any rows that share the same name, keeping the one
+-- with the lowest id. Then adds a UNIQUE constraint so it
+-- can never happen again.
+-- ============================================================
+
+-- Remove duplicate equipment rows (keep the smallest id per name)
+DELETE FROM equipment
+WHERE id NOT IN (
+    SELECT MIN(id) FROM equipment GROUP BY name
+);
+
+-- Add a UNIQUE constraint so future inserts with ON CONFLICT work correctly
+ALTER TABLE equipment ADD CONSTRAINT equipment_name_unique UNIQUE (name);
+
+-- Also disable RLS on activity_log if not already done
+ALTER TABLE activity_log DISABLE ROW LEVEL SECURITY;
