@@ -267,9 +267,9 @@ function redirectToDashboard() {
     const user = getCurrentUser();
     if (user) {
         if (user.role === 'admin') {
-            window.location.href = 'admin-new.html';
+            window.location.href = 'admin.html';
         } else {
-            window.location.href = 'home.html';
+            window.location.href = 'user-dashboard.html';
         }
     }
 }
