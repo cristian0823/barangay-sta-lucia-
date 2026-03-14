@@ -2608,6 +2608,7 @@
                         <p><strong>Category:</strong> ${c.category}</p>
                         <p><strong>Resident:</strong> ${c.userName}</p>
                         <p><strong>Description:</strong> ${c.description}</p>
+                        ${c.image_url ? `<div style="margin-top: 10px; margin-bottom: 10px;"><img src="${c.image_url}" alt="Concern Image" style="max-height: 200px; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;" onclick="window.open(this.src, '_blank')"></div>` : ''}
                         ${c.response ? `<p><strong>Response:</strong> ${c.response}</p>` : ''}
                     </div>
                     <div class="card-actions">

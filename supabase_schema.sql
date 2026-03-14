@@ -59,8 +59,9 @@ CREATE TABLE IF NOT EXISTS concerns (
     description TEXT,
     address VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending',
-    response TEXT,
-    assigned_to VARCHAR(255),
+    date DATE NOT NULL,
+    reply TEXT,
+    image_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 

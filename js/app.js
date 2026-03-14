@@ -667,14 +667,14 @@ async function cancelBorrowingRequest(borrowingId) {
 }
 
 // Concerns Functions
-async function submitConcern(category, title, description, address) {
+async function submitConcern(category, title, description, address, imageUrl = null) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
 
     if (supabaseAvailable) {
-        const { error } = await supabase.from('concerns').insert([{
+        const payload = {
             user_id: user.id,
             user_name: user.fullName || user.username,
             category: category,
@@ -682,7 +682,13 @@ async function submitConcern(category, title, description, address) {
             description: description,
             address: address,
             status: 'pending'
-        }]);
+        };
+        
+        if (imageUrl) {
+            payload.image_url = imageUrl;
+        }
+
+        const { error } = await supabase.from('concerns').insert([payload]);
 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User ${user.fullName || user.username} submitted a concern: ${title}`);
