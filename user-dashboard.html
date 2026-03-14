@@ -195,6 +195,7 @@
                             <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Details</label><textarea id="concernDescription" required class="w-full border-2 rounded-lg px-3 py-2 h-24 resize-none border-gray-200"></textarea></div>
                             <div>
                                 <label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Attach Photo (Optional)</label>
+                                <p class="text-xs text-gray-500 mb-2 italic">Adding an image helps provide visual proof or context to your concern (e.g., a photo of a broken street light), allowing the administration to address the issue more effectively.</p>
                                 <input type="file" id="concernImage" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition cursor-pointer">
                             </div>
                             <button type="submit" id="submitConcernBtn" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition transform hover:scale-[1.02]">Submit Report</button>
@@ -874,37 +875,14 @@
             const loc = document.getElementById('concernLocation').value;
             const imageInput = document.getElementById('concernImage');
             
-            let imageUrl = null;
+            let imageFile = null;
 
-            // Handle Image Upload if file is chosen
             if (imageInput.files.length > 0) {
-                const file = imageInput.files[0];
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-                const filePath = `concerns/${fileName}`;
-                
-                btn.innerHTML = 'Uploading Image...';
-                
-                try {
-                    const { data, error } = await supabase.storage
-                        .from('concerns_images')
-                        .upload(filePath, file);
-                        
-                    if (error) throw error;
-                    
-                    const { data: publicUrlData } = supabase.storage
-                        .from('concerns_images')
-                        .getPublicUrl(filePath);
-                        
-                    imageUrl = publicUrlData.publicUrl;
-                } catch (err) {
-                    console.error('Image upload error:', err);
-                    showToast('Failed to upload image. Submitting without it.', 'error');
-                }
+                imageFile = imageInput.files[0];
             }
 
             btn.innerHTML = 'Saving Report...';
-            const res = await submitConcern(category, title, desc, loc, imageUrl);
+            const res = await submitConcern(category, title, desc, loc, imageFile);
             
             if (res.success) { 
                 showToast('Concern successfully reported!', 'success'); 

@@ -667,13 +667,37 @@ async function cancelBorrowingRequest(borrowingId) {
 }
 
 // Concerns Functions
-async function submitConcern(category, title, description, address, imageUrl = null) {
+async function submitConcern(category, title, description, address, imageFile = null) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
 
     const supabaseAvailable = await isSupabaseAvailable();
 
     if (supabaseAvailable) {
+        let imageUrl = null;
+        
+        if (imageFile) {
+            // Upload to Supabase Storage
+            const fileExt = imageFile.name.split('.').pop();
+            const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+            const filePath = `concern_images/${fileName}`;
+
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('concerns_images')
+                .upload(filePath, imageFile);
+
+            if (uploadError) {
+                console.error("Storage upload error:", uploadError);
+                return { success: false, message: "Failed to upload image: " + uploadError.message };
+            }
+
+            const { data: urlData } = supabase.storage
+                .from('concerns_images')
+                .getPublicUrl(filePath);
+                
+            imageUrl = urlData.publicUrl;
+        }
+
         const payload = {
             user_id: user.id,
             user_name: user.fullName || user.username,
@@ -681,7 +705,8 @@ async function submitConcern(category, title, description, address, imageUrl = n
             title: title,
             description: description,
             address: address,
-            status: 'pending'
+            status: 'pending',
+            date: new Date().toISOString().split('T')[0] // Ensure date is provided as it's NOT NULL in DB
         };
         
         if (imageUrl) {
@@ -705,6 +730,8 @@ async function submitConcern(category, title, description, address, imageUrl = n
             description: description,
             address: address,
             status: 'pending',
+            date: new Date().toISOString().split('T')[0],
+            imageUrl: imageFile ? "local_image_placeholder.jpg" : null, // Mock image URL for local
             createdAt: new Date().toISOString()
         };
         concerns.push(newConcern);
