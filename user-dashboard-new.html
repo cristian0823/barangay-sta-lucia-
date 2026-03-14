@@ -159,6 +159,11 @@
                             </div>
                             <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Specific Location (Optional)</label><input type="text" id="concernLocation" class="w-full border-2 rounded-lg px-3 py-2 border-gray-200" placeholder="e.g. Purok 4, near intersection"></div>
                             <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Details</label><textarea id="concernDescription" required class="w-full border-2 rounded-lg px-3 py-2 h-24 resize-none border-gray-200"></textarea></div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Attach Photo (Optional)</label>
+                                <p class="text-xs text-gray-500 mb-2 italic">Adding an image helps provide visual proof or context to your concern (e.g., a photo of a broken street light), allowing the administration to address the issue more effectively.</p>
+                                <input type="file" id="concernImage" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition cursor-pointer">
+                            </div>
                             <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition transform hover:scale-[1.02]">Submit Report</button>
                         </form>
                     </div>
@@ -659,7 +664,14 @@
         document.getElementById('concernForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]'); btn.disabled = true; btn.innerHTML = 'Submitting...';
-            const res = await submitConcern(document.getElementById('concernCategory').value, document.getElementById('concernTitle').value, document.getElementById('concernDescription').value, document.getElementById('concernLocation').value);
+            
+            const imageInput = document.getElementById('concernImage');
+            let imageFile = null;
+            if (imageInput && imageInput.files.length > 0) {
+                imageFile = imageInput.files[0];
+            }
+            
+            const res = await submitConcern(document.getElementById('concernCategory').value, document.getElementById('concernTitle').value, document.getElementById('concernDescription').value, document.getElementById('concernLocation').value, imageFile);
             if (res.success) { showToast('Concern successfully reported!', 'success'); this.reset(); await loadConcernsView(); await loadDashboardStats(); }
             else { showToast(res.message, 'error'); }
             btn.disabled = false; btn.innerHTML = 'Submit Report';
