@@ -2037,7 +2037,7 @@
                         <span class="equip-count">${item.available}/${item.quantity}</span>
                     </div>
                     <div class="progress"><div class="progress-fill ${fc}" style="width:${pct}%"></div></div>
-                    <button class="btn-borrow" onclick="requestEquipment(${item.id})">+ Request to Borrow</button>
+                    <button class="btn-borrow" onclick="window.openEquipModal(${item.id})">+ Request to Borrow</button>
                 </div>`;
             }).join('');
         }
