@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Barangay Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        corePlugins: {
+          preflight: false,
+        }
+      }
+    </script>
     <link rel="stylesheet" href="css/premium-dashboard.css">
     <style type="text/disabled">
         :root {
@@ -1557,9 +1565,11 @@
             
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
             document.getElementById('borrowModal').classList.remove('hidden');
+            document.getElementById('borrowModal').classList.add('active');
         };
 
         window.closeBorrowModal = function() {
+            document.getElementById('borrowModal').classList.remove('active');
             document.getElementById('borrowModal').classList.add('hidden');
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
         }
