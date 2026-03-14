@@ -664,9 +664,13 @@
                 // Set custom icons if name matches and icon is generic empty box
                 let itemIcon = item.icon;
                 const lowerName = item.name.toLowerCase();
-                if (lowerName.includes('table') || lowerName.includes('mesa')) itemIcon = '🪑';
-                if (lowerName.includes('ladder')) itemIcon = '🪜';
-                if (lowerName.includes('tent')) itemIcon = '🏕️';
+                if (lowerName.includes('table') || lowerName.includes('mesa')) {
+                    itemIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-teal-700 drop-shadow-sm"><rect x="2" y="7" width="20" height="4" rx="1"/><path d="M4 11v9"/><path d="M20 11v9"/><path d="M8 11v4"/><path d="M16 11v4"/></svg>';
+                } else if (lowerName.includes('ladder')) {
+                    itemIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-teal-700 drop-shadow-sm"><path d="M6 3v18"/><path d="M18 3v18"/><path d="M6 7h12"/><path d="M6 12h12"/><path d="M6 17h12"/></svg>';
+                } else if (lowerName.includes('tent')) {
+                    itemIcon = '🏕️';
+                }
 
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + (ok ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1' : 'border-gray-100 opacity-60') + '">' +
                     '<div class="absolute top-4 right-4 z-10 max-w-[50%]"><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis ' + (ok ? statusBg + ' ' + statusColor : 'bg-gray-100 text-gray-500') + '"><span>' + statusIcon + '</span> ' + item.available + ' available</span></div>' +
