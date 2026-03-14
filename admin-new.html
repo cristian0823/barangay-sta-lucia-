@@ -1303,6 +1303,14 @@
             background: #ef4444;
             color: #fff;
         }
+
+        /* Panel show/hide - required for switchTab to work */
+        .content-panel {
+            display: none;
+        }
+        .content-panel.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -1796,9 +1804,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- ACTIVITY LOG PANEL -->
-                <div id="activity-log" class="content-panel">
+            <!-- ACTIVITY LOG PANEL -->
+            <div id="activity-log" class="content-panel">
                     <div class="panel-header">
                         <h1>📝 Activity Log</h1>
                         <p>Track administrator and system activities across the platform</p>
