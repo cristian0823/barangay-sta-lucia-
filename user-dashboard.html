@@ -12,13 +12,16 @@
             --text-muted: #6b7280; --panel-bg: #ffffff; --border-color: #e5e7eb;
             --primary: #10b981; --primary-hover: #059669; --nav-hover-bg: #ecfdf5;
             --nav-active-bg: linear-gradient(135deg, #10b981, #059669); --nav-active-text: #ffffff;
+            --input-bg: #f9fafb; --input-border: #d1fae5; --input-focus: #059669;
         }
         [data-theme="dark"] {
             --bg-color: #022c22; --sidebar-bg: #064e3b; --text-main: #f1f5f9;
             --text-muted: #9ca3af; --panel-bg: #064e3b; --border-color: #14532d;
             --primary: #10b981; --nav-hover-bg: #14532d;
             --nav-active-bg: linear-gradient(135deg, #059669, #047857); --nav-active-text: #ffffff;
+            --input-bg: #0d2818; --input-border: #14532d; --input-focus: #10b981;
         }
+        * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
         [data-theme="dark"] .dashboard-header { background-color: #064e3b; border-color: #14532d; box-shadow: none; }
         [data-theme="dark"] .sidebar { background-color: #064e3b; border-color: #14532d; }
@@ -31,7 +34,16 @@
         .content-panel { display: none; animation: fadeIn 0.3s ease; }
         .content-panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glass-card { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .glass-card { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 4px 24px -4px rgba(0,0,0,0.07); }
+        /* Professional field styling */
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .form-input { width: 100%; padding: 11px 14px; background: var(--input-bg); border: 1.5px solid var(--input-border); border-radius: 12px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text-main); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+        .form-textarea { resize: none; min-height: 100px; }
+        /* Section headers */
+        .panel-header { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+        .panel-subheader { font-size: 14px; color: var(--text-muted); }
         [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: #0d2818; color: #f1f5f9; border-color: #14532d; }
         [data-theme="dark"] .bg-white { background-color: #064e3b !important; }
         [data-theme="dark"] .text-gray-800 { color: #f1f5f9 !important; }
@@ -88,13 +100,6 @@
             </button>
             <button onclick="showPanel('events')" id="nav-events" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
                 <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">🎉</div> Events
-            </button>
-            <div class="sidebar-title text-[12px] font-bold text-gray-500 uppercase tracking-widest px-3 mb-2 mt-6">Settings</div>
-            <button onclick="showPanel('settings')" id="nav-settings" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-gray-100">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-gray-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-gray-200">⚙️</div> Profile Settings
-            </button>
-            <button onclick="toggleDarkMode()" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-gray-100 mt-2">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-gray-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-gray-200 text-black"><span class="dark-mode-toggle flex items-center justify-center w-[24px]">🌙</span></div> Dark Mode
             </button>
         </aside>
 
@@ -170,79 +175,111 @@
             <!-- PANEL 3: CONCERNS -->
             <div id="panel-concerns" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="text-3xl font-extrabold text-amber-500 mb-2">💬 Sent a Concern</h2>
-                    <p style="color: var(--text-muted);">Report issues, give feedback, or request assistance securely.</p>
+                    <h2 class="panel-header text-amber-500">💬 Submit a Concern</h2>
+                    <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-1 glass-card p-6 h-fit">
-                        <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">New Report</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                    <!-- Concern Form -->
+                    <div class="lg:col-span-1 glass-card overflow-hidden">
+                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+                            <h3 class="text-base font-bold text-amber-700">📝 New Report</h3>
+                            <p class="text-xs text-amber-600 mt-0.5">Fill out the form below to submit your concern.</p>
+                        </div>
+                        <div class="p-6">
                         <form id="concernForm" class="space-y-4">
-                            <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Title</label><input type="text" id="concernTitle" required class="w-full border-2 rounded-lg px-3 py-2 focus:border-emerald-500 focus:outline-none transition"></div>
-                            <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Category</label>
-                                <select id="concernCategory" required class="w-full border-2 rounded-lg px-3 py-2 border-gray-200">
+                            <div class="form-field">
+                                <label class="form-label">Title</label>
+                                <input type="text" id="concernTitle" required class="form-input" placeholder="e.g. Broken street light on Purok 3">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Category</label>
+                                <select id="concernCategory" required class="form-input">
                                     <option value="" disabled selected>Select a category...</option>
-                                    <option value="Road Issue">Road Issue / Pothole</option>
-                                    <option value="Electric">Electric / Power Outage</option>
-                                    <option value="Fire">Fire Hazard / Emergency</option>
-                                    <option value="Water Leak">Water Leak / Broken Pipe</option>
-                                    <option value="Waste & Cleanliness">Waste & Cleanliness</option>
-                                    <option value="Safety & Security">Safety & Security</option>
-                                    <option value="Noise Complaint">Noise Complaint</option>
-                                    <option value="Other">Other</option>
+                                    <option value="Road Issue">🚧 Road Issue / Pothole</option>
+                                    <option value="Electric">⚡ Electric / Power Outage</option>
+                                    <option value="Fire">🔥 Fire Hazard / Emergency</option>
+                                    <option value="Water Leak">💧 Water Leak / Broken Pipe</option>
+                                    <option value="Waste & Cleanliness">🗑️ Waste & Cleanliness</option>
+                                    <option value="Safety & Security">🛡️ Safety & Security</option>
+                                    <option value="Noise Complaint">🔊 Noise Complaint</option>
+                                    <option value="Other">📝 Other</option>
                                 </select>
                             </div>
-                            <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Specific Location (Optional)</label><input type="text" id="concernLocation" class="w-full border-2 rounded-lg px-3 py-2 border-gray-200" placeholder="e.g. Purok 4, near intersection"></div>
-                            <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Details</label><textarea id="concernDescription" required class="w-full border-2 rounded-lg px-3 py-2 h-24 resize-none border-gray-200"></textarea></div>
-                            <div>
-                                <label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Attach Photo (Optional)</label>
-                                <p class="text-xs text-gray-500 mb-2 italic">Adding an image helps provide visual proof or context to your concern (e.g., a photo of a broken street light), allowing the administration to address the issue more effectively.</p>
-                                <input type="file" id="concernImage" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition cursor-pointer">
+                            <div class="form-field">
+                                <label class="form-label">Specific Location <span class="normal-case font-normal">(Optional)</span></label>
+                                <input type="text" id="concernLocation" class="form-input" placeholder="e.g. Purok 4, near intersection">
                             </div>
-                            <button type="submit" id="submitConcernBtn" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition transform hover:scale-[1.02]">Submit Report</button>
+                            <div class="form-field">
+                                <label class="form-label">Detailed Description</label>
+                                <textarea id="concernDescription" required class="form-input form-textarea" placeholder="Please describe your concern in detail..."></textarea>
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">📷 Attach Photo <span class="normal-case font-normal">(Optional)</span></label>
+                                <p class="text-xs mt-0.5 mb-2" style="color: var(--text-muted);">Adding an image helps the admin understand and address your concern faster.</p>
+                                <input type="file" id="concernImage" accept="image/*" class="w-full text-sm cursor-pointer file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition">
+                            </div>
+                            <button type="submit" id="submitConcernBtn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5 hover:shadow-lg border-none cursor-pointer">Submit Report →</button>
                         </form>
+                        </div>
                     </div>
-                    <div class="lg:col-span-2 glass-card p-6">
-                        <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">My Submitted Concerns</h3>
-                        <div id="myConcernsList" class="space-y-4"><p class="text-gray-500 italic">Loading concerns...</p></div>
+                    <!-- My Submitted Concerns -->
+                    <div class="lg:col-span-2 glass-card overflow-hidden">
+                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
+                            <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Submitted Concerns</h3>
+                            <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track the status of your submitted reports.</p>
+                        </div>
+                        <div class="p-6">
+                            <div id="myConcernsList" class="space-y-4"><p style="color: var(--text-muted);" class="italic text-sm">Loading concerns...</p></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- PANEL 4: COURT BOOKING -->
             <div id="panel-booking" class="content-panel">
-                <div class="mb-8 border-b pb-6 flex justify-between items-end flex-wrap gap-4" style="border-color: var(--border-color);">
-                    <div><h2 class="text-3xl font-extrabold text-blue-600 mb-2">📅 Court Booking</h2><p style="color: var(--text-muted);">Reserve the basketball court or multi-purpose hall.</p></div>
-                    <div class="bg-gray-100 p-1 rounded-xl flex shadow-inner">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition">🏀 Basketball Court</button>
-                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-5 py-2 rounded-lg font-bold text-sm text-gray-500 hover:text-gray-800 transition">🏢 Multi-Purpose Hall</button>
+                <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="panel-header text-blue-600">📅 Court Booking</h2>
+                        <p class="panel-subheader">Reserve the basketball court or multi-purpose hall.</p>
+                    </div>
+                    <div class="flex p-1 rounded-xl gap-1" style="background-color: var(--border-color);">
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer">🏀 Basketball Court</button>
+                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-5 py-2 rounded-lg font-bold text-sm transition border-none cursor-pointer" style="color: var(--text-muted);">🏢 Multi-Purpose Hall</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 id="calendarMonthTitle" class="text-xl font-bold" style="color: var(--text-main);">Month</h2>
-                            <div class="flex space-x-2">
-                                <button onclick="changeBookingMonth(-1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm font-bold transition">←</button>
-                                <button onclick="changeBookingMonth(1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm font-bold transition">→</button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-7 gap-1 mb-2">
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div><div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div><div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div><div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
-                        </div>
-                        <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1"></div>
-                        <div class="flex justify-center flex-wrap gap-4 mt-6 text-xs font-semibold text-gray-500">
-                            <div class="flex items-center"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded-sm mr-1"></div>Available</div>
-                            <div class="flex items-center"><div class="w-3 h-3 bg-purple-100 border border-purple-300 rounded-sm mr-1"></div>Brgy Event</div>
-                            <div class="flex items-center"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded-sm mr-1"></div>Booked</div>
+                <div class="glass-card p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
+                        <div class="flex gap-2">
+                            <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">←</button>
+                            <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">→</button>
                         </div>
                     </div>
+                    <div class="grid grid-cols-7 gap-1 mb-3">
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
+                    </div>
+                    <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
+                    <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>Available</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-purple-100 border border-purple-300 rounded"></div>Brgy Event</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>Booked</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
+                    </div>
                 </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">My Reservations</h3>
-                    <div id="myReservationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><p class="text-gray-500 italic">Loading reservations...</p></div>
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Reservations</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your court bookings.</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="myReservationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><p style="color: var(--text-muted);" class="italic text-sm">Loading reservations...</p></div>
+                    </div>
                 </div>
             </div>
 
@@ -411,55 +448,37 @@
                     <form id="borrowForm" class="flex-1 flex flex-col h-full space-y-4">
                         <input type="hidden" id="borrowEquipmentId"><input type="hidden" id="borrowEquipmentName">
                         <input type="hidden" id="borrowStartDate"><input type="hidden" id="borrowReturnDate">
-                        <!-- Professional User Info -->
+                        <!-- User Info Fields -->
                         <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold mb-2 text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                                    <span class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center text-sm">📥</span> Borrow Date
-                                </label>
-                                <div id="borrowDateDisplay" class="bg-emerald-50 border-2 border-emerald-200 rounded-xl py-3 px-4 text-center">
-                                    <div class="text-lg font-bold text-emerald-700">Select date</div><div class="text-xs text-emerald-500">from calendar</div>
-                                </div>
+                            <div class="form-field">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" id="borrowerFullName" required class="form-input" placeholder="Your full name">
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold mb-2 text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                                    <span class="w-6 h-6 bg-teal-100 rounded-lg flex items-center justify-center text-sm">📤</span> Return Date
-                                </label>
-                                <div id="returnDateDisplay" class="bg-teal-50 border-2 border-teal-200 rounded-xl py-3 px-4 text-center">
-                                    <div class="text-lg font-bold text-teal-700">Select date</div><div class="text-xs text-teal-500">from calendar</div>
-                                </div>
+                            <div class="form-field">
+                                <label class="form-label">Contact Number</label>
+                                <input type="text" id="borrowerContact" required class="form-input" placeholder="09XX XXX XXXX">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Full Name</label>
-                                <input type="text" id="borrowerFullName" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium" placeholder="Your full name">
+                            <div class="form-field">
+                                <label class="form-label">Borrow Time</label>
+                                <input type="time" id="borrowTime" required class="form-input">
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Contact Number</label>
-                                <input type="text" id="borrowerContact" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium" placeholder="09XX XXX XXXX">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Borrow Time</label>
-                                <input type="time" id="borrowTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Return Time</label>
-                                <input type="time" id="returnTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium">
+                            <div class="form-field">
+                                <label class="form-label">Return Time</label>
+                                <input type="time" id="returnTime" required class="form-input">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Quantity Needed</label>
-                            <input type="number" id="borrowQty" min="1" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium">
-                            <p id="borrowMaxHelp" class="text-xs text-orange-600 mt-1.5 font-medium"></p>
+                        <div class="form-field">
+                            <label class="form-label">Quantity Needed</label>
+                            <input type="number" id="borrowQty" min="1" required class="form-input">
+                            <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium"></p>
                         </div>
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Purpose</label>
-                            <textarea id="borrowPurpose" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 h-24 resize-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800" placeholder="Describe why you need this equipment..."></textarea>
+                        <div class="form-field flex-1">
+                            <label class="form-label">Purpose</label>
+                            <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..."></textarea>
                         </div>
-                        <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5">
+                        <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer">
                             ✅ Submit Borrow Request
                         </button>
                     </form>
