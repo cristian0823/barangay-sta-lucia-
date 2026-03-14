@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1258,30 +1258,106 @@
     </div>
 
 
-    <!-- Equipment Borrow Modal -->
-    <div class="modal-overlay" id="equipModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="font-size: 20px; font-weight: 800; color: var(--primary-900);">Borrow <span
-                        id="emName">Item</span></h3>
-                <button class="modal-close" onclick="closeEquipModal()">&times;</button>
+    <!-- ADVANCED EQUIPMENT BORROW MODAL -->
+    <div id="borrowModal" class="modal-overlay hidden" style="z-index: 200; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+        <div class="modal-content" style="max-width: 1000px; width: 90%; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;">
+            <button onclick="closeBorrowModal()" style="position: absolute; top: 16px; right: 16px; z-index: 20; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.05); border: none; cursor: pointer; color: #374151;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div style="padding: 24px; border-bottom: 1px solid #f3f4f6; background: #ecfdf5;">
+                <h3 style="font-size: 24px; font-weight: 800; color: #1f2937;" id="borrowModalTitle">Borrow Item</h3>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 4px;">Select your borrowing dates and provide details below.</p>
             </div>
-            <form id="equipForm" class="concern-form">
-                <input type="hidden" id="emId">
-                <div class="form-group">
-                    <label>Quantity Needed (Max: <span id="emMax">0</span>)</label>
-                    <input type="number" id="emQty" class="form-control" min="1" required>
+            <div style="display: flex; flex-wrap: wrap; flex: 1; overflow-y: auto;">
+                <!-- Left Column: Calendar -->
+                <div style="width: 50%; padding: 24px; border-right: 1px solid #f3f4f6; background: #f9fafb; min-width: 300px; flex-grow: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 id="borrowMonthTitle" style="font-size: 18px; font-weight: 700; color: #1f2937;">Month Year</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" onclick="changeBorrowMonth(-1)" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; color: #4b5563;">&larr;</button>
+                            <button type="button" onclick="changeBorrowMonth(1)" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; color: #4b5563;">&rarr;</button>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px;">
+                        <div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Sun</div><div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Mon</div>
+                        <div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Tue</div><div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Wed</div>
+                        <div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Thu</div><div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Fri</div>
+                        <div style="text-align: center; font-weight: 700; color: #9ca3af; font-size: 12px; padding: 4px 0;">Sat</div>
+                    </div>
+                    <div id="borrowCalendarGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;"></div>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 24px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #f3f4f6; font-size: 12px; font-weight: 500; color: #4b5563;">
+                        <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 12px; height: 12px; border-radius: 4px; background: #d1fae5; border: 1px solid #6ee7b7;"></div> Available</div>
+                        <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 12px; height: 12px; border-radius: 4px; background: #fee2e2; border: 1px solid #fca5a5;"></div> Unavailable</div>
+                        <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 12px; height: 12px; border-radius: 4px; background: #10b981; border: 1px solid #059669;"></div> Selected</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Purpose of Borrowing</label>
-                    <input type="text" id="emPurpose" class="form-control" placeholder="e.g. Birthday Party" required>
+                <!-- Right Column: Professional Form -->
+                <div style="width: 50%; padding: 24px; display: flex; flex-direction: column; min-width: 300px; flex-grow: 1;">
+                    <!-- Date Display -->
+                    <div style="background: linear-gradient(to bottom right, #ecfdf5, #f0fdfa); border: 1px solid #a7f3d0; border-radius: 16px; padding: 20px; margin-bottom: 24px; position: relative; overflow: hidden;">
+                        <h5 style="font-size: 14px; font-weight: 700; color: #065f46; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 32px; height: 32px; background: #10b981; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">📅</span> Selected Borrowing Period
+                        </h5>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                            <div style="flex: 1; text-align: center;">
+                                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #059669; font-weight: 700; margin-bottom: 4px;">Borrow Date</div>
+                                <div style="background: white; border-radius: 12px; padding: 12px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #d1fae5;">
+                                    <div style="font-size: 24px; font-weight: 800; color: #059669;" id="dispStartDateDay">--</div>
+                                    <div style="font-size: 12px; color: #6b7280;" id="dispStartDateMonth">Select date</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div style="width: 40px; height: 40px; background: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #059669; font-size: 20px;">&rarr;</div>
+                                <div style="font-size: 12px; font-weight: 700; color: #059669; margin-top: 4px;" id="borrowDuration">0 days</div>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #059669; font-weight: 700; margin-bottom: 4px;">Return Date</div>
+                                <div style="background: white; border-radius: 12px; padding: 12px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #d1fae5;">
+                                    <div style="font-size: 24px; font-weight: 800; color: #059669;" id="dispReturnDateDay">--</div>
+                                    <div style="font-size: 12px; color: #6b7280;" id="dispReturnDateMonth">Select date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dateRangeDisplay" style="margin-top: 16px; text-align: center; font-size: 14px; font-weight: 500; color: #047857; background: rgba(255,255,255,0.6); padding: 8px; border-radius: 8px;">Please select your borrowing dates from the calendar</div>
+                        <div style="margin-top: 12px; font-size: 11px; line-height: 1.5; color: #047857; background: rgba(209,250,229,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(167,243,208,0.5);">
+                            <strong>Important:</strong> Return deadline is <strong>2:00 PM</strong> on your Return Date.
+                        </div>
+                    </div>
+                    <form id="borrowForm" style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                        <input type="hidden" id="borrowEquipmentId"><input type="hidden" id="borrowEquipmentName">
+                        
+                        <!-- Professional User Info -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Full Name</label>
+                                <input type="text" id="borrowerFullName" required style="width: 100%; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 14px; color: #1f2937; box-sizing: border-box; outline: none;" placeholder="Your full name">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Contact Number</label>
+                                <input type="text" id="borrowerContact" required style="width: 100%; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 14px; color: #1f2937; box-sizing: border-box; outline: none;" placeholder="09XX XXX XXXX">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div style="display: none;"> <!-- Hidden fields needed for date tracking visually, handled by JS -->
+                                <div id="borrowDateDisplay"></div>
+                                <div id="returnDateDisplay"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Quantity Needed</label>
+                            <input type="number" id="borrowQty" min="1" required style="width: 100%; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 14px; color: #1f2937; box-sizing: border-box; outline: none;">
+                            <p id="borrowMaxHelp" style="font-size: 12px; color: #d97706; margin-top: 6px; font-weight: 500;"></p>
+                        </div>
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Purpose</label>
+                            <textarea id="borrowPurpose" required style="width: 100%; flex: 1; min-height: 80px; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 14px; color: #1f2937; resize: none; box-sizing: border-box; outline: none;" placeholder="Describe why you need this equipment..."></textarea>
+                        </div>
+                        <button type="submit" id="submitBorrowBtn" disabled style="width: 100%; margin-top: auto; padding: 14px; background: linear-gradient(to right, #10b981, #059669); color: white; font-weight: 700; font-size: 16px; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);">
+                            ✅ Submit Borrow Request
+                        </button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label>Return Date</label>
-                    <input type="date" id="emReturnDate" class="form-control" required>
-                </div>
-                <button type="submit" class="btn-submit" style="width: 100%;">Submit Request</button>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -1447,53 +1523,216 @@
 
 
 
-        // --- EQUIPMENT MODAL LOGIC ---
-        let currentEquipMax = 0;
+        // --- EQUIPMENT MODAL LOGIC (New Advanced Design) ---
+        let borrowStartDate = null;
+        let borrowReturnDate = null;
+        let borrowDateSelectingStart = true;
+        let borrowCalMonth = new Date().getMonth();
+        let borrowCalYear = new Date().getFullYear();
 
-        // Expose a new function, old requestEquipment will just call this
-        window.openEquipModal = async function (equipmentId) {
-            const equipment = await getEquipment();
-            const item = equipment.find(e => e.id === equipmentId);
+        window.openEquipModal = async function (equipId) {
+            const list = await getEquipment();
+            const item = list.find(e => e.id === equipId);
             if (!item || item.available <= 0) {
                 showToast('Item currently unavailable', 'error');
                 return;
             }
 
-            document.getElementById('emId').value = item.id;
-            document.getElementById('emName').textContent = item.name;
-            document.getElementById('emMax').textContent = item.available;
-            document.getElementById('emQty').max = item.available;
-            document.getElementById('emQty').value = 1;
+            document.getElementById('borrowModalTitle').innerHTML = 'Borrow ' + item.name;
+            document.getElementById('borrowEquipmentId').value = equipId;
+            document.getElementById('borrowEquipmentName').value = item.name;
+            document.getElementById('borrowQty').max = item.available;
+            document.getElementById('borrowQty').value = 1;
+            
+            const maxHelp = document.getElementById('borrowMaxHelp');
+            if(maxHelp) maxHelp.innerHTML = '📦 Max: ' + item.available + ' units available';
+            
+            document.getElementById('borrowPurpose').value = '';
+            document.getElementById('borrowerFullName').value = user.fullName || '';
+            document.getElementById('borrowerContact').value = '';
 
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            document.getElementById('emReturnDate').value = tomorrow.toISOString().split('T')[0];
-
-            document.getElementById('equipModal').classList.add('active');
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            borrowCalMonth = new Date().getMonth();
+            borrowCalYear = new Date().getFullYear();
+            
+            updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
+            document.getElementById('borrowModal').classList.remove('hidden');
         };
 
-        function closeEquipModal() {
-            document.getElementById('equipModal').classList.remove('active');
-            document.getElementById('equipForm').reset();
+        window.closeBorrowModal = function() {
+            document.getElementById('borrowModal').classList.add('hidden');
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
         }
 
-        document.getElementById('equipForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const id = parseInt(document.getElementById('emId').value);
-            const qty = parseInt(document.getElementById('emQty').value);
-            const purpose = document.getElementById('emPurpose').value;
-            const rDate = document.getElementById('emReturnDate').value;
-            const today = new Date().toISOString().split('T')[0];
+        // Exposing global changeBorrowMonth for the calendar
+        window.changeBorrowMonth = function(delta) {
+            borrowCalMonth += delta;
+            if (borrowCalMonth > 11) { borrowCalMonth = 0; borrowCalYear++; }
+            else if (borrowCalMonth < 0) { borrowCalMonth = 11; borrowCalYear--; }
+            renderBorrowCalendar();
+        };
 
-            const result = await borrowEquipment(id, qty, today, rDate, purpose);
-            if (result.success) {
-                showToast('✅ ' + result.message, 'success');
-                closeEquipModal();
-                await loadEquipment();
-                await loadMyBorrowings();
+        function updateBorrowSubmitButton() {
+            const btn = document.getElementById('submitBorrowBtn');
+            const qty = parseInt(document.getElementById('borrowQty').value);
+            const purpose = document.getElementById('borrowPurpose').value;
+            const name = document.getElementById('borrowerFullName').value;
+            const contact = document.getElementById('borrowerContact').value;
+            btn.disabled = !(borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '');
+        }
+
+        document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
+        document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
+        document.getElementById('borrowerFullName')?.addEventListener('input', updateBorrowSubmitButton);
+        document.getElementById('borrowerContact')?.addEventListener('input', updateBorrowSubmitButton);
+
+        function updateBorrowDateDisplays() {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const bDisp = document.getElementById('borrowDateDisplay');
+            const rDisp = document.getElementById('returnDateDisplay');
+            const dpStartDay = document.getElementById('dispStartDateDay');
+            const dpStartMonth = document.getElementById('dispStartDateMonth');
+            const dpReturnDay = document.getElementById('dispReturnDateDay');
+            const dpReturnMonth = document.getElementById('dispReturnDateMonth');
+            const durText = document.getElementById('borrowDuration');
+            const rangeDisplay = document.getElementById('dateRangeDisplay');
+
+            if (borrowStartDate) {
+                const d = new Date(borrowStartDate);
+                if(bDisp) {
+                    bDisp.innerHTML = '<div class="text-lg font-bold text-emerald-700">' + fullMonths[d.getMonth()] + ' ' + d.getDate() + '</div><div class="text-xs text-emerald-500">' + d.getFullYear() + '</div>';
+                    bDisp.classList.add('border-emerald-400', 'bg-emerald-100');
+                }
+                if (dpStartDay) { dpStartDay.textContent = d.getDate(); dpStartMonth.textContent = months[d.getMonth()] + ' ' + d.getFullYear(); }
+                if(rangeDisplay) rangeDisplay.textContent = 'Now select a return date from the calendar';
             } else {
-                showToast(result.message, 'error');
+                if(bDisp) {
+                    bDisp.innerHTML = '<div class="text-lg font-bold text-emerald-700">Select date</div><div class="text-xs text-emerald-500">from calendar</div>';
+                    bDisp.classList.remove('border-emerald-400', 'bg-emerald-100');
+                }
+                if (dpStartDay) { dpStartDay.textContent = '--'; dpStartMonth.textContent = 'Select date'; }
+                if(rangeDisplay) rangeDisplay.textContent = 'Please select your borrowing dates from the calendar';
             }
+
+            if (borrowReturnDate) {
+                const d = new Date(borrowReturnDate);
+                if(rDisp) {
+                    rDisp.innerHTML = '<div class="text-lg font-bold text-teal-700">' + fullMonths[d.getMonth()] + ' ' + d.getDate() + '</div><div class="text-xs text-teal-500">' + d.getFullYear() + '</div>';
+                    rDisp.classList.add('border-teal-400', 'bg-teal-100');
+                }
+                if (dpReturnDay) { dpReturnDay.textContent = d.getDate(); dpReturnMonth.textContent = months[d.getMonth()] + ' ' + d.getFullYear(); }
+                const start = new Date(borrowStartDate);
+                const diffDays = Math.ceil(Math.abs(d - start) / (1000*60*60*24)) + 1;
+                if(durText) durText.textContent = diffDays + (diffDays > 1 ? ' days' : ' day');
+                if(rangeDisplay) rangeDisplay.innerHTML = '<span class="text-emerald-600">📅 ' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' → ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
+            } else {
+                if(rDisp) {
+                    rDisp.innerHTML = '<div class="text-lg font-bold text-teal-700">Select date</div><div class="text-xs text-teal-500">from calendar</div>';
+                    rDisp.classList.remove('border-teal-400', 'bg-teal-100');
+                }
+                if (dpReturnDay) { dpReturnDay.textContent = '--'; dpReturnMonth.textContent = 'Select date'; }
+                if(durText) durText.textContent = '0 days';
+            }
+        }
+
+        function renderBorrowCalendar() {
+            const grid = document.getElementById('borrowCalendarGrid');
+            if(!grid) return;
+            const monthTitle = document.getElementById('borrowMonthTitle');
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            if(monthTitle) monthTitle.textContent = months[borrowCalMonth] + ' ' + borrowCalYear;
+            
+            grid.innerHTML = '';
+            const firstDay = new Date(borrowCalYear, borrowCalMonth, 1).getDay();
+            const daysInMonth = new Date(borrowCalYear, borrowCalMonth + 1, 0).getDate();
+            const today = new Date(); today.setHours(0,0,0,0);
+            
+            for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')); }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = borrowCalYear + '-' + String(borrowCalMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                const dateObj = new Date(borrowCalYear, borrowCalMonth, day);
+                const dayDiv = document.createElement('div');
+                
+                dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm transition transform hover:scale-105 ';
+                
+                if (dateObj < today) { 
+                    dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed'; 
+                } else { 
+                    dayDiv.className += 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200'; 
+                    dayDiv.onclick = () => window.selectBorrowDate(dateStr); 
+                }
+                
+                if (dateObj.getTime() === today.getTime() && !(dateObj < today)) { 
+                    dayDiv.className += ' ring-2 ring-emerald-500 ring-offset-2'; 
+                }
+                
+                if (borrowStartDate === dateStr) { 
+                    dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm bg-emerald-500 text-white shadow-md ring-2 ring-emerald-300'; 
+                }
+                if (borrowReturnDate === dateStr) { 
+                    dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm bg-teal-500 text-white shadow-md ring-2 ring-teal-300'; 
+                }
+                if (borrowStartDate && borrowReturnDate) {
+                    const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
+                    if (dateObj > start && dateObj < end) { dayDiv.className += ' bg-emerald-100'; }
+                }
+                
+                dayDiv.textContent = day;
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        window.selectBorrowDate = function(dateStr) {
+            const today = new Date(); today.setHours(0,0,0,0);
+            if (new Date(dateStr) < today) {
+                showToast('Cannot select past dates', 'error');
+                return;
+            }
+            if (borrowDateSelectingStart) {
+                borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
+                showToast('Now select the return date', 'success');
+            } else {
+                if (new Date(dateStr) < new Date(borrowStartDate)) {
+                    showToast('Return date must be after borrow date', 'error');
+                    return;
+                }
+                borrowReturnDate = dateStr; borrowDateSelectingStart = true;
+            }
+            updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
+        };
+
+        document.getElementById('borrowForm')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
+            const qty = parseInt(document.getElementById('borrowQty').value);
+            const purposeStr = document.getElementById('borrowPurpose').value;
+            const fullName = document.getElementById('borrowerFullName').value;
+            const contact = document.getElementById('borrowerContact').value;
+            
+            const borrowDate = borrowStartDate;
+            const returnDate = borrowReturnDate;
+            
+            if (!equipId) return showToast('Please select an equipment item', 'error');
+            if (!borrowDate || !returnDate) return showToast('Please select both dates', 'error');
+            
+            const btn = document.getElementById('submitBorrowBtn');
+            btn.disabled = true; btn.innerHTML = 'Submitting...';
+            
+            const fullPurpose = `${purposeStr} | Borrower: ${fullName} | Contact: ${contact}`;
+            const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
+            
+            if (result.success) { 
+                showToast('✅ ' + result.message, 'success'); 
+                window.closeBorrowModal(); 
+                await loadEquipment(); 
+                await loadMyBorrowings(); 
+            } else { 
+                showToast(result.message, 'error'); 
+            }
+            
+            btn.disabled = false; btn.innerHTML = '✅ Submit Borrow Request';
         });
 
         // Override original requestEquipment
