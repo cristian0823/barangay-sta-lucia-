@@ -127,14 +127,42 @@
                         <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
                     </div>
                 </div>
+                <div class="mb-6">
+                    <div style="position:relative;">
+                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;">🔍</span>
+                        <input
+                            id="equipmentSearchInput"
+                            type="text"
+                            placeholder="Search equipment by name or category..."
+                            oninput="filterEquipmentGrid()"
+                            style="width:100%;padding:12px 16px 12px 44px;border:2px solid #d1fae5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(16,185,129,0.07);transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='#059669'"
+                            onblur="this.style.borderColor='#d1fae5'"
+                        >
+                    </div>
+                    <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
+                </div>
                 <div class="mb-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="equipmentGrid"></div></div>
                 <div class="glass-card p-6">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center justify-between mb-4" style="gap:12px;flex-wrap:wrap;">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-xl">📋</div>
                             <div><h3 class="text-xl font-bold text-gray-800 dark:text-white">My Borrowing History</h3><p class="text-xs text-gray-500">Track all your equipment requests</p></div>
                         </div>
+                        <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
+                            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
+                            <input
+                                id="borrowingSearchInput"
+                                type="text"
+                                placeholder="Search borrowings..."
+                                oninput="filterBorrowingsList()"
+                                style="width:100%;padding:9px 12px 9px 36px;border:2px solid #d1fae5;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#111;box-sizing:border-box;transition:border-color 0.2s;"
+                                onfocus="this.style.borderColor='#059669'"
+                                onblur="this.style.borderColor='#d1fae5'"
+                            >
+                        </div>
                     </div>
+                    <p id="borrowingSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No borrowing records match your search.</p>
                     <div id="myBorrowingsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><p class="text-gray-500 italic col-span-full">No borrowing history yet.</p></div>
                 </div>
             </div>
@@ -553,6 +581,45 @@
             } catch(err) {
                 console.error('[DEBUG] loadEquipmentView error:', err);
             }
+        }
+
+        // ── Equipment Search Filter ──────────────────────────────
+        function filterEquipmentGrid() {
+            const query = (document.getElementById('equipmentSearchInput')?.value || '').toLowerCase().trim();
+            const grid  = document.getElementById('equipmentGrid');
+            const empty = document.getElementById('equipmentSearchEmpty');
+            if (!grid) return;
+
+            const cards = grid.children;
+            let visible = 0;
+            Array.from(cards).forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const show = !query || text.includes(query);
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            if (empty) empty.style.display = (visible === 0 && query) ? 'block' : 'none';
+        }
+
+        // ── Borrowing History Search Filter ─────────────────────
+        function filterBorrowingsList() {
+            const query = (document.getElementById('borrowingSearchInput')?.value || '').toLowerCase().trim();
+            const list  = document.getElementById('myBorrowingsList');
+            const empty = document.getElementById('borrowingSearchEmpty');
+            if (!list) return;
+
+            // Notice: The container might have only the empty state `<p>` element initially.
+            const cards = list.querySelectorAll('.group'); // Only filter actual cards
+            if (cards.length === 0) return;
+
+            let visible = 0;
+            Array.from(cards).forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const show = !query || text.includes(query);
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            if (empty) empty.style.display = (visible === 0 && query) ? 'block' : 'none';
         }
 
         async function loadMyBorrowingsList() {

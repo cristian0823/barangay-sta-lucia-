@@ -132,6 +132,23 @@ INSERT INTO users (username, password, full_name, email, role, avatar)
 VALUES ('admin', 'admin123', 'Barangay Administrator', 'admin@barangay.gov', 'admin', 'A')
 ON CONFLICT (username) DO NOTHING;
 
+-- Equipment is seeded in STEP 5 below with correct quantities.
+
+
+
+-- ============================================================
+-- STEP 5: RESET EQUIPMENT TO CORRECT VALUES (safe to re-run)
+-- Wipes all equipment rows and re-inserts the exact correct
+-- data. Total = 150+3+5+1+1+1+5 = 166 items.
+-- ============================================================
+
+-- 5a: Drop old unique constraint if it exists
+ALTER TABLE equipment DROP CONSTRAINT IF EXISTS equipment_name_unique;
+
+-- 5b: Remove ALL rows (fixes duplicates)
+DELETE FROM equipment;
+
+-- 5c: Re-insert the CORRECT equipment with EXACT quantities
 INSERT INTO equipment (name, quantity, available, broken, icon, description) VALUES
 ('Chairs',       150, 150, 0, '🪑', 'Plastic folding chairs'),
 ('Tables',         3,   3, 0, '🪵', 'Foldable tables'),
@@ -139,25 +156,10 @@ INSERT INTO equipment (name, quantity, available, broken, icon, description) VAL
 ('Ladder',         1,   1, 0, '🪜', 'Barangay use only'),
 ('Microphone',     1,   1, 0, '🎤', 'Barangay use only'),
 ('Speaker',        1,   1, 0, '🔊', 'For big events'),
-('Electric Fan',   5,   5, 0, '🌀', 'For big events')
-ON CONFLICT DO NOTHING;
+('Electric Fan',   5,   5, 0, '🌀', 'For big events');
 
-
--- ============================================================
--- STEP 5: DEDUPLICATE EQUIPMENT (safe to re-run)
--- Removes any rows that share the same name, keeping the one
--- with the lowest id. Then adds a UNIQUE constraint so it
--- can never happen again.
--- ============================================================
-
--- Remove duplicate equipment rows (keep the smallest id per name)
-DELETE FROM equipment
-WHERE id NOT IN (
-    SELECT MIN(id) FROM equipment GROUP BY name
-);
-
--- Add a UNIQUE constraint so future inserts with ON CONFLICT work correctly
+-- 5d: Add UNIQUE constraint so duplicates can never happen again
 ALTER TABLE equipment ADD CONSTRAINT equipment_name_unique UNIQUE (name);
 
--- Also disable RLS on activity_log if not already done
+-- 5e: Disable RLS on activity_log so logs are always readable
 ALTER TABLE activity_log DISABLE ROW LEVEL SECURITY;
