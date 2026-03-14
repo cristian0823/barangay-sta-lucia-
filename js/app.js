@@ -365,6 +365,15 @@ async function updateEquipment(id, updates) {
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };
+        
+        if (diffBroken !== 0) {
+            const actionVerb = diffBroken > 0 ? 'marked as' : 'removed from';
+            await logActivity('Inventory Update', `Admin ${actionVerb} broken ${Math.abs(diffBroken)}x ${item.name}`);
+        } else if (diffQty !== 0) {
+            const actionVerb = diffQty > 0 ? 'added' : 'removed';
+            await logActivity('Inventory Update', `Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
+        }
+        
         return { success: true, message: 'Equipment updated successfully' };
     } else {
         // Local fallback
@@ -388,6 +397,15 @@ async function updateEquipment(id, updates) {
         if (updates.isArchived !== undefined) item.isArchived = updates.isArchived;
 
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        
+        if (diffBroken !== 0) {
+            const actionVerb = diffBroken > 0 ? 'marked as' : 'removed from';
+            logActivity('Inventory Update', `Local Admin ${actionVerb} broken ${Math.abs(diffBroken)}x ${item.name}`);
+        } else if (diffQty !== 0) {
+            const actionVerb = diffQty > 0 ? 'added' : 'removed';
+            logActivity('Inventory Update', `Local Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
+        }
+        
         return { success: true, message: 'Equipment updated successfully' };
     }
 }
@@ -454,6 +472,8 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         }]);
 
         if (error) return { success: false, message: error.message };
+        
+        await logActivity('Borrow Request', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -483,6 +503,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         borrowings.push(newBorrowing);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
+        logActivity('Borrow Request', `Local User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     }
 }
@@ -576,6 +597,8 @@ async function updateBorrowingStatus(borrowingId, status) {
                 await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
             }
         }
+        
+        await logActivity(`Borrow ${status.charAt(0).toUpperCase() + status.slice(1)}`, `Admin marked request for ${borrowing.quantity}x ${borrowing.equipment} by ${borrowing.user_name || 'User'} as ${status}`);
         return { success: true, message: `Status updated to ${status}` };
     } else {
         // Local fallback
@@ -595,6 +618,8 @@ async function updateBorrowingStatus(borrowingId, status) {
                 localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
             }
         }
+        
+        logActivity(`Borrow ${status.charAt(0).toUpperCase() + status.slice(1)}`, `Admin marked request for ${borrowings[index].quantity}x ${borrowings[index].equipment} by ${borrowings[index].userName} as ${status} (Local)`);
         return { success: true, message: `Status updated to ${status}` };
     }
 }
@@ -617,6 +642,7 @@ async function cancelBorrowingRequest(borrowingId) {
         }
 
         await supabase.from('borrowings').delete().eq('id', borrowingId);
+        await logActivity('Borrow Cancelled', `User ${user.fullName || user.username} cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
     } else {
         // Local fallback
@@ -635,6 +661,7 @@ async function cancelBorrowingRequest(borrowingId) {
 
         borrowings.splice(index, 1);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
+        logActivity('Borrow Cancelled', `Local User ${user.fullName || user.username} cancelled their request for ${borrowings[index].quantity}x ${borrowings[index].equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
     }
 }
@@ -658,6 +685,7 @@ async function submitConcern(category, title, description, address) {
         }]);
 
         if (error) return { success: false, message: error.message };
+        await logActivity('Concern Submitted', `User ${user.fullName || user.username} submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
@@ -675,6 +703,7 @@ async function submitConcern(category, title, description, address) {
         };
         concerns.push(newConcern);
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
+        logActivity('Concern Submitted', `Local User ${user.fullName || user.username} submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     }
 }
@@ -902,6 +931,7 @@ async function bookCourt(bookingData) {
             }]);
 
             if (error) throw error;
+            await logActivity('Court Booking Submitted', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
             console.error('Supabase booking error:', err.message);
@@ -923,6 +953,7 @@ async function bookCourt(bookingData) {
     };
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+    logActivity('Court Booking Submitted', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
     return { success: true, message: 'Venue booked (offline mode)' };
 }
 

@@ -414,6 +414,16 @@
                                 <input type="text" id="borrowerContact" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium" placeholder="09XX XXX XXXX">
                             </div>
                         </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Borrow Time</label>
+                                <input type="time" id="borrowTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Return Time</label>
+                                <input type="time" id="returnTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium">
+                            </div>
+                        </div>
                         <div>
                             <label class="block text-xs font-bold mb-1.5 text-gray-700 uppercase tracking-wider">Quantity Needed</label>
                             <input type="number" id="borrowQty" min="1" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium">
@@ -700,16 +710,43 @@
             e.preventDefault();
             const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
             const qty = parseInt(document.getElementById('borrowQty').value);
-            const purpose = document.getElementById('borrowPurpose').value;
+            const purposeStr = document.getElementById('borrowPurpose').value;
+            const fullName = document.getElementById('borrowerFullName').value;
+            const contact = document.getElementById('borrowerContact').value;
+            
+            const borrowTime = document.getElementById('borrowTime').value;
+            const returnTime = document.getElementById('returnTime').value;
+            
             const borrowDate = borrowStartDate;
             const returnDate = borrowReturnDate;
+            
             if (!equipId) return showToast('Please select an equipment item', 'error');
             if (!borrowDate || !returnDate) return showToast('Please select both dates', 'error');
+            if (!borrowTime || !returnTime) return showToast('Please select the pickup and return times', 'error');
+            
             const btn = this.querySelector('button[type="submit"]');
             btn.disabled = true; btn.innerHTML = 'Submitting...';
-            const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, purpose);
-            if (result.success) { showToast(result.message, 'success'); closeBorrowModal(); await loadEquipmentView(); await loadDashboardStats(); }
-            else { showToast(result.message, 'error'); }
+            
+            // Format time string for 12-hour AM/PM purely for readability in logs
+            const formatTime = (time24h) => {
+                let [h, m] = time24h.split(':');
+                h = parseInt(h);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return `${h}:${m} ${ampm}`;
+            };
+            
+            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact}`;
+            const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
+            
+            if (result.success) { 
+                showToast('✅ ' + result.message, 'success'); 
+                closeBorrowModal(); 
+                await loadEquipmentView(); 
+                await loadDashboardStats(); 
+            } else { 
+                showToast(result.message, 'error'); 
+            }
             btn.disabled = false; btn.innerHTML = '✅ Submit Borrow Request';
         });
 

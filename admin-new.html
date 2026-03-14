@@ -1808,17 +1808,26 @@
                         <div class="premium-card">
                             <div class="section-header"
                                 style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
-                                <h3
-                                    style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--primary-dark);">
-                                    System Activities</h3>
+                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--primary-dark);">System &amp; Transaction History</h3>
                                 <button class="btn btn-primary btn-sm" onclick="loadActivityLog()">🔄 Refresh</button>
+                            </div>
+                            <!-- Filters & Search -->
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 24px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; align-items: center;">
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    <button id="logFilter-all"       onclick="setLogFilter('all')"       style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 2px solid #065f46; background: #065f46; color: #fff; cursor: pointer;">📋 All</button>
+                                    <button id="logFilter-inventory" onclick="setLogFilter('inventory')" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 2px solid #d1fae5; background: #fff; color: #065f46; cursor: pointer;">📦 Inventory</button>
+                                    <button id="logFilter-requests"  onclick="setLogFilter('requests')"  style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 2px solid #d1fae5; background: #fff; color: #065f46; cursor: pointer;">🙋 User Requests</button>
+                                    <button id="logFilter-bookings"  onclick="setLogFilter('bookings')"  style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 2px solid #d1fae5; background: #fff; color: #065f46; cursor: pointer;">📅 Court Bookings</button>
+                                    <button id="logFilter-concerns"  onclick="setLogFilter('concerns')"  style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 2px solid #d1fae5; background: #fff; color: #065f46; cursor: pointer;">📣 Concerns</button>
+                                </div>
+                                <input id="logSearchInput" type="text" placeholder="🔍 Search logs..." oninput="renderActivityTable()" style="flex: 1; min-width: 200px; padding: 8px 14px; border: 1.5px solid #d1fae5; border-radius: 10px; font-size: 13px; outline: none; background: #fff;">
                             </div>
                             <div class="table-responsive" style="overflow-x: auto;">
                                 <table class="activity-log-table" style="width: 100%; border-collapse: collapse;">
                                     <thead>
                                         <tr>
                                             <th>Date &amp; Time</th>
-                                            <th>Admin</th>
+                                            <th>User / Admin</th>
                                             <th>Action</th>
                                             <th>Details</th>
                                         </tr>
@@ -3156,45 +3165,94 @@
             document.getElementById('lastUpdatedInfo').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        async function loadActivityLog() {
-            const tbody = document.getElementById('activityLogTable');
-            const emptyState = document.getElementById('noActivityLog');
-            if (!tbody) return;
+        // ─── Activity Log Filter State ───────────────────────────────────
+        let _allActivityLogs = [];
+        let _activeLogFilter = 'all';
 
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
-            try {
-                const logs = await getActivityLog();
-                if (logs.length === 0) {
-                    tbody.innerHTML = '';
-                    if (emptyState) emptyState.style.display = 'block';
-                    return;
+        const LOG_FILTER_KEYWORDS = {
+            inventory: ['Inventory Update', 'Equipment Added', 'Equipment'],
+            requests:  ['Borrow Request', 'Borrow Approved', 'Borrow Rejected', 'Borrow Returned', 'Borrow Cancelled'],
+            bookings:  ['Court Booking'],
+            concerns:  ['Concern Submitted', 'Concern Updated', 'Concern Deleted'],
+        };
+
+        function setLogFilter(filter) {
+            _activeLogFilter = filter;
+            // Update button styles
+            ['all','inventory','requests','bookings','concerns'].forEach(f => {
+                const btn = document.getElementById('logFilter-' + f);
+                if (!btn) return;
+                const active = f === filter;
+                btn.style.background = active ? '#065f46' : '#fff';
+                btn.style.color     = active ? '#fff'   : '#065f46';
+                btn.style.borderColor = active ? '#065f46' : '#d1fae5';
+            });
+            renderActivityTable();
+        }
+
+        function renderActivityTable() {
+            const tbody      = document.getElementById('activityLogTable');
+            const emptyState = document.getElementById('noActivityLog');
+            const search     = (document.getElementById('logSearchInput')?.value || '').toLowerCase();
+
+            let filtered = _allActivityLogs;
+
+            // Category filter
+            if (_activeLogFilter !== 'all') {
+                const kws = LOG_FILTER_KEYWORDS[_activeLogFilter] || [];
+                filtered = filtered.filter(log => kws.some(kw => log.action.includes(kw)));
+            }
+
+            // Keyword search
+            if (search) {
+                filtered = filtered.filter(log =>
+                    (log.action  || '').toLowerCase().includes(search) ||
+                    (log.details || '').toLowerCase().includes(search) ||
+                    (log.adminUsername || '').toLowerCase().includes(search)
+                );
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.style.display = 'block';
+                return;
+            }
+            if (emptyState) emptyState.style.display = 'none';
+
+            tbody.innerHTML = filtered.map(log => {
+                const dt      = new Date(log.createdAt);
+                const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                let badgeClass = 'badge-muted';
+                if (log.action.includes('Deleted') || log.action.includes('Rejected') || log.action.includes('Cancelled')) {
+                    badgeClass = 'badge-danger';
+                } else if (log.action.includes('Submitted') || log.action.includes('Approved') || log.action.includes('Returned') || log.action.includes('Confirmed') || log.action.includes('Registered')) {
+                    badgeClass = 'badge-success';
+                } else if (log.action.includes('Updated') || log.action.includes('Inventory')) {
+                    badgeClass = 'badge-primary';
+                } else if (log.action.includes('Request') || log.action.includes('Booking')) {
+                    badgeClass = 'badge-warning';
                 }
 
-                if (emptyState) emptyState.style.display = 'none';
+                return `<tr>
+                    <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
+                    <td data-label="User / Admin"><div class="admin-cell"><span class="admin-icon">👤</span> <strong>${log.adminUsername || 'System'}</strong></div></td>
+                    <td data-label="Action"><span class="status-badge ${badgeClass}">${log.action}</span></td>
+                    <td data-label="Details" style="max-width:320px;font-size:12px;color:#6b7280;">${log.details || ''}</td>
+                </tr>`;
+            }).join('');
+        }
 
-                tbody.innerHTML = logs.map(log => {
-                    const dt = new Date(log.createdAt);
-                    const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-                    let badgeClass = 'badge-muted'; // Default styling
-                    if (log.action.includes('Deleted') || log.action.includes('Rejected')) {
-                        badgeClass = 'badge-danger';
-                    } else if (log.action.includes('Created') || log.action.includes('Approved') || log.action.includes('Confirmed')) {
-                        badgeClass = 'badge-success';
-                    } else if (log.action.includes('Updated')) {
-                        badgeClass = 'badge-primary';
-                    }
-
-                    return `<tr>
-                        <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
-                        <td data-label="Admin"><div class="admin-cell"><span class="admin-icon">👤</span> <strong>${log.adminUsername}</strong></div></td>
-                        <td data-label="Action"><span class="status-badge ${badgeClass}">${log.action}</span></td>
-                        <td data-label="Details"><span class="text-xs text-gray-500">${log.details || ''}</span></td>
-                    </tr>`;
-                }).join('');
+        async function loadActivityLog() {
+            const tbody = document.getElementById('activityLogTable');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+            try {
+                _allActivityLogs = await getActivityLog();
+                renderActivityTable();
             } catch (error) {
-                console.error("Error loading activity log:", error);
+                console.error('Error loading activity log:', error);
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#ef4444;">Error loading logs</td></tr>';
             }
         }

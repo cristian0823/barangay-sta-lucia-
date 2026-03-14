@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS equipment (
 CREATE TABLE IF NOT EXISTS borrowings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT,
     user_name VARCHAR(255),
     equipment VARCHAR(255),
     quantity INTEGER NOT NULL,
@@ -88,6 +89,7 @@ CREATE TABLE IF NOT EXISTS court_bookings (
 
 CREATE TABLE IF NOT EXISTS activity_log (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     admin_username VARCHAR(255),
     action VARCHAR(255),
     details TEXT,
@@ -105,6 +107,8 @@ ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
+ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
 
 
 -- ============================================================

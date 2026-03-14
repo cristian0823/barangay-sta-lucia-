@@ -1350,6 +1350,14 @@
                                 <div id="borrowDateDisplay"></div>
                                 <div id="returnDateDisplay"></div>
                             </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Borrow Time</label>
+                                <input type="time" id="borrowTime" required style="width: 100%; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 14px; color: #1f2937; box-sizing: border-box; outline: none;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Return Time</label>
+                                <input type="time" id="returnTime" required style="width: 100%; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 14px; color: #1f2937; box-sizing: border-box; outline: none;">
+                            </div>
                         </div>
                         <div>
                             <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Quantity Needed</label>
@@ -1721,16 +1729,29 @@
             const fullName = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
             
+            const borrowTime = document.getElementById('borrowTime').value;
+            const returnTime = document.getElementById('returnTime').value;
+            
             const borrowDate = borrowStartDate;
             const returnDate = borrowReturnDate;
             
             if (!equipId) return showToast('Please select an equipment item', 'error');
             if (!borrowDate || !returnDate) return showToast('Please select both dates', 'error');
+            if (!borrowTime || !returnTime) return showToast('Please select the pickup and return times', 'error');
             
             const btn = document.getElementById('submitBorrowBtn');
             btn.disabled = true; btn.innerHTML = 'Submitting...';
             
-            const fullPurpose = `${purposeStr} | Borrower: ${fullName} | Contact: ${contact}`;
+            // Format time string for 12-hour AM/PM purely for readability in logs
+            const formatTime = (time24h) => {
+                let [h, m] = time24h.split(':');
+                h = parseInt(h);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return `${h}:${m} ${ampm}`;
+            };
+            
+            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact}`;
             const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
             
             if (result.success) { 
