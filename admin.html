@@ -2616,129 +2616,121 @@
                 const monthTitle = document.getElementById('adminCalendarMonth');
                 if (!grid || !monthTitle) return;
 
-                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
                 monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
 
-                const events = await getEvents();
-                const bookings = await getCourtBookings();
-                const selectedVenue = document.getElementById('adminSelectedVenue').value;
-
-                // Filter events that are approved
-                const approvedEvents = events.filter(e => e.status === 'approved');
-
-                // Filter bookings by venue
-                const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue);
-
-                const eventDates = {};
-                approvedEvents.forEach(e => {
-                    eventDates[e.date] = eventDates[e.date] || [];
-                    eventDates[e.date].push(e);
-                });
-
-                const bookingDates = {};
-                venueBookings.forEach(b => {
-                    bookingDates[b.date] = bookingDates[b.date] || [];
-                    bookingDates[b.date].push(b);
-                });
+                // Fetch data safely — calendar renders even if these fail
+                let eventDates = {}, bookingDates = {};
+                try {
+                    const [events, bookings] = await Promise.all([getEvents(), getCourtBookings()]);
+                    const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
+                    events.filter(e => e.status === 'approved').forEach(e => {
+                        eventDates[e.date] = eventDates[e.date] || [];
+                        eventDates[e.date].push(e);
+                    });
+                    bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue).forEach(b => {
+                        bookingDates[b.date] = bookingDates[b.date] || [];
+                        bookingDates[b.date].push(b);
+                    });
+                } catch(err) {
+                    console.warn('Calendar data fetch failed, rendering empty calendar:', err);
+                }
 
                 grid.innerHTML = '';
-
-                // Day headers are already in static HTML above the grid — no need to inject them here
 
                 const firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
                 const daysInMonth = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
+                // Empty spacer cells for days before the 1st
                 for (let i = 0; i < firstDay; i++) {
                     const empty = document.createElement('div');
-                    empty.className = 'p-2';
                     grid.appendChild(empty);
                 }
 
+                // Day tiles
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dateStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const dayElement = document.createElement('div');
                     const dateObj = new Date(adminCalendarYear, adminCalendarMonth, day);
 
-                    const hasEvents = eventDates[dateStr] && eventDates[dateStr].length > 0;
+                    const hasEvents   = eventDates[dateStr]   && eventDates[dateStr].length > 0;
                     const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
-                    const isSelected = adminSelectedDate === dateStr;
-                    const isToday = dateObj.getTime() === today.getTime();
+                    const isSelected  = adminSelectedDate === dateStr;
+                    const isToday     = dateObj.getTime() === today.getTime();
+                    const isPast      = dateObj < today;
 
-                    // Base inline style
-                    let bg = '#ffffff', color = '#059669', border = '1px solid #e5e7eb', label = '', labelColor = '#a7f3d0';
-                    let cursor = 'pointer';
-                    let extraStyle = 'box-shadow:0 1px 4px rgba(0,0,0,0.05);';
+                    let bg, color, border, labelText, labelColor, extraStyle;
 
                     if (isSelected) {
                         bg = 'linear-gradient(135deg,#3b82f6,#4338ca)';
-                        color = '#ffffff';
-                        border = 'none';
-                        label = 'SELECTED';
-                        labelColor = 'rgba(255,255,255,0.7)';
-                        extraStyle = 'box-shadow:0 6px 20px rgba(59,130,246,0.4);transform:scale(1.05);';
-                    } else if (dateObj < today) {
-                        bg = '#f8fafc';
-                        color = '#cbd5e1';
-                        border = '1px solid #f1f5f9';
-                        cursor = 'not-allowed';
-                        label = 'Past';
-                        labelColor = '#e2e8f0';
-                        extraStyle = '';
+                        color = '#fff'; border = '2px solid transparent';
+                        labelText = 'SELECTED'; labelColor = 'rgba(255,255,255,0.75)';
+                        extraStyle = 'box-shadow:0 6px 20px rgba(59,130,246,0.4);transform:scale(1.07);z-index:1;';
                     } else if (hasEvents) {
-                        bg = 'linear-gradient(135deg,#f3e8ff,#fae8ff)';
-                        color = '#6d28d9';
-                        border = '1px solid #ddd6fe';
-                        label = '● EVENT';
-                        labelColor = '#8b5cf6';
-                        extraStyle = 'box-shadow:0 2px 8px rgba(139,92,246,0.15);';
+                        bg = 'linear-gradient(135deg,#f3e8ff,#ede9fe)';
+                        color = '#6d28d9'; border = '1.5px solid #c4b5fd';
+                        labelText = 'EVENT'; labelColor = '#8b5cf6';
+                        extraStyle = 'box-shadow:0 2px 8px rgba(139,92,246,0.18);';
                     } else if (hasBookings) {
                         bg = 'linear-gradient(135deg,#fef2f2,#ffe4e6)';
-                        color = '#b91c1c';
-                        border = '1px solid #fecaca';
-                        label = 'Booked';
-                        labelColor = '#ef4444';
+                        color = '#b91c1c'; border = '1.5px solid #fca5a5';
+                        labelText = 'BOOKED'; labelColor = '#ef4444';
                         extraStyle = 'box-shadow:0 2px 8px rgba(239,68,68,0.12);';
+                    } else if (isPast) {
+                        bg = '#f8fafc'; color = '#94a3b8'; border = '1.5px solid #f1f5f9';
+                        labelText = ''; labelColor = 'transparent';
+                        extraStyle = '';
+                    } else {
+                        bg = '#ffffff'; color = '#059669'; border = '1.5px solid #d1fae5';
+                        labelText = ''; labelColor = 'transparent';
+                        extraStyle = 'box-shadow:0 1px 4px rgba(16,185,129,0.08);';
                     }
 
-                    const todayBorder = isToday ? 'border:2px solid #10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.12);' : '';
+                    if (isToday && !isSelected) {
+                        border = '2px solid #10b981';
+                        extraStyle += 'box-shadow:0 0 0 3px rgba(16,185,129,0.15);';
+                    }
 
                     dayElement.style.cssText = `
                         background:${bg}; color:${color}; border:${border};
-                        border-radius:12px; padding:8px 4px 20px; text-align:center;
-                        cursor:${cursor}; position:relative; transition:all 0.2s ease;
-                        font-weight:700; font-size:14px; min-height:54px;
-                        ${extraStyle} ${todayBorder}
+                        border-radius:10px; padding:6px 2px 18px; text-align:center;
+                        cursor:${isPast ? 'default' : 'pointer'}; position:relative;
+                        transition:transform 0.15s ease, box-shadow 0.15s ease;
+                        font-weight:700; font-size:14px; min-height:52px;
+                        ${extraStyle}
                     `;
                     dayElement.innerHTML = `
-                        <span>${day}</span>
-                        <div style="position:absolute;bottom:4px;left:0;right:0;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:${labelColor};">${label}</div>
+                        <span style="display:block;font-size:14px;font-weight:800;line-height:2;">${day}</span>
+                        <span style="position:absolute;bottom:3px;left:0;right:0;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:${labelColor};">${labelText}</span>
                     `;
 
-                    if (hasEvents) {
-                        dayElement.title = eventDates[dateStr].map(e => `${e.title} - ${e.time}${e.end_time ? ' - ' + e.end_time : ''}`).join('\n');
-                    } else if (hasBookings) {
-                        dayElement.title = bookingDates[dateStr].map(b => `${b.venueName || b.venue} - ${b.time}`).join('\n');
+                    if (hasEvents)   dayElement.title = eventDates[dateStr].map(e => e.title).join(', ');
+                    if (hasBookings) dayElement.title = bookingDates[dateStr].map(b => b.purpose || b.venue).join(', ');
+
+                    if (!isPast && !isSelected) {
+                        dayElement.onmouseover = () => {
+                            if (!hasEvents && !hasBookings) { dayElement.style.background = '#ecfdf5'; dayElement.style.borderColor = '#6ee7b7'; }
+                            dayElement.style.transform = 'scale(1.05)';
+                        };
+                        dayElement.onmouseout = () => {
+                            if (!hasEvents && !hasBookings) { dayElement.style.background = bg; dayElement.style.borderColor = ''; }
+                            dayElement.style.transform = 'scale(1)';
+                        };
                     }
 
-                    // Hover effect for available dates
-                    if (!isSelected && dateObj >= today && !hasEvents && !hasBookings) {
-                        dayElement.onmouseover = () => { dayElement.style.background = '#ecfdf5'; dayElement.style.borderColor = '#6ee7b7'; };
-                        dayElement.onmouseout = () => { dayElement.style.background = '#ffffff'; dayElement.style.borderColor = '#e5e7eb'; };
-                    }
-
-                    // Click to select date
-                    dayElement.onclick = () => adminSelectDate(dateStr);
+                    if (!isPast) dayElement.onclick = () => adminSelectDate(dateStr);
                     grid.appendChild(dayElement);
                 }
             }
 
             function adminSelectDate(dateStr) {
                 adminSelectedDate = dateStr;
-                document.getElementById('adminBookingDate').value = dateStr;
+                // Pre-fill the event form date if it is open
+                const evtDateInput = document.getElementById('adminSidebarEventDate');
+                if (evtDateInput) evtDateInput.value = dateStr;
                 renderAdminCalendar();
-                renderAdminAllBookings();
             }
 
             async function changeAdminMonth(delta) {
@@ -2766,6 +2758,7 @@
                 // Auto-load section data on switch
                 if (section === 'activity-log') loadActivityLog();
                 if (section === 'users') loadUsers();
+                if (section === 'events') { renderAdminCalendar(); renderAdminAllBookings(); }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
