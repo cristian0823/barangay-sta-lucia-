@@ -1325,7 +1325,6 @@
             <button onclick="mobileSwitchSection('concerns')">📋 Concerns</button>
             <button onclick="mobileSwitchSection('events')">📅 Court Events</button>
             <button onclick="mobileSwitchSection('equipment')">🪑 Equipment</button>
-            <button onclick="mobileSwitchSection('users')">👥 Users</button>
             <button onclick="mobileSwitchSection('reports')">📊 Reports</button>
             <button onclick="mobileSwitchSection('activity-log')">📝 Activity Log</button>
         </div>
@@ -1354,9 +1353,7 @@
                 <div class="user-avatar" id="userAvatar">A</div>
                 <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode"
                     style="display:none;">🌙</button>
-                <button class="logout-btn"
-                    onclick="switchSection('profile', document.querySelectorAll('.sidebar-btn')[9])">⚙️
-                    Settings</button>
+                <a href="admin-settings.html" class="logout-btn" style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
             </div>
         </header>
@@ -1387,29 +1384,13 @@
                     <button class="sidebar-btn" onclick="switchSection('equipment', this)">
                         <span class="nav-icon">🪑</span> Equipment
                     </button>
-                    <button class="sidebar-btn" onclick="switchSection('users', this)">
-                        <span class="nav-icon">👥</span> Users
-                    </button>
                     <button class="sidebar-btn" onclick="switchSection('reports', this)">
                         <span class="nav-icon">📊</span> Reports
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('activity-log', this)">
                         <span class="nav-icon">📝</span> Activity Log
                     </button>
-                    <button class="sidebar-btn" onclick="switchSection('profile', this)">
-                        <span class="nav-icon">👤</span> My Profile
-                    </button>
-                    <button class="sidebar-btn" onclick="switchSection('system', this)">
-                        <span class="nav-icon">📊</span> System Info
-                    </button>
                 </nav>
-                <div class="left-sidebar-footer">
-                    <button class="sidebar-btn"
-                        onclick="switchSection('profile', document.querySelectorAll('.sidebar-btn')[9])"
-                        style="color:var(--muted);">
-                        <span class="nav-icon">⚙️</span> Settings
-                    </button>
-                </div>
             </aside>
 
             <!-- MAIN CONTENT -->
@@ -1897,38 +1878,7 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Users Section -->
-                    <div id="users-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>👥 Registered Users</h3>
-                            <span style="font-size:13px;color:var(--muted);">All residents and admins in the
-                                system</span>
-                        </div>
-                        <div class="section-content" style="padding: 0;">
-                            <div class="admin-tables">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Username</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="usersTable"></tbody>
-                                </table>
-                                <div id="noUsers" class="empty-state" style="display:none;">
-                                    <div class="empty-state-icon">👥</div>
-                                    <p>No users found</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reports Section -->
+                    </div>                    <!-- Reports Section -->
                     <div id="reports-section" class="section-container" style="display: none;">
                         <div class="section-header">
                             <h3>📊 Report Generation</h3>
