@@ -1353,7 +1353,7 @@
                 <div class="user-avatar" id="userAvatar">A</div>
                 <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode"
                     style="display:none;">🌙</button>
-                <a href="admin-settings.html" class="logout-btn" style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
+                <a href="admin-settings.html" target="_blank" class="logout-btn" style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
             </div>
         </header>
@@ -1674,195 +1674,153 @@
                             <h3>📅 Court Events</h3>
                             <button class="btn btn-small btn-light" onclick="openEventModal()">+ Add Event</button>
                         </div>
-                        <div class="section-content">
-                            <!-- Premium Segmented Venue Selection -->
-                            <div class="flex justify-center mb-8">
-                                <div class="bg-white/80 backdrop-blur-md border border-gray-200/50 p-1.5 rounded-full inline-flex shadow-sm">
+                        <div class="section-content" style="padding: 24px;">
+
+                            <!-- Venue Toggle -->
+                            <div style="display:flex; justify-content:center; margin-bottom:28px;">
+                                <div style="background:#f1f5f9; border-radius:50px; padding:6px; display:inline-flex; gap:0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);">
                                     <button onclick="adminSelectVenue('basketball')" id="admin-venue-basketball"
-                                        class="px-8 py-2.5 rounded-full font-bold text-sm transition-all duration-300 bg-emerald-600 text-white shadow-md transform hover:-translate-y-0.5">
-                                        🏀 Basketball Court
-                                    </button>
+                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.3);">🏀 Basketball Court</button>
                                     <button onclick="adminSelectVenue('multipurpose')" id="admin-venue-multipurpose"
-                                        class="px-8 py-2.5 rounded-full font-bold text-sm transition-all duration-300 text-gray-500 hover:text-gray-800 hover:bg-white/50">
-                                        🏢 Multi-Purpose Hall
-                                    </button>
+                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:transparent; color:#64748b;">🏢 Multi-Purpose Hall</button>
                                 </div>
                             </div>
                             <input type="hidden" id="adminSelectedVenue" value="basketball">
 
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <!-- Calendar Section -->
-                                <div class="bg-white/80 backdrop-blur-xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 relative overflow-hidden group">
-                                    <div class="absolute top-0 right-0 -mt-20 -mr-20 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob"></div>
-                                    <div class="absolute top-0 left-0 -mt-20 -ml-20 w-40 h-40 bg-emerald-200 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob animation-delay-2000"></div>
-                                    
-                                    <div class="flex justify-between items-center mb-8 relative z-10">
-                                        <h2 id="adminCalendarMonth" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-800"></h2>
-                                        <div class="flex space-x-3">
-                                            <button onclick="changeAdminMonth(-1)"
-                                                class="w-10 h-10 flex border items-center justify-center bg-white/50 hover:bg-white text-gray-700 rounded-xl transition-all shadow-sm hover:shadow hover:-translate-y-0.5">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                                            </button>
-                                            <button onclick="changeAdminMonth(1)"
-                                                class="w-10 h-10 flex border items-center justify-center bg-white/50 hover:bg-white text-gray-700 rounded-xl transition-all shadow-sm hover:shadow hover:-translate-y-0.5">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                            </button>
+                            <!-- Two Column Layout -->
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+                                <!-- Calendar Card -->
+                                <div style="background:#fff; border-radius:20px; padding:28px; box-shadow:0 4px 24px rgba(0,0,0,0.07); border:1px solid #f0f0f0; position:relative; overflow:hidden;">
+                                    <!-- Decorative orbs -->
+                                    <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:rgba(167,139,250,0.15);border-radius:50%;filter:blur(30px);"></div>
+                                    <div style="position:absolute;bottom:-40px;left:-40px;width:120px;height:120px;background:rgba(16,185,129,0.1);border-radius:50%;filter:blur(30px);"></div>
+
+                                    <!-- Month Header -->
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; position:relative;">
+                                        <h2 id="adminCalendarMonth" style="font-size:22px; font-weight:800; background:linear-gradient(135deg,#10b981,#0d9488); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:0;"></h2>
+                                        <div style="display:flex; gap:8px;">
+                                            <button onclick="changeAdminMonth(-1)" style="width:36px;height:36px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.06);transition:all 0.2s;font-size:16px;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='#fff'">‹</button>
+                                            <button onclick="changeAdminMonth(1)" style="width:36px;height:36px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.06);transition:all 0.2s;font-size:16px;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='#fff'">›</button>
                                         </div>
                                     </div>
 
-                                    <!-- Calendar Grid -->
-                                    <div class="grid grid-cols-7 gap-2 mb-4 relative z-10">
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Sun</div>
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Mon</div>
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Tue</div>
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Wed</div>
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Thu</div>
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Fri</div>
-                                        <div class="text-center font-bold text-xs uppercase tracking-wider text-gray-400 py-2">Sat</div>
+                                    <!-- Day Labels -->
+                                    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:8px;">
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">SUN</div>
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">MON</div>
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">TUE</div>
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">WED</div>
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">THU</div>
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">FRI</div>
+                                        <div style="text-align:center;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:0.05em;padding:4px 0;">SAT</div>
                                     </div>
-                                    <div id="adminCalendarGrid" class="grid grid-cols-7 gap-2 relative z-10"></div>
+                                    <div id="adminCalendarGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;"></div>
 
-                                    <!-- Premium Legend -->
-                                    <div class="flex justify-center space-x-6 text-sm mt-8 border-t border-gray-100 pt-6 relative z-10">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-3 h-3 bg-emerald-400 rounded-full shadow-sm ring-4 ring-emerald-50"></div><span class="font-medium text-gray-600 text-xs">Available</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-3 h-3 bg-purple-500 rounded-full shadow-sm ring-4 ring-purple-50"></div><span class="font-medium text-gray-600 text-xs">Event</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-3 h-3 bg-red-500 rounded-full shadow-sm ring-4 ring-red-50"></div><span class="font-medium text-gray-600 text-xs">Booked</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-3 h-3 bg-blue-600 rounded-full shadow-sm ring-4 ring-blue-50"></div><span class="font-medium text-gray-600 text-xs">Selected</span>
-                                        </div>
+                                    <!-- Legend -->
+                                    <div style="display:flex; justify-content:center; gap:20px; margin-top:20px; padding-top:16px; border-top:1px solid #f1f5f9;">
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#10b981;display:inline-block;"></span><span style="font-size:11px;font-weight:600;color:#6b7280;">Available</span></div>
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#8b5cf6;display:inline-block;"></span><span style="font-size:11px;font-weight:600;color:#6b7280;">Event</span></div>
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block;"></span><span style="font-size:11px;font-weight:600;color:#6b7280;">Booked</span></div>
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#3b82f6;display:inline-block;"></span><span style="font-size:11px;font-weight:600;color:#6b7280;">Selected</span></div>
                                     </div>
                                 </div>
 
-                                <!-- Booking & Event Action Panel -->
-                                <div class="bg-white/80 backdrop-blur-xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 flex flex-col relative overflow-hidden">
-                                    <div class="mb-8">
-                                        <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Manage Schedule</h2>
-                                        <p class="text-sm text-gray-500">Create new bookings or official barangay events for the selected venue.</p>
+                                <!-- Management Panel -->
+                                <div style="background:#fff; border-radius:20px; padding:28px; box-shadow:0 4px 24px rgba(0,0,0,0.07); border:1px solid #f0f0f0; display:flex; flex-direction:column;">
+                                    <div style="margin-bottom:20px;">
+                                        <h2 style="font-size:20px; font-weight:800; color:#1e293b; margin:0 0 4px 0;">Manage Schedule</h2>
+                                        <p style="font-size:13px; color:#94a3b8; margin:0;">Create bookings or official barangay events.</p>
                                     </div>
 
-                                    <div id="adminVenueDisplay" class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 text-emerald-800 px-5 py-3 rounded-xl mb-8 text-center font-bold text-sm tracking-wide shadow-sm flex items-center justify-center gap-2">
-                                        🏀 Basketball Court
-                                    </div>
+                                    <div id="adminVenueDisplay" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5); border:1px solid #a7f3d0; color:#065f46; padding:12px 20px; border-radius:12px; margin-bottom:20px; text-align:center; font-weight:700; font-size:13px; letter-spacing:0.03em;">🏀 Basketball Court</div>
 
-                                    <div class="flex gap-4 mb-8">
+                                    <div style="display:flex; gap:12px; margin-bottom:20px;">
                                         <button onclick="adminShowBookingForm()"
-                                            class="flex-1 flex flex-col items-center justify-center bg-white border-2 border-emerald-100 hover:border-emerald-500 hover:bg-emerald-50 text-emerald-700 font-bold py-4 px-4 rounded-2xl transition-all duration-300 group">
-                                            <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">➕</div>
-                                            <span>New Booking</span>
+                                            style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid #d1fae5; border-radius:16px; padding:16px 12px; cursor:pointer; transition:all 0.25s; color:#065f46; font-weight:700; font-size:13px;"
+                                            onmouseover="this.style.background='#f0fdf4';this.style.borderColor='#10b981';" onmouseout="this.style.background='#fff';this.style.borderColor='#d1fae5';">
+                                            <span style="width:38px;height:38px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:18px;">➕</span>
+                                            New Booking
                                         </button>
                                         <button onclick="adminShowEventForm()"
-                                            class="flex-1 flex flex-col items-center justify-center bg-white border-2 border-purple-100 hover:border-purple-500 hover:bg-purple-50 text-purple-700 font-bold py-4 px-4 rounded-2xl transition-all duration-300 group">
-                                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">🎉</div>
-                                            <span>New Event</span>
+                                            style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid #ede9fe; border-radius:16px; padding:16px 12px; cursor:pointer; transition:all 0.25s; color:#5b21b6; font-weight:700; font-size:13px;"
+                                            onmouseover="this.style.background='#faf5ff';this.style.borderColor='#8b5cf6';" onmouseout="this.style.background='#fff';this.style.borderColor='#ede9fe';">
+                                            <span style="width:38px;height:38px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:18px;">🎉</span>
+                                            New Event
                                         </button>
                                     </div>
 
-                                    <!-- Premium Booking Form -->
-                                    <form id="adminBookingForm" class="hidden space-y-5 animate-fade-in-up">
-                                        <div class="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100/50 space-y-5">
+                                    <!-- Booking Form -->
+                                    <form id="adminBookingForm" style="display:none;">
+                                        <div style="background:#f0fdf4; border-radius:14px; border:1px solid #d1fae5; padding:20px; display:flex; flex-direction:column; gap:14px;">
                                             <div>
-                                                <label class="block text-xs font-bold text-emerald-800 mb-2 uppercase tracking-wider">📆 Selected Date</label>
-                                                <input type="date" id="adminBookingDate" required class="w-full bg-white border border-emerald-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium outline-none">
+                                                <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">📆 Date</label>
+                                                <input type="date" id="adminBookingDate" required style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;transition:border-color 0.2s;box-sizing:border-box;">
                                             </div>
-                                            <div class="grid grid-cols-2 gap-4">
+                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                                                 <div>
-                                                    <label class="block text-xs font-bold text-emerald-800 mb-2 uppercase tracking-wider">⏰ Start Time</label>
-                                                    <select id="adminBookingTime" required class="w-full bg-white border border-emerald-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium outline-none cursor-pointer">
+                                                    <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">⏰ Start</label>
+                                                    <select id="adminBookingTime" required style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;cursor:pointer;">
                                                         <option value="">-- Choose --</option>
-                                                        <option value="6:00 AM">6:00 AM</option>
-                                                        <option value="7:00 AM">7:00 AM</option>
-                                                        <option value="8:00 AM">8:00 AM</option>
-                                                        <option value="9:00 AM">9:00 AM</option>
-                                                        <option value="10:00 AM">10:00 AM</option>
-                                                        <option value="11:00 AM">11:00 AM</option>
-                                                        <option value="12:00 PM">12:00 PM</option>
-                                                        <option value="1:00 PM">1:00 PM</option>
-                                                        <option value="2:00 PM">2:00 PM</option>
-                                                        <option value="3:00 PM">3:00 PM</option>
-                                                        <option value="4:00 PM">4:00 PM</option>
-                                                        <option value="5:00 PM">5:00 PM</option>
-                                                        <option value="6:00 PM">6:00 PM</option>
-                                                        <option value="7:00 PM">7:00 PM</option>
-                                                        <option value="8:00 PM">8:00 PM</option>
+                                                        <option>6:00 AM</option><option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option>
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label class="block text-xs font-bold text-emerald-800 mb-2 uppercase tracking-wider">⏰ End Time</label>
-                                                    <select id="adminBookingEndTime" required class="w-full bg-white border border-emerald-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium outline-none cursor-pointer">
+                                                    <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">⏰ End</label>
+                                                    <select id="adminBookingEndTime" required style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;cursor:pointer;">
                                                         <option value="">-- Choose --</option>
-                                                        <option value="6:00 AM">6:00 AM</option>
-                                                        <option value="7:00 AM">7:00 AM</option>
-                                                        <option value="8:00 AM">8:00 AM</option>
-                                                        <option value="9:00 AM">9:00 AM</option>
-                                                        <option value="10:00 AM">10:00 AM</option>
-                                                        <option value="11:00 AM">11:00 AM</option>
-                                                        <option value="12:00 PM">12:00 PM</option>
-                                                        <option value="1:00 PM">1:00 PM</option>
-                                                        <option value="2:00 PM">2:00 PM</option>
-                                                        <option value="3:00 PM">3:00 PM</option>
-                                                        <option value="4:00 PM">4:00 PM</option>
-                                                        <option value="5:00 PM">5:00 PM</option>
-                                                        <option value="6:00 PM">6:00 PM</option>
-                                                        <option value="7:00 PM">7:00 PM</option>
-                                                        <option value="8:00 PM">8:00 PM</option>
-                                                        <option value="9:00 PM">9:00 PM</option>
-                                                        <option value="10:00 PM">10:00 PM</option>
+                                                        <option>6:00 AM</option><option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option><option>10:00 PM</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-xs font-bold text-emerald-800 mb-2 uppercase tracking-wider">📝 Purpose</label>
-                                                <input type="text" id="adminBookingPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-white border border-emerald-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-800 font-medium outline-none">
+                                                <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">📝 Purpose</label>
+                                                <input type="text" id="adminBookingPurpose" required placeholder="e.g. Liga Practice, Birthday Party" style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;box-sizing:border-box;">
                                             </div>
                                         </div>
-                                        <div class="flex space-x-3 pt-2">
-                                            <button type="button" onclick="adminHideBookingForm()" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all focus:outline-none">Cancel</button>
-                                            <button type="submit" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all">✅ Confirm Booking</button>
+                                        <div style="display:flex;gap:10px;margin-top:14px;">
+                                            <button type="button" onclick="adminHideBookingForm()" style="padding:12px 20px;border:1.5px solid #e5e7eb;border-radius:10px;background:#f8fafc;color:#64748b;font-weight:700;font-size:13px;cursor:pointer;">Cancel</button>
+                                            <button type="submit" style="flex:1;padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.3);">✅ Confirm Booking</button>
                                         </div>
                                     </form>
 
-                                    <!-- Premium Event Form -->
-                                    <form id="adminSidebarEventForm" class="hidden space-y-5 animate-fade-in-up">
-                                        <div class="bg-purple-50/50 p-6 rounded-2xl border border-purple-100/50 space-y-5">
+                                    <!-- Event Form -->
+                                    <form id="adminSidebarEventForm" style="display:none;">
+                                        <div style="background:#faf5ff; border-radius:14px; border:1px solid #ddd6fe; padding:20px; display:flex; flex-direction:column; gap:14px;">
                                             <div>
-                                                <label class="block text-xs font-bold text-purple-800 mb-2 uppercase tracking-wider">📝 Event Title</label>
-                                                <input type="text" id="adminSidebarEventTitle" required placeholder="e.g. Barangay Fiesta, Basketball Tournament" class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-gray-800 font-medium outline-none">
+                                                <label style="display:block;font-size:11px;font-weight:700;color:#5b21b6;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">📝 Event Title</label>
+                                                <input type="text" id="adminSidebarEventTitle" required placeholder="e.g. Barangay Fiesta, Basketball Tournament" style="width:100%;background:#fff;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;box-sizing:border-box;">
                                             </div>
                                             <div>
-                                                <label class="block text-xs font-bold text-purple-800 mb-2 uppercase tracking-wider">📆 Selected Date</label>
-                                                <input type="date" id="adminSidebarEventDate" required class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-gray-800 font-medium outline-none">
+                                                <label style="display:block;font-size:11px;font-weight:700;color:#5b21b6;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">📆 Date</label>
+                                                <input type="date" id="adminSidebarEventDate" required style="width:100%;background:#fff;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;box-sizing:border-box;">
                                             </div>
-                                            <div class="grid grid-cols-2 gap-4">
+                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                                                 <div>
-                                                    <label class="block text-xs font-bold text-purple-800 mb-2 uppercase tracking-wider">⏰ Start Time</label>
-                                                    <input type="time" id="adminSidebarEventTime" required class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-gray-800 font-medium outline-none cursor-pointer">
+                                                    <label style="display:block;font-size:11px;font-weight:700;color:#5b21b6;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">⏰ Start</label>
+                                                    <input type="time" id="adminSidebarEventTime" required style="width:100%;background:#fff;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-xs font-bold text-purple-800 mb-2 uppercase tracking-wider">⏰ End Time</label>
-                                                    <input type="time" id="adminSidebarEventEndTime" class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-gray-800 font-medium outline-none cursor-pointer">
+                                                    <label style="display:block;font-size:11px;font-weight:700;color:#5b21b6;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">⏰ End</label>
+                                                    <input type="time" id="adminSidebarEventEndTime" style="width:100%;background:#fff;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;">
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-xs font-bold text-purple-800 mb-2 uppercase tracking-wider">👤 Organizer</label>
-                                                <input type="text" id="adminSidebarEventOrganizer" required placeholder="Name of Official or Group" class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-gray-800 font-medium outline-none">
+                                                <label style="display:block;font-size:11px;font-weight:700;color:#5b21b6;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">👤 Organizer</label>
+                                                <input type="text" id="adminSidebarEventOrganizer" required placeholder="Name of Official or Group" style="width:100%;background:#fff;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;box-sizing:border-box;">
                                             </div>
                                         </div>
-                                        <div class="flex space-x-3 pt-2">
-                                            <button type="button" onclick="adminHideEventForm()" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all focus:outline-none">Cancel</button>
-                                            <button type="submit" class="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-600 hover:from-purple-600 hover:to-fuchsia-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all">🎉 Create Event</button>
+                                        <div style="display:flex;gap:10px;margin-top:14px;">
+                                            <button type="button" onclick="adminHideEventForm()" style="padding:12px 20px;border:1.5px solid #e5e7eb;border-radius:10px;background:#f8fafc;color:#64748b;font-weight:700;font-size:13px;cursor:pointer;">Cancel</button>
+                                            <button type="submit" style="flex:1;padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(139,92,246,0.3);">🎉 Create Event</button>
                                         </div>
                                     </form>
-                                    <div id="adminBookingMessage" class="mt-4"></div>
+
+                                    <div id="adminBookingMessage" style="margin-top:16px;"></div>
 
                                     <!-- All Bookings List -->
-                                    <h3 class="text-lg font-bold text-gray-800 mt-6 mb-3">📋 All Bookings</h3>
-                                    <div id="adminAllBookingsList" class="space-y-2 max-h-64 overflow-y-auto"></div>
+                                    <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:20px 0 10px;">📋 All Bookings</h3>
+                                    <div id="adminAllBookingsList" style="overflow-y:auto;max-height:260px;display:flex;flex-direction:column;gap:8px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -2575,15 +2533,15 @@
                 const venueDisplay = document.getElementById('adminVenueDisplay');
 
                 if (venue === 'basketball') {
-                    basketballBtn.className = 'px-8 py-2.5 rounded-full font-bold text-sm transition-all duration-300 bg-emerald-600 text-white shadow-md transform hover:-translate-y-0.5';
-                    multipurposeBtn.className = 'px-8 py-2.5 rounded-full font-bold text-sm transition-all duration-300 text-gray-500 hover:text-gray-800 hover:bg-white/50';
+                    basketballBtn.style.cssText = 'padding:10px 24px;border-radius:50px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s ease;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);';
+                    multipurposeBtn.style.cssText = 'padding:10px 24px;border-radius:50px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s ease;background:transparent;color:#64748b;';
                     venueDisplay.innerHTML = '🏀 Basketball Court';
-                    venueDisplay.className = 'bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 text-emerald-800 px-5 py-3 rounded-xl mb-8 text-center font-bold text-sm tracking-wide shadow-sm flex items-center justify-center gap-2';
+                    venueDisplay.style.cssText = 'background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;color:#065f46;padding:12px 20px;border-radius:12px;margin-bottom:20px;text-align:center;font-weight:700;font-size:13px;letter-spacing:0.03em;';
                 } else {
-                    basketballBtn.className = 'px-8 py-2.5 rounded-full font-bold text-sm transition-all duration-300 text-gray-500 hover:text-gray-800 hover:bg-white/50';
-                    multipurposeBtn.className = 'px-8 py-2.5 rounded-full font-bold text-sm transition-all duration-300 bg-blue-600 text-white shadow-md transform hover:-translate-y-0.5';
+                    basketballBtn.style.cssText = 'padding:10px 24px;border-radius:50px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s ease;background:transparent;color:#64748b;';
+                    multipurposeBtn.style.cssText = 'padding:10px 24px;border-radius:50px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s ease;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3);';
                     venueDisplay.innerHTML = '🏢 Multi-Purpose Hall';
-                    venueDisplay.className = 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-800 px-5 py-3 rounded-xl mb-8 text-center font-bold text-sm tracking-wide shadow-sm flex items-center justify-center gap-2';
+                    venueDisplay.style.cssText = 'background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;color:#1e3a8a;padding:12px 20px;border-radius:12px;margin-bottom:20px;text-align:center;font-weight:700;font-size:13px;letter-spacing:0.03em;';
                 }
                 renderAdminCalendar();
                 renderAdminAllBookings();
@@ -2617,24 +2575,26 @@
             }
 
             function adminShowBookingForm() {
-                document.getElementById('adminSidebarEventForm')?.classList.add('hidden');
-                document.getElementById('adminBookingForm').classList.remove('hidden');
+                const eventForm = document.getElementById('adminSidebarEventForm');
+                if (eventForm) eventForm.style.display = 'none';
+                document.getElementById('adminBookingForm').style.display = 'block';
                 document.getElementById('adminBookingDate').value = adminSelectedDate || '';
             }
 
             function adminHideBookingForm() {
-                document.getElementById('adminBookingForm').classList.add('hidden');
+                document.getElementById('adminBookingForm').style.display = 'none';
                 document.getElementById('adminBookingForm').reset();
             }
 
             function adminShowEventForm() {
-                document.getElementById('adminBookingForm')?.classList.add('hidden');
-                document.getElementById('adminSidebarEventForm').classList.remove('hidden');
+                const bookingForm = document.getElementById('adminBookingForm');
+                if (bookingForm) bookingForm.style.display = 'none';
+                document.getElementById('adminSidebarEventForm').style.display = 'block';
                 document.getElementById('adminSidebarEventDate').value = adminSelectedDate || '';
             }
 
             function adminHideEventForm() {
-                document.getElementById('adminSidebarEventForm').classList.add('hidden');
+                document.getElementById('adminSidebarEventForm').style.display = 'none';
                 document.getElementById('adminSidebarEventForm').reset();
             }
 
@@ -2750,44 +2710,69 @@
 
                     const hasEvents = eventDates[dateStr] && eventDates[dateStr].length > 0;
                     const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
+                    const isSelected = adminSelectedDate === dateStr;
+                    const isToday = dateObj.getTime() === today.getTime();
 
-                    // Base premium styling
-                    dayElement.className = 'calendar-day p-3 text-center rounded-2xl cursor-pointer transition-all duration-300 font-bold border border-transparent shadow-sm hover:shadow-md hover:-translate-y-1 relative';
-                    dayElement.innerHTML = `<span class="text-sm z-10 relative">${day}</span>`;
+                    // Base inline style
+                    let bg = '#ffffff', color = '#059669', border = '1px solid #e5e7eb', label = '', labelColor = '#a7f3d0';
+                    let cursor = 'pointer';
+                    let extraStyle = 'box-shadow:0 1px 4px rgba(0,0,0,0.05);';
 
-                    if (dateObj < today) {
-                        dayElement.classList.add('bg-gray-50/50', 'text-gray-400', 'cursor-not-allowed', 'shadow-none', 'hover:-translate-y-0', 'hover:shadow-none');
-                        dayElement.innerHTML += '<div class="absolute bottom-1.5 left-0 right-0 text-[9px] font-medium text-gray-300 uppercase tracking-wider">Past</div>';
+                    if (isSelected) {
+                        bg = 'linear-gradient(135deg,#3b82f6,#4338ca)';
+                        color = '#ffffff';
+                        border = 'none';
+                        label = 'SELECTED';
+                        labelColor = 'rgba(255,255,255,0.7)';
+                        extraStyle = 'box-shadow:0 6px 20px rgba(59,130,246,0.4);transform:scale(1.05);';
+                    } else if (dateObj < today) {
+                        bg = '#f8fafc';
+                        color = '#cbd5e1';
+                        border = '1px solid #f1f5f9';
+                        cursor = 'not-allowed';
+                        label = 'Past';
+                        labelColor = '#e2e8f0';
+                        extraStyle = '';
                     } else if (hasEvents) {
-                        dayElement.classList.add('bg-gradient-to-br', 'from-purple-100', 'to-fuchsia-100', 'text-purple-800', 'border-purple-200');
-                        dayElement.innerHTML += '<div class="absolute bottom-1.5 left-0 right-0 text-[10px] font-extrabold uppercase tracking-widest flex justify-center items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span> EVENT</div>';
+                        bg = 'linear-gradient(135deg,#f3e8ff,#fae8ff)';
+                        color = '#6d28d9';
+                        border = '1px solid #ddd6fe';
+                        label = '● EVENT';
+                        labelColor = '#8b5cf6';
+                        extraStyle = 'box-shadow:0 2px 8px rgba(139,92,246,0.15);';
+                    } else if (hasBookings) {
+                        bg = 'linear-gradient(135deg,#fef2f2,#ffe4e6)';
+                        color = '#b91c1c';
+                        border = '1px solid #fecaca';
+                        label = 'Booked';
+                        labelColor = '#ef4444';
+                        extraStyle = 'box-shadow:0 2px 8px rgba(239,68,68,0.12);';
+                    }
+
+                    const todayBorder = isToday ? 'border:2px solid #10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.12);' : '';
+
+                    dayElement.style.cssText = `
+                        background:${bg}; color:${color}; border:${border};
+                        border-radius:12px; padding:8px 4px 20px; text-align:center;
+                        cursor:${cursor}; position:relative; transition:all 0.2s ease;
+                        font-weight:700; font-size:14px; min-height:54px;
+                        ${extraStyle} ${todayBorder}
+                    `;
+                    dayElement.innerHTML = `
+                        <span>${day}</span>
+                        <div style="position:absolute;bottom:4px;left:0;right:0;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:${labelColor};">${label}</div>
+                    `;
+
+                    if (hasEvents) {
                         dayElement.title = eventDates[dateStr].map(e => `${e.title} - ${e.time}${e.end_time ? ' - ' + e.end_time : ''}`).join('\n');
                     } else if (hasBookings) {
-                        dayElement.classList.add('bg-gradient-to-br', 'from-red-50', 'to-rose-100', 'text-red-800', 'border-red-200');
-                        dayElement.innerHTML += '<div class="absolute bottom-1.5 left-0 right-0 text-[10px] font-bold uppercase tracking-widest text-red-600/80">Booked</div>';
                         dayElement.title = bookingDates[dateStr].map(b => `${b.venueName || b.venue} - ${b.time}`).join('\n');
-                    } else {
-                        dayElement.classList.add('bg-white', 'text-emerald-700', 'hover:bg-emerald-50', 'border-gray-100');
-                        dayElement.innerHTML += '<div class="absolute bottom-1.5 left-0 right-0 text-[9px] font-bold uppercase tracking-widest text-emerald-400/opacity-0 opacity-0 group-hover:opacity-100 transition-opacity">Open</div>';
                     }
 
-                    // Check if today
-                    if (dateObj.getTime() === today.getTime()) {
-                        dayElement.style.border = '2px solid #10b981';
-                        dayElement.classList.add('shadow-[0_0_15px_rgba(16,185,129,0.2)]');
-                    }
-
-                    // Check if selected
-                    if (adminSelectedDate === dateStr) {
-                        dayElement.classList.remove('bg-white', 'bg-gray-50/50', 'bg-gradient-to-br', 'from-purple-100', 'to-fuchsia-100', 'from-red-50', 'to-rose-100', 'hover:bg-emerald-50', 'border-gray-100', 'border-purple-200', 'border-red-200', 'text-emerald-700', 'text-purple-800', 'text-red-800');
-                        dayElement.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-indigo-600', 'text-white', 'shadow-lg', 'scale-105', 'border-none');
-                        const statusLabel = dayElement.querySelector('div.absolute');
-                        if(statusLabel) {
-                            statusLabel.className = 'absolute bottom-1.5 left-0 right-0 text-[10px] font-bold uppercase tracking-widest text-blue-100';
-                            statusLabel.innerText = 'SELECTED';
-                        } else {
-                            dayElement.innerHTML += '<div class="absolute bottom-1.5 left-0 right-0 text-[10px] font-bold uppercase tracking-widest text-blue-100">SELECTED</div>';
-                        }
+                    // Hover effect for available dates
+                    if (!isSelected && dateObj >= today && !hasEvents && !hasBookings) {
+                        dayElement.onmouseover = () => { dayElement.style.background = '#ecfdf5'; dayElement.style.borderColor = '#6ee7b7'; };
+                        dayElement.onmouseout = () => { dayElement.style.background = '#ffffff'; dayElement.style.borderColor = '#e5e7eb'; };
                     }
 
                     // Click to select date
