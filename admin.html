@@ -1401,22 +1401,21 @@
             <!-- MAIN CONTENT -->
             <div class="main-content">
                 <main class="dashboard-content">
-                    <div class="welcome-banner admin-banner" style="position:relative;overflow:hidden;">
-                        <div class="welcome-content">
-                            <h2 id="welcomeGreeting">Good morning, Admin</h2>
-                            <p id="welcomeDateStr">Loading date...</p>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:28px;font-weight:800;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums;"
-                                id="welcomeTime">--:--</div>
-                            <div
-                                style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:1px;text-transform:uppercase;">
-                                Barangay Sta. Lucia</div>
-                        </div>
-                    </div>
-
                     <!-- Overview Section - Digital Dashboard -->
                     <div id="overview-section">
+                        <div class="welcome-banner admin-banner" style="position:relative;overflow:hidden;margin-bottom:24px;">
+                            <div class="welcome-content">
+                                <h2 id="welcomeGreeting">Good morning, Admin</h2>
+                                <p id="welcomeDateStr">Loading date...</p>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:28px;font-weight:800;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums;"
+                                    id="welcomeTime">--:--</div>
+                                <div
+                                    style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:1px;text-transform:uppercase;">
+                                    Barangay Sta. Lucia</div>
+                            </div>
+                        </div>
                         
                         <div class="stats-grid">
                             <div class="stat-card"
@@ -1824,12 +1823,12 @@
                                 <table class="data-table">
                                     <thead>
                                         <tr>
-                                            <th>Equipment</th>
-                                            <th>Total</th>
-                                            <th>Available</th>
-                                            <th>Under Repair</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                            <th style="text-align: left;">Equipment</th>
+                                            <th style="text-align: center;">Total</th>
+                                            <th style="text-align: center;">Available</th>
+                                            <th style="text-align: center;">Under Repair</th>
+                                            <th style="text-align: center;">Status</th>
+                                            <th style="text-align: right;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="equipmentTable"></tbody>
@@ -1933,10 +1932,10 @@
                                 <table class="activity-log-table">
                                     <thead>
                                         <tr>
-                                            <th>Date &amp; Time</th>
-                                            <th>User / Admin</th>
-                                            <th>Action</th>
-                                            <th>Details</th>
+                                            <th style="text-align: left;">Date &amp; Time</th>
+                                            <th style="text-align: center;">User / Admin</th>
+                                            <th style="text-align: center;">Action</th>
+                                            <th style="text-align: right;">Details</th>
                                         </tr>
                                     </thead>
                                     <tbody id="activityLogTable"></tbody>
@@ -2902,9 +2901,9 @@
 
                     return `<tr>
                         <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
-                        <td data-label="User / Admin"><div class="admin-cell"><span class="admin-icon">👤</span> <strong>${log.adminUsername || 'System'}</strong></div></td>
-                        <td data-label="Action"><span class="status-badge ${badgeClass}">${log.action}</span></td>
-                        <td data-label="Details" style="max-width:320px;font-size:12px;color:#6b7280;">${log.details || ''}</td>
+                        <td data-label="User / Admin" style="text-align: center;"><div class="admin-cell"><span class="admin-icon">👤</span> <strong>${log.adminUsername || 'System'}</strong></div></td>
+                        <td data-label="Action" style="text-align: center;"><span class="status-badge ${badgeClass}">${log.action}</span></td>
+                        <td data-label="Details" style="text-align: right; max-width:320px;font-size:12px;color:#6b7280;">${log.details || ''}</td>
                     </tr>`;
                 }).join('');
             }
@@ -3454,11 +3453,11 @@
                     return `
                 <tr style="${e.isArchived ? 'opacity: 0.6;background:#fafafa;' : ''}">
                     <td><strong>${e.icon} ${e.name}</strong><br><span style="font-size:12px;color:#9ca3af;">${e.description || ''}</span></td>
-                    <td>${e.quantity}</td>
-                    <td style="font-weight:700;color:#16a34a;">${e.available}</td>
-                    <td style="color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
-                    <td>${statusBadge}</td>
-                    <td>
+                    <td style="text-align: center;">${e.quantity}</td>
+                    <td style="text-align: center; font-weight:700;color:#16a34a;">${e.available}</td>
+                    <td style="text-align: center; color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
+                    <td style="text-align: center;">${statusBadge}</td>
+                    <td style="text-align: right;">
                         <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
                     </td>
                 </tr>`;
