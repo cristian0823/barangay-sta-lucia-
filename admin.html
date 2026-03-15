@@ -2677,6 +2677,9 @@
                     const isToday     = dateObj.getTime() === today.getTime();
                     const isPast      = dateObj < today;
 
+                    let bg, color, border, labelText, labelColor, extraStyle;
+                    let cursor = 'pointer';
+
                     if (isSelected && !hasEvents && !hasBookings) {
                         bg = '#10b981'; // bg-emerald-500
                         color = '#ffffff';
@@ -2689,9 +2692,11 @@
                     } else if (hasEvents) {
                         bg = '#dbeafe'; color = '#1e40af'; border = '2px solid #60a5fa'; // Blue for official events
                         extraStyle = 'opacity:0.9;';
+                        cursor = 'not-allowed';
                     } else if (hasBookings) {
                         bg = '#fee2e2'; color = '#b91c1c'; border = '2px solid #fca5a5'; // Red for booked
                         extraStyle = '';
+                        cursor = 'not-allowed';
                     } else {
                         bg = '#ecfdf5'; color = '#047857'; border = '1px solid #a7f3d0'; // Emerald for available
                         extraStyle = '';
