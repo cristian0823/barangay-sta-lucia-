@@ -1735,54 +1735,13 @@
 
                                     <div id="adminVenueDisplay" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5); border:1px solid #a7f3d0; color:#065f46; padding:12px 20px; border-radius:12px; margin-bottom:20px; text-align:center; font-weight:700; font-size:13px; letter-spacing:0.03em;">🏀 Basketball Court</div>
 
-                                    <div style="display:flex; gap:12px; margin-bottom:20px;">
-                                        <button onclick="adminShowBookingForm()"
-                                            style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid #d1fae5; border-radius:16px; padding:16px 12px; cursor:pointer; transition:all 0.25s; color:#065f46; font-weight:700; font-size:13px;"
-                                            onmouseover="this.style.background='#f0fdf4';this.style.borderColor='#10b981';" onmouseout="this.style.background='#fff';this.style.borderColor='#d1fae5';">
-                                            <span style="width:38px;height:38px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:18px;">➕</span>
-                                            New Booking
-                                        </button>
-                                        <button onclick="adminShowEventForm()"
-                                            style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid #ede9fe; border-radius:16px; padding:16px 12px; cursor:pointer; transition:all 0.25s; color:#5b21b6; font-weight:700; font-size:13px;"
-                                            onmouseover="this.style.background='#faf5ff';this.style.borderColor='#8b5cf6';" onmouseout="this.style.background='#fff';this.style.borderColor='#ede9fe';">
-                                            <span style="width:38px;height:38px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:18px;">🎉</span>
-                                            New Event
-                                        </button>
-                                    </div>
-
-                                    <!-- Booking Form -->
-                                    <form id="adminBookingForm" style="display:none;">
-                                        <div style="background:#f0fdf4; border-radius:14px; border:1px solid #d1fae5; padding:20px; display:flex; flex-direction:column; gap:14px;">
-                                            <div>
-                                                <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">📆 Date</label>
-                                                <input type="date" id="adminBookingDate" required style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;transition:border-color 0.2s;box-sizing:border-box;">
-                                            </div>
-                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                                                <div>
-                                                    <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">⏰ Start</label>
-                                                    <select id="adminBookingTime" required style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;cursor:pointer;">
-                                                        <option value="">-- Choose --</option>
-                                                        <option>6:00 AM</option><option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">⏰ End</label>
-                                                    <select id="adminBookingEndTime" required style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;cursor:pointer;">
-                                                        <option value="">-- Choose --</option>
-                                                        <option>6:00 AM</option><option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option><option>10:00 PM</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label style="display:block;font-size:11px;font-weight:700;color:#065f46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">📝 Purpose</label>
-                                                <input type="text" id="adminBookingPurpose" required placeholder="e.g. Liga Practice, Birthday Party" style="width:100%;background:#fff;border:1.5px solid #a7f3d0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;color:#1e293b;outline:none;box-sizing:border-box;">
-                                            </div>
-                                        </div>
-                                        <div style="display:flex;gap:10px;margin-top:14px;">
-                                            <button type="button" onclick="adminHideBookingForm()" style="padding:12px 20px;border:1.5px solid #e5e7eb;border-radius:10px;background:#f8fafc;color:#64748b;font-weight:700;font-size:13px;cursor:pointer;">Cancel</button>
-                                            <button type="submit" style="flex:1;padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.3);">✅ Confirm Booking</button>
-                                        </div>
-                                    </form>
+                                    <!-- Add Event Button -->
+                                    <button onclick="adminShowEventForm()"
+                                        style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid #ede9fe; border-radius:16px; padding:18px 12px; cursor:pointer; transition:all 0.25s; color:#5b21b6; font-weight:700; font-size:14px; margin-bottom:20px;"
+                                        onmouseover="this.style.background='#faf5ff';this.style.borderColor='#8b5cf6';" onmouseout="this.style.background='#fff';this.style.borderColor='#ede9fe';">
+                                        <span style="width:42px;height:42px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:22px;">🎉</span>
+                                        Add Court Event
+                                    </button>
 
                                     <!-- Event Form -->
                                     <form id="adminSidebarEventForm" style="display:none;">
@@ -2684,13 +2643,7 @@
 
                 grid.innerHTML = '';
 
-                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                dayNames.forEach(day => {
-                    const header = document.createElement('div');
-                    header.className = 'text-center font-bold text-gray-500 py-2';
-                    header.textContent = day;
-                    grid.appendChild(header);
-                });
+                // Day headers are already in static HTML above the grid — no need to inject them here
 
                 const firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
                 const daysInMonth = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
