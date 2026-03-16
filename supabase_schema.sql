@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS borrowings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT,
-    user_name VARCHAR(255),
     equipment VARCHAR(255),
     quantity INTEGER NOT NULL,
     borrow_date DATE NOT NULL,
@@ -53,7 +52,6 @@ CREATE TABLE IF NOT EXISTS borrowings (
 CREATE TABLE IF NOT EXISTS concerns (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    user_name VARCHAR(255),
     category VARCHAR(100),
     title VARCHAR(255),
     description TEXT,
@@ -79,7 +77,6 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS court_bookings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    user_name VARCHAR(255),
     date DATE NOT NULL,
     time VARCHAR(255) NOT NULL,
     purpose TEXT,
@@ -91,7 +88,6 @@ CREATE TABLE IF NOT EXISTS court_bookings (
 CREATE TABLE IF NOT EXISTS activity_log (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-    admin_username VARCHAR(255),
     action VARCHAR(255),
     details TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
@@ -99,7 +95,7 @@ CREATE TABLE IF NOT EXISTS activity_log (
 
 
 -- ============================================================
--- STEP 2: PATCH MISSING COLUMNS (safe to re-run)
+-- STEP 2: PATCH MISSING COLUMNS & CLEANUP (safe to re-run)
 -- ============================================================
 
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS broken INTEGER DEFAULT 0;
@@ -110,6 +106,12 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
 ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+
+-- Remove redundant username columns, keeping relations only
+ALTER TABLE borrowings DROP COLUMN IF EXISTS user_name;
+ALTER TABLE concerns DROP COLUMN IF EXISTS user_name;
+ALTER TABLE court_bookings DROP COLUMN IF EXISTS user_name;
+ALTER TABLE activity_log DROP COLUMN IF EXISTS admin_username;
 
 
 -- ============================================================

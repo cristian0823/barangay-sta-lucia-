@@ -462,7 +462,6 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         // Insert borrowing
         const { error } = await supabase.from('borrowings').insert([{
             user_id: user.id,
-            user_name: user.fullName || user.username,
             equipment: item.name,
             quantity: quantity,
             borrow_date: borrowDate,
@@ -516,13 +515,13 @@ async function getMyBorrowings() {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('borrowings').select('*').eq('user_id', user.id).order('id', { ascending: false });
+        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username)').eq('user_id', user.id).order('id', { ascending: false });
         if (error || !data) return [];
         return data.map(item => ({
             ...item,
             id: item.id,
             userId: item.user_id,
-            userName: item.user_name || item.username || 'Unknown',
+            userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
             equipment: item.equipment || 'Unknown Equipment',
             quantity: item.quantity,
             borrowDate: item.borrow_date || item.borrowDate || '',
@@ -545,7 +544,7 @@ async function getMyBorrowings() {
 async function getAllBorrowings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('borrowings').select('*').order('id', { ascending: false });
+        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username)').order('id', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
             return localData.map(item => ({
@@ -560,7 +559,7 @@ async function getAllBorrowings() {
             ...item,
             id: item.id,
             userId: item.user_id,
-            userName: item.user_name || item.username || 'Unknown',
+            userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
             equipment: item.equipment || 'Unknown Equipment',
             quantity: item.quantity,
             borrowDate: item.borrow_date || item.borrowDate || '',
@@ -700,7 +699,6 @@ async function submitConcern(category, title, description, address, imageFile = 
 
         const payload = {
             user_id: user.id,
-            user_name: user.fullName || user.username,
             category: category,
             title: title,
             description: description,
@@ -747,13 +745,13 @@ async function getMyConcerns() {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('concerns').select('*').eq('user_id', user.id).order('id', { ascending: false });
+        const { data, error } = await supabase.from('concerns').select('*, users(full_name, username)').eq('user_id', user.id).order('id', { ascending: false });
         if (error || !data) return [];
         return data.map(item => ({
             ...item,
             id: item.id,
             userId: item.user_id,
-            userName: item.user_name || item.username || 'Unknown',
+            userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
             category: item.category || '',
             title: item.title || '',
             description: item.description || '',
@@ -776,7 +774,7 @@ async function getMyConcerns() {
 async function getAllConcerns() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('concerns').select('*').order('id', { ascending: false });
+        const { data, error } = await supabase.from('concerns').select('*, users(full_name, username)').order('id', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
             return localData.map(item => ({
@@ -789,7 +787,7 @@ async function getAllConcerns() {
             ...item,
             id: item.id,
             userId: item.user_id,
-            userName: item.user_name || item.username || 'Unknown',
+            userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
             category: item.category || '',
             title: item.title || '',
             description: item.description || '',
@@ -902,7 +900,7 @@ function parseBookingTime(timeStr) {
 async function getCourtBookings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('court_bookings').select('*').order('date', { ascending: false });
+        const { data, error } = await supabase.from('court_bookings').select('*, users(full_name, username)').order('date', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
             return localData.map(item => {
@@ -916,7 +914,7 @@ async function getCourtBookings() {
                 ...item,
                 id: item.id,
                 userId: item.user_id,
-                userName: item.user_name || item.username || 'Unknown',
+                userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
                 venueName: item.venue_name || item.venue || parsed.venueName,
                 timeRange: parsed.timeRange || item.time,
                 date: item.date,
@@ -955,7 +953,6 @@ async function bookCourt(bookingData) {
         try {
             const { error } = await supabase.from('court_bookings').insert([{
                 user_id: user.id,
-                user_name: user.fullName || user.username,
                 date: bookingData.date,
                 time: combinedTime,
                 venue: venue,
@@ -1438,7 +1435,7 @@ async function logActivity(action, details) {
     if (supabaseAvailable) {
         try {
             const { error } = await supabase.from('activity_log').insert([{
-                admin_username: adminUsername,
+                user_id: user ? user.id : null,
                 action: action,
                 details: details,
                 created_at: timestamp
@@ -1472,7 +1469,7 @@ async function getActivityLog() {
         try {
             const { data, error } = await supabase
                 .from('activity_log')
-                .select('*')
+                .select('*, users(full_name, username)')
                 .order('created_at', { ascending: false })
                 .limit(200);
             
@@ -1481,7 +1478,7 @@ async function getActivityLog() {
             if (data && data.length > 0) {
                 return data.map(r => ({
                     id: r.id,
-                    adminUsername: r.admin_username,
+                    adminUsername: r.users ? (r.users.full_name || r.users.username) : 'System',
                     action: r.action,
                     details: r.details,
                     createdAt: r.created_at
