@@ -291,6 +291,129 @@
             justify-content: center;
         }
 
+        /* NOTIFICATION DROPDOWN */
+        .notification-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 320px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: dropdownFadeIn 0.2s ease forwards;
+            transform-origin: top right;
+        }
+
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .notification-dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .notification-dropdown-header h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .notification-dropdown-body {
+            max-height: 380px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: var(--text);
+            position: relative;
+        }
+
+        .notification-item:hover {
+            background: #f1f5f9;
+        }
+
+        .notification-item.unread {
+            background: #f0f9ff;
+        }
+        
+        .notification-item.unread::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+
+        .notif-icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .notif-icon-wrap.concern { background: #fee2e2; color: #ef4444; }
+        .notif-icon-wrap.request { background: #ffedd5; color: #f97316; }
+        .notif-icon-wrap.booking { background: #dbeafe; color: #3b82f6; }
+
+        .notif-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .notif-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .notification-dropdown-empty {
+            padding: 32px 16px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
         /* CONTENT */
         .dashboard-content {
             padding: 24px 28px 80px;
@@ -1352,9 +1475,24 @@
                     <span class="user-name" id="userName">Administrator</span>
                     <span class="user-role">Official</span>
                 </div>
-                <div class="notification-badge" id="notificationBadge" data-count="0"
-                    onclick="switchSection('requests', null)">
-                    🔔</div>
+                <div style="position: relative;">
+                    <div class="notification-badge" id="notificationBadge" data-count="0"
+                        onclick="toggleNotificationDropdown(event)">
+                        🔔</div>
+                    
+                    <div id="notificationDropdown" class="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>Notifications</h4>
+                            <!-- Could add a "mark all read" button here in the future -->
+                        </div>
+                        <div class="notification-dropdown-body" id="notificationDropdownBody">
+                            <div class="notification-dropdown-empty">
+                                <span style="font-size:24px;">📭</span>
+                                <span>No new notifications</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="user-avatar" id="userAvatar">A</div>
                 <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode"
                     style="display:none;">🌙</button>
@@ -2769,20 +2907,122 @@
                     getAllUsers()
                 ]);
 
-                const pendingReqs = borrowings.filter(b => b.status === 'pending').length;
-                const pendingCons = concerns.filter(c => c.status === 'pending').length;
+                const pendingReqs = borrowings.filter(b => b.status === 'pending');
+                const pendingCons = concerns.filter(c => c.status === 'pending');
                 const upcomingEvts = events.filter(e => e.status === 'approved').length;
                 const totalBookings = bookings.filter(b => b.status !== 'cancelled').length;
 
-                document.getElementById('pendingRequests').textContent = pendingReqs;
-                document.getElementById('pendingConcerns').textContent = pendingCons;
+                document.getElementById('pendingRequests').textContent = pendingReqs.length;
+                document.getElementById('pendingConcerns').textContent = pendingCons.length;
                 document.getElementById('upcomingEvents').textContent = totalBookings;
                 document.getElementById('totalUsers').textContent = users.length;
 
                 const badge = document.getElementById('notificationBadge');
-                const total = pendingReqs + pendingCons;
+                const total = pendingReqs.length + pendingCons.length;
                 badge.setAttribute('data-count', total);
-                badge.style.display = total > 0 ? 'block' : 'none';
+                badge.style.display = total > 0 ? 'flex' : 'none';
+
+                // Populate Dropdown
+                populateNotificationDropdown(pendingReqs, pendingCons);
+            }
+
+            function toggleNotificationDropdown(e) {
+                if (e) e.stopPropagation();
+                const dropdown = document.getElementById('notificationDropdown');
+                
+                if (dropdown.style.display === 'flex') {
+                    dropdown.style.display = 'none';
+                } else {
+                    dropdown.style.display = 'flex';
+                }
+            }
+
+            // Close notification dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('notificationDropdown');
+                const badge = document.getElementById('notificationBadge');
+                if (dropdown && dropdown.style.display === 'flex') {
+                    if (!dropdown.contains(event.target) && event.target !== badge && !badge.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                }
+            });
+
+            function populateNotificationDropdown(pendingReqs, pendingCons) {
+                const body = document.getElementById('notificationDropdownBody');
+                if (!body) return;
+
+                let notifications = [];
+
+                pendingReqs.forEach(req => {
+                    const date = new Date(req.created_at || req.createdAt || new Date());
+                    notifications.push({
+                        type: 'request',
+                        icon: '📦',
+                        title: `New Borrowing Request`,
+                        detail: `${req.userName || req.user_name || 'Resident'} requested ${req.quantity}x ${req.equipment}`,
+                        time: date,
+                        action: () => switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])
+                    });
+                });
+
+                pendingCons.forEach(con => {
+                    const date = new Date(con.createdAt || new Date());
+                    notifications.push({
+                        type: 'concern',
+                        icon: '📋',
+                        title: `New Citizen Concern`,
+                        detail: `[${con.category}] ${con.title}`,
+                        time: date,
+                        action: () => switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])
+                    });
+                });
+
+                // Sort by newest first
+                notifications.sort((a, b) => b.time - a.time);
+
+                if (notifications.length === 0) {
+                    body.innerHTML = `
+                        <div class="notification-dropdown-empty">
+                            <span style="font-size:24px;">📭</span>
+                            <span>No new notifications</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                body.innerHTML = notifications.map(n => `
+                    <div class="notification-item unread" onclick="handleNotificationClick(event, ${notifications.indexOf(n)})">
+                        <div class="notif-icon-wrap ${n.type}">${n.icon}</div>
+                        <div class="notif-content">
+                            <span class="notif-title">${n.title}</span>
+                            <span style="font-size:12px;color:var(--text);">${n.detail}</span>
+                            <span class="notif-time">${getTimeAgo(n.time)}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Store actions temporarily (hacky but works for vanilla JS without heavy scoping)
+                window._currentNotificationActions = notifications.map(n => n.action);
+            }
+
+            window.handleNotificationClick = function(e, index) {
+                e.stopPropagation();
+                document.getElementById('notificationDropdown').style.display = 'none';
+                if (window._currentNotificationActions && window._currentNotificationActions[index]) {
+                    window._currentNotificationActions[index]();
+                }
+            };
+
+            function getTimeAgo(date) {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                if (seconds < 60) return 'Just now';
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return minutes + 'm ago';
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24) return hours + 'h ago';
+                const days = Math.floor(hours / 24);
+                return days + 'd ago';
             }
 
             // ─── Activity Log Filter State ───────────────────────────────────
