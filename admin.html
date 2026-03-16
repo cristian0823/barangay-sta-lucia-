@@ -1834,74 +1834,30 @@
                         </div>
                     </div>                    <!-- Reports Section -->
                     <div id="reports-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>📊 Report Generation</h3>
-                            <span style="font-size:13px;color:var(--muted);">Generate printable reports for official
-                                documentation</span>
+                        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3>📊 Barangay Simple Report</h3>
+                                <span style="font-size:13px;color:var(--muted);">Consolidated timeline of all barangay transactions (Equipment, Concerns, Bookings)</span>
+                            </div>
+                            <button class="btn btn-small btn-primary" onclick="window.print()">🖨️ Print Report</button>
                         </div>
-                        <div class="section-content">
-                            <div
-                                style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
-                                <div
-                                    style="background:var(--green-50);border:1.5px solid var(--green-200);border-radius:16px;padding:24px;text-align:center;">
-                                    <div style="font-size:40px;margin-bottom:12px;">🪑</div>
-                                    <h4 style="font-size:16px;font-weight:700;color:var(--green-xl);margin-bottom:6px;">
-                                        Equipment / Asset Report</h4>
-                                    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">All barangay
-                                        equipment with
-                                        status labels: Available, In Use, Under Repair, Archived</p>
-                                    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                                        <button class="btn btn-primary" onclick="generateEquipmentCSV()">📥 Export
-                                            CSV</button>
-                                        <button class="btn btn-light" onclick="printEquipmentReport()">🖨️ Print
-                                            Report</button>
-                                    </div>
-                                </div>
-                                <div
-                                    style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:16px;padding:24px;text-align:center;">
-                                    <div style="font-size:40px;margin-bottom:12px;">🏀</div>
-                                    <h4 style="font-size:16px;font-weight:700;color:#1d4ed8;margin-bottom:6px;">Facility
-                                        Reservations Report</h4>
-                                    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">All court/hall
-                                        bookings
-                                        with dates, residents, venue, and approval status</p>
-                                    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                                        <button class="btn btn-primary" onclick="generateBookingsCSV()">📥 Export
-                                            CSV</button>
-                                        <button class="btn btn-light" onclick="printBookingsReport()">🖨️ Print
-                                            Report</button>
-                                    </div>
-                                </div>
-                                <div
-                                    style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:16px;padding:24px;text-align:center;">
-                                    <div style="font-size:40px;margin-bottom:12px;">📋</div>
-                                    <h4 style="font-size:16px;font-weight:700;color:#c2410c;margin-bottom:6px;">Citizen
-                                        Complaints Report</h4>
-                                    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">All submitted
-                                        concerns with
-                                        categories, assignment, and resolution status</p>
-                                    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                                        <button class="btn btn-primary" onclick="generateConcernsCSV()">📥 Export
-                                            CSV</button>
-                                        <button class="btn btn-light" onclick="printConcernsReport()">🖨️ Print
-                                            Report</button>
-                                    </div>
-                                </div>
-                                <div
-                                    style="background:#f5f3ff;border:1.5px solid #ddd6fe;border-radius:16px;padding:24px;text-align:center;">
-                                    <div style="font-size:40px;margin-bottom:12px;">📊</div>
-                                    <h4 style="font-size:16px;font-weight:700;color:#7c3aed;margin-bottom:6px;">
-                                        Equipment
-                                        Borrowings Report</h4>
-                                    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">All equipment
-                                        borrow
-                                        requests with quantities, dates, and approval status</p>
-                                    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                                        <button class="btn btn-primary" onclick="generateBorrowingsCSV()">📥 Export
-                                            CSV</button>
-                                        <button class="btn btn-light" onclick="printBorrowingsReport()">🖨️ Print
-                                            Report</button>
-                                    </div>
+                        <div class="section-content" style="padding: 0;">
+                            <div class="admin-tables">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Transaction Type</th>
+                                            <th>Resident</th>
+                                            <th>Details / Purpose</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="simpleReportTable"></tbody>
+                                </table>
+                                <div id="noSimpleReport" class="empty-state" style="display:none;">
+                                    <div class="empty-state-icon">📄</div>
+                                    <p>No transactions found</p>
                                 </div>
                             </div>
                         </div>
@@ -3203,28 +3159,61 @@
             }
 
             async function approveRequest(id) {
-                if (await updateBorrowingStatus(id, 'approved')) {
-                    showAlert('Request approved', 'success');
-                    await loadStats();
-                    await loadRequests();
+                if (confirm('Approve this request?')) {
+                    const result = await approveEquipmentRequest(id);
+                    if (result && result.success) {
+                        showAlert('Request approved', 'success');
+                        await loadStats();
+                        await loadRequests();
+                        await loadEquipment();
+                    } else if (result) {
+                        showAlert(result.message || 'Error approving request', 'error');
+                    }
                 }
             }
 
-            async function rejectRequest(id) {
-                if (await updateBorrowingStatus(id, 'rejected')) {
+            let _currentRejectEqId = null;
+
+            function rejectRequest(id) {
+                _currentRejectEqId = id;
+                document.getElementById('rejectEqReasonText').value = '';
+                document.getElementById('rejectEqModal').style.display = 'flex';
+            }
+
+            function closeRejectEqModal() {
+                document.getElementById('rejectEqModal').style.display = 'none';
+                _currentRejectEqId = null;
+            }
+
+            async function confirmRejectEq() {
+                const reason = document.getElementById('rejectEqReasonText').value.trim();
+                if (!reason) {
+                    alert('Please enter a reason for rejection.');
+                    return;
+                }
+                const result = await rejectEquipmentRequest(_currentRejectEqId, reason);
+                if (result && result.success) {
                     showAlert('Request rejected', 'success');
+                    closeRejectEqModal();
                     await loadStats();
                     await loadRequests();
                     await loadEquipment();
+                } else if (result) {
+                    showAlert(result.message || 'Error rejecting request', 'error');
                 }
             }
 
             async function returnRequest(id) {
-                if (await updateBorrowingStatus(id, 'returned')) {
-                    showAlert('Equipment marked as returned', 'success');
-                    await loadStats();
-                    await loadRequests();
-                    await loadEquipment();
+                if (confirm('Mark this equipment as returned?')) {
+                    const result = await returnEquipmentRequest(id);
+                    if (result && result.success) {
+                        showAlert('Equipment marked as returned', 'success');
+                        await loadStats();
+                        await loadRequests();
+                        await loadEquipment();
+                    } else if (result) {
+                        showAlert(result.message || 'Error returning equipment', 'error');
+                    }
                 }
             }
 
@@ -3930,7 +3919,83 @@
                 if (name === 'court-bookings') loadAdminBookings();
                 if (name === 'concerns') loadConcerns();
                 if (name === 'equipment') loadEquipment();
+                if (name === 'reports') loadSimpleReport();
             };
+
+            async function loadSimpleReport() {
+                const tbody = document.getElementById('simpleReportTable');
+                const noData = document.getElementById('noSimpleReport');
+                if (!tbody) return;
+                
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">Loading...</td></tr>';
+                noData.style.display = 'none';
+
+                try {
+                    const [borrowings, concerns, bookings] = await Promise.all([
+                        getAllBorrowings(),
+                        getAllConcerns(),
+                        getCourtBookings()
+                    ]);
+
+                    let transactions = [];
+
+                    // Add Equipment Borrowing Transactions
+                    borrowings.forEach(b => {
+                        transactions.push({
+                            date: new Date(b.created_at || new Date()), // Fallback if created_at is missing depending on DB
+                            type: '📦 Equipment Borrowing',
+                            user: b.userName || b.user_name || 'Resident',
+                            details: `Requested ${b.quantity}x ${b.equipment} for ${b.purpose || 'general use'}.`,
+                            status: b.status
+                        });
+                    });
+
+                    // Add Concerns
+                    concerns.forEach(c => {
+                        transactions.push({
+                            date: new Date(c.createdAt),
+                            type: '📋 Citizen Concern',
+                            user: c.userName || 'Resident',
+                            details: `Reported [${c.category}] - ${c.title}.`,
+                            status: c.status
+                        });
+                    });
+
+                    // Add Court Bookings
+                    bookings.forEach(b => {
+                        transactions.push({
+                            date: new Date(b.createdAt || b.created_at || new Date()),
+                            type: '🏀 Court Booking',
+                            user: b.userName || b.user_name || 'Resident',
+                            details: `Booked ${b.venueName || 'Court'} on ${b.date} at ${b.time} for ${b.purpose}.`,
+                            status: b.status
+                        });
+                    });
+
+                    // Sort descending by date
+                    transactions.sort((a, b) => b.date - a.date);
+
+                    if (transactions.length === 0) {
+                        tbody.innerHTML = '';
+                        noData.style.display = 'block';
+                        return;
+                    }
+
+                    tbody.innerHTML = transactions.map(t => {
+                        return `<tr>
+                            <td width="15%" style="color:#6b7280; font-size:13px;">${t.date.toLocaleDateString()} <br> <span style="font-size:11px;">${t.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></td>
+                            <td width="20%"><strong>${t.type}</strong></td>
+                            <td width="20%">${t.user}</td>
+                            <td width="30%" style="font-size:13px;">${t.details}</td>
+                            <td width="15%">${getStatusBadge(t.status)}</td>
+                        </tr>`;
+                    }).join('');
+
+                } catch (e) {
+                    console.error('Error loading report:', e);
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:red;">Failed to load report</td></tr>';
+                }
+            }
 
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
@@ -4026,6 +4091,26 @@
             });
 
         </script>
+
+        <!-- Admin Eq Reject Modal -->
+        <div id="rejectEqModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9000; align-items:center; justify-content:center; padding:16px;">
+            <div style="background:#fff; border-radius:18px; padding:28px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="font-size:18px; font-weight:800; color:#111;">Reject Request</h3>
+                    <button onclick="closeRejectEqModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">✕</button>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Reason for Rejection *</label>
+                    <textarea id="rejectEqReasonText" rows="4" required placeholder="State the reason why..."
+                        style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
+                        onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'"></textarea>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" onclick="closeRejectEqModal()" style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
+                    <button type="button" onclick="confirmRejectEq()" style="flex:1; padding:12px; background:#ef4444; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Reject</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Admin Concern Respond Modal -->
         <div id="adminConcernModal"

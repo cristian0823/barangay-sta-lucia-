@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS borrowings (
     borrow_date DATE NOT NULL,
     return_date DATE NOT NULL,
     status VARCHAR(50) DEFAULT 'pending',
-    purpose TEXT
+    purpose TEXT,
+    rejection_reason TEXT
 );
 
 CREATE TABLE IF NOT EXISTS concerns (
@@ -105,6 +106,7 @@ ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
+ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
 ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
 
 -- Remove redundant username columns, keeping relations only
@@ -115,16 +117,69 @@ ALTER TABLE activity_log DROP COLUMN IF EXISTS admin_username;
 
 
 -- ============================================================
--- STEP 3: DISABLE ROW LEVEL SECURITY (THE CRITICAL FIX)
--- This is what was blocking all inserts/updates from the website
+-- STEP 3: ENABLE ROW LEVEL SECURITY AND CREATE POLICIES
 -- ============================================================
 
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE equipment DISABLE ROW LEVEL SECURITY;
-ALTER TABLE borrowings DISABLE ROW LEVEL SECURITY;
-ALTER TABLE concerns DISABLE ROW LEVEL SECURITY;
-ALTER TABLE events DISABLE ROW LEVEL SECURITY;
-ALTER TABLE court_bookings DISABLE ROW LEVEL SECURITY;
+-- Enable RLS
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE equipment ENABLE ROW LEVEL SECURITY;
+ALTER TABLE borrowings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE concerns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE court_bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if any to prevent errors
+DROP POLICY IF EXISTS "Enable read access for all users" ON equipment;
+DROP POLICY IF EXISTS "Enable write access for admins" ON equipment;
+DROP POLICY IF EXISTS "Enable read access for users own borrowings" ON borrowings;
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON borrowings;
+DROP POLICY IF EXISTS "Enable full access for admins" ON borrowings;
+DROP POLICY IF EXISTS "Enable read access for all users" ON events;
+DROP POLICY IF EXISTS "Enable write access for admins" ON events;
+DROP POLICY IF EXISTS "Enable read access for users own concerns" ON concerns;
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON concerns;
+DROP POLICY IF EXISTS "Enable full access for admins" ON concerns;
+DROP POLICY IF EXISTS "Enable read access for users own bookings" ON court_bookings;
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON court_bookings;
+DROP POLICY IF EXISTS "Enable full access for admins" ON court_bookings;
+DROP POLICY IF EXISTS "Enable full access for admins" ON users;
+DROP POLICY IF EXISTS "Enable read access for all users" ON users;
+DROP POLICY IF EXISTS "Enable read access for all users" ON activity_log;
+DROP POLICY IF EXISTS "Enable write access for admins" ON activity_log;
+
+-- Users Table Policies
+CREATE POLICY "Enable read access for all users" ON users FOR SELECT USING (true);
+CREATE POLICY "Enable update access for users own profile" ON users FOR UPDATE USING (id::text = current_setting('request.jwt.claims', true)::json->>'sub');
+CREATE POLICY "Enable full access for admins" ON users FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
+-- Equipment Table Policies
+CREATE POLICY "Enable read access for all users" ON equipment FOR SELECT USING (true);
+CREATE POLICY "Enable write access for admins" ON equipment FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
+-- Events Table Policies
+CREATE POLICY "Enable read access for all users" ON events FOR SELECT USING (true);
+CREATE POLICY "Enable write access for admins" ON events FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
+-- Borrowings Table Policies
+CREATE POLICY "Enable read access for users own borrowings" ON borrowings FOR SELECT USING (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub' OR EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable insert for authenticated users" ON borrowings FOR INSERT WITH CHECK (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub');
+CREATE POLICY "Enable full access for admins" ON borrowings FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
+-- Concerns Table Policies
+CREATE POLICY "Enable read access for users own concerns" ON concerns FOR SELECT USING (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub' OR EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable insert for authenticated users" ON concerns FOR INSERT WITH CHECK (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub');
+CREATE POLICY "Enable full access for admins" ON concerns FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
+-- Court Bookings Policies
+CREATE POLICY "Enable read access for users own bookings" ON court_bookings FOR SELECT USING (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub' OR EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable insert for authenticated users" ON court_bookings FOR INSERT WITH CHECK (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub');
+CREATE POLICY "Enable full access for admins" ON court_bookings FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
+-- Activity Log Policies
+CREATE POLICY "Enable read access for all users" ON activity_log FOR SELECT USING (true);
+CREATE POLICY "Enable write access for admins" ON activity_log FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+
 
 
 -- ============================================================
@@ -164,5 +219,93 @@ INSERT INTO equipment (name, quantity, available, broken, icon, description) VAL
 -- 5d: Add UNIQUE constraint so duplicates can never happen again
 ALTER TABLE equipment ADD CONSTRAINT equipment_name_unique UNIQUE (name);
 
--- 5e: Disable RLS on activity_log so logs are always readable
-ALTER TABLE activity_log DISABLE ROW LEVEL SECURITY;
+-- 5e: Enable RLS on activity_log
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================
+-- STEP 6: STORED PROCEDURES (RPCs) FOR INVENTORY MANAGEMENT
+-- ============================================================
+
+-- Function to approve equipment borrowing and strictly deduct inventory
+CREATE OR REPLACE FUNCTION approve_equipment_request(borrowing_id INTEGER, admin_user_id INTEGER)
+RETURNS JSON AS $$
+DECLARE
+    v_equipment_id INTEGER;
+    v_borrow_qty INTEGER;
+    v_current_status VARCHAR(50);
+    v_is_admin BOOLEAN;
+BEGIN
+    -- Check if user is admin
+    SELECT EXISTS(SELECT 1 FROM users WHERE id = admin_user_id AND role = 'admin') INTO v_is_admin;
+    IF NOT v_is_admin THEN
+        RETURN json_build_object('success', false, 'message', 'Unauthorized. Admin access required.');
+    END IF;
+
+    -- Lock the borrowing row for update to prevent concurrent race conditions
+    SELECT equipment_id, quantity, status INTO v_equipment_id, v_borrow_qty, v_current_status
+    FROM borrowings WHERE id = borrowing_id FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RETURN json_build_object('success', false, 'message', 'Borrowing request not found.');
+    END IF;
+
+    IF v_current_status != 'pending' THEN
+        RETURN json_build_object('success', false, 'message', 'Request is not pending.');
+    END IF;
+
+    -- Update the equipment table, automatically locking it during the transaction
+    UPDATE equipment 
+    SET available = available - v_borrow_qty
+    WHERE id = v_equipment_id AND available >= v_borrow_qty;
+
+    IF NOT FOUND THEN
+        -- Revert changes if not enough quantity
+        RETURN json_build_object('success', false, 'message', 'Not enough equipment available.');
+    END IF;
+
+    -- Mark request as approved
+    UPDATE borrowings SET status = 'approved' WHERE id = borrowing_id;
+    
+    RETURN json_build_object('success', true, 'message', 'Equipment request approved successfully.');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- Function to return equipment and strictly restore inventory
+CREATE OR REPLACE FUNCTION return_equipment_request(borrowing_id INTEGER, admin_user_id INTEGER)
+RETURNS JSON AS $$
+DECLARE
+    v_equipment_id INTEGER;
+    v_borrow_qty INTEGER;
+    v_current_status VARCHAR(50);
+    v_is_admin BOOLEAN;
+BEGIN
+    -- Check if user is admin
+    SELECT EXISTS(SELECT 1 FROM users WHERE id = admin_user_id AND role = 'admin') INTO v_is_admin;
+    IF NOT v_is_admin THEN
+        RETURN json_build_object('success', false, 'message', 'Unauthorized. Admin access required.');
+    END IF;
+
+    -- Lock the borrowing row for update to prevent concurrent race conditions
+    SELECT equipment_id, quantity, status INTO v_equipment_id, v_borrow_qty, v_current_status
+    FROM borrowings WHERE id = borrowing_id FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RETURN json_build_object('success', false, 'message', 'Borrowing request not found.');
+    END IF;
+
+    IF v_current_status != 'approved' THEN
+        RETURN json_build_object('success', false, 'message', 'Request is not actively borrowed.');
+    END IF;
+
+    -- Update the equipment table, automatically locking it during the transaction
+    UPDATE equipment 
+    SET available = available + v_borrow_qty
+    WHERE id = v_equipment_id;
+
+    -- Mark request as returned
+    UPDATE borrowings SET status = 'returned' WHERE id = borrowing_id;
+
+    RETURN json_build_object('success', true, 'message', 'Equipment marked as returned successfully.');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

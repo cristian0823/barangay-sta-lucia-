@@ -579,47 +579,97 @@ async function getAllBorrowings() {
     }
 }
 
-async function updateBorrowingStatus(borrowingId, status) {
+async function approveEquipmentRequest(borrowingId) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Not logged in' };
+    
     const supabaseAvailable = await isSupabaseAvailable();
-
     if (supabaseAvailable) {
-        const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
-        if (!borrowing) return { success: false, message: 'Borrowing record not found' };
-
-        const { error } = await supabase.from('borrowings').update({ status }).eq('id', borrowingId);
+        const { data, error } = await supabase.rpc('approve_equipment_request', { borrowing_id: borrowingId, admin_user_id: user.id });
         if (error) return { success: false, message: error.message };
-
-        // Restore available stock on rejection or return
-        if (status === 'rejected' || status === 'returned') {
-            const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
-            if (item) {
-                await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
-            }
-        }
+        if (!data.success) return data;
         
-        await logActivity(`Borrow ${status.charAt(0).toUpperCase() + status.slice(1)}`, `Admin marked request for ${borrowing.quantity}x ${borrowing.equipment} by ${borrowing.user_name || 'User'} as ${status}`);
-        return { success: true, message: `Status updated to ${status}` };
+        await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
+        return data; 
     } else {
         // Local fallback
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
         const index = borrowings.findIndex(b => b.id === borrowingId);
         if (index === -1) return { success: false, message: 'Borrowing record not found' };
 
-        borrowings[index].status = status;
+        borrowings[index].status = 'approved';
+        localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
+        
+        // Update stock
+        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
+        if (itemIndex !== -1) {
+            equipment[itemIndex].available -= borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        }
+
+        logActivity(`Borrow Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
+        return { success: true, message: `Status updated to approved` };
+    }
+}
+
+async function returnEquipmentRequest(borrowingId) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Not logged in' };
+    
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { data, error } = await supabase.rpc('return_equipment_request', { borrowing_id: borrowingId, admin_user_id: user.id });
+        if (error) return { success: false, message: error.message };
+        if (!data.success) return data;
+        
+        await logActivity('Borrow Returned', `Admin marked equipment request #${borrowingId} as returned`);
+        return data;
+    } else {
+        // Local fallback
+        const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+        const index = borrowings.findIndex(b => b.id === borrowingId);
+        if (index === -1) return { success: false, message: 'Borrowing record not found' };
+
+        borrowings[index].status = 'returned';
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
-        // Restore available stock on rejection or return
-        if (status === 'rejected' || status === 'returned') {
-            const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
-            const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
-            if (itemIndex !== -1) {
-                equipment[itemIndex].available += borrowings[index].quantity;
-                localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-            }
+        // Restore stock
+        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
+        if (itemIndex !== -1) {
+            equipment[itemIndex].available += borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
         }
         
-        logActivity(`Borrow ${status.charAt(0).toUpperCase() + status.slice(1)}`, `Admin marked request for ${borrowings[index].quantity}x ${borrowings[index].equipment} by ${borrowings[index].userName} as ${status} (Local)`);
-        return { success: true, message: `Status updated to ${status}` };
+        logActivity(`Borrow Returned`, `Admin marked request for ${borrowings[index].quantity}x ${borrowings[index].equipment} as returned (Local)`);
+        return { success: true, message: `Status updated to returned` };
+    }
+}
+
+async function rejectEquipmentRequest(borrowingId, reason) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
+        if (!borrowing) return { success: false, message: 'Borrowing record not found' };
+
+        const { error } = await supabase.from('borrowings').update({ status: 'rejected', rejection_reason: reason }).eq('id', borrowingId);
+        if (error) return { success: false, message: error.message };
+        
+        await logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowing.quantity}x ${borrowing.equipment}. Reason: ${reason}`);
+        return { success: true, message: `Status updated to rejected` };
+    } else {
+        // Local fallback
+        const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+        const index = borrowings.findIndex(b => b.id === borrowingId);
+        if (index === -1) return { success: false, message: 'Borrowing record not found' };
+
+        borrowings[index].status = 'rejected';
+        borrowings[index].rejection_reason = reason;
+        localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
+        
+        logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
+        return { success: true, message: `Status updated to rejected` };
     }
 }
 
