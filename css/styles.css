@@ -1906,4 +1906,106 @@ img {
 
 .form-row .form-group {
     flex: 1;
-} 
+}
+
+/* --- RESPONSIVE DESIGN FOR LANDING & AUTH PAGES --- */
+
+/* Tablet & Smaller Desktops */
+@media screen and (max-width: 1024px) {
+    .landing-header {
+        padding: 20px 30px;
+    }
+    
+    .landing-content {
+        padding: 40px 30px;
+    }
+    
+    .landing-text h2 {
+        font-size: 36px;
+    }
+    
+    .features-grid {
+        gap: 16px;
+    }
+    
+    .cta-section {
+        padding: 60px 20px;
+    }
+}
+
+/* Mobile Devices */
+@media screen and (max-width: 768px) {
+    .landing-header {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .landing-nav {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .landing-content {
+        padding: 30px 16px;
+    }
+    
+    .landing-text h2 {
+        font-size: 28px;
+    }
+    
+    .landing-text p {
+        font-size: 16px;
+    }
+    
+    .landing-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+    
+    .landing-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .step-card {
+        padding: 20px 16px;
+    }
+    
+    .auth-card {
+        padding: 24px 20px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* Small Mobile */
+@media screen and (max-width: 480px) {
+    .landing-text h2 {
+        font-size: 24px;
+    }
+    
+    .logo-text h1 {
+        font-size: 18px;
+    }
+    
+    .logo-text span {
+        font-size: 10px;
+    }
+    
+    .auth-header h2 {
+        font-size: 20px;
+    }
+    
+    .cta-primary, .cta-secondary {
+        padding: 14px 24px;
+        width: 100%;
+        text-align: center;
+        font-size: 15px;
+    }
+}
