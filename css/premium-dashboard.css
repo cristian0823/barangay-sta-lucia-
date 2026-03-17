@@ -1079,11 +1079,22 @@ h6,
 @media screen and (max-width: 768px) {
     .dashboard-header {
         padding: 0 16px;
-        height: 70px;
+        height: 60px; /* Slimmer native height */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Native hairline bottom border */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    [data-theme="dark"] .dashboard-header {
+        background: rgba(15, 23, 42, 0.95);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
     .brand {
-        font-size: 18px;
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
     }
 
     .subtitle {
@@ -1091,8 +1102,9 @@ h6,
     }
     
     .header-logo {
-        width: 40px;
-        height: 40px;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px; /* App icon curvature */
     }
     
     .user-name, .user-role {
@@ -1121,11 +1133,18 @@ h6,
     }
 
     .dashboard-container {
-        margin-top: 70px;
-        padding: 16px;
-        display: block;
+        margin-top: 60px; /* Slimmer native app bar space */
+        padding: 0; /* Remove web padding for full-width feed */
+        display: flex;
+        flex-direction: column;
+        gap: 0; /* Remove gap, use borders for separation */
         padding-bottom: 90px; /* Space for bottom nav */
-        min-height: calc(100vh - 70px - 90px);
+        min-height: calc(100vh - 60px - 90px);
+        background: #f0f2f5; /* Native feed background color */
+    }
+    
+    [data-theme="dark"] .dashboard-container {
+        background: #0f172a;
     }
     
     /* Convert Sidebar to Bottom Navigation Bar */
@@ -1204,13 +1223,55 @@ h6,
     /* Main Content Adjustments */
     .main-content {
         width: 100%;
+        padding: 0;
+    }
+
+    .content-panel {
+        padding: 0; /* Remove inner panel padding */
+        background: transparent;
+    }
+    
+    .panel-header {
+        padding: 16px;
+        background: var(--surface);
+        margin: 0 !important;
+        border-bottom: 1px solid var(--border) !important;
+        position: sticky;
+        top: 60px; /* Underneath the app bar */
+        z-index: 90;
+    }
+
+    /* Feed-like Cards */
+    .equip-card, .list-item, .event-card {
+        border-radius: 0; /* Edge to edge */
+        border-right: none;
+        border-left: none;
+        border-top: none;
+        border-bottom: 6px solid #e5e7eb; /* Feed separation block */
+        margin-bottom: 0;
+        box-shadow: none;
+        padding: 16px;
+        background: var(--surface);
+    }
+
+    [data-theme="dark"] .equip-card, 
+    [data-theme="dark"] .list-item, 
+    [data-theme="dark"] .event-card {
+        border-bottom-color: #1e293b;
+    }
+
+    .equip-card:last-child,
+    .list-item:last-child {
+        border-bottom: none;
     }
     
     .welcome-banner {
-        padding: 24px;
+        padding: 24px 16px;
         flex-direction: column;
         text-align: center;
         gap: 16px;
+        border-radius: 0;
+        margin-bottom: 8px !important;
     }
     
     .welcome-text h2 {
@@ -1254,12 +1315,17 @@ h6,
     }
 
     .concern-form {
-        padding: 20px;
+        padding: 20px 16px;
     }
     
-    .fg input, .fg select, .fg textarea {
-        font-size: 16px; /* Prevent iOS zoom on focus */
-        padding: 12px;
+    .concern-form label {
+        font-size: 14px; /* Larger label for reading */
+    }
+
+    .fg input, .fg select, .fg textarea, .form-control, .btn, .venue-btn {
+        font-size: 16px !important; /* Prevent iOS zoom on focus */
+        padding: 16px !important; /* Much larger tap target */
+        border-radius: 12px;
     }
     
     .venue-toggle {
