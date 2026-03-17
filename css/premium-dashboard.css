@@ -1272,8 +1272,17 @@ h6,
         text-align: center;
     }
 
+    /* Calendar overflow fixes */
     .calendar-wrapper {
+        width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px; /* Space for scrollbar */
+    }
+
+    .calendar-grid {
+        min-width: 500px; /* Force minimum width to prevent squishing */
+        gap: 4px;
     }
 }
 

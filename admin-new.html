@@ -1185,6 +1185,45 @@
                 font-size: 12px;
                 text-transform: uppercase;
             }
+            /* Calendar overflow fixes */
+            .calendar-container {
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .calendar-month-title {
+                font-size: 20px;
+                padding: 10px 18px;
+            }
+
+            .calendar-wrapper {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 10px; /* Space for scrollbar */
+            }
+
+            .calendar-grid {
+                min-width: 500px; /* Force minimum width to prevent squishing */
+                gap: 4px;
+            }
+
+            .calendar-day {
+                min-height: 60px;
+                font-size: 13px;
+                padding: 6px 4px;
+            }
+
+            .calendar-day-header {
+                font-size: 10px;
+                padding: 10px 0;
+            }
         }
 
         /* Activity Log Styling */
@@ -1646,16 +1685,19 @@
                                 </div>
 
                                 <!-- Calendar Grid -->
-                                <div class="grid grid-cols-7 gap-2 mb-4">
-                                    <div class="text-center font-bold text-gray-500 py-2">Sun</div>
-                                    <div class="text-center font-bold text-gray-500 py-2">Mon</div>
-                                    <div class="text-center font-bold text-gray-500 py-2">Tue</div>
-                                    <div class="text-center font-bold text-gray-500 py-2">Wed</div>
-                                    <div class="text-center font-bold text-gray-500 py-2">Thu</div>
-                                    <div class="text-center font-bold text-gray-500 py-2">Fri</div>
-                                    <div class="text-center font-bold text-gray-500 py-2">Sat</div>
+                                <div class="calendar-wrapper">
+                                    <!-- Calendar Days Header -->
+                                    <div class="grid grid-cols-7 gap-2 mb-4">
+                                        <div class="text-center font-bold text-gray-500 py-2">Sun</div>
+                                        <div class="text-center font-bold text-gray-500 py-2">Mon</div>
+                                        <div class="text-center font-bold text-gray-500 py-2">Tue</div>
+                                        <div class="text-center font-bold text-gray-500 py-2">Wed</div>
+                                        <div class="text-center font-bold text-gray-500 py-2">Thu</div>
+                                        <div class="text-center font-bold text-gray-500 py-2">Fri</div>
+                                        <div class="text-center font-bold text-gray-500 py-2">Sat</div>
+                                    </div>
+                                    <div id="adminCalendarGrid" class="grid grid-cols-7 gap-2"></div>
                                 </div>
-                                <div id="adminCalendarGrid" class="grid grid-cols-7 gap-2"></div>
 
                                 <!-- Legend -->
                                 <div class="flex flex-wrap justify-center gap-4 text-sm mt-4">

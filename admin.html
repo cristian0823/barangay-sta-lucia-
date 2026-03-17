@@ -1304,6 +1304,51 @@
                 padding: 10px 12px;
             }
 
+            /* Aggressive Mobile Table Stacking for Activity Log */
+            .activity-log-table,
+            .activity-log-table thead,
+            .activity-log-table tbody,
+            .activity-log-table th,
+            .activity-log-table td,
+            .activity-log-table tr {
+                display: block;
+            }
+
+            .activity-log-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .activity-log-table tr {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 12px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .activity-log-table td {
+                border: none;
+                border-bottom: 1px solid #f3f4f6;
+                position: relative;
+                padding-left: 120px !important;
+                min-height: 48px;
+            }
+
+            .activity-log-table td:before {
+                position: absolute;
+                top: 12px;
+                left: 16px;
+                width: 90px;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: 600;
+                color: #6b7280;
+                font-size: 12px;
+                text-transform: uppercase;
+            }
+
             /* Action buttons */
             .admin-actions {
                 display: flex;
