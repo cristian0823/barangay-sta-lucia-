@@ -1070,6 +1070,103 @@
         [data-theme="dark"] .concern-form input, [data-theme="dark"] .concern-form select, [data-theme="dark"] .concern-form textarea { background: #022c22; border-color: #047857; color: #f8fafc; }
         [data-theme="dark"] .sec-title, [data-theme="dark"] .action-card h4, [data-theme="dark"] .panel-header h3 { color: #34d399; }
 
+        /* FAB for User Home */
+        .mobile-fab {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            font-size: 24px;
+            border: none;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+            z-index: 1000;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mobile-fab:active {
+            transform: scale(0.92);
+        }
+
+        /* Desktop specific overrides for Mobile-only elements */
+        .mobile-only-header { display: none; }
+        .mobile-close-btn { display: none; }
+        #concernFormBackdrop { display: none; }
+
+        @media (max-width: 768px) {
+            .mobile-fab {
+                display: flex;
+            }
+
+            /* Divergent UI: Convert Inline Concern Form to Native Bottom Sheet */
+            #concernForm {
+                position: fixed !important;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                background: white;
+                z-index: 2000;
+                padding: 24px 24px 40px !important;
+                border-radius: 24px 24px 0 0;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
+                transform: translateY(100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+                margin: 0 !important;
+            }
+
+            #concernForm.show-sheet {
+                transform: translateY(0);
+            }
+
+            #concernFormBackdrop.show-backdrop {
+                display: block;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 1999;
+                backdrop-filter: blur(4px);
+            }
+
+            .mobile-only-header { 
+                display: block; 
+                font-size: 20px; 
+                font-weight: 800; 
+                margin-bottom: 20px;
+                color: #064e3b;
+            }
+
+            .mobile-close-btn {
+                display: flex;
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #f3f4f6;
+                border: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                color: #4b5563;
+                cursor: pointer;
+            }
+
+            /* Hide Desktop Headers on Mobile */
+            #concerns-panel .panel-header {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -1150,7 +1247,11 @@
                     style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
                     <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">📋 Submit a Concern</h3>
                 </div>
+                
+                <div id="concernFormBackdrop" onclick="toggleConcernSheet()"></div>
                 <form id="concernForm" class="concern-form" style="max-width: 680px;">
+                    <button type="button" class="mobile-close-btn" onclick="toggleConcernSheet()">✕</button>
+                    <div class="mobile-only-header">Submit Concern</div>
                     <div class="fg">
                         <label>Your Address</label>
                         <input type="text" id="concernAddress" required placeholder="e.g., Block 5, Lot 10, Sta. Lucia">
@@ -1267,6 +1368,9 @@
         </main>
     </div>
 
+
+    <!-- Mobile-Only Contextual Floating Action Button -->
+    <button id="userFab" class="mobile-fab" style="display: none;" onclick="handleUserFab()">+</button>
 
     <!-- ADVANCED EQUIPMENT BORROW MODAL -->
     <div id="borrowModal" class="modal-overlay hidden" style="z-index: 200; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
@@ -2021,6 +2125,18 @@
                     document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
                     document.getElementById(panelId).classList.add('active');
 
+                    // Manage Contextual Mobile FAB
+                    const fab = document.getElementById('userFab');
+                    if (window.innerWidth <= 768 && fab) {
+                        if (panelId === 'concerns-panel') {
+                            fab.style.display = 'flex';
+                        } else {
+                            fab.style.display = 'none';
+                        }
+                    } else if (fab) {
+                        fab.style.display = 'none';
+                    }
+
                     // Auto-sync data based on tab clicked to emulate real-time
                     if (panelId === 'court-bookings-panel') {
                         loadUpcomingEvents();
@@ -2035,6 +2151,47 @@
                     }
                 });
             });
+
+            // Initialize FAB state on load
+            const activeNav = document.querySelector('.nav-item.active');
+            if (activeNav && window.innerWidth <= 768) {
+                const fab = document.getElementById('userFab');
+                if (fab && activeNav.getAttribute('data-panel') === 'concerns-panel') {
+                    fab.style.display = 'flex';
+                }
+            }
+
+            // Window resize listener to handle FAB visibility transitioning between mobile/desktop
+            window.addEventListener('resize', () => {
+                const fab = document.getElementById('userFab');
+                if (!fab) return;
+                const activeNav = document.querySelector('.nav-item.active');
+                if (window.innerWidth <= 768 && activeNav && activeNav.getAttribute('data-panel') === 'concerns-panel') {
+                    fab.style.display = 'flex';
+                } else {
+                    fab.style.display = 'none';
+                }
+            });
+
+            // Global functions for Divergent Mobile Patterns
+            window.handleUserFab = function() {
+                const activeNav = document.querySelector('.nav-item.active');
+                if (activeNav && activeNav.getAttribute('data-panel') === 'concerns-panel') {
+                    toggleConcernSheet();
+                }
+            };
+
+            window.toggleConcernSheet = function() {
+                const form = document.getElementById('concernForm');
+                const backdrop = document.getElementById('concernFormBackdrop');
+                if (form.classList.contains('show-sheet')) {
+                    form.classList.remove('show-sheet');
+                    backdrop.classList.remove('show-backdrop');
+                } else {
+                    form.classList.add('show-sheet');
+                    backdrop.classList.add('show-backdrop');
+                }
+            };
 
             try { await renderCal(); } catch (e) { console.error("Calendar fail:", e); }
             try { await loadUpcomingEvents(); } catch (e) { console.error("Events fail:", e); }

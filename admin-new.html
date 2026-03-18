@@ -1375,6 +1375,39 @@
         .content-panel.active {
             display: block;
         }
+
+        /* Floating Action Button (Desktop: Hidden, Mobile: Visible) */
+        .mobile-fab {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            font-size: 24px;
+            border: none;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+            z-index: 1000;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .mobile-fab:active {
+            transform: scale(0.92);
+        }
+        @media screen and (max-width: 768px) {
+            .mobile-fab {
+                display: flex;
+            }
+            /* Hide the standard top-right Add buttons on mobile to enforce Divergent App Design */
+            .section-header .btn {
+                display: none; /* Only the FAB should trigger adds on mobile */
+            }
+        }
     </style>
 </head>
 
@@ -2334,6 +2367,7 @@
         </div>
     </div>
 
+    <button id="adminFab" class="mobile-fab" style="display: none;">+</button>
     <div id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2350,6 +2384,22 @@
             document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
             const panel = document.getElementById(panelId);
             if (panel) panel.classList.add('active');
+
+            // Manage Contextual Mobile FAB
+            const fab = document.getElementById('adminFab');
+            if (window.innerWidth <= 768 && fab) {
+                if (panelId === 'equipment-inventory') {
+                    fab.style.display = 'flex';
+                    fab.onclick = openAddEquipmentModal;
+                } else if (panelId === 'court-events') {
+                    fab.style.display = 'flex';
+                    fab.onclick = adminShowEventForm;
+                } else {
+                    fab.style.display = 'none';
+                }
+            } else {
+                fab.style.display = 'none';
+            }
 
             if (panelId === 'activity-log' && typeof loadActivityLog === 'function') {
                 loadActivityLog();
