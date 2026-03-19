@@ -38,6 +38,7 @@ const LOCAL_BOOKINGS_KEY = 'barangay_local_bookings';
 
 // Initialize default users in localStorage if not exists
 const LOCAL_ACTIVITY_LOG_KEY = 'barangay_local_activity_log';
+const LOCAL_NOTIFICATIONS_KEY = 'barangay_local_notifications';
 
 function initializeLocalUsers() {
     const stored = localStorage.getItem(LOCAL_USERS_KEY);
@@ -473,6 +474,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         if (error) return { success: false, message: error.message };
         
         await logActivity('Borrow Request', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
+        await addNotification('admin', 'borrow', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -503,6 +505,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
         logActivity('Borrow Request', `Local User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
+        await addNotification('admin', 'borrow', `Local User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     }
 }
@@ -765,6 +768,7 @@ async function submitConcern(category, title, description, address, imageFile = 
 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User ${user.fullName || user.username} submitted a concern: ${title}`);
+        await addNotification('admin', 'concern', `User ${user.fullName || user.username} submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
@@ -785,6 +789,7 @@ async function submitConcern(category, title, description, address, imageFile = 
         concerns.push(newConcern);
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
         logActivity('Concern Submitted', `Local User ${user.fullName || user.username} submitted a concern: ${title}`);
+        await addNotification('admin', 'concern', `Local User ${user.fullName || user.username} submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     }
 }
@@ -984,17 +989,78 @@ async function getCourtBookings() {
 }
 
 
+// Time Slot Validation Helper
+function timeToMinutes(t) {
+    if (!t) return 0;
+    const match = t.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!match) return 0;
+    let [ , h, m, ampm ] = match;
+    h = parseInt(h);
+    m = parseInt(m);
+    if (ampm) {
+        if (ampm.toUpperCase() === 'PM' && h < 12) h += 12;
+        if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+    }
+    return h * 60 + m;
+}
+
+async function checkTimeOverlap(date, venue, startTime, endTime) {
+    const reqStart = timeToMinutes(startTime);
+    const reqEnd = timeToMinutes(endTime || startTime);
+    if (reqStart >= reqEnd && endTime) {
+        return { success: false, message: 'End time must be after start time' };
+    }
+    
+    // Check bookings
+    const allBookings = await getCourtBookings();
+    const venueLabelCheck = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+    for (const b of allBookings) {
+        if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled') {
+            if (venue === 'all' || b.venue === venue || b.venueName === venueLabelCheck) {
+                let tRange = b.timeRange || b.time; 
+                if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
+                if (!eTime) eTime = sTime; 
+                const eStart = timeToMinutes(sTime);
+                const eEnd = timeToMinutes(eTime);
+                if (reqStart < eEnd && reqEnd > eStart) {
+                    return { success: false, message: `Time slot overlaps with an existing booking (${tRange})` };
+                }
+            }
+        }
+    }
+
+    // Check official events (events block all venues)
+    const allEvents = await getEvents();
+    for (const e of allEvents) {
+         if (e.date === date) {
+             const eStart = timeToMinutes(e.time);
+             const eEnd = timeToMinutes(e.end_time || e.time);
+             if (reqStart < eEnd && reqEnd > eStart) {
+                 return { success: false, message: `Time slot overlaps with an official Barangay Event (${e.time} - ${e.end_time || e.time})` };
+             }
+         }
+    }
+    
+    return { success: true };
+}
+
+
 async function bookCourt(bookingData) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
 
-    const supabaseAvailable = await isSupabaseAvailable();
     const venue = bookingData.venue || 'basketball';
     const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
-
-    // Encode venue + time range into a single string so we don't need optional columns
     const startTime = bookingData.time || '';
     const endTime = bookingData.end_time || '';
+
+    const overlapCheck = await checkTimeOverlap(bookingData.date, venue, startTime, endTime);
+    if (!overlapCheck.success) return overlapCheck;
+
+    const supabaseAvailable = await isSupabaseAvailable();
+
+    // Encode venue + time range into a single string so we don't need optional columns
     const combinedTime = endTime
         ? `${venueLabel} | ${startTime} – ${endTime}`
         : `${venueLabel} | ${startTime}`;
@@ -1012,6 +1078,7 @@ async function bookCourt(bookingData) {
 
             if (error) throw error;
             await logActivity('Court Booking Submitted', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
+            await addNotification('admin', 'booking', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
             console.error('Supabase booking error:', err.message);
@@ -1034,6 +1101,7 @@ async function bookCourt(bookingData) {
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
     logActivity('Court Booking Submitted', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
+    await addNotification('admin', 'booking', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
     return { success: true, message: 'Venue booked (offline mode)' };
 }
 
@@ -1230,6 +1298,9 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
 }
 
 async function createEvent(eventData) {
+    const overlapCheck = await checkTimeOverlap(eventData.date, 'all', eventData.time, eventData.end_time);
+    if (!overlapCheck.success) return overlapCheck;
+
     const supabaseAvailable = await isSupabaseAvailable();
 
     // Admin-created events should be automatically approved
@@ -1542,6 +1613,95 @@ async function getActivityLog() {
     return JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
 }
 
+// ==========================================
+// NOTIFICATIONS API
+// ==========================================
+
+async function addNotification(userId, type, message, referenceId = null) {
+    const timestamp = new Date().toISOString();
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        try {
+            const { error } = await supabase.from('notifications').insert([{
+                user_id: String(userId),
+                type,
+                message,
+                reference_id: referenceId,
+                is_read: false,
+                created_at: timestamp
+            }]);
+            if (!error) return true;
+        } catch (e) {
+            console.warn('Notifications Supabase error:', e);
+        }
+    }
+    // Fallback to local storage
+    const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+    notifs.unshift({
+        id: Date.now(),
+        userId: String(userId),
+        type,
+        message,
+        referenceId,
+        isRead: false,
+        createdAt: timestamp
+    });
+    if (notifs.length > 200) notifs.splice(200); // Keep last 200
+    localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+    return true;
+}
+
+async function getNotifications(userId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        try {
+            const { data, error } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', String(userId))
+                .order('created_at', { ascending: false })
+                .limit(50);
+            if (!error && data) {
+                return data.map(n => ({
+                    id: n.id,
+                    userId: n.user_id,
+                    type: n.type,
+                    message: n.message,
+                    isRead: n.is_read,
+                    referenceId: n.reference_id,
+                    createdAt: n.created_at
+                }));
+            }
+        } catch (e) {
+            console.warn('Notifications fetch error:', e);
+        }
+    }
+    // Fallback
+    const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+    return notifs.filter(n => n.userId === String(userId));
+}
+
+async function markNotificationAsRead(notifId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        try {
+            const { error } = await supabase
+                .from('notifications')
+                .update({ is_read: true })
+                .eq('id', notifId);
+            if (!error) return true;
+        } catch (e) {}
+    }
+    // Fallback
+    const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+    const index = notifs.findIndex(n => n.id === notifId);
+    if (index !== -1) {
+        notifs[index].isRead = true;
+        localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+    }
+    return true;
+}
+
 // Generic Mapper to transform snake_case to camelCase
 function mapRecords(records) {
     if (!records) return [];
@@ -1620,4 +1780,21 @@ function requireAdmin() {
         return false;
     }
     return true;
+}
+
+// Helper function for calendar time slot logic
+function timeToMinutes(tStr) {
+    if (!tStr) return 0;
+    // Handle 24hr format "HH:MM"
+    if (tStr.includes(':') && !tStr.toLowerCase().includes('m')) {
+        const [h, m] = tStr.split(':');
+        return parseInt(h) * 60 + parseInt(m);
+    }
+    // Handle 12hr format "HH:MM AM"
+    let modifier = tStr.slice(-2).toLowerCase();
+    let time = tStr.slice(0, -2).trim();
+    let [hours, minutes] = time.split(':');
+    if (hours === '12') hours = '0';
+    if (modifier === 'pm') hours = parseInt(hours) + 12;
+    return parseInt(hours) * 60 + parseInt(minutes || 0);
 }

@@ -291,6 +291,10 @@
             justify-content: center;
         }
 
+        .notification-badge.no-count::after {
+            display: none !important;
+        }
+
         /* NOTIFICATION DROPDOWN */
         .notification-dropdown {
             position: absolute;
@@ -1969,11 +1973,11 @@
                                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                                                 <div>
                                                     <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">⏰ Start Time</label>
-                                                    <input type="time" id="adminSidebarEventTime" required style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+                                                    <select id="adminSidebarEventTime" required style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'"></select>
                                                 </div>
                                                 <div>
                                                     <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">⏰ End Time</label>
-                                                    <input type="time" id="adminSidebarEventEndTime" style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+                                                    <select id="adminSidebarEventEndTime" required style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'"></select>
                                                 </div>
                                             </div>
 
@@ -4222,6 +4226,7 @@
                 if (name === 'concerns') loadConcerns();
                 if (name === 'equipment') loadEquipment();
                 if (name === 'reports') loadSimpleReport();
+                if (name === 'events') renderAdminCalendar();
             };
 
             async function loadSimpleReport() {
@@ -4299,10 +4304,328 @@
                 }
             }
 
+            // ==========================================
+            // ADMIN NOTIFICATIONS
+            // ==========================================
+            async function loadAdminNotifications() {
+                const notifications = await getNotifications('admin');
+                const badge = document.getElementById('notificationBadge');
+                const body = document.getElementById('notificationDropdownBody');
+                
+                if (!badge || !body) return;
+
+                const unreadCount = notifications.filter(n => !n.isRead).length;
+                badge.setAttribute('data-count', unreadCount);
+                
+                // Always show the notification bell so they can click it even if 0 unread
+                badge.style.display = 'block';
+
+                // Hide the pseudo-element counter if 0 unread
+                if (unreadCount === 0) {
+                    badge.classList.add('no-count');
+                } else {
+                    badge.classList.remove('no-count');
+                }
+
+                if (notifications.length === 0) {
+                    body.innerHTML = `
+                        <div class="notification-dropdown-empty">
+                            <span style="font-size:24px;">📭</span>
+                            <span>No new notifications</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                body.innerHTML = notifications.map(notif => {
+                    const iconClass = notif.type === 'concern' ? 'concern' : notif.type === 'borrow' ? 'request' : 'booking';
+                    const icon = notif.type === 'concern' ? '📋' : notif.type === 'borrow' ? '📦' : '🏀';
+                    
+                    const timeAgo = formatTimeAgoAdmin(notif.created_at || notif.createdAt);
+                    const unreadClass = notif.isRead ? '' : 'unread';
+                    
+                    return `
+                        <a href="javascript:void(0)" class="notification-item ${unreadClass}" onclick="handleNotificationClick('${notif.id}', '${notif.type}', event)">
+                            <div class="notif-icon-wrap ${iconClass}">${icon}</div>
+                            <div class="notif-content">
+                                <span class="notif-title">${notif.message}</span>
+                                <span class="notif-time">${timeAgo}</span>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+            }
+
+            function formatTimeAgoAdmin(dateStr) {
+                if (!dateStr) return 'Just now';
+                const date = new Date(dateStr);
+                const seconds = Math.floor((new Date() - date) / 1000);
+                
+                let interval = seconds / 31536000;
+                if (interval > 1) return Math.floor(interval) + " years ago";
+                interval = seconds / 2592000;
+                if (interval > 1) return Math.floor(interval) + " months ago";
+                interval = seconds / 86400;
+                if (interval > 1) return Math.floor(interval) + " days ago";
+                interval = seconds / 3600;
+                if (interval > 1) return Math.floor(interval) + " hours ago";
+                interval = seconds / 60;
+                if (interval > 1) return Math.floor(interval) + " mins ago";
+                return Math.floor(seconds) + " seconds ago";
+            }
+
+            async function handleNotificationClick(id, type, event) {
+                event.preventDefault();
+                await markNotificationAsRead(id);
+                document.getElementById('notificationDropdown').style.display = 'none';
+                
+                const sectionMap = {
+                    'borrow': 'requests',
+                    'concern': 'concerns',
+                    'booking': 'court-bookings'
+                };
+                
+                const sectionId = sectionMap[type] || 'overview';
+                switchSection(sectionId, null);
+                await loadAdminNotifications();
+            }
+
+            window.toggleNotificationDropdown = function(event) {
+                const dropdown = document.getElementById('notificationDropdown');
+                if (dropdown.style.display === 'flex') {
+                    dropdown.style.display = 'none';
+                } else {
+                    dropdown.style.display = 'flex';
+                }
+                event.stopPropagation();
+            };
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('notificationDropdown');
+                const badge = document.getElementById('notificationBadge');
+                if (dropdown && badge && dropdown.style.display === 'flex') {
+                    if (!dropdown.contains(event.target) && !badge.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                }
+            });
+
+            // ==========================================
+            // ADMIN COURT EVENTS CALENDAR
+            // ==========================================
+            let adminCurrentDate = new Date();
+            // adminSelectedDate is declared earlier in the file
+
+            async function renderAdminCalendar() {
+                const year = adminCurrentDate.getFullYear();
+                const month = adminCurrentDate.getMonth();
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                document.getElementById('adminCalendarMonth').textContent = `${monthNames[month]} ${year}`;
+                
+                const grid = document.getElementById('adminCalendarGrid');
+                grid.innerHTML = '';
+                
+                // Fetch bookings & events to highlight dates
+                const allBookings = await getCourtBookings();
+                const allEvents = await getEvents();
+                const venue = document.getElementById('adminSelectedVenue').value;
+                const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                
+                // Add empty cells for offset
+                for (let i = 0; i < firstDay; i++) {
+                    grid.innerHTML += `<div style="height:60px;"></div>`;
+                }
+                
+                const today = new Date();
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                    
+                    // Check bookings & events for this date
+                    const hasEvent = allEvents.some(e => e.date === dateStr);
+                    const hasBooking = allBookings.some(b => b.date === dateStr && (b.venue === venue || b.venueName === venueLabel) && b.status !== 'rejected' && b.status !== 'cancelled');
+                    
+                    let bgClass = '';
+                    let styleStr = 'height:60px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.2s;';
+                    
+                    if (adminSelectedDate === dateStr) {
+                        styleStr += 'background:linear-gradient(135deg, #3b82f6, #2563eb);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3);';
+                    } else if (hasEvent) {
+                        styleStr += 'background:#eff6ff;color:#1e3a8a;border:2px solid #60a5fa;';
+                    } else if (hasBooking) {
+                        styleStr += 'background:#fef2f2;color:#991b1b;border:2px solid #fca5a5;';
+                    } else {
+                        styleStr += 'background:#f8fafc;color:#334155;border:1px solid #e2e8f0;';
+                    }
+                    
+                    if (isToday && adminSelectedDate !== dateStr) {
+                        styleStr += 'border:2px solid #10b981;';
+                    }
+
+                    grid.innerHTML += `
+                        <div onclick="adminSelectDate('${dateStr}')" style="${styleStr} user-select:none;" class="calendar-day" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            ${day}
+                        </div>
+                    `;
+                }
+            }
+
+            window.changeAdminMonth = function(delta) {
+                adminCurrentDate.setMonth(adminCurrentDate.getMonth() + delta);
+                renderAdminCalendar();
+            };
+
+            window.adminSelectVenue = function(venue) {
+                document.getElementById('adminSelectedVenue').value = venue;
+                document.getElementById('admin-venue-basketball').style.background = venue === 'basketball' ? 'linear-gradient(135deg,#10b981,#059669)' : 'transparent';
+                document.getElementById('admin-venue-basketball').style.color = venue === 'basketball' ? '#fff' : '#64748b';
+                
+                document.getElementById('admin-venue-multipurpose').style.background = venue === 'multipurpose' ? 'linear-gradient(135deg,#10b981,#059669)' : 'transparent';
+                document.getElementById('admin-venue-multipurpose').style.color = venue === 'multipurpose' ? '#fff' : '#64748b';
+                
+                renderAdminCalendar();
+                if(adminSelectedDate) adminSelectDate(adminSelectedDate); // Refresh slots
+            };
+
+            window.adminHideEventForm = function() {
+                adminSelectedDate = null;
+                document.getElementById('adminEventEmptyState').style.display = 'flex';
+                document.getElementById('adminSidebarEventForm').style.display = 'none';
+                renderAdminCalendar();
+            };
+
+            async function generateTimeSlots(dateStr) {
+                 const startTimeSel = document.getElementById('adminSidebarEventTime');
+                 const endTimeSel = document.getElementById('adminSidebarEventEndTime');
+                 
+                 startTimeSel.innerHTML = '<option value="">Select Start Time</option>';
+                 endTimeSel.innerHTML = '<option value="">Select End Time</option>';
+
+                 const slots = [];
+                 for(let i = 6; i <= 22; i++) { // 6am to 10pm
+                     const t1 = `${String(i).padStart(2, '0')}:00`;
+                     const t2 = `${String(i).padStart(2, '0')}:30`;
+                     slots.push(t1);
+                     if(i !== 22) slots.push(t2); // skip 22:30
+                 }
+
+                 const allBookings = await getCourtBookings();
+                 const allEvents = await getEvents();
+                 const venue = document.getElementById('adminSelectedVenue').value;
+                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+
+                 slots.forEach(slot => {
+                     // Check if this slot overlaps with anything
+                     let isBooked = false;
+                     let slotStartMinutes = timeToMinutes(slot);
+                     let slotEndMinutes = slotStartMinutes + 30; // each slot represents 30 min chunk
+
+                     // Check bookings
+                     for (const b of allBookings) {
+                        if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled') {
+                           if (b.venue === venue || b.venueName === venueLabel) {
+                              let tRange = b.timeRange || b.time; 
+                              if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                              let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
+                              if (!eTime) eTime = sTime; 
+                              const eStart = timeToMinutes(sTime);
+                              const eEnd = timeToMinutes(eTime);
+                              if (slotStartMinutes < eEnd && slotEndMinutes > eStart) isBooked = true;
+                           }
+                        }
+                     }
+                     // Check events (Events apply to all venues typically)
+                     for (const e of allEvents) {
+                        if (e.date === dateStr) {
+                           const eStart = timeToMinutes(e.time);
+                           const eEnd = timeToMinutes(e.end_time || e.time);
+                           if (slotStartMinutes < eEnd && slotEndMinutes > eStart) isBooked = true;
+                        }
+                     }
+
+                     // Convert 24hr to 12hr AM/PM for display
+                     let h = parseInt(slot.split(':')[0]);
+                     let m = slot.split(':')[1];
+                     let ampm = h >= 12 ? 'PM' : 'AM';
+                     let h12 = h % 12;
+                     if(h12 === 0) h12 = 12;
+                     const displayTime = `${h12}:${m} ${ampm}`;
+
+                     const opt1 = document.createElement('option');
+                     opt1.value = slot;
+                     opt1.textContent = displayTime + (isBooked ? ' (Booked)' : '');
+                     if(isBooked) opt1.disabled = true;
+                     startTimeSel.appendChild(opt1);
+
+                     const opt2 = document.createElement('option');
+                     opt2.value = slot;
+                     opt2.textContent = displayTime + (isBooked ? ' (Booked)' : '');
+                     if(isBooked) opt2.disabled = true;
+                     endTimeSel.appendChild(opt2);
+                 });
+            }
+
+            window.adminSelectDate = async function(dateStr) {
+                adminSelectedDate = dateStr;
+                renderAdminCalendar();
+
+                const d = new Date(dateStr);
+                const displayStr = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+                
+                document.getElementById('adminEventSelectedDateDisplay').textContent = displayStr;
+                document.getElementById('adminSidebarEventDate').value = dateStr;
+                
+                document.getElementById('adminEventEmptyState').style.display = 'none';
+                document.getElementById('adminSidebarEventForm').style.display = 'flex';
+                
+                await generateTimeSlots(dateStr);
+            };
+
+            const adminEventForm = document.getElementById('adminSidebarEventForm');
+            if(adminEventForm) {
+                adminEventForm.addEventListener('submit', async function(e) {
+                     e.preventDefault();
+                     const btn = this.querySelector('button[type="submit"]');
+                     const orig = btn.innerHTML;
+                     btn.innerHTML = 'Scheduling...';
+                     btn.disabled = true;
+
+                     const eventData = {
+                         title: document.getElementById('adminSidebarEventTitle').value,
+                         date: document.getElementById('adminSidebarEventDate').value,
+                         time: document.getElementById('adminSidebarEventTime').value,
+                         end_time: document.getElementById('adminSidebarEventEndTime').value,
+                         organizer: document.getElementById('adminSidebarEventOrganizer').value,
+                         location: document.getElementById('adminSelectedVenue').value === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                         description: 'Official Barangay Event'
+                     };
+
+                     const result = await createEvent(eventData);
+                     btn.innerHTML = orig;
+                     btn.disabled = false;
+
+                     if (result.success) {
+                         showAlert('Event scheduled successfully!', 'success');
+                         adminHideEventForm();
+                         document.getElementById('adminSidebarEventForm').reset();
+                         renderAdminCalendar();
+                     } else {
+                         showAlert('Error: ' + result.message, 'error');
+                     }
+                });
+            }
+
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
                 initWelcomeClock();
                 loadOverview();
+                loadAdminNotifications();
+                renderAdminCalendar();
             });
 
             // ==========================================
