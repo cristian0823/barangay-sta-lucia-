@@ -2645,10 +2645,10 @@
                 await loadConcerns();
                 await loadEvents();
                 await loadEquipment();
-                await renderAdminCalendar();
                 await renderAdminAllBookings();
                 await loadAdminNotifications();
-
+                
+                initWelcomeClock();
                 await loadSystemStatsForProfile();
 
                 // Profile form
@@ -3326,13 +3326,13 @@
                     <td>${b.borrowDate} to ${b.returnDate}</td>
                     <td>${b.purpose}</td>
                     <td>${getStatusBadge(b.status)}</td>
-                    <td class="admin-actions">
+                    <td class="admin-actions" style="display:flex;gap:6px;flex-wrap:wrap;border:none;">
                         ${b.status === 'pending' ? `
-                            <button class="btn btn-small btn-primary" onclick="approveRequest(${b.id})">Approve</button>
-                            <button class="btn btn-small btn-danger" onclick="rejectRequest(${b.id})">Reject</button>
+                            <button onclick="approveRequest(${b.id})" style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">✅ Approve</button>
+                            <button onclick="rejectRequest(${b.id})" style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">❌ Reject</button>
                         ` : b.status === 'approved' ? `
-                            <button class="btn btn-small btn-light" onclick="returnRequest(${b.id})">Mark Returned</button>
-                        ` : ''}
+                            <button onclick="returnRequest(${b.id})" style="padding:6px 12px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">🔙 Returned</button>
+                        ` : '<span style="font-size:12px;color:#9ca3af;padding:6px 0;">—</span>'}
                     </td>
                 </tr>
             `).join('');

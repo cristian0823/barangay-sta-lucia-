@@ -458,7 +458,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available` };
 
         // Update available count
-        await supabase.from('equipment').update({ available: item.available - quantity }).eq('id', equipmentId);
+        // We no longer deduct here! Admin approval will handle the deduction.
 
         // Insert borrowing
         const { error } = await supabase.from('borrowings').insert([{
@@ -485,8 +485,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available` };
 
         // Update available count
-        item.available -= quantity;
-        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        // We no longer deduct here! Admin approval will handle the deduction locally.
 
         // Add borrowing record
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
@@ -1798,3 +1797,4 @@ function timeToMinutes(tStr) {
     if (modifier === 'pm') hours = parseInt(hours) + 12;
     return parseInt(hours) * 60 + parseInt(minutes || 0);
 }
+
