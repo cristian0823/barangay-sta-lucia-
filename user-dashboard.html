@@ -492,87 +492,68 @@
             </div>
         </div>
     </div>
-    <!-- Premium Court Booking Modal -->
-    <div class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto pt-10 pb-10" id="bookingModal">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl relative max-w-lg w-full mx-4 flex flex-col animate-[fadeIn_0.3s_ease]">
+    </div>
 
-            <!-- Modal Top Green Header -->
-            <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-7 relative">
-                <button onclick="closeBookingModal()"
-                    class="absolute top-4 right-4 bg-white/10 hover:bg-white/20 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">&times;</button>
-                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M8 2v4" />
-                        <path d="M16 2v4" />
-                        <rect width="18" height="18" x="3" y="4" rx="2" />
-                        <path d="M3 10h18" />
-                        <path d="M8 14h.01" />
-                        <path d="M12 14h.01" />
-                        <path d="M16 14h.01" />
-                        <path d="M8 18h.01" />
-                        <path d="M12 18h.01" />
-                        <path d="M16 18h.01" />
-                    </svg>
-                </div>
-                <h3 id="bookingDateTitle" class="text-2xl font-extrabold text-white mb-1">Book Court</h3>
-                <p class="text-sm text-white/80 m-0">Secure your preferred schedule instantly.</p>
+    <!-- ===== DAY SCHEDULE POPUP (New) ===== -->
+    <div id="dayScheduleModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]" style="max-height:90vh;">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
+                <button onclick="closeDayScheduleModal()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
+                <div class="text-3xl mb-2">📅</div>
+                <h3 id="dsModalDate" class="text-xl font-extrabold text-white mb-0.5">Select a Date</h3>
+                <p id="dsModalVenue" class="text-sm text-white/80 m-0"></p>
             </div>
 
-            <!-- Modal Body Form -->
-            <div class="p-7 bg-white dark:bg-gray-800">
-                <div id="bookingMsg" class="mb-4"></div>
-                <form id="courtBookForm">
-                    <input type="hidden" id="cbDate">
-                    <input type="hidden" id="bookingVenueInput" value="basketball">
+            <!-- Schedule List -->
+            <div class="overflow-y-auto flex-grow px-6 pt-5 pb-2">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Time Slot Schedule</p>
+                <div id="dsScheduleList" class="space-y-3 mb-4">
+                    <!-- Populated by JS -->
+                </div>
+                <div id="dsEmptyState" class="hidden text-center py-6">
+                    <div class="text-4xl mb-2">🟢</div>
+                    <p class="text-sm font-semibold text-gray-500">No bookings yet for this day.</p>
+                    <p class="text-xs text-gray-400">All time slots are available!</p>
+                </div>
+            </div>
 
-                    <!-- Reserved By -->
-                    <div class="mb-5">
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider text-xs">Reserved By</label>
-                        <input type="text" id="cbName" required placeholder="Full Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 font-medium outline-none">
-                    </div>
+            <!-- Add Booking Section -->
+            <div class="px-6 pb-6 flex-shrink-0 border-t border-gray-100 dark:border-gray-700 pt-4">
+                <!-- Toggle Button -->
+                <button id="dsToggleFormBtn" onclick="toggleDsForm()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
+                    <span>＋ Add Court Booking</span>
+                </button>
 
-                    <!-- Start & End Time Side by Side -->
-                    <div class="grid grid-cols-2 gap-4 mb-5">
+                <!-- Inline Booking Form (hidden by default) -->
+                <form id="dsBookingForm" class="hidden mt-4 space-y-3" onsubmit="submitDsBooking(event)">
+                    <input type="hidden" id="dsDate">
+                    <input type="hidden" id="dsVenue">
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider text-xs">Start Time</label>
-                            <select id="cbStartTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 font-medium outline-none cursor-pointer">
-                                <option value="">-- Choose --</option>
-                                <option value="6:00 AM">6:00 AM</option>
-                                <option value="8:00 AM">8:00 AM</option>
-                                <option value="10:00 AM">10:00 AM</option>
-                                <option value="12:00 PM">12:00 PM</option>
-                                <option value="2:00 PM">2:00 PM</option>
-                                <option value="4:00 PM">4:00 PM</option>
-                                <option value="6:00 PM">6:00 PM</option>
-                                <option value="8:00 PM">8:00 PM</option>
-                            </select>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Start Time</label>
+                            <select id="dsStartTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider text-xs">End Time</label>
-                            <select id="cbEndTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 font-medium outline-none cursor-pointer">
-                                <option value="">-- Choose --</option>
-                                <option value="8:00 AM">8:00 AM</option>
-                                <option value="10:00 AM">10:00 AM</option>
-                                <option value="12:00 PM">12:00 PM</option>
-                                <option value="2:00 PM">2:00 PM</option>
-                                <option value="4:00 PM">4:00 PM</option>
-                                <option value="6:00 PM">6:00 PM</option>
-                                <option value="8:00 PM">8:00 PM</option>
-                                <option value="10:00 PM">10:00 PM</option>
-                            </select>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">End Time</label>
+                            <select id="dsEndTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
                         </div>
                     </div>
 
-                    <!-- Purpose -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider text-xs">Purpose of Booking</label>
-                        <input type="text" id="cbPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-800 font-medium outline-none">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Reserved By</label>
+                        <input type="text" id="dsName" required placeholder="Full Name" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400">
                     </div>
 
-                    <!-- Submit -->
-                    <button type="submit" id="cbSubmitBtn" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border-none cursor-pointer">
-                        Confirm Booking
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Purpose</label>
+                        <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+
+                    <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
+                        ✅ Confirm Booking
                     </button>
                 </form>
             </div>
@@ -1053,19 +1034,19 @@
                     dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed'; 
                 }
                 else if (hasEvent) { 
-                    // Official Events make the date purple. Still clickable to book non-overlapping times.
+                    // Official Events make the date purple. Still clickable.
                     dayDiv.className += 'bg-purple-100 text-purple-800 border-2 border-purple-400 cursor-pointer hover:bg-purple-200 hover:scale-105'; 
-                    dayDiv.title = 'Barangay Event: ' + hasEvent.title + '. Click to book available times.'; 
-                    dayDiv.onclick = () => selectBookingDate(dateStr, hasEvent);
+                    dayDiv.title = 'Barangay Event: ' + hasEvent.title + '. Click to see schedule.'; 
+                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 else if (bookedDates.includes(dateStr)) { 
                     dayDiv.className += 'bg-red-100 text-red-700 border-2 border-red-300 cursor-pointer hover:bg-red-200 hover:scale-105'; 
-                    dayDiv.title = 'Has Bookings. Click to book available times.';
-                    dayDiv.onclick = () => selectBookingDate(dateStr, false);
+                    dayDiv.title = 'Has Bookings. Click to see schedule.';
+                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 else { 
                     dayDiv.className += 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200 cursor-pointer hover:scale-105'; 
-                    dayDiv.onclick = () => selectBookingDate(dateStr, false);
+                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 
                 if (dateObj.getTime() === today.getTime() && !selectedDate) { 
@@ -1098,147 +1079,211 @@
             }
         }
 
-        async function selectBookingDate(dateStr, eventOnDate) {
+        // selectBookingDate is replaced by openDaySchedulePopup below
+        async function selectBookingDate(dateStr) {
+            return openDaySchedulePopup(dateStr);
+        }
+
+        // ==========================================
+        // DAY SCHEDULE POPUP SYSTEM
+        // ==========================================
+        let _dsCurrentDate = null;
+        let _dsCurrentVenue = null;
+
+        function fmt12(slot) {
+            // Convert "HH:MM" 24h string to "H:MM AM/PM"
+            let h = parseInt(slot.split(':')[0]);
+            let m = slot.split(':')[1];
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            let h12 = h % 12; if (h12 === 0) h12 = 12;
+            return `${h12}:${m} ${ampm}`;
+        }
+
+        async function openDaySchedulePopup(dateStr) {
             const today = new Date(); today.setHours(0,0,0,0);
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
-            
-            // Format date for title
-            const dateFmt = new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            document.getElementById('bookingDateTitle').textContent = dateFmt;
-            document.getElementById('cbDate').value = dateStr;
-            
-            // Auto-fill name
-            if (window.user && window.user.name) {
-                document.getElementById('cbName').value = window.user.name;
-            }
 
-            const btn = document.getElementById('cbSubmitBtn');
-            const msg = document.getElementById('bookingMsg');
+            _dsCurrentDate = dateStr;
+            _dsCurrentVenue = selectedVenue;
 
-            if (eventOnDate) {
-                msg.innerHTML = '<div class="bg-purple-50 border-l-4 border-purple-500 p-3 rounded mb-4 text-xs text-purple-800"><strong>⚠️ Official Event:</strong> An official event (' + eventOnDate.title + ') is scheduled for this day. You can still book available times.</div>';
+            const venueLabel = selectedVenue === 'basketball' ? '🏀 Basketball Court' : '🏢 Multi-Purpose Hall';
+            const d = new Date(dateStr + 'T00:00:00');
+            const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+            document.getElementById('dsModalDate').textContent = dateFmt;
+            document.getElementById('dsModalVenue').textContent = venueLabel;
+            document.getElementById('dsDate').value = dateStr;
+            document.getElementById('dsVenue').value = selectedVenue;
+            document.getElementById('dsName').value = user.name || '';
+
+            // Hide form by default
+            document.getElementById('dsBookingForm').classList.add('hidden');
+            document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+
+            // Show modal
+            const modal = document.getElementById('dayScheduleModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            await refreshDsSchedule(dateStr, selectedVenue);
+        }
+
+        async function refreshDsSchedule(dateStr, venue) {
+            const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+            const [allBookings, allEvents] = await Promise.all([getCourtBookings(), getEvents()]);
+
+            const dayBookings = allBookings.filter(b =>
+                b.date === dateStr &&
+                b.status !== 'cancelled' && b.status !== 'rejected' &&
+                (b.venue === venue || b.venueName === venueLabel)
+            );
+            const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
+
+            const list = document.getElementById('dsScheduleList');
+            const empty = document.getElementById('dsEmptyState');
+
+            const entries = [];
+
+            dayBookings.forEach(b => {
+                const timeStr = b.time + (b.end_time ? ' – ' + b.end_time : '');
+                entries.push({ type: 'booking', timeStr, label: b.userName || b.username || 'Resident', purpose: b.purpose || '' });
+            });
+            dayEvents.forEach(e => {
+                const timeStr = e.time + (e.end_time ? ' – ' + e.end_time : '');
+                entries.push({ type: 'event', timeStr, label: e.title, purpose: e.organizer ? 'By ' + e.organizer : '' });
+            });
+
+            if (entries.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
             } else {
-                msg.innerHTML = '';
+                empty.classList.add('hidden');
+                list.innerHTML = entries.map(en => {
+                    const isBk = en.type === 'booking';
+                    const bg = isBk ? 'bg-red-50 border-red-200' : 'bg-purple-50 border-purple-200';
+                    const dot = isBk ? '🔴' : '🟣';
+                    const nameColor = isBk ? 'text-red-700' : 'text-purple-700';
+                    return `<div class="flex items-start gap-3 p-3 rounded-xl border ${bg}">
+                        <span class="text-lg leading-none mt-0.5">${dot}</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold ${nameColor} truncate">${en.timeStr}</p>
+                            <p class="text-xs text-gray-600 font-semibold truncate">${en.label}</p>
+                            ${en.purpose ? `<p class="text-xs text-gray-400 italic truncate">${en.purpose}</p>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
             }
 
-            await generateUserTimeSlots(dateStr);
-
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            document.getElementById('bookingModal').classList.remove('hidden');
-            document.getElementById('bookingModal').classList.add('flex');
+            // Regenerate time selects
+            await fillDsTimeSelects(dateStr, venue, allBookings, allEvents);
         }
 
-        async function generateUserTimeSlots(dateStr) {
-             const startTimeSel = document.getElementById('cbStartTime');
-             const endTimeSel = document.getElementById('cbEndTime');
-             
-             startTimeSel.innerHTML = '<option value="">-- Choose Start Time --</option>';
-             endTimeSel.innerHTML = '<option value="">-- Choose End Time --</option>';
+        async function fillDsTimeSelects(dateStr, venue, allBookings, allEvents) {
+            const startSel = document.getElementById('dsStartTime');
+            const endSel = document.getElementById('dsEndTime');
+            startSel.innerHTML = '<option value="">-- Start Time --</option>';
+            endSel.innerHTML = '<option value="">-- End Time --</option>';
 
-             const slots = [];
-             for(let i = 6; i <= 22; i++) { // 6am to 10pm
-                 const t1 = `${String(i).padStart(2, '0')}:00`;
-                 const t2 = `${String(i).padStart(2, '0')}:30`;
-                 slots.push(t1);
-                 if(i !== 22) slots.push(t2); // skip 22:30
-             }
+            const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
 
-             const allBookings = await getCourtBookings();
-             const allEvents = await getEvents();
-             const venue = document.getElementById('bookingVenueInput').value;
-             const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+            const slots = [];
+            for (let i = 6; i <= 22; i++) {
+                slots.push(`${String(i).padStart(2,'0')}:00`);
+                if (i !== 22) slots.push(`${String(i).padStart(2,'0')}:30`);
+            }
 
-             slots.forEach(slot => {
-                 let isBooked = false;
-                 let slotStartMinutes = timeToMinutes(slot);
-                 let slotEndMinutes = slotStartMinutes + 30;
+            slots.forEach(slot => {
+                const sMin = timeToMinutes(slot);
+                const eMin = sMin + 30;
+                let taken = false;
 
-                 for (const b of allBookings) {
-                    if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled') {
-                       if (b.venue === venue || b.venueName === venueLabel) {
-                          let tRange = b.timeRange || b.time; 
-                          if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-                          let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
-                          if (!eTime) eTime = sTime; 
-                          const eStart = timeToMinutes(sTime);
-                          const eEnd = timeToMinutes(eTime);
-                          if (slotStartMinutes < eEnd && slotEndMinutes > eStart) isBooked = true;
-                       }
+                for (const b of allBookings) {
+                    if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' &&
+                        (b.venue === venue || b.venueName === venueLabel)) {
+                        let tRange = b.timeRange || b.time;
+                        if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                        let [st, et] = tRange.split('–').map(s => s.trim());
+                        if (!et) et = st;
+                        if (sMin < timeToMinutes(et) && eMin > timeToMinutes(st)) taken = true;
                     }
-                 }
-                 for (const e of allEvents) {
+                }
+                for (const e of allEvents) {
                     if (e.date === dateStr && e.status === 'approved') {
-                       const eStart = timeToMinutes(e.time);
-                       const eEnd = timeToMinutes(e.end_time || e.time);
-                       if (slotStartMinutes < eEnd && slotEndMinutes > eStart) isBooked = true;
+                        const es = timeToMinutes(e.time);
+                        const ee = timeToMinutes(e.end_time || e.time);
+                        if (sMin < ee && eMin > es) taken = true;
                     }
-                 }
+                }
 
-                 let h = parseInt(slot.split(':')[0]);
-                 let m = slot.split(':')[1];
-                 let ampm = h >= 12 ? 'PM' : 'AM';
-                 let h12 = h % 12;
-                 if(h12 === 0) h12 = 12;
-                 const displayTime = `${h12}:${m} ${ampm}`;
-
-                 const opt1 = document.createElement('option');
-                 opt1.value = displayTime;
-                 opt1.textContent = displayTime + (isBooked ? ' (Unavailable)' : '');
-                 if(isBooked) opt1.disabled = true;
-                 startTimeSel.appendChild(opt1);
-
-                 const opt2 = document.createElement('option');
-                 opt2.value = displayTime;
-                 opt2.textContent = displayTime + (isBooked ? ' (Unavailable)' : '');
-                 if(isBooked) opt2.disabled = true;
-                 endTimeSel.appendChild(opt2);
-             });
+                const label = fmt12(slot) + (taken ? ' (Unavailable)' : '');
+                const o1 = new Option(label, fmt12(slot)); if (taken) o1.disabled = true;
+                const o2 = new Option(label, fmt12(slot)); if (taken) o2.disabled = true;
+                startSel.appendChild(o1);
+                endSel.appendChild(o2);
+            });
         }
 
-        function closeBookingModal() {
-            document.getElementById('bookingModal').classList.add('hidden');
-            document.getElementById('bookingModal').classList.remove('flex');
-            document.getElementById('courtBookForm').reset();
-            document.getElementById('bookingMsg').innerHTML = '';
+        function closeDayScheduleModal() {
+            const modal = document.getElementById('dayScheduleModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('dsBookingForm').reset();
+            document.getElementById('dsBookingForm').classList.add('hidden');
+            document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
         }
 
-        document.getElementById('courtBookForm').addEventListener('submit', async function (e) {
+        function toggleDsForm() {
+            const form = document.getElementById('dsBookingForm');
+            const btn = document.getElementById('dsToggleFormBtn');
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                btn.innerHTML = '<span>▲ Hide Form</span>';
+            } else {
+                form.classList.add('hidden');
+                btn.innerHTML = '<span>＋ Add Court Booking</span>';
+            }
+        }
+
+        async function submitDsBooking(e) {
             e.preventDefault();
-            const btn = document.getElementById('cbSubmitBtn');
+            const btn = document.getElementById('dsSubmitBtn');
             btn.disabled = true; btn.innerHTML = 'Processing...';
 
-            const bookingData = { 
-                date: document.getElementById('cbDate').value, 
-                time: document.getElementById('cbStartTime').value, 
-                end_time: document.getElementById('cbEndTime').value, 
-                purpose: document.getElementById('cbPurpose').value, 
-                venue: document.getElementById('bookingVenueInput').value, 
-                venueName: document.getElementById('bookingVenueInput').value === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
-                username: document.getElementById('cbName').value || user.name
-            };
+            const date = document.getElementById('dsDate').value;
+            const venue = document.getElementById('dsVenue').value;
+            const startTime = document.getElementById('dsStartTime').value;
+            const endTime = document.getElementById('dsEndTime').value;
+            const name = document.getElementById('dsName').value;
+            const purpose = document.getElementById('dsPurpose').value;
 
             const result = await bookCourt({
                 user_id: user.id,
-                username: bookingData.username,
-                date: bookingData.date,
-                time: bookingData.time,
-                end_time: bookingData.end_time,
-                venue: bookingData.venue,
-                purpose: bookingData.purpose,
+                username: name,
+                date,
+                time: startTime,
+                end_time: endTime,
+                venue,
+                venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                purpose,
                 status: 'pending'
             });
 
-            if (result.success) { 
-                showToast(result.message, 'success'); 
-                closeBookingModal(); 
-                await loadBookingView(); 
-                await loadDashboardStats(); 
-            } else { 
-                showToast(result.message, 'error'); 
+            btn.disabled = false; btn.innerHTML = '✅ Confirm Booking';
+
+            if (result.success) {
+                showToast('Booking submitted!', 'success');
+                document.getElementById('dsPurpose').value = '';
+                document.getElementById('dsStartTime').value = '';
+                document.getElementById('dsEndTime').value = '';
+                document.getElementById('dsBookingForm').classList.add('hidden');
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+                await refreshDsSchedule(date, venue);
+                await loadBookingView();
+                await loadDashboardStats();
+            } else {
+                showToast(result.message, 'error');
             }
-            btn.disabled = false; btn.innerHTML = 'Confirm Booking';
-        });
+        }
 
         async function cancelMyReservation(id) {
             if (!confirm("Cancel this reservation?")) return;

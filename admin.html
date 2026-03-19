@@ -1933,79 +1933,23 @@
                                     </div>
                                 </div>
 
-                                <!-- Add Event Panel (Right Side) -->
-                                <div style="background:#fff; border-radius:24px; box-shadow:0 12px 40px rgba(0,0,0,0.06); border:1px solid #f1f5f9; display:flex; flex-direction:column; overflow:hidden; min-height:400px;">
-                                    
-                                    <!-- Header area of panel -->
+                                <!-- The Right Panel is now just a summary or deleted -->
+                                <div style="width:340px; background:#fff; border-left:1px solid #e2e8f0; display:flex; flex-direction:column;">
                                     <div style="padding:28px 28px 0 28px; flex-shrink:0;">
-                                        <h2 style="font-size:22px; font-weight:800; color:#0f172a; margin:0 0 6px 0; letter-spacing:-0.02em;">Add Official Event</h2>
-                                        <p style="font-size:14px; color:#64748b; margin:0;" id="adminEventPanelSubtitle">Create barangay events to block out court bookings.</p>
+                                        <h2 style="font-size:22px; font-weight:800; color:#0f172a; margin:0 0 6px 0; letter-spacing:-0.02em;">Schedule Overview</h2>
+                                        <p style="font-size:14px; color:#64748b; margin:0;">Click any date on the calendar to view its schedule and add official events.</p>
                                     </div>
 
                                     <div style="padding:24px 28px 28px 28px; flex-grow:1; display:flex; flex-direction:column;">
-                                        
-                                        <!-- Empty State (Shown when no date is clicked) -->
-                                        <div id="adminEventEmptyState" style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 20px;">
-                                            <div style="width:64px; height:64px; background:#f8fafc; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:16px; font-size:32px;">📅</div>
-                                            <h3 style="font-size:16px; font-weight:700; color:#334155; margin:0 0 8px 0;">Select a Date</h3>
-                                            <p style="font-size:13px; color:#94a3b8; margin:0; line-height:1.5;">Click any available date on the calendar to the left to schedule a new official barangay event.</p>
-                                        </div>
-
-                                        <!-- Event Form (Hidden default, shown on date click) -->
-                                        <form id="adminSidebarEventForm" style="display:none; flex-grow:1; flex-direction:column; gap:20px;">
-                                            
-                                            <!-- Selected Date Display -->
-                                            <div style="background:#f8fafc; border-radius:12px; padding:16px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:12px;">
-                                                <div style="font-size:24px;">📆</div>
-                                                <div>
-                                                    <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px;">Selected Date</div>
-                                                    <div id="adminEventSelectedDateDisplay" style="font-size:15px; font-weight:800; color:#0f172a;"></div>
-                                                </div>
-                                            </div>
-
-                                            <input type="hidden" id="adminSidebarEventDate" required>
-
-                                            <div>
-                                                <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">📝 Event Title</label>
-                                                <input type="text" id="adminSidebarEventTitle" required placeholder="e.g. Barangay Fiesta, Liga ng Barangay" style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
-                                            </div>
-                                            
-                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                                                <div>
-                                                    <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">⏰ Start Time</label>
-                                                    <select id="adminSidebarEventTime" required style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'"></select>
-                                                </div>
-                                                <div>
-                                                    <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">⏰ End Time</label>
-                                                    <select id="adminSidebarEventEndTime" required style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'"></select>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">👤 Organizer / Official</label>
-                                                <input type="text" id="adminSidebarEventOrganizer" required placeholder="Name of Official or Group" style="width:100%;height:48px;background:#fff;border:1.5px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:14px;font-weight:500;color:#0f172a;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
-                                            </div>
-
-                                            <div style="margin-top:auto; padding-top:16px;">
-                                                <button type="submit" style="width:100%;height:52px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(59,130,246,0.3);transition:transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 24px rgba(59,130,246,0.4)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 20px rgba(59,130,246,0.3)';">
-                                                    🎉 Schedule Event
-                                                </button>
-                                                <button type="button" onclick="adminHideEventForm()" style="width:100%;height:44px;background:transparent;color:#64748b;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;transition:background 0.2s;" onmouseover="this.style.background='#f1f5f9';this.style.color='#475569';" onmouseout="this.style.background='transparent';this.style.color='#64748b';">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </form>
+                                    
+                                        <!-- All Bookings List -->
+                                        <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 10px;">📋 All Active Bookings</h3>
+                                        <div id="adminAllBookingsList" style="overflow-y:auto;flex-grow:1;display:flex;flex-direction:column;gap:8px;"></div>
                                     </div>
                                 </div>
                             </div>
-
-                                    <div id="adminBookingMessage" style="margin-top:16px;"></div>
-
-                                    <!-- All Bookings List -->
-                                    <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:20px 0 10px;">📋 All Bookings</h3>
-                                    <div id="adminAllBookingsList" style="overflow-y:auto;max-height:260px;display:flex;flex-direction:column;gap:8px;"></div>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
                     <div id="equipment-section" class="section-container" style="display: none;">
                         <div class="section-header">
                             <h3>Equipment Inventory</h3>
@@ -4473,7 +4417,44 @@
                         </div>
                     `;
                 }
+
+                // Sort and display all upcoming bookings/events in the right panel
+                const rightList = document.getElementById('adminAllBookingsList');
+                if (rightList) {
+                    const todayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const upcomingBooks = allBookings.filter(b => b.date >= todayStr && b.status !== 'rejected' && b.status !== 'cancelled');
+                    const upcomingEvents = allEvents.filter(e => e.date >= todayStr && e.status === 'approved');
+                    
+                    const combined = [];
+                    upcomingBooks.forEach(b => combined.push({ type: 'booking', date: b.date, time: b.time, label: b.userName || 'Resident', sub: b.venueName || b.venue }));
+                    upcomingEvents.forEach(e => combined.push({ type: 'event', date: e.date, time: e.time, label: e.title, sub: 'Official Event' }));
+                    
+                    // Sort by date then time
+                    combined.sort((a,b) => {
+                        if (a.date !== b.date) return a.date.localeCompare(b.date);
+                        return timeToMinutes(a.time) - timeToMinutes(b.time);
+                    });
+
+                    if (combined.length === 0) {
+                        rightList.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No upcoming schedules found.</div>';
+                    } else {
+                        rightList.innerHTML = combined.map(item => {
+                            const isEv = item.type === 'event';
+                            const dot = isEv ? '🟣' : '🔴';
+                            const dateFmt = new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            return `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:flex-start;">
+                                <div style="font-size:16px;line-height:1;margin-top:2px;">${dot}</div>
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:2px;">${item.label}</div>
+                                    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">${item.sub}</div>
+                                    <div style="font-weight:700;font-size:11px;color:${isEv ? '#6d28d9' : '#b91c1c'};">${dateFmt} • ${item.time}</div>
+                                </div>
+                            </div>`;
+                        }).join('');
+                    }
+                }
             }
+
 
             window.changeAdminMonth = function(delta) {
                 adminCurrentDate.setMonth(adminCurrentDate.getMonth() + delta);
@@ -4492,133 +4473,214 @@
                 if(adminSelectedDate) adminSelectDate(adminSelectedDate); // Refresh slots
             };
 
-            window.adminHideEventForm = function() {
-                adminSelectedDate = null;
-                document.getElementById('adminEventEmptyState').style.display = 'flex';
-                document.getElementById('adminSidebarEventForm').style.display = 'none';
-                renderAdminCalendar();
-            };
+            // =====================================================
+            // ADMIN DAY SCHEDULE POPUP SYSTEM
+            // =====================================================
 
-            async function generateTimeSlots(dateStr) {
-                 const startTimeSel = document.getElementById('adminSidebarEventTime');
-                 const endTimeSel = document.getElementById('adminSidebarEventEndTime');
-                 
-                 startTimeSel.innerHTML = '<option value="">Select Start Time</option>';
-                 endTimeSel.innerHTML = '<option value="">Select End Time</option>';
-
-                 const slots = [];
-                 for(let i = 6; i <= 22; i++) { // 6am to 10pm
-                     const t1 = `${String(i).padStart(2, '0')}:00`;
-                     const t2 = `${String(i).padStart(2, '0')}:30`;
-                     slots.push(t1);
-                     if(i !== 22) slots.push(t2); // skip 22:30
-                 }
-
-                 const allBookings = await getCourtBookings();
-                 const allEvents = await getEvents();
-                 const venue = document.getElementById('adminSelectedVenue').value;
-                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
-
-                 slots.forEach(slot => {
-                     // Check if this slot overlaps with anything
-                     let isBooked = false;
-                     let slotStartMinutes = timeToMinutes(slot);
-                     let slotEndMinutes = slotStartMinutes + 30; // each slot represents 30 min chunk
-
-                     // Check bookings
-                     for (const b of allBookings) {
-                        if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled') {
-                           if (b.venue === venue || b.venueName === venueLabel) {
-                              let tRange = b.timeRange || b.time; 
-                              if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-                              let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
-                              if (!eTime) eTime = sTime; 
-                              const eStart = timeToMinutes(sTime);
-                              const eEnd = timeToMinutes(eTime);
-                              if (slotStartMinutes < eEnd && slotEndMinutes > eStart) isBooked = true;
-                           }
-                        }
-                     }
-                     // Check events (Events apply to all venues typically)
-                     for (const e of allEvents) {
-                        if (e.date === dateStr) {
-                           const eStart = timeToMinutes(e.time);
-                           const eEnd = timeToMinutes(e.end_time || e.time);
-                           if (slotStartMinutes < eEnd && slotEndMinutes > eStart) isBooked = true;
-                        }
-                     }
-
-                     // Convert 24hr to 12hr AM/PM for display
-                     let h = parseInt(slot.split(':')[0]);
-                     let m = slot.split(':')[1];
-                     let ampm = h >= 12 ? 'PM' : 'AM';
-                     let h12 = h % 12;
-                     if(h12 === 0) h12 = 12;
-                     const displayTime = `${h12}:${m} ${ampm}`;
-
-                     const opt1 = document.createElement('option');
-                     opt1.value = slot;
-                     opt1.textContent = displayTime + (isBooked ? ' (Booked)' : '');
-                     if(isBooked) opt1.disabled = true;
-                     startTimeSel.appendChild(opt1);
-
-                     const opt2 = document.createElement('option');
-                     opt2.value = slot;
-                     opt2.textContent = displayTime + (isBooked ? ' (Booked)' : '');
-                     if(isBooked) opt2.disabled = true;
-                     endTimeSel.appendChild(opt2);
-                 });
+            function adminFmt12(slot) {
+                let h = parseInt(slot.split(':')[0]);
+                let m = slot.split(':')[1];
+                let ampm = h >= 12 ? 'PM' : 'AM';
+                let h12 = h % 12; if (h12 === 0) h12 = 12;
+                return `${h12}:${m} ${ampm}`;
             }
 
             window.adminSelectDate = async function(dateStr) {
                 adminSelectedDate = dateStr;
                 renderAdminCalendar();
-
-                const d = new Date(dateStr);
-                const displayStr = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-                
-                document.getElementById('adminEventSelectedDateDisplay').textContent = displayStr;
-                document.getElementById('adminSidebarEventDate').value = dateStr;
-                
-                document.getElementById('adminEventEmptyState').style.display = 'none';
-                document.getElementById('adminSidebarEventForm').style.display = 'flex';
-                
-                await generateTimeSlots(dateStr);
+                await openAdminDayPopup(dateStr);
             };
 
-            const adminEventForm = document.getElementById('adminSidebarEventForm');
-            if(adminEventForm) {
-                adminEventForm.addEventListener('submit', async function(e) {
-                     e.preventDefault();
-                     const btn = this.querySelector('button[type="submit"]');
-                     const orig = btn.innerHTML;
-                     btn.innerHTML = 'Scheduling...';
-                     btn.disabled = true;
+            async function openAdminDayPopup(dateStr) {
+                const venue = document.getElementById('adminSelectedVenue').value;
+                const venueLabel = venue === 'basketball' ? '🏀 Basketball Court' : '🏢 Multi-Purpose Hall';
+                const d = new Date(dateStr + 'T00:00:00');
+                const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
-                     const eventData = {
-                         title: document.getElementById('adminSidebarEventTitle').value,
-                         date: document.getElementById('adminSidebarEventDate').value,
-                         time: document.getElementById('adminSidebarEventTime').value,
-                         end_time: document.getElementById('adminSidebarEventEndTime').value,
-                         organizer: document.getElementById('adminSidebarEventOrganizer').value,
-                         location: document.getElementById('adminSelectedVenue').value === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
-                         description: 'Official Barangay Event'
-                     };
+                document.getElementById('adsDayTitle').textContent = dateFmt;
+                document.getElementById('adsDayVenue').textContent = venueLabel;
+                document.getElementById('adsDate').value = dateStr;
+                document.getElementById('adsVenue').value = venue;
 
-                     const result = await createEvent(eventData);
-                     btn.innerHTML = orig;
-                     btn.disabled = false;
+                // Hide Add Event form by default
+                document.getElementById('adsEventFormWrap').classList.add('hidden');
+                document.getElementById('adsToggleEventBtn').textContent = '＋ Add Official Event';
 
-                     if (result.success) {
-                         showAlert('Event scheduled successfully!', 'success');
-                         adminHideEventForm();
-                         document.getElementById('adminSidebarEventForm').reset();
-                         renderAdminCalendar();
-                     } else {
-                         showAlert('Error: ' + result.message, 'error');
-                     }
+                const modal = document.getElementById('adminDayScheduleModal');
+                modal.style.display = 'flex';
+
+                await refreshAdminDaySchedule(dateStr, venue);
+            }
+
+            async function refreshAdminDaySchedule(dateStr, venue) {
+                const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                const [allBookings, allEvents] = await Promise.all([getCourtBookings(), getEvents()]);
+
+                const dayBookings = allBookings.filter(b =>
+                    b.date === dateStr &&
+                    b.status !== 'cancelled' && b.status !== 'rejected' &&
+                    (b.venue === venue || b.venueName === venueLabel)
+                );
+                const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
+
+                const list = document.getElementById('adsScheduleList');
+                const empty = document.getElementById('adsEmptyState');
+
+                const entries = [];
+                dayBookings.forEach(b => {
+                    const timeStr = b.time + (b.end_time ? ' – ' + b.end_time : '');
+                    entries.push({ type: 'booking', id: b.id, timeStr, label: b.userName || b.username || 'Resident', sub: b.purpose || '' });
+                });
+                dayEvents.forEach(e => {
+                    const timeStr = e.time + (e.end_time ? ' – ' + e.end_time : '');
+                    entries.push({ type: 'event', id: e.id, timeStr, label: e.title, sub: e.organizer ? 'By ' + e.organizer : '' });
+                });
+
+                if (entries.length === 0) {
+                    list.innerHTML = '';
+                    empty.style.display = 'block';
+                } else {
+                    empty.style.display = 'none';
+                    list.innerHTML = entries.map(en => {
+                        const isBk = en.type === 'booking';
+                        const bg = isBk ? '#fef2f2' : '#f5f3ff';
+                        const border = isBk ? '#fca5a5' : '#c4b5fd';
+                        const dot = isBk ? '🔴' : '🟣';
+                        const clr = isBk ? '#b91c1c' : '#6d28d9';
+                        const removeFn = isBk ? `adminRemoveBooking(${en.id})` : `adminRemoveEvent(${en.id})`;
+                        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:12px;border:1.5px solid ${border};background:${bg};margin-bottom:8px;">
+                            <span style="font-size:18px;line-height:1;margin-top:2px;">${dot}</span>
+                            <div style="flex:1;min-width:0;">
+                                <p style="margin:0;font-size:13px;font-weight:800;color:${clr};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${en.timeStr}</p>
+                                <p style="margin:0;font-size:12px;font-weight:600;color:#374151;">${en.label}</p>
+                                ${en.sub ? `<p style="margin:0;font-size:11px;color:#9ca3af;font-style:italic;">${en.sub}</p>` : ''}
+                            </div>
+                            <button onclick="${removeFn}" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #e5e7eb;background:#fff;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">✕ Remove</button>
+                        </div>`;
+                    }).join('');
+                }
+
+                // Fill Add Event time selects
+                await fillAdsTimeSelects(dateStr, venue, allBookings, allEvents);
+            }
+
+            async function fillAdsTimeSelects(dateStr, venue, allBookings, allEvents) {
+                const startSel = document.getElementById('adsStartTime');
+                const endSel = document.getElementById('adsEndTime');
+                if (!startSel || !endSel) return;
+                startSel.innerHTML = '<option value="">-- Start Time --</option>';
+                endSel.innerHTML = '<option value="">-- End Time --</option>';
+
+                const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                const slots = [];
+                for (let i = 6; i <= 22; i++) {
+                    slots.push(`${String(i).padStart(2,'0')}:00`);
+                    if (i !== 22) slots.push(`${String(i).padStart(2,'0')}:30`);
+                }
+
+                slots.forEach(slot => {
+                    const sMin = timeToMinutes(slot);
+                    const eMin = sMin + 30;
+                    let taken = false;
+                    for (const b of allBookings) {
+                        if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' &&
+                            (b.venue === venue || b.venueName === venueLabel)) {
+                            let tRange = b.timeRange || b.time;
+                            if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                            let [st, et] = tRange.split('–').map(s => s.trim());
+                            if (!et) et = st;
+                            if (sMin < timeToMinutes(et) && eMin > timeToMinutes(st)) taken = true;
+                        }
+                    }
+                    for (const e of allEvents) {
+                        if (e.date === dateStr && e.status === 'approved') {
+                            if (sMin < timeToMinutes(e.end_time || e.time) && eMin > timeToMinutes(e.time)) taken = true;
+                        }
+                    }
+
+                    const label = adminFmt12(slot) + (taken ? ' (Unavailable)' : '');
+                    const o1 = new Option(label, slot); if (taken) o1.disabled = true;
+                    const o2 = new Option(label, slot); if (taken) o2.disabled = true;
+                    startSel.appendChild(o1);
+                    endSel.appendChild(o2);
                 });
             }
+
+            window.adminRemoveBooking = async function(id) {
+                if (!confirm('Remove this booking?')) return;
+                const res = await cancelCourtBooking(id);
+                if (res.success) {
+                    showAlert('Booking removed.', 'success');
+                    const dateStr = document.getElementById('adsDate').value;
+                    const venue = document.getElementById('adsVenue').value;
+                    await refreshAdminDaySchedule(dateStr, venue);
+                    renderAdminCalendar();
+                } else { showAlert('Error: ' + res.message, 'error'); }
+            };
+
+            window.adminRemoveEvent = async function(id) {
+                if (!confirm('Delete this event?')) return;
+                const res = await deleteEvent(id);
+                if (res.success) {
+                    showAlert('Event removed.', 'success');
+                    const dateStr = document.getElementById('adsDate').value;
+                    const venue = document.getElementById('adsVenue').value;
+                    await refreshAdminDaySchedule(dateStr, venue);
+                    renderAdminCalendar();
+                } else { showAlert('Error: ' + res.message, 'error'); }
+            };
+
+            window.toggleAdsEventForm = function() {
+                const wrap = document.getElementById('adsEventFormWrap');
+                const btn = document.getElementById('adsToggleEventBtn');
+                if (wrap.classList.contains('hidden')) {
+                    wrap.classList.remove('hidden');
+                    btn.textContent = '▲ Hide Form';
+                } else {
+                    wrap.classList.add('hidden');
+                    btn.textContent = '＋ Add Official Event';
+                }
+            };
+
+            window.closeAdminDayPopup = function() {
+                document.getElementById('adminDayScheduleModal').style.display = 'none';
+                adminSelectedDate = null;
+                renderAdminCalendar();
+            };
+
+            document.getElementById('adsEventForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                btn.disabled = true; btn.textContent = 'Scheduling...';
+
+                const dateStr = document.getElementById('adsDate').value;
+                const venue = document.getElementById('adsVenue').value;
+
+                const eventData = {
+                    title: document.getElementById('adsEventTitle').value,
+                    date: dateStr,
+                    time: document.getElementById('adsStartTime').value,
+                    end_time: document.getElementById('adsEndTime').value,
+                    organizer: document.getElementById('adsOrganizer').value,
+                    location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                    status: 'approved',
+                    description: 'Official Barangay Event'
+                };
+
+                const result = await createEvent(eventData);
+                btn.disabled = false; btn.textContent = '🎉 Schedule Event';
+
+                if (result.success) {
+                    showAlert('Event scheduled!', 'success');
+                    this.reset();
+                    document.getElementById('adsEventFormWrap').classList.add('hidden');
+                    document.getElementById('adsToggleEventBtn').textContent = '＋ Add Official Event';
+                    await refreshAdminDaySchedule(dateStr, venue);
+                    renderAdminCalendar();
+                } else {
+                    showAlert('Error: ' + result.message, 'error');
+                }
+            });
 
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
@@ -4784,7 +4846,7 @@
                             onblur="this.style.borderColor='#d1d5db'"></textarea>
                     </div>
 
-                    <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px;">
                         <button type="button" onclick="closeAdminConcernModal()"
                             style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
                         <button type="submit"
@@ -4794,6 +4856,74 @@
                 </form>
             </div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- ADMIN DAY SCHEDULE POPUP -->
+        <!-- ========================================== -->
+        <div id="adminDayScheduleModal" class="hidden" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+            <div style="background:#fff; border-radius:24px; width:100%; max-width:480px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); display:flex; flex-direction:column; overflow:hidden; animation:fadeIn 0.3s ease; max-height:90vh;">
+                
+                <!-- Header -->
+                <div style="background:linear-gradient(135deg,#3b82f6,#2563eb); padding:24px; position:relative; flex-shrink:0;">
+                    <button onclick="closeAdminDayPopup()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                    <div style="font-size:32px; margin-bottom:8px;">📅</div>
+                    <h3 id="adsDayTitle" style="color:#fff; font-size:20px; font-weight:800; margin:0 0 4px 0;">Select Date</h3>
+                    <p id="adsDayVenue" style="color:rgba(255,255,255,0.8); font-size:14px; margin:0;"></p>
+                </div>
+
+                <!-- Schedule List -->
+                <div style="padding:24px 24px 12px; overflow-y:auto; flex-grow:1;">
+                    <p style="font-size:12px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:1px; margin:0 0 16px 0;">Schedule for this Day</p>
+                    <div id="adsScheduleList" style="display:flex; flex-direction:column; gap:12px;"></div>
+                    <div id="adsEmptyState" style="display:none; text-align:center; padding:32px 0;">
+                        <div style="font-size:40px; margin-bottom:12px;">🟢</div>
+                        <p style="font-size:15px; font-weight:700; color:#64748b; margin:0 0 4px 0;">No bookings for this day.</p>
+                        <p style="font-size:13px; color:#94a3b8; margin:0;">All time slots are completely free.</p>
+                    </div>
+                </div>
+
+                <!-- Add Official Event Section -->
+                <div style="padding:16px 24px 24px; flex-shrink:0; border-top:1px solid #f1f5f9;">
+                    <button id="adsToggleEventBtn" onclick="toggleAdsEventForm()" style="width:100%; padding:14px; background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(139,92,246,0.25); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        ＋ Add Official Event
+                    </button>
+
+                    <form id="adsEventForm" style="display:contents;">
+                        <div id="adsEventFormWrap" class="hidden" style="margin-top:20px; display:flex; flex-direction:column; gap:16px;">
+                            <input type="hidden" id="adsDate">
+                            <input type="hidden" id="adsVenue">
+
+                            <div>
+                                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Event Title</label>
+                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Fiesta, Liga" style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div>
+                                    <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Start Time</label>
+                                    <select id="adsStartTime" required style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">End Time</label>
+                                    <select id="adsEndTime" required style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Organizer</label>
+                                <input type="text" id="adsOrganizer" required placeholder="Official/Group Name" style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
+                            </div>
+
+                            <button type="submit" style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.25); margin-top:8px;">
+                                🎉 Schedule Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
 
         <script src="js/darkmode.js" style="display:none"></script>
 </body>
