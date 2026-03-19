@@ -4241,29 +4241,44 @@
                     const todayObj = new Date(today.getFullYear(), today.getMonth(), today.getDate());
                     const isPast = dateObj < todayObj;
 
-                    let bgClass = '';
-                    let styleStr = 'height:60px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:all 0.2s;';
-                    let actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"`;
+                    let bg, color, border, extraStyle = '';
+                    let actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;"`;
                     
-                    if (isPast) {
-                        styleStr += 'background:#f8fafc;color:#cbd5e1;border:1px solid #f1f5f9;opacity:0.6;';
+                    if (adminSelectedDate === dateStr && !hasEvent && !hasBooking) {
+                        bg = '#10b981';
+                        color = '#ffffff';
+                        border = '1px solid #059669';
+                        extraStyle = 'box-shadow:0 4px 12px rgba(16,185,129,0.3);transform:scale(1.05);z-index:1;';
+                    } else if (isPast) {
+                        bg = '#f3f4f6';
+                        color = '#9ca3af';
+                        border = '1px solid #e5e7eb';
                         actionStrs = `class="calendar-day" style="cursor:not-allowed;"`;
-                    } else if (adminSelectedDate === dateStr) {
-                        styleStr += 'background:linear-gradient(135deg, #3b82f6, #2563eb);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3);';
                     } else if (hasEvent) {
-                        styleStr += 'background:#eff6ff;color:#1e3a8a;border:2px solid #60a5fa;';
+                        bg = '#dbeafe';
+                        color = '#1e40af';
+                        border = '2px solid #60a5fa';
+                        extraStyle = 'opacity:0.9;';
+                        actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;"`;
                     } else if (hasBooking) {
-                        styleStr += 'background:#fef2f2;color:#991b1b;border:2px solid #fca5a5;';
+                        bg = '#fee2e2';
+                        color = '#b91c1c';
+                        border = '2px solid #fca5a5';
+                        actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;"`;
                     } else {
-                        styleStr += 'background:#f8fafc;color:#334155;border:1px solid #e2e8f0;';
+                        bg = '#ecfdf5';
+                        color = '#047857';
+                        border = '1px solid #a7f3d0';
                     }
                     
-                    if (isToday && adminSelectedDate !== dateStr && !isPast) {
-                        styleStr += 'border:2px solid #10b981;';
+                    if (isToday && adminSelectedDate !== dateStr) {
+                        extraStyle += 'box-shadow:0 0 0 2px #fff, 0 0 0 4px #10b981;';
                     }
 
+                    let styleStr = `height:60px;background:${bg};color:${color};border:${border};border-radius:12px;padding:12px 4px;text-align:center;display:flex;align-items:center;justify-content:center;transition:all 0.15s ease;font-weight:800;font-size:14px;position:relative;${extraStyle}`;
+
                     grid.innerHTML += `
-                        <div ${actionStrs} style="${styleStr} user-select:none;">
+                        <div ${actionStrs} style="${styleStr} user-select:none;" onmouseover="if(!${isPast}){this.style.transform='scale(1.05)'; if('${bg}'==='#ecfdf5')this.style.background='#d1fae5';}" onmouseout="if(!${isPast}){this.style.transform='scale(1)'; if('${bg}'==='#ecfdf5')this.style.background='${bg}';}">
                             ${day}
                         </div>
                     `;
