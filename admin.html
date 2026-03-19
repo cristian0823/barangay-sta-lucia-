@@ -1790,27 +1790,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Admin Tips Card -->
-                            <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#065f46 100%);border-radius:16px;padding:20px;color:#fff;position:relative;overflow:hidden;">
-                                <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(16,185,129,0.25),transparent 70%);border-radius:50%;"></div>
-                                <div style="margin-bottom:14px;">
-                                    <div style="font-size:22px;margin-bottom:6px;">🛡️</div>
-                                    <div style="font-size:15px;font-weight:800;color:#fff;">Admin Quick Tips</div>
-                                    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Barangay Sta. Lucia BMS</div>
+                            <!-- Recent Activity Card -->
+                            <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
+                                        <div>
+                                            <div style="font-size:14px;font-weight:700;color:#1e293b;">Recent Activity</div>
+                                            <div style="font-size:11px;color:#94a3b8;">Latest system events</div>
+                                        </div>
+                                    </div>
+                                    <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;">LIVE</span>
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:9px;">
-                                    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.07);border-radius:10px;">
-                                        <span style="font-size:14px;flex-shrink:0;">✅</span>
-                                        <span style="font-size:12px;color:rgba(255,255,255,0.8);">Always <strong>approve or reject</strong> equipment requests promptly.</span>
-                                    </div>
-                                    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.07);border-radius:10px;">
-                                        <span style="font-size:14px;flex-shrink:0;">📋</span>
-                                        <span style="font-size:12px;color:rgba(255,255,255,0.8);">Respond to <strong>citizen concerns</strong> within 24 hours when possible.</span>
-                                    </div>
-                                    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.07);border-radius:10px;">
-                                        <span style="font-size:14px;flex-shrink:0;">📅</span>
-                                        <span style="font-size:12px;color:rgba(255,255,255,0.8);">Check <strong>court bookings</strong> daily to avoid scheduling conflicts.</span>
-                                    </div>
+                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;gap:8px;">
+                                    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Loading...</div>
                                 </div>
                             </div>
                         </div>
@@ -4287,12 +4280,54 @@
                 if (el('upcomingEvents')) el('upcomingEvents').textContent = activeBooks;
                 if (el('totalUsers')) el('totalUsers').textContent = users.length;
 
-                // At a Glance panel
+                // Glance row
                 if (el('glancePendingReqs')) el('glancePendingReqs').textContent = pendingReqs + ' pending';
                 if (el('glancePendingCons')) el('glancePendingCons').textContent = pendingCons + ' open';
                 if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks + ' active';
-                if (el('glanceUsers')) el('glanceUsers').textContent = users.length + ' registered';
-            }
+                if (el('glanceUsers')) el('glanceUsers').textContent = users.length + ' total';
+
+                // Recent Activity Feed
+                const feed = document.getElementById('overviewActivityFeed');
+                if (feed) {
+                    try {
+                        const logs = await getActivityLog();
+                        const recent = logs.slice(0, 5);
+                        const actionIcons = {
+                            'Login': '🔐', 'Borrow Request': '📦', 'Borrow Approved': '✅',
+                            'Borrow Rejected': '❌', 'Borrow Returned': '🔙', 'Borrow Cancelled': '🚫',
+                            'Court Booking Submitted': '🏀', 'Booking Approved': '✅', 'Booking Rejected': '❌',
+                            'Concern Submitted': '📋', 'Concern Updated': '📝', 'Event Created': '📅',
+                            'Equipment Added': '🪑', 'Inventory Update': '🔧', 'User Registered': '👤',
+                            'User Deleted': '🗑️'
+                        };
+                        if (recent.length === 0) {
+                            feed.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No activity yet.</div>';
+                        } else {
+                            feed.innerHTML = recent.map(log => {
+                                const icon = actionIcons[log.action] || '📌';
+                                const timeAgo = (() => {
+                                    const diff = Date.now() - new Date(log.createdAt).getTime();
+                                    const m = Math.floor(diff / 60000);
+                                    if (m < 1) return 'Just now';
+                                    if (m < 60) return m + 'm ago';
+                                    const h = Math.floor(m / 60);
+                                    if (h < 24) return h + 'h ago';
+                                    return Math.floor(h / 24) + 'd ago';
+                                })();
+                                return `<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:#f8fafc;border-radius:10px;border:1px solid #f1f5f9;">
+                                    <span style="font-size:16px;flex-shrink:0;margin-top:1px;">${icon}</span>
+                                    <div style="flex:1;min-width:0;">
+                                        <div style="font-size:12px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${log.action}</div>
+                                        <div style="font-size:11px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${log.details}</div>
+                                    </div>
+                                    <span style="font-size:10px;color:#94a3b8;flex-shrink:0;margin-top:2px;">${timeAgo}</span>
+                                </div>`;
+                            }).join('');
+                        }
+                    } catch(e) {
+                        feed.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Could not load activity.</div>';
+                    }
+                }
 
 
             // Auto-load sections when tabs are clicked
