@@ -2731,166 +2731,6 @@
                     await renderAdminAllBookings();
                 }
             });
-
-            async function renderAdminCalendar() {
-                const grid = document.getElementById('adminCalendarGrid');
-                const monthTitle = document.getElementById('adminCalendarMonth');
-                if (!grid || !monthTitle) return;
-
-                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-                monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
-
-                // Fetch data safely — calendar renders even if these fail
-                let eventDates = {}, bookingDates = {};
-                try {
-                    const [events, bookings] = await Promise.all([getEvents(), getCourtBookings()]);
-                    const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
-                    events.filter(e => e.status === 'approved').forEach(e => {
-                        eventDates[e.date] = eventDates[e.date] || [];
-                        eventDates[e.date].push(e);
-                    });
-                    bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue).forEach(b => {
-                        bookingDates[b.date] = bookingDates[b.date] || [];
-                        bookingDates[b.date].push(b);
-                    });
-                } catch(err) {
-                    console.warn('Calendar data fetch failed, rendering empty calendar:', err);
-                }
-
-                grid.innerHTML = '';
-
-                const firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
-                const daysInMonth = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                // Empty spacer cells for days before the 1st
-                for (let i = 0; i < firstDay; i++) {
-                    const empty = document.createElement('div');
-                    grid.appendChild(empty);
-                }
-
-                // Day tiles
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const dayElement = document.createElement('div');
-                    const dateObj = new Date(adminCalendarYear, adminCalendarMonth, day);
-
-                    const hasEvents   = eventDates[dateStr]   && eventDates[dateStr].length > 0;
-                    const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
-                    const isSelected  = adminSelectedDate === dateStr;
-                    const isToday     = dateObj.getTime() === today.getTime();
-                    const isPast      = dateObj < today;
-
-                    let bg, color, border, labelText, labelColor, extraStyle;
-                    let cursor = 'pointer';
-
-                    if (isSelected && !hasEvents && !hasBookings) {
-                        bg = '#10b981'; // bg-emerald-500
-                        color = '#ffffff';
-                        border = '1px solid #059669'; // border-emerald-600
-                        extraStyle = 'box-shadow:0 4px 12px rgba(16,185,129,0.3);transform:scale(1.05);z-index:1;';
-                    } else if (isPast) {
-                        bg = '#f3f4f6'; color = '#9ca3af'; border = '1px solid #e5e7eb';
-                        extraStyle = '';
-                        cursor = 'not-allowed';
-                    } else if (hasEvents) {
-                        bg = '#dbeafe'; color = '#1e40af'; border = '2px solid #60a5fa'; // Blue for official events
-                        extraStyle = 'opacity:0.9;';
-                        cursor = 'not-allowed';
-                    } else if (hasBookings) {
-                        bg = '#fee2e2'; color = '#b91c1c'; border = '2px solid #fca5a5'; // Red for booked
-                        extraStyle = '';
-                        cursor = 'not-allowed';
-                    } else {
-                        bg = '#ecfdf5'; color = '#047857'; border = '1px solid #a7f3d0'; // Emerald for available
-                        extraStyle = '';
-                    }
-
-                    if (isToday && !isSelected) {
-                        extraStyle += 'box-shadow:0 0 0 2px #fff, 0 0 0 4px #10b981;';
-                    }
-
-                    dayElement.style.cssText = `
-                        background:${bg}; color:${color}; border:${border};
-                        border-radius:12px; padding:12px 4px; text-align:center;
-                        cursor:${cursor}; position:relative;
-                        transition:all 0.15s ease;
-                        font-weight:800; font-size:14px;
-                        ${extraStyle}
-                    `;
-                    dayElement.innerHTML = day;
-
-                    if (hasEvents)   dayElement.title = eventDates[dateStr].map(e => e.title).join(', ');
-                    if (hasBookings) dayElement.title = bookingDates[dateStr].map(b => b.purpose || b.venue).join(', ');
-
-                    if (!isPast && !isSelected && !hasEvents && !hasBookings) {
-                        dayElement.onmouseover = () => {
-                            dayElement.style.background = '#d1fae5'; // hover:bg-emerald-200
-                            dayElement.style.transform = 'scale(1.05)';
-                        };
-                        dayElement.onmouseout = () => {
-                            dayElement.style.background = bg;
-                            dayElement.style.transform = 'scale(1)';
-                        };
-                    }
-
-                    if (!isPast && !hasEvents && !hasBookings) {
-                        dayElement.onclick = () => adminSelectDate(dateStr);
-                    } else if (hasEvents) {
-                        dayElement.onclick = () => showToast('This date already has an official event.', 'error');
-                    } else if (hasBookings) {
-                        dayElement.onclick = () => showToast('This date is already fully booked by a resident.', 'error');
-                    }
-                    grid.appendChild(dayElement);
-                }
-            }
-
-            function adminSelectDate(dateStr) {
-                adminSelectedDate = dateStr;
-                renderAdminCalendar();
-                
-                // Show the form and hide the empty state
-                const emptyState = document.getElementById('adminEventEmptyState');
-                const form = document.getElementById('adminSidebarEventForm');
-                const dateDisplay = document.getElementById('adminEventSelectedDateDisplay');
-                const hiddenDateInput = document.getElementById('adminSidebarEventDate');
-                
-                if (emptyState && form && dateDisplay && hiddenDateInput) {
-                    emptyState.style.display = 'none';
-                    form.style.display = 'flex';
-                    
-                    // Format and display date
-                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                    dateDisplay.textContent = new Date(dateStr).toLocaleDateString('en-US', options);
-                    hiddenDateInput.value = dateStr;
-                }
-            }
-
-            function adminHideEventForm() {
-                adminSelectedDate = null;
-                renderAdminCalendar();
-                const emptyState = document.getElementById('adminEventEmptyState');
-                const form = document.getElementById('adminSidebarEventForm');
-                if (emptyState && form) {
-                    emptyState.style.display = 'flex';
-                    form.style.display = 'none';
-                    form.reset();
-                }
-            }
-
-            async function changeAdminMonth(delta) {
-                adminCalendarMonth += delta;
-                if (adminCalendarMonth > 11) {
-                    adminCalendarMonth = 0;
-                    adminCalendarYear++;
-                } else if (adminCalendarMonth < 0) {
-                    adminCalendarMonth = 11;
-                    adminCalendarYear--;
-                }
-                await renderAdminCalendar();
-            }
-
             function switchSection(section, btn) {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
@@ -2904,9 +2744,10 @@
                 // Auto-load section data on switch
                 if (section === 'activity-log') loadActivityLog();
                 if (section === 'users') loadUsers();
-                if (section === 'events') { renderAdminCalendar(); renderAdminAllBookings(); }
+                if (section === 'events') { renderAdminCalendar(); }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+
 
             async function loadStats() {
                 const [borrowings, concerns, events, bookings, users] = await Promise.all([
@@ -4370,12 +4211,14 @@
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 document.getElementById('adminCalendarMonth').textContent = `${monthNames[month]} ${year}`;
                 
-                const grid = document.getElementById('adminCalendarGrid');
-                grid.innerHTML = '';
-                
                 // Fetch bookings & events to highlight dates
                 const allBookings = await getCourtBookings();
                 const allEvents = await getEvents();
+                
+                const grid = document.getElementById('adminCalendarGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                
                 const venue = document.getElementById('adminSelectedVenue').value;
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
                 
