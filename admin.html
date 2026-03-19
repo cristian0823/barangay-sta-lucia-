@@ -270,8 +270,7 @@
             cursor: pointer;
             font-size: 20px;
             position: relative;
-            display: none;
-            /* shown via JS when count > 0 */
+            display: block; /* Always visible, loadAdminNotifications manages the counter */
         }
 
         .notification-badge::after {
@@ -2639,6 +2638,10 @@
                 const user = getCurrentUser();
                 document.getElementById('userName').textContent = user.fullName;
                 document.getElementById('userAvatar').textContent = user.avatar;
+                
+                // Run clock immediately — before any awaits
+                initWelcomeClock();
+                
                 await loadOverview();
                 await loadCourtBookings();
                 await loadRequests();
@@ -2649,7 +2652,6 @@
                 await renderAdminAllBookings();
                 await loadAdminNotifications();
                 
-                initWelcomeClock();
                 await loadSystemStatsForProfile();
 
                 // Profile form
