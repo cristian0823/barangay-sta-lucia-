@@ -2639,7 +2639,7 @@
                 const user = getCurrentUser();
                 document.getElementById('userName').textContent = user.fullName;
                 document.getElementById('userAvatar').textContent = user.avatar;
-                await loadStats();
+                await loadOverview();
                 await loadCourtBookings();
                 await loadRequests();
                 await loadConcerns();
@@ -2647,6 +2647,7 @@
                 await loadEquipment();
                 await renderAdminCalendar();
                 await renderAdminAllBookings();
+                await loadAdminNotifications();
 
                 await loadSystemStatsForProfile();
 
@@ -4305,6 +4306,7 @@
                 if (_origSwitchSection) _origSwitchSection(name, btn);
                 if (name === 'overview') loadOverview();
                 if (name === 'court-bookings') loadAdminBookings();
+                if (name === 'requests') loadRequests();
                 if (name === 'concerns') loadConcerns();
                 if (name === 'equipment') loadEquipment();
                 if (name === 'reports') loadSimpleReport();
@@ -4999,36 +5001,6 @@
 
 
         <script src="js/darkmode.js" style="display:none"></script>
-</body>
-
-</html> <label
-    style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">End
-    Time</label>
-<select id="adsEndTime" required
-    style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
-</div>
-</div>
-
-<div>
-    <label
-        style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Organizer</label>
-    <input type="text" id="adsOrganizer" required placeholder="Official/Group Name"
-        style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
-</div>
-
-<button type="submit"
-    style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.25); margin-top:8px;">
-    🎉 Schedule Event
-</button>
-</div>
-</form>
-</div>
-
-</div>
-</div>
-
-
-<script src="js/darkmode.js" style="display:none"></script>
 </body>
 
 </html>
