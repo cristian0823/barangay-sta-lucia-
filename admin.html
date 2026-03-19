@@ -1760,64 +1760,56 @@
                             </button>
                         </div>
 
-                        <!-- Status Overview Grid -->
+                        <!-- Recent Summary Row -->
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                            <!-- System Status -->
-                            <div class="section-container" style="margin-bottom:0;">
-                                <div class="section-header">
-                                    <h3><i class="bi bi-cpu" style="margin-right:6px;"></i>System Status</h3>
-                                    <span
-                                        style="font-size:11px;background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;">●
-                                        ONLINE</span>
+                            <!-- Pending Actions Card -->
+                            <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                                    <div style="width:36px;height:36px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚡</div>
+                                    <div>
+                                        <div style="font-size:14px;font-weight:700;color:#1e293b;">Pending Actions</div>
+                                        <div style="font-size:11px;color:#94a3b8;">Requires your attention</div>
+                                    </div>
                                 </div>
-                                <div class="section-content" style="display:flex;flex-direction:column;gap:14px;">
-                                    <div class="status-row">
-                                        <span class="status-label"><i class="bi bi-database"></i> Database</span>
-                                        <span class="status-pill green">Connected</span>
+                                <div style="display:flex;flex-direction:column;gap:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a;">
+                                        <span style="font-size:13px;font-weight:600;color:#92400e;">📦 Equipment Requests</span>
+                                        <span id="glancePendingReqs" style="font-weight:800;font-size:15px;color:#d97706;">—</span>
                                     </div>
-                                    <div class="status-row">
-                                        <span class="status-label"><i class="bi bi-shield-check"></i> Auth
-                                            Service</span>
-                                        <span class="status-pill green">Active</span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;">
+                                        <span style="font-size:13px;font-weight:600;color:#991b1b;">📋 Open Concerns</span>
+                                        <span id="glancePendingCons" style="font-weight:800;font-size:15px;color:#dc2626;">—</span>
                                     </div>
-                                    <div class="status-row">
-                                        <span class="status-label"><i class="bi bi-globe"></i> Vercel Deploy</span>
-                                        <span class="status-pill green">Live</span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;">
+                                        <span style="font-size:13px;font-weight:600;color:#1e40af;">🏀 Active Bookings</span>
+                                        <span id="glanceBookings" style="font-weight:800;font-size:15px;color:#2563eb;">—</span>
                                     </div>
-                                    <div class="status-row">
-                                        <span class="status-label"><i class="bi bi-calendar-check"></i> Today's
-                                            Date</span>
-                                        <span style="font-size:13px;font-weight:600;color:var(--text);"
-                                            id="todayDate">—</span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
+                                        <span style="font-size:13px;font-weight:600;color:#065f46;">👥 Registered Users</span>
+                                        <span id="glanceUsers" style="font-weight:800;font-size:15px;color:#059669;">—</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Quick Stats Panel -->
-                            <div class="section-container" style="margin-bottom:0;">
-                                <div class="section-header">
-                                    <h3><i class="bi bi-bar-chart-line" style="margin-right:6px;"></i>At a Glance</h3>
+                            <!-- Admin Tips Card -->
+                            <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#065f46 100%);border-radius:16px;padding:20px;color:#fff;position:relative;overflow:hidden;">
+                                <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(16,185,129,0.25),transparent 70%);border-radius:50%;"></div>
+                                <div style="margin-bottom:14px;">
+                                    <div style="font-size:22px;margin-bottom:6px;">🛡️</div>
+                                    <div style="font-size:15px;font-weight:800;color:#fff;">Admin Quick Tips</div>
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Barangay Sta. Lucia BMS</div>
                                 </div>
-                                <div class="section-content" style="display:flex;flex-direction:column;gap:14px;">
-                                    <div class="status-row">
-                                        <span class="status-label">📦 Equipment Requests</span>
-                                        <span id="glancePendingReqs"
-                                            style="font-weight:700;font-size:13px;color:#d97706;">—</span>
+                                <div style="display:flex;flex-direction:column;gap:9px;">
+                                    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.07);border-radius:10px;">
+                                        <span style="font-size:14px;flex-shrink:0;">✅</span>
+                                        <span style="font-size:12px;color:rgba(255,255,255,0.8);">Always <strong>approve or reject</strong> equipment requests promptly.</span>
                                     </div>
-                                    <div class="status-row">
-                                        <span class="status-label">📋 Open Concerns</span>
-                                        <span id="glancePendingCons"
-                                            style="font-weight:700;font-size:13px;color:#dc2626;">—</span>
+                                    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.07);border-radius:10px;">
+                                        <span style="font-size:14px;flex-shrink:0;">📋</span>
+                                        <span style="font-size:12px;color:rgba(255,255,255,0.8);">Respond to <strong>citizen concerns</strong> within 24 hours when possible.</span>
                                     </div>
-                                    <div class="status-row">
-                                        <span class="status-label">🏀 Court Bookings</span>
-                                        <span id="glanceBookings"
-                                            style="font-weight:700;font-size:13px;color:#2563eb;">—</span>
-                                    </div>
-                                    <div class="status-row">
-                                        <span class="status-label">👥 Registered Users</span>
-                                        <span id="glanceUsers"
-                                            style="font-weight:700;font-size:13px;color:#059669;">—</span>
+                                    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.07);border-radius:10px;">
+                                        <span style="font-size:14px;flex-shrink:0;">📅</span>
+                                        <span style="font-size:12px;color:rgba(255,255,255,0.8);">Check <strong>court bookings</strong> daily to avoid scheduling conflicts.</span>
                                     </div>
                                 </div>
                             </div>
