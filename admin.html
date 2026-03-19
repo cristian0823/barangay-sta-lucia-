@@ -1540,6 +1540,19 @@
         .booking-card:hover {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
+        /* Pulse Animation for Calendar Loading Skeleton */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive Grid for Admin Calendar */
+        @media (max-width: 900px) {
+            .admin-cal-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 </head>
 
@@ -1952,16 +1965,17 @@
                             </div>
                             <input type="hidden" id="adminSelectedVenue" value="basketball">
 
-                            <!-- Two Column Layout (Matching User Dashboard Modal) -->
-                            <div style="display:grid; grid-template-columns:3fr 2fr; gap:32px; align-items:start;">
+                            <!-- Two Column Layout -->
+                            <div class="admin-cal-grid" style="display:grid; grid-template-columns:3fr 2fr; gap:32px; align-items:start;">
 
                                 <!-- Calendar Card (Left Side) -->
                                 <div style="background:#fff; border-radius:24px; padding:32px; box-shadow:0 12px 40px rgba(0,0,0,0.06); border:1px solid #f1f5f9; position:relative; overflow:hidden;">
                                     <!-- Month Header -->
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; position:relative; z-index:10;">
                                         <h2 id="adminCalendarMonth" style="font-size:24px; font-weight:800; color:#0f172a; margin:0; letter-spacing:-0.02em;"></h2>
-                                        <div style="display:flex; gap:10px;">
+                                        <div style="display:flex; gap:8px; align-items:center;">
                                             <button onclick="changeAdminMonth(-1)" style="width:40px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:#64748b;" onmouseover="this.style.background='#f8fafc';this.style.color='#0f172a';this.style.borderColor='#cbd5e1';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">←</button>
+                                            <button onclick="jumpToToday()" style="padding:0 14px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:#10b981;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;letter-spacing:0.02em;" onmouseover="this.style.background='#f0fdf4';this.style.borderColor='#a7f3d0';" onmouseout="this.style.background='#fff';this.style.borderColor='#e2e8f0';">Today</button>
                                             <button onclick="changeAdminMonth(1)" style="width:40px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:#64748b;" onmouseover="this.style.background='#f8fafc';this.style.color='#0f172a';this.style.borderColor='#cbd5e1';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">→</button>
                                         </div>
                                     </div>
@@ -2825,16 +2839,21 @@
                 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                 monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
 
+                grid.innerHTML = Array(35).fill('<div style="height:50px;border-radius:6px;background:#f1f5f9;animation:pulse 1.5s ease-in-out infinite;"></div>').join('');
+
                 // Fetch data safely
                 let eventDates = {}, bookingDates = {};
+                let allEvents = [], allBookings = [];
                 try {
-                    const [events, bookings] = await Promise.all([getEvents(), getCourtBookings()]);
+                    const [_e, _b] = await Promise.all([getEvents(), getCourtBookings()]);
+                    allEvents = _e;
+                    allBookings = _b;
                     const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
-                    events.filter(e => e.status === 'approved').forEach(e => {
+                    _e.filter(e => e.status === 'approved').forEach(e => {
                         eventDates[e.date] = eventDates[e.date] || [];
                         eventDates[e.date].push(e);
                     });
-                    bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue).forEach(b => {
+                    _b.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue).forEach(b => {
                         bookingDates[b.date] = bookingDates[b.date] || [];
                         bookingDates[b.date].push(b);
                     });
@@ -2863,6 +2882,7 @@
                     const hasEvents = eventDates[dateStr] && eventDates[dateStr].length > 0;
                     const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
                     const isSelected = adminSelectedDate === dateStr;
+                    const isToday = dateObj.getTime() === today.getTime();
                     const isPast = dateObj < today;
 
                     let styleStr = 'height:50px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:all 0.15s;text-align:center;';
@@ -2879,6 +2899,8 @@
 
                     if (isSelected) {
                         styleStr += 'box-shadow:0 0 0 2px #fff, 0 0 0 3px #10b981;z-index:1;';
+                    } else if (isToday) {
+                        styleStr += 'box-shadow:0 0 0 2px #fff, 0 0 0 3.5px #10b981;';
                     }
 
                     const dayEl = document.createElement('div');
@@ -2898,6 +2920,60 @@
                     }
 
                     grid.appendChild(dayEl);
+                }
+
+                // Sort and display all upcoming bookings/events in the right panel
+                const rightList = document.getElementById('adminAllBookingsList');
+                if (rightList) {
+                    const venue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
+                    const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                    const todayStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    
+                    const upcomingBooks = allBookings.filter(b => b.date >= todayStr && b.status !== 'rejected' && b.status !== 'cancelled' && (b.venue === venue || b.venueName === venueLabel));
+                    const upcomingEvents = allEvents.filter(e => e.date >= todayStr && e.status === 'approved');
+
+                    const combined = [];
+                    upcomingBooks.forEach(b => combined.push({ type: 'booking', date: b.date, time: b.time, label: b.userName || 'Resident', sub: b.venueName || b.venue }));
+                    upcomingEvents.forEach(e => combined.push({ type: 'event', date: e.date, time: e.time, label: e.title, sub: 'Official Event' }));
+
+                    // Helper for sorting
+                    function _timeToMins(t) {
+                        if (!t) return 0;
+                        const parts = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                        if (!parts) return 0;
+                        let h = parseInt(parts[1], 10);
+                        let m = parseInt(parts[2], 10);
+                        if (parts[3].toUpperCase() === 'PM' && h < 12) h += 12;
+                        if (parts[3].toUpperCase() === 'AM' && h === 12) h = 0;
+                        return h * 60 + m;
+                    }
+
+                    combined.sort((a, b) => {
+                        if (a.date !== b.date) return a.date.localeCompare(b.date);
+                        return _timeToMins(a.time) - _timeToMins(b.time);
+                    });
+
+                    if (combined.length === 0) {
+                        rightList.innerHTML = `<div style="text-align:center;padding:32px 16px;">
+                            <div style="font-size:40px;margin-bottom:12px;">📭</div>
+                            <p style="color:#1e293b;font-weight:700;font-size:14px;margin:0 0 4px;">All Clear!</p>
+                            <p style="color:#94a3b8;font-size:13px;margin:0;">No bookings or events scheduled yet.</p>
+                        </div>`;
+                    } else {
+                        rightList.innerHTML = combined.map(item => {
+                            const isEv = item.type === 'event';
+                            const dot = isEv ? '🟣' : '🔴';
+                            const dateFmt = new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            return `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:flex-start;">
+                                <div style="font-size:16px;line-height:1;margin-top:2px;">${dot}</div>
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:2px;">${item.label}</div>
+                                    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">${item.sub}</div>
+                                    <div style="font-weight:700;font-size:11px;color:${isEv ? '#6d28d9' : '#b91c1c'};">${dateFmt} • ${item.time}</div>
+                                </div>
+                            </div>`;
+                        }).join('');
+                    }
                 }
             }
 
@@ -2932,6 +3008,13 @@
                     form.style.display = 'none';
                     form.reset();
                 }
+            }
+
+            window.jumpToToday = async function() {
+                const now = new Date();
+                adminCalendarMonth = now.getMonth();
+                adminCalendarYear = now.getFullYear();
+                await renderAdminCalendar();
             }
 
             async function changeAdminMonth(delta) {
