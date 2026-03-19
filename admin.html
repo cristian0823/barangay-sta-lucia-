@@ -304,7 +304,7 @@
             background: #fff;
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
             z-index: 1000;
             display: none;
             flex-direction: column;
@@ -314,8 +314,15 @@
         }
 
         @keyframes dropdownFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .notification-dropdown-header {
@@ -360,7 +367,7 @@
         .notification-item.unread {
             background: #f0f9ff;
         }
-        
+
         .notification-item.unread::after {
             content: '';
             position: absolute;
@@ -384,9 +391,20 @@
             flex-shrink: 0;
         }
 
-        .notif-icon-wrap.concern { background: #fee2e2; color: #ef4444; }
-        .notif-icon-wrap.request { background: #ffedd5; color: #f97316; }
-        .notif-icon-wrap.booking { background: #dbeafe; color: #3b82f6; }
+        .notif-icon-wrap.concern {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .notif-icon-wrap.request {
+            background: #ffedd5;
+            color: #f97316;
+        }
+
+        .notif-icon-wrap.booking {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
 
         .notif-content {
             display: flex;
@@ -1367,7 +1385,8 @@
 
             /* Bottom Sheet Modals */
             .modal-overlay {
-                align-items: flex-end; /* Align to bottom */
+                align-items: flex-end;
+                /* Align to bottom */
                 padding: 0;
             }
 
@@ -1375,7 +1394,8 @@
                 margin: 0;
                 width: 100%;
                 max-height: 90vh;
-                border-radius: 24px 24px 0 0; /* Only round top corners */
+                border-radius: 24px 24px 0 0;
+                /* Only round top corners */
                 overflow-y: auto;
                 animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
@@ -1386,8 +1406,13 @@
             }
 
             @keyframes slideUp {
-                from { transform: translateY(100%); }
-                to { transform: translateY(0); }
+                from {
+                    transform: translateY(100%);
+                }
+
+                to {
+                    transform: translateY(0);
+                }
             }
         }
 
@@ -1474,10 +1499,25 @@
             letter-spacing: 0.3px;
         }
 
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
-        .badge-primary { background: #e0e7ff; color: #3730a3; }
-        .badge-muted { background: #f1f5f9; color: #475569; }
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-primary {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-muted {
+            background: #f1f5f9;
+            color: #475569;
+        }
 
 
         /* Calendar styles like user dashboard */
@@ -1545,7 +1585,7 @@
                     <div class="notification-badge" id="notificationBadge" data-count="0"
                         onclick="toggleNotificationDropdown(event)">
                         🔔</div>
-                    
+
                     <div id="notificationDropdown" class="notification-dropdown">
                         <div class="notification-dropdown-header">
                             <h4>Notifications</h4>
@@ -1562,7 +1602,8 @@
                 <div class="user-avatar" id="userAvatar">A</div>
                 <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode"
                     style="display:none;">🌙</button>
-                <a href="admin-settings.html" class="logout-btn" style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
+                <a href="admin-settings.html" class="logout-btn"
+                    style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
             </div>
         </header>
@@ -1607,7 +1648,8 @@
                 <main class="dashboard-content">
                     <!-- Overview Section - Digital Dashboard -->
                     <div id="overview-section">
-                        <div class="welcome-banner admin-banner" style="position:relative;overflow:hidden;margin-bottom:24px;">
+                        <div class="welcome-banner admin-banner"
+                            style="position:relative;overflow:hidden;margin-bottom:24px;">
                             <div class="welcome-content">
                                 <h2 id="welcomeGreeting">Good morning, Admin</h2>
                                 <p id="welcomeDateStr">Loading date...</p>
@@ -1620,15 +1662,18 @@
                                     Barangay Sta. Lucia</div>
                             </div>
                         </div>
-                        
+
                         <div class="stats-grid">
                             <div class="stat-card"
                                 onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])"
                                 style="cursor:pointer;border-left:4px solid #f59e0b;padding:22px;border-radius:14px;">
                                 <div class="stat-icon" style="background:#fffbeb;border:1px solid #fde68a;">📦</div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Pending Requests</h3>
-                                    <div class="stat-value" id="pendingRequests" style="font-size:32px;font-weight:800;color:#ea580c;line-height:1;">0</div>
+                                    <h3
+                                        style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+                                        Pending Requests</h3>
+                                    <div class="stat-value" id="pendingRequests"
+                                        style="font-size:32px;font-weight:800;color:#ea580c;line-height:1;">0</div>
                                 </div>
                             </div>
                             <div class="stat-card"
@@ -1636,8 +1681,11 @@
                                 style="cursor:pointer;border-left:4px solid #ef4444;padding:22px;border-radius:14px;">
                                 <div class="stat-icon" style="background:#fef2f2;border:1px solid #fecaca;">📋</div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Pending Concerns</h3>
-                                    <div class="stat-value" id="pendingConcerns" style="font-size:32px;font-weight:800;color:#dc2626;line-height:1;">0</div>
+                                    <h3
+                                        style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+                                        Pending Concerns</h3>
+                                    <div class="stat-value" id="pendingConcerns"
+                                        style="font-size:32px;font-weight:800;color:#dc2626;line-height:1;">0</div>
                                 </div>
                             </div>
                             <div class="stat-card"
@@ -1645,8 +1693,11 @@
                                 style="cursor:pointer;border-left:4px solid #3b82f6;padding:22px;border-radius:14px;">
                                 <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe;">🏀</div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Active Bookings</h3>
-                                    <div class="stat-value" id="upcomingEvents" style="font-size:32px;font-weight:800;color:#2563eb;line-height:1;">0</div>
+                                    <h3
+                                        style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+                                        Active Bookings</h3>
+                                    <div class="stat-value" id="upcomingEvents"
+                                        style="font-size:32px;font-weight:800;color:#2563eb;line-height:1;">0</div>
                                 </div>
                             </div>
                             <div class="stat-card"
@@ -1654,8 +1705,11 @@
                                 style="cursor:pointer;border-left:4px solid #10b981;padding:22px;border-radius:14px;">
                                 <div class="stat-icon" style="background:#ecfdf5;border:1px solid #a7f3d0;">👥</div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Total Users</h3>
-                                    <div class="stat-value" id="totalUsers" style="font-size:32px;font-weight:800;color:#059669;line-height:1;">0</div>
+                                    <h3
+                                        style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+                                        Total Users</h3>
+                                    <div class="stat-value" id="totalUsers"
+                                        style="font-size:32px;font-weight:800;color:#059669;line-height:1;">0</div>
                                 </div>
                             </div>
                         </div>
@@ -1886,11 +1940,14 @@
 
                             <!-- Venue Toggle -->
                             <div style="display:flex; justify-content:center; margin-bottom:28px;">
-                                <div style="background:#f1f5f9; border-radius:50px; padding:6px; display:inline-flex; gap:0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);">
+                                <div
+                                    style="background:#f1f5f9; border-radius:50px; padding:6px; display:inline-flex; gap:0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);">
                                     <button onclick="adminSelectVenue('basketball')" id="admin-venue-basketball"
-                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.3);">🏀 Basketball Court</button>
+                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.3);">🏀
+                                        Basketball Court</button>
                                     <button onclick="adminSelectVenue('multipurpose')" id="admin-venue-multipurpose"
-                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:transparent; color:#64748b;">🏢 Multi-Purpose Hall</button>
+                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:transparent; color:#64748b;">🏢
+                                        Multi-Purpose Hall</button>
                                 </div>
                             </div>
                             <input type="hidden" id="adminSelectedVenue" value="basketball">
@@ -1900,51 +1957,56 @@
 
                                 <!-- Calendar Card (Left Side) -->
                                 <div style="background:#fff; border-radius:24px; padding:32px; box-shadow:0 12px 40px rgba(0,0,0,0.06); border:1px solid #f1f5f9; position:relative; overflow:hidden;">
-                                    <!-- Decorative orbs matching user dash -->
-                                    <div style="position:absolute;top:-50px;left:-50px;width:150px;height:150px;background:radial-gradient(circle,rgba(52,211,153,0.15) 0%,transparent 70%);border-radius:50%;"></div>
-                                    <div style="position:absolute;bottom:-50px;right:-50px;width:150px;height:150px;background:radial-gradient(circle,rgba(96,165,250,0.15) 0%,transparent 70%);border-radius:50%;"></div>
-
                                     <!-- Month Header -->
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; position:relative; z-index:10;">
                                         <h2 id="adminCalendarMonth" style="font-size:24px; font-weight:800; color:#0f172a; margin:0; letter-spacing:-0.02em;"></h2>
                                         <div style="display:flex; gap:10px;">
-                                            <button onclick="changeAdminMonth(-1)" style="width:40px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:18px;color:#64748b;" onmouseover="this.style.background='#f8fafc';this.style.color='#0f172a';this.style.borderColor='#cbd5e1';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">‹</button>
-                                            <button onclick="changeAdminMonth(1)" style="width:40px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:18px;color:#64748b;" onmouseover="this.style.background='#f8fafc';this.style.color='#0f172a';this.style.borderColor='#cbd5e1';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">›</button>
+                                            <button onclick="changeAdminMonth(-1)" style="width:40px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:#64748b;" onmouseover="this.style.background='#f8fafc';this.style.color='#0f172a';this.style.borderColor='#cbd5e1';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">←</button>
+                                            <button onclick="changeAdminMonth(1)" style="width:40px;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:#64748b;" onmouseover="this.style.background='#f8fafc';this.style.color='#0f172a';this.style.borderColor='#cbd5e1';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">→</button>
                                         </div>
                                     </div>
 
                                     <!-- Day Labels -->
-                                    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:12px; position:relative; z-index:10; border-bottom:1px solid #f1f5f9; padding-bottom:12px;">
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">SUN</div>
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">MON</div>
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">TUE</div>
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">WED</div>
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">THU</div>
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">FRI</div>
-                                        <div style="text-align:center;font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.05em;">SAT</div>
+                                    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:12px; position:relative; z-index:10; padding-bottom:12px;">
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Sun</div>
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Mon</div>
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Tue</div>
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Wed</div>
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Thu</div>
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Fri</div>
+                                        <div style="text-align:center;font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:0.02em;">Sat</div>
                                     </div>
                                     <div id="adminCalendarGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; position:relative; z-index:10;"></div>
 
                                     <!-- Legend -->
-                                    <div style="display:flex; justify-content:center; gap:24px; margin-top:28px; padding-top:20px; border-top:1px solid #f1f5f9; position:relative; z-index:10;">
-                                        <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:4px;background:#ecfdf5;border:1px solid #6ee7b7;display:inline-block;"></span><span style="font-size:12px;font-weight:600;color:#64748b;">Available</span></div>
-                                        <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:4px;background:#eff6ff;border:2px solid #60a5fa;display:inline-block;"></span><span style="font-size:12px;font-weight:600;color:#64748b;">Official Event</span></div>
-                                        <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:4px;background:#fef2f2;border:2px solid #fca5a5;display:inline-block;"></span><span style="font-size:12px;font-weight:600;color:#64748b;">Booked</span></div>
+                                    <div style="display:flex; justify-content:center; gap:20px; margin-top:32px; padding-top:24px; border-top:1px solid #f1f5f9; position:relative; z-index:10;">
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:14px;border-radius:4px;background:#f0fdf4;border:1px solid #a7f3d0;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:#334155;">Available</span></div>
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:14px;border-radius:4px;background:#faf5ff;border:1px solid #e9d5ff;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:#334155;">Brgy Event</span></div>
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:14px;border-radius:4px;background:#fef2f2;border:1px solid #fca5a5;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:#334155;">Booked</span></div>
+                                        <div style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:14px;border-radius:4px;background:#f8fafc;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:#334155;">Past</span></div>
                                     </div>
                                 </div>
 
                                 <!-- The Right Panel is now just a summary or deleted -->
-                                <div style="width:340px; background:#fff; border-left:1px solid #e2e8f0; display:flex; flex-direction:column;">
+                                <div
+                                    style="width:340px; background:#fff; border-left:1px solid #e2e8f0; display:flex; flex-direction:column;">
                                     <div style="padding:28px 28px 0 28px; flex-shrink:0;">
-                                        <h2 style="font-size:22px; font-weight:800; color:#0f172a; margin:0 0 6px 0; letter-spacing:-0.02em;">Schedule Overview</h2>
-                                        <p style="font-size:14px; color:#64748b; margin:0;">Click any date on the calendar to view its schedule and add official events.</p>
+                                        <h2
+                                            style="font-size:22px; font-weight:800; color:#0f172a; margin:0 0 6px 0; letter-spacing:-0.02em;">
+                                            Schedule Overview</h2>
+                                        <p style="font-size:14px; color:#64748b; margin:0;">Click any date on the
+                                            calendar to view its schedule and add official events.</p>
                                     </div>
 
-                                    <div style="padding:24px 28px 28px 28px; flex-grow:1; display:flex; flex-direction:column;">
-                                    
+                                    <div
+                                        style="padding:24px 28px 28px 28px; flex-grow:1; display:flex; flex-direction:column;">
+
                                         <!-- All Bookings List -->
-                                        <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 10px;">📋 All Active Bookings</h3>
-                                        <div id="adminAllBookingsList" style="overflow-y:auto;flex-grow:1;display:flex;flex-direction:column;gap:8px;"></div>
+                                        <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 10px;">📋 All
+                                            Active Bookings</h3>
+                                        <div id="adminAllBookingsList"
+                                            style="overflow-y:auto;flex-grow:1;display:flex;flex-direction:column;gap:8px;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1980,12 +2042,14 @@
                                 </table>
                             </div>
                         </div>
-                    </div>                    <!-- Reports Section -->
+                    </div> <!-- Reports Section -->
                     <div id="reports-section" class="section-container" style="display: none;">
-                        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="section-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <h3>📊 Barangay Simple Report</h3>
-                                <span style="font-size:13px;color:var(--muted);">Consolidated timeline of all barangay transactions (Equipment, Concerns, Bookings)</span>
+                                <span style="font-size:13px;color:var(--muted);">Consolidated timeline of all barangay
+                                    transactions (Equipment, Concerns, Bookings)</span>
                             </div>
                             <button class="btn btn-small btn-primary" onclick="window.print()">🖨️ Print Report</button>
                         </div>
@@ -2014,20 +2078,36 @@
                     <!-- Activity Log Section (Premium) -->
                     <div id="activity-log-section" class="section-container" style="display: none;">
                         <div class="premium-card">
-                            <div class="section-header" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
-                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--green-xl);">System &amp; Transaction History</h3>
-                                <button class="btn btn-primary btn-small" onclick="loadActivityLog()">🔄 Refresh</button>
+                            <div class="section-header"
+                                style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
+                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--green-xl);">
+                                    System &amp; Transaction History</h3>
+                                <button class="btn btn-primary btn-small" onclick="loadActivityLog()">🔄
+                                    Refresh</button>
                             </div>
                             <!-- Filters & Search -->
-                            <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 24px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; align-items: center;">
+                            <div
+                                style="display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 24px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; align-items: center;">
                                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                    <button id="logFilter-all"       onclick="setLogFilter('all')"       style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #065f46; background:#065f46; color:#fff; cursor:pointer;">📋 All</button>
-                                    <button id="logFilter-inventory" onclick="setLogFilter('inventory')" style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📦 Inventory</button>
-                                    <button id="logFilter-requests"  onclick="setLogFilter('requests')"  style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">🙋 User Requests</button>
-                                    <button id="logFilter-bookings"  onclick="setLogFilter('bookings')"  style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📅 Court Bookings</button>
-                                    <button id="logFilter-concerns"  onclick="setLogFilter('concerns')"  style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📣 Concerns</button>
+                                    <button id="logFilter-all" onclick="setLogFilter('all')"
+                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #065f46; background:#065f46; color:#fff; cursor:pointer;">📋
+                                        All</button>
+                                    <button id="logFilter-inventory" onclick="setLogFilter('inventory')"
+                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📦
+                                        Inventory</button>
+                                    <button id="logFilter-requests" onclick="setLogFilter('requests')"
+                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">🙋
+                                        User Requests</button>
+                                    <button id="logFilter-bookings" onclick="setLogFilter('bookings')"
+                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📅
+                                        Court Bookings</button>
+                                    <button id="logFilter-concerns" onclick="setLogFilter('concerns')"
+                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📣
+                                        Concerns</button>
                                 </div>
-                                <input id="logSearchInput" type="text" placeholder="🔍 Search logs..." oninput="renderActivityTable()" style="flex:1; min-width:200px; padding:7px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:13px; outline:none; background:#fff;">
+                                <input id="logSearchInput" type="text" placeholder="🔍 Search logs..."
+                                    oninput="renderActivityTable()"
+                                    style="flex:1; min-width:200px; padding:7px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:13px; outline:none; background:#fff;">
                             </div>
                             <div class="admin-tables" style="overflow-x: auto; padding: 0 24px 24px;">
                                 <table class="activity-log-table">
@@ -2041,7 +2121,8 @@
                                     </thead>
                                     <tbody id="activityLogTable"></tbody>
                                 </table>
-                                <div id="noActivityLog" class="empty-state" style="display:none; text-align:center; padding: 40px;">
+                                <div id="noActivityLog" class="empty-state"
+                                    style="display:none; text-align:center; padding: 40px;">
                                     <div style="font-size:40px; margin-bottom:12px;">📝</div>
                                     <p style="color: #6b7280;">No activity recorded yet</p>
                                 </div>
@@ -2070,7 +2151,8 @@
                                         style="background: linear-gradient(135deg, var(--green-light), #ecfdf5); padding: 25px 30px; border-bottom: 1px solid var(--border);">
                                         <h3
                                             style="margin: 0; font-size: 18px; font-weight: 700; color: var(--green-dark);">
-                                            <i class="bi bi-person-lines-fill"></i> Personal Details</h3>
+                                            <i class="bi bi-person-lines-fill"></i> Personal Details
+                                        </h3>
                                     </div>
                                     <div style="padding: 30px;">
                                         <form id="profileForm">
@@ -2179,7 +2261,8 @@
                                     onmouseout="this.style.transform='none'">
                                     <div
                                         style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-people-fill"></i></div>
+                                        <i class="bi bi-people-fill"></i>
+                                    </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
                                         Total Users</div>
@@ -2192,7 +2275,8 @@
                                     onmouseout="this.style.transform='none'">
                                     <div
                                         style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-person-check-fill"></i></div>
+                                        <i class="bi bi-person-check-fill"></i>
+                                    </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
                                         Regular Users</div>
@@ -2205,7 +2289,8 @@
                                     onmouseout="this.style.transform='none'">
                                     <div
                                         style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-shield-lock-fill"></i></div>
+                                        <i class="bi bi-shield-lock-fill"></i>
+                                    </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
                                         Administrators</div>
@@ -2218,7 +2303,8 @@
                                     onmouseout="this.style.transform='none'">
                                     <div
                                         style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-box-seam-fill"></i></div>
+                                        <i class="bi bi-box-seam-fill"></i>
+                                    </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
                                         Equipment Items</div>
@@ -2231,7 +2317,8 @@
                                     onmouseout="this.style.transform='none'">
                                     <div
                                         style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-exclamation-triangle-fill"></i></div>
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                    </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
                                         Pending Req.</div>
@@ -2244,7 +2331,8 @@
                                     onmouseout="this.style.transform='none'">
                                     <div
                                         style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-calendar-event-fill"></i></div>
+                                        <i class="bi bi-calendar-event-fill"></i>
+                                    </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
                                         Court Bookings</div>
@@ -2270,7 +2358,8 @@
                                     <div style="display: flex; align-items: flex-start; gap: 15px;">
                                         <div
                                             style="background: #e0e7ff; color: #4338ca; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-box"></i></div>
+                                            <i class="bi bi-box"></i>
+                                        </div>
                                         <div>
                                             <p
                                                 style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
@@ -2285,7 +2374,8 @@
                                     <div style="display: flex; align-items: flex-start; gap: 15px;">
                                         <div
                                             style="background: #dcfce7; color: #15803d; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-database"></i></div>
+                                            <i class="bi bi-database"></i>
+                                        </div>
                                         <div>
                                             <p
                                                 style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
@@ -2300,7 +2390,8 @@
                                     <div style="display: flex; align-items: flex-start; gap: 15px;">
                                         <div
                                             style="background: #fae8ff; color: #c026d3; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-geo-alt"></i></div>
+                                            <i class="bi bi-geo-alt"></i>
+                                        </div>
                                         <div>
                                             <p
                                                 style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
@@ -2315,7 +2406,8 @@
                                     <div style="display: flex; align-items: flex-start; gap: 15px;">
                                         <div
                                             style="background: #f1f5f9; color: #475569; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-clock-history"></i></div>
+                                            <i class="bi bi-clock-history"></i>
+                                        </div>
                                         <div>
                                             <p
                                                 style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
@@ -2731,6 +2823,166 @@
                     await renderAdminAllBookings();
                 }
             });
+
+            async function renderAdminCalendar() {
+                const grid = document.getElementById('adminCalendarGrid');
+                const monthTitle = document.getElementById('adminCalendarMonth');
+                if (!grid || !monthTitle) return;
+
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
+
+                // Fetch data safely — calendar renders even if these fail
+                let eventDates = {}, bookingDates = {};
+                try {
+                    const [events, bookings] = await Promise.all([getEvents(), getCourtBookings()]);
+                    const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
+                    events.filter(e => e.status === 'approved').forEach(e => {
+                        eventDates[e.date] = eventDates[e.date] || [];
+                        eventDates[e.date].push(e);
+                    });
+                    bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue).forEach(b => {
+                        bookingDates[b.date] = bookingDates[b.date] || [];
+                        bookingDates[b.date].push(b);
+                    });
+                } catch (err) {
+                    console.warn('Calendar data fetch failed, rendering empty calendar:', err);
+                }
+
+                grid.innerHTML = '';
+
+                const firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
+                const daysInMonth = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Empty spacer cells for days before the 1st
+                for (let i = 0; i < firstDay; i++) {
+                    const empty = document.createElement('div');
+                    grid.appendChild(empty);
+                }
+
+                // Day tiles
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayElement = document.createElement('div');
+                    const dateObj = new Date(adminCalendarYear, adminCalendarMonth, day);
+
+                    const hasEvents = eventDates[dateStr] && eventDates[dateStr].length > 0;
+                    const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
+                    const isSelected = adminSelectedDate === dateStr;
+                    const isToday = dateObj.getTime() === today.getTime();
+                    const isPast = dateObj < today;
+
+                    let bg, color, border, labelText, labelColor, extraStyle;
+                    let cursor = 'pointer';
+
+                    if (isSelected && !hasEvents && !hasBookings) {
+                        bg = '#10b981'; // bg-emerald-500
+                        color = '#ffffff';
+                        border = '1px solid #059669'; // border-emerald-600
+                        extraStyle = 'box-shadow:0 4px 12px rgba(16,185,129,0.3);transform:scale(1.05);z-index:1;';
+                    } else if (isPast) {
+                        bg = '#f3f4f6'; color = '#9ca3af'; border = '1px solid #e5e7eb';
+                        extraStyle = '';
+                        cursor = 'not-allowed';
+                    } else if (hasEvents) {
+                        bg = '#dbeafe'; color = '#1e40af'; border = '2px solid #60a5fa'; // Blue for official events
+                        extraStyle = 'opacity:0.9;';
+                        cursor = 'not-allowed';
+                    } else if (hasBookings) {
+                        bg = '#fee2e2'; color = '#b91c1c'; border = '2px solid #fca5a5'; // Red for booked
+                        extraStyle = '';
+                        cursor = 'not-allowed';
+                    } else {
+                        bg = '#ecfdf5'; color = '#047857'; border = '1px solid #a7f3d0'; // Emerald for available
+                        extraStyle = '';
+                    }
+
+                    if (isToday && !isSelected) {
+                        extraStyle += 'box-shadow:0 0 0 2px #fff, 0 0 0 4px #10b981;';
+                    }
+
+                    dayElement.style.cssText = `
+                        background:${bg}; color:${color}; border:${border};
+                        border-radius:12px; padding:12px 4px; text-align:center;
+                        cursor:${cursor}; position:relative;
+                        transition:all 0.15s ease;
+                        font-weight:800; font-size:14px;
+                        ${extraStyle}
+                    `;
+                    dayElement.innerHTML = day;
+
+                    if (hasEvents) dayElement.title = eventDates[dateStr].map(e => e.title).join(', ');
+                    if (hasBookings) dayElement.title = bookingDates[dateStr].map(b => b.purpose || b.venue).join(', ');
+
+                    if (!isPast && !isSelected && !hasEvents && !hasBookings) {
+                        dayElement.onmouseover = () => {
+                            dayElement.style.background = '#d1fae5'; // hover:bg-emerald-200
+                            dayElement.style.transform = 'scale(1.05)';
+                        };
+                        dayElement.onmouseout = () => {
+                            dayElement.style.background = bg;
+                            dayElement.style.transform = 'scale(1)';
+                        };
+                    }
+
+                    if (!isPast && !hasEvents && !hasBookings) {
+                        dayElement.onclick = () => adminSelectDate(dateStr);
+                    } else if (hasEvents) {
+                        dayElement.onclick = () => showToast('This date already has an official event.', 'error');
+                    } else if (hasBookings) {
+                        dayElement.onclick = () => showToast('This date is already fully booked by a resident.', 'error');
+                    }
+                    grid.appendChild(dayElement);
+                }
+            }
+
+            function adminSelectDate(dateStr) {
+                adminSelectedDate = dateStr;
+                renderAdminCalendar();
+
+                // Show the form and hide the empty state
+                const emptyState = document.getElementById('adminEventEmptyState');
+                const form = document.getElementById('adminSidebarEventForm');
+                const dateDisplay = document.getElementById('adminEventSelectedDateDisplay');
+                const hiddenDateInput = document.getElementById('adminSidebarEventDate');
+
+                if (emptyState && form && dateDisplay && hiddenDateInput) {
+                    emptyState.style.display = 'none';
+                    form.style.display = 'flex';
+
+                    // Format and display date
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    dateDisplay.textContent = new Date(dateStr).toLocaleDateString('en-US', options);
+                    hiddenDateInput.value = dateStr;
+                }
+            }
+
+            function adminHideEventForm() {
+                adminSelectedDate = null;
+                renderAdminCalendar();
+                const emptyState = document.getElementById('adminEventEmptyState');
+                const form = document.getElementById('adminSidebarEventForm');
+                if (emptyState && form) {
+                    emptyState.style.display = 'flex';
+                    form.style.display = 'none';
+                    form.reset();
+                }
+            }
+
+            async function changeAdminMonth(delta) {
+                adminCalendarMonth += delta;
+                if (adminCalendarMonth > 11) {
+                    adminCalendarMonth = 0;
+                    adminCalendarYear++;
+                } else if (adminCalendarMonth < 0) {
+                    adminCalendarMonth = 11;
+                    adminCalendarYear--;
+                }
+                await renderAdminCalendar();
+            }
+
             function switchSection(section, btn) {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
@@ -2744,10 +2996,9 @@
                 // Auto-load section data on switch
                 if (section === 'activity-log') loadActivityLog();
                 if (section === 'users') loadUsers();
-                if (section === 'events') { renderAdminCalendar(); }
+                if (section === 'events') { renderAdminCalendar(); renderAdminAllBookings(); }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-
 
             async function loadStats() {
                 const [borrowings, concerns, events, bookings, users] = await Promise.all([
@@ -2780,7 +3031,7 @@
             function toggleNotificationDropdown(e) {
                 if (e) e.stopPropagation();
                 const dropdown = document.getElementById('notificationDropdown');
-                
+
                 if (dropdown.style.display === 'flex') {
                     dropdown.style.display = 'none';
                 } else {
@@ -2789,7 +3040,7 @@
             }
 
             // Close notification dropdown when clicking outside
-            document.addEventListener('click', function(event) {
+            document.addEventListener('click', function (event) {
                 const dropdown = document.getElementById('notificationDropdown');
                 const badge = document.getElementById('notificationBadge');
                 if (dropdown && dropdown.style.display === 'flex') {
@@ -2857,7 +3108,7 @@
                 window._currentNotificationActions = notifications.map(n => n.action);
             }
 
-            window.handleNotificationClick = function(e, index) {
+            window.handleNotificationClick = function (e, index) {
                 e.stopPropagation();
                 document.getElementById('notificationDropdown').style.display = 'none';
                 if (window._currentNotificationActions && window._currentNotificationActions[index]) {
@@ -2882,28 +3133,28 @@
 
             const LOG_FILTER_KEYWORDS = {
                 inventory: ['Inventory Update', 'Equipment Added', 'Equipment'],
-                requests:  ['Borrow Request', 'Borrow Approved', 'Borrow Rejected', 'Borrow Returned', 'Borrow Cancelled'],
-                bookings:  ['Court Booking'],
-                concerns:  ['Concern Submitted', 'Concern Updated', 'Concern Deleted'],
+                requests: ['Borrow Request', 'Borrow Approved', 'Borrow Rejected', 'Borrow Returned', 'Borrow Cancelled'],
+                bookings: ['Court Booking'],
+                concerns: ['Concern Submitted', 'Concern Updated', 'Concern Deleted'],
             };
 
             function setLogFilter(filter) {
                 _activeLogFilter = filter;
-                ['all','inventory','requests','bookings','concerns'].forEach(f => {
+                ['all', 'inventory', 'requests', 'bookings', 'concerns'].forEach(f => {
                     const btn = document.getElementById('logFilter-' + f);
                     if (!btn) return;
                     const active = f === filter;
-                    btn.style.background  = active ? '#065f46' : '#fff';
-                    btn.style.color       = active ? '#fff'    : '#065f46';
+                    btn.style.background = active ? '#065f46' : '#fff';
+                    btn.style.color = active ? '#fff' : '#065f46';
                     btn.style.borderColor = active ? '#065f46' : '#d1fae5';
                 });
                 renderActivityTable();
             }
 
             function renderActivityTable() {
-                const tbody      = document.getElementById('activityLogTable');
+                const tbody = document.getElementById('activityLogTable');
                 const emptyState = document.getElementById('noActivityLog');
-                const search     = (document.getElementById('logSearchInput')?.value || '').toLowerCase();
+                const search = (document.getElementById('logSearchInput')?.value || '').toLowerCase();
 
                 let filtered = _allActivityLogs;
 
@@ -2928,7 +3179,7 @@
                 if (emptyState) emptyState.style.display = 'none';
 
                 tbody.innerHTML = filtered.map(log => {
-                    const dt      = new Date(log.createdAt);
+                    const dt = new Date(log.createdAt);
                     const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
@@ -4018,7 +4269,7 @@
                 const tbody = document.getElementById('simpleReportTable');
                 const noData = document.getElementById('noSimpleReport');
                 if (!tbody) return;
-                
+
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">Loading...</td></tr>';
                 noData.style.display = 'none';
 
@@ -4075,7 +4326,7 @@
 
                     tbody.innerHTML = transactions.map(t => {
                         return `<tr>
-                            <td width="15%" style="color:#6b7280; font-size:13px;">${t.date.toLocaleDateString()} <br> <span style="font-size:11px;">${t.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></td>
+                            <td width="15%" style="color:#6b7280; font-size:13px;">${t.date.toLocaleDateString()} <br> <span style="font-size:11px;">${t.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></td>
                             <td width="20%"><strong>${t.type}</strong></td>
                             <td width="20%">${t.user}</td>
                             <td width="30%" style="font-size:13px;">${t.details}</td>
@@ -4096,12 +4347,12 @@
                 const notifications = await getNotifications('admin');
                 const badge = document.getElementById('notificationBadge');
                 const body = document.getElementById('notificationDropdownBody');
-                
+
                 if (!badge || !body) return;
 
                 const unreadCount = notifications.filter(n => !n.isRead).length;
                 badge.setAttribute('data-count', unreadCount);
-                
+
                 // Always show the notification bell so they can click it even if 0 unread
                 badge.style.display = 'block';
 
@@ -4125,10 +4376,10 @@
                 body.innerHTML = notifications.map(notif => {
                     const iconClass = notif.type === 'concern' ? 'concern' : notif.type === 'borrow' ? 'request' : 'booking';
                     const icon = notif.type === 'concern' ? '📋' : notif.type === 'borrow' ? '📦' : '🏀';
-                    
+
                     const timeAgo = formatTimeAgoAdmin(notif.created_at || notif.createdAt);
                     const unreadClass = notif.isRead ? '' : 'unread';
-                    
+
                     return `
                         <a href="javascript:void(0)" class="notification-item ${unreadClass}" onclick="handleNotificationClick('${notif.id}', '${notif.type}', event)">
                             <div class="notif-icon-wrap ${iconClass}">${icon}</div>
@@ -4145,7 +4396,7 @@
                 if (!dateStr) return 'Just now';
                 const date = new Date(dateStr);
                 const seconds = Math.floor((new Date() - date) / 1000);
-                
+
                 let interval = seconds / 31536000;
                 if (interval > 1) return Math.floor(interval) + " years ago";
                 interval = seconds / 2592000;
@@ -4163,19 +4414,19 @@
                 event.preventDefault();
                 await markNotificationAsRead(id);
                 document.getElementById('notificationDropdown').style.display = 'none';
-                
+
                 const sectionMap = {
                     'borrow': 'requests',
                     'concern': 'concerns',
                     'booking': 'court-bookings'
                 };
-                
+
                 const sectionId = sectionMap[type] || 'overview';
                 switchSection(sectionId, null);
                 await loadAdminNotifications();
             }
 
-            window.toggleNotificationDropdown = function(event) {
+            window.toggleNotificationDropdown = function (event) {
                 const dropdown = document.getElementById('notificationDropdown');
                 if (dropdown.style.display === 'flex') {
                     dropdown.style.display = 'none';
@@ -4186,7 +4437,7 @@
             };
 
             // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
+            document.addEventListener('click', function (event) {
                 const dropdown = document.getElementById('notificationDropdown');
                 const badge = document.getElementById('notificationBadge');
                 if (dropdown && badge && dropdown.style.display === 'flex') {
@@ -4207,82 +4458,71 @@
                 const month = adminCurrentDate.getMonth();
                 const firstDay = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
+
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 document.getElementById('adminCalendarMonth').textContent = `${monthNames[month]} ${year}`;
-                
+
+                const grid = document.getElementById('adminCalendarGrid');
+                grid.innerHTML = '';
+
                 // Fetch bookings & events to highlight dates
                 const allBookings = await getCourtBookings();
                 const allEvents = await getEvents();
-                
-                const grid = document.getElementById('adminCalendarGrid');
-                if (!grid) return;
-                grid.innerHTML = '';
-                
                 const venue = document.getElementById('adminSelectedVenue').value;
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
-                
+
                 // Add empty cells for offset
                 for (let i = 0; i < firstDay; i++) {
                     grid.innerHTML += `<div style="height:60px;"></div>`;
                 }
-                
+
                 const today = new Date();
-                
+                today.setHours(0, 0, 0, 0);
+
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-                    
-                    // Fetch bookings & events for this date
+                    const dateObj = new Date(year, month, day);
+
+                    // Check bookings & events for this date
                     const hasEvent = allEvents.some(e => e.date === dateStr);
                     const hasBooking = allBookings.some(b => b.date === dateStr && (b.venue === venue || b.venueName === venueLabel) && b.status !== 'rejected' && b.status !== 'cancelled');
-                    
-                    const dateObj = new Date(year, month, day);
-                    const todayObj = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                    const isPast = dateObj < todayObj;
 
-                    let bg = 'transparent', color, border, extraStyle = '';
-                    let actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;"`;
-                    
-                    if (adminSelectedDate === dateStr && !hasEvent && !hasBooking) {
-                        bg = '#10b981';
-                        color = '#ffffff';
-                        border = '1px solid #059669';
-                        extraStyle = 'box-shadow:0 4px 12px rgba(16,185,129,0.3);transform:scale(1.05);z-index:1;';
-                    } else if (isPast) {
-                        bg = '#f8fafc';
-                        color = '#cbd5e1';
-                        border = '1px solid #f1f5f9';
-                        actionStrs = `class="calendar-day" style="cursor:not-allowed;"`;
+                    const isPast = dateObj < today;
+
+                    let bgClass = '';
+                    let styleStr = 'height:50px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:all 0.15s;';
+                    let clickStr = '';
+
+                    if (isPast) {
+                        styleStr += 'background:#f8fafc;color:#94a3b8;cursor:not-allowed;';
                     } else if (hasEvent) {
-                        bg = '#eff6ff';
-                        color = '#1e3b8a'; // custom dark blue
-                        border = '2px solid #93c5fd'; // hollow blue border
-                        extraStyle = 'font-weight:700;';
-                        actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;"`;
+                        styleStr += 'background:#faf5ff;color:#9333ea;border:1px solid #e9d5ff;cursor:pointer;';
+                        clickStr = `onclick="adminSelectDate('${dateStr}')"`;
                     } else if (hasBooking) {
-                        bg = '#fef2f2';
-                        color = '#991b1b'; // custom dark red
-                        border = '2px solid #fca5a5'; // hollow red border
-                        extraStyle = 'font-weight:700;';
-                        actionStrs = `onclick="adminSelectDate('${dateStr}')" class="calendar-day" style="cursor:pointer;"`;
+                        styleStr += 'background:#fef2f2;color:#dc2626;border:1px solid #fecaca;cursor:pointer;';
+                        clickStr = `onclick="adminSelectDate('${dateStr}')"`;
                     } else {
-                        bg = '#ffffff';
-                        color = '#334155';
-                        border = '1px solid #a7f3d0'; // emerald-200 for available space
-                    }
-                    
-                    if (isToday && adminSelectedDate !== dateStr) {
-                        extraStyle += 'box-shadow:0 0 0 2px #fff, 0 0 0 4px #10b981;';
+                        styleStr += 'background:#f0fdf4;color:#059669;border:1px solid #a7f3d0;cursor:pointer;';
+                        clickStr = `onclick="adminSelectDate('${dateStr}')"`;
                     }
 
-                    let styleStr = `height:60px;background:${bg};color:${color};border:${border};border-radius:12px;padding:12px 4px;text-align:center;display:flex;align-items:center;justify-content:center;transition:all 0.15s ease;font-weight:600;font-size:14px;position:relative;${extraStyle}`;
+                    if (adminSelectedDate === dateStr) {
+                        styleStr += 'box-shadow:0 0 0 2px #fff, 0 0 0 3px #10b981;z-index:1;';
+                    }
 
-                    grid.innerHTML += `
-                        <div ${actionStrs} style="${styleStr} user-select:none;" onmouseover="if(!${isPast}){this.style.transform='scale(1.05)'; if('${bg}'==='#ffffff')this.style.background='#d1fae5';}" onmouseout="if(!${isPast}){this.style.transform='scale(1)'; if('${bg}'==='#ffffff')this.style.background='${bg}';}">
-                            ${day}
-                        </div>
-                    `;
+                    if (!isPast) {
+                        grid.innerHTML += `
+                            <div ${clickStr} style="${styleStr} user-select:none;" class="calendar-day" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                ${day}
+                            </div>
+                        `;
+                    } else {
+                        grid.innerHTML += `
+                            <div style="${styleStr} user-select:none;" class="calendar-day">
+                                ${day}
+                            </div>
+                        `;
+                    }
                 }
 
                 // Sort and display all upcoming bookings/events in the right panel
@@ -4291,13 +4531,13 @@
                     const todayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     const upcomingBooks = allBookings.filter(b => b.date >= todayStr && b.status !== 'rejected' && b.status !== 'cancelled');
                     const upcomingEvents = allEvents.filter(e => e.date >= todayStr && e.status === 'approved');
-                    
+
                     const combined = [];
                     upcomingBooks.forEach(b => combined.push({ type: 'booking', date: b.date, time: b.time, label: b.userName || 'Resident', sub: b.venueName || b.venue }));
                     upcomingEvents.forEach(e => combined.push({ type: 'event', date: e.date, time: e.time, label: e.title, sub: 'Official Event' }));
-                    
+
                     // Sort by date then time
-                    combined.sort((a,b) => {
+                    combined.sort((a, b) => {
                         if (a.date !== b.date) return a.date.localeCompare(b.date);
                         return timeToMinutes(a.time) - timeToMinutes(b.time);
                     });
@@ -4323,21 +4563,21 @@
             }
 
 
-            window.changeAdminMonth = function(delta) {
+            window.changeAdminMonth = function (delta) {
                 adminCurrentDate.setMonth(adminCurrentDate.getMonth() + delta);
                 renderAdminCalendar();
             };
 
-            window.adminSelectVenue = function(venue) {
+            window.adminSelectVenue = function (venue) {
                 document.getElementById('adminSelectedVenue').value = venue;
                 document.getElementById('admin-venue-basketball').style.background = venue === 'basketball' ? 'linear-gradient(135deg,#10b981,#059669)' : 'transparent';
                 document.getElementById('admin-venue-basketball').style.color = venue === 'basketball' ? '#fff' : '#64748b';
-                
+
                 document.getElementById('admin-venue-multipurpose').style.background = venue === 'multipurpose' ? 'linear-gradient(135deg,#10b981,#059669)' : 'transparent';
                 document.getElementById('admin-venue-multipurpose').style.color = venue === 'multipurpose' ? '#fff' : '#64748b';
-                
+
                 renderAdminCalendar();
-                if(adminSelectedDate) adminSelectDate(adminSelectedDate); // Refresh slots
+                if (adminSelectedDate) adminSelectDate(adminSelectedDate); // Refresh slots
             };
 
             // =====================================================
@@ -4352,7 +4592,7 @@
                 return `${h12}:${m} ${ampm}`;
             }
 
-            window.adminSelectDate = async function(dateStr) {
+            window.adminSelectDate = async function (dateStr) {
                 adminSelectedDate = dateStr;
                 renderAdminCalendar();
                 await openAdminDayPopup(dateStr);
@@ -4441,8 +4681,8 @@
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
                 const slots = [];
                 for (let i = 6; i <= 22; i++) {
-                    slots.push(`${String(i).padStart(2,'0')}:00`);
-                    if (i !== 22) slots.push(`${String(i).padStart(2,'0')}:30`);
+                    slots.push(`${String(i).padStart(2, '0')}:00`);
+                    if (i !== 22) slots.push(`${String(i).padStart(2, '0')}:30`);
                 }
 
                 slots.forEach(slot => {
@@ -4473,7 +4713,7 @@
                 });
             }
 
-            window.adminRemoveBooking = async function(id) {
+            window.adminRemoveBooking = async function (id) {
                 if (!confirm('Remove this booking?')) return;
                 const res = await cancelCourtBooking(id);
                 if (res.success) {
@@ -4485,7 +4725,7 @@
                 } else { showAlert('Error: ' + res.message, 'error'); }
             };
 
-            window.adminRemoveEvent = async function(id) {
+            window.adminRemoveEvent = async function (id) {
                 if (!confirm('Delete this event?')) return;
                 const res = await deleteEvent(id);
                 if (res.success) {
@@ -4497,7 +4737,7 @@
                 } else { showAlert('Error: ' + res.message, 'error'); }
             };
 
-            window.toggleAdsEventForm = function() {
+            window.toggleAdsEventForm = function () {
                 const wrap = document.getElementById('adsEventFormWrap');
                 const btn = document.getElementById('adsToggleEventBtn');
                 if (wrap.classList.contains('hidden')) {
@@ -4509,13 +4749,13 @@
                 }
             };
 
-            window.closeAdminDayPopup = function() {
+            window.closeAdminDayPopup = function () {
                 document.getElementById('adminDayScheduleModal').style.display = 'none';
                 adminSelectedDate = null;
                 renderAdminCalendar();
             };
 
-            document.getElementById('adsEventForm').addEventListener('submit', async function(e) {
+            document.getElementById('adsEventForm').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const btn = this.querySelector('button[type="submit"]');
                 btn.disabled = true; btn.textContent = 'Scheduling...';
@@ -4647,21 +4887,28 @@
         </script>
 
         <!-- Admin Eq Reject Modal -->
-        <div id="rejectEqModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:#fff; border-radius:18px; padding:28px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+        <div id="rejectEqModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9000; align-items:center; justify-content:center; padding:16px;">
+            <div
+                style="background:#fff; border-radius:18px; padding:28px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h3 style="font-size:18px; font-weight:800; color:#111;">Reject Request</h3>
-                    <button onclick="closeRejectEqModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">✕</button>
+                    <button onclick="closeRejectEqModal()"
+                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">✕</button>
                 </div>
                 <div style="margin-bottom:20px;">
-                    <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Reason for Rejection *</label>
+                    <label
+                        style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Reason
+                        for Rejection *</label>
                     <textarea id="rejectEqReasonText" rows="4" required placeholder="State the reason why..."
                         style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
                         onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'"></textarea>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button type="button" onclick="closeRejectEqModal()" style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
-                    <button type="button" onclick="confirmRejectEq()" style="flex:1; padding:12px; background:#ef4444; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Reject</button>
+                    <button type="button" onclick="closeRejectEqModal()"
+                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
+                    <button type="button" onclick="confirmRejectEq()"
+                        style="flex:1; padding:12px; background:#ef4444; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Reject</button>
                 </div>
             </div>
         </div>
@@ -4713,7 +4960,7 @@
                             onblur="this.style.borderColor='#d1d5db'"></textarea>
                     </div>
 
-            <div style="display:flex; gap:10px;">
+                    <div style="display:flex; gap:10px;">
                         <button type="button" onclick="closeAdminConcernModal()"
                             style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
                         <button type="submit"
@@ -4727,61 +4974,87 @@
         <!-- ========================================== -->
         <!-- ADMIN DAY SCHEDULE POPUP -->
         <!-- ========================================== -->
-        <div id="adminDayScheduleModal" class="hidden" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:#fff; border-radius:24px; width:100%; max-width:480px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); display:flex; flex-direction:column; overflow:hidden; animation:fadeIn 0.3s ease; max-height:90vh;">
-                
+        <div id="adminDayScheduleModal" class="hidden"
+            style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+            <div
+                style="background:#fff; border-radius:24px; width:100%; max-width:480px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); display:flex; flex-direction:column; overflow:hidden; animation:fadeIn 0.3s ease; max-height:90vh;">
+
                 <!-- Header -->
-                <div style="background:linear-gradient(135deg,#3b82f6,#2563eb); padding:24px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminDayPopup()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                <div
+                    style="background:linear-gradient(135deg,#3b82f6,#2563eb); padding:24px; position:relative; flex-shrink:0;">
+                    <button onclick="closeAdminDayPopup()"
+                        style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:background 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
                     <div style="font-size:32px; margin-bottom:8px;">📅</div>
-                    <h3 id="adsDayTitle" style="color:#fff; font-size:20px; font-weight:800; margin:0 0 4px 0;">Select Date</h3>
+                    <h3 id="adsDayTitle" style="color:#fff; font-size:20px; font-weight:800; margin:0 0 4px 0;">Select
+                        Date</h3>
                     <p id="adsDayVenue" style="color:rgba(255,255,255,0.8); font-size:14px; margin:0;"></p>
                 </div>
 
                 <!-- Schedule List -->
                 <div style="padding:24px 24px 12px; overflow-y:auto; flex-grow:1;">
-                    <p style="font-size:12px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:1px; margin:0 0 16px 0;">Schedule for this Day</p>
+                    <p
+                        style="font-size:12px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:1px; margin:0 0 16px 0;">
+                        Schedule for this Day</p>
                     <div id="adsScheduleList" style="display:flex; flex-direction:column; gap:12px;"></div>
                     <div id="adsEmptyState" style="display:none; text-align:center; padding:32px 0;">
                         <div style="font-size:40px; margin-bottom:12px;">🟢</div>
-                        <p style="font-size:15px; font-weight:700; color:#64748b; margin:0 0 4px 0;">No bookings for this day.</p>
+                        <p style="font-size:15px; font-weight:700; color:#64748b; margin:0 0 4px 0;">No bookings for
+                            this day.</p>
                         <p style="font-size:13px; color:#94a3b8; margin:0;">All time slots are completely free.</p>
                     </div>
                 </div>
 
                 <!-- Add Official Event Section -->
                 <div style="padding:16px 24px 24px; flex-shrink:0; border-top:1px solid #f1f5f9;">
-                    <button id="adsToggleEventBtn" onclick="toggleAdsEventForm()" style="width:100%; padding:14px; background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(139,92,246,0.25); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <button id="adsToggleEventBtn" onclick="toggleAdsEventForm()"
+                        style="width:100%; padding:14px; background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(139,92,246,0.25); transition:transform 0.15s;"
+                        onmouseover="this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.transform='translateY(0)'">
                         ＋ Add Official Event
                     </button>
 
                     <form id="adsEventForm" style="display:contents;">
-                        <div id="adsEventFormWrap" class="hidden" style="margin-top:20px; display:flex; flex-direction:column; gap:16px;">
+                        <div id="adsEventFormWrap" class="hidden"
+                            style="margin-top:20px; display:flex; flex-direction:column; gap:16px;">
                             <input type="hidden" id="adsDate">
                             <input type="hidden" id="adsVenue">
 
                             <div>
-                                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Event Title</label>
-                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Fiesta, Liga" style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
+                                <label
+                                    style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Event
+                                    Title</label>
+                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Fiesta, Liga"
+                                    style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
                             </div>
 
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                 <div>
-                                    <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Start Time</label>
-                                    <select id="adsStartTime" required style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
+                                    <label
+                                        style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Start
+                                        Time</label>
+                                    <select id="adsStartTime" required
+                                        style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
                                 </div>
                                 <div>
-                                    <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">End Time</label>
-                                    <select id="adsEndTime" required style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
+                                    <label
+                                        style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">End
+                                        Time</label>
+                                    <select id="adsEndTime" required
+                                        style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
                                 </div>
                             </div>
 
                             <div>
-                                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Organizer</label>
-                                <input type="text" id="adsOrganizer" required placeholder="Official/Group Name" style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
+                                <label
+                                    style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Organizer</label>
+                                <input type="text" id="adsOrganizer" required placeholder="Official/Group Name"
+                                    style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
                             </div>
 
-                            <button type="submit" style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.25); margin-top:8px;">
+                            <button type="submit"
+                                style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.25); margin-top:8px;">
                                 🎉 Schedule Event
                             </button>
                         </div>
@@ -4793,6 +5066,36 @@
 
 
         <script src="js/darkmode.js" style="display:none"></script>
+</body>
+
+</html> <label
+    style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">End
+    Time</label>
+<select id="adsEndTime" required
+    style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
+</div>
+</div>
+
+<div>
+    <label
+        style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Organizer</label>
+    <input type="text" id="adsOrganizer" required placeholder="Official/Group Name"
+        style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
+</div>
+
+<button type="submit"
+    style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.25); margin-top:8px;">
+    🎉 Schedule Event
+</button>
+</div>
+</form>
+</div>
+
+</div>
+</div>
+
+
+<script src="js/darkmode.js" style="display:none"></script>
 </body>
 
 </html>
