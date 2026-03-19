@@ -4462,14 +4462,14 @@
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 document.getElementById('adminCalendarMonth').textContent = `${monthNames[month]} ${year}`;
 
-                const grid = document.getElementById('adminCalendarGrid');
-                grid.innerHTML = '';
-
                 // Fetch bookings & events to highlight dates
                 const allBookings = await getCourtBookings();
                 const allEvents = await getEvents();
                 const venue = document.getElementById('adminSelectedVenue').value;
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+
+                const grid = document.getElementById('adminCalendarGrid');
+                grid.innerHTML = '';
 
                 // Add empty cells for offset
                 for (let i = 0; i < firstDay; i++) {
