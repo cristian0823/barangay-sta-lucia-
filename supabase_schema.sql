@@ -94,15 +94,6 @@ CREATE TABLE IF NOT EXISTS activity_log (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
-CREATE TABLE IF NOT EXISTS notifications (
-    id SERIAL PRIMARY KEY,
-    user_id VARCHAR(50) NOT NULL, -- 'admin' or user ID as string
-    type VARCHAR(50) NOT NULL, -- 'borrow', 'concern', 'booking'
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT false,
-    reference_id INTEGER,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
 
 -- ============================================================
 -- STEP 2: PATCH MISSING COLUMNS & CLEANUP (safe to re-run)
@@ -128,6 +119,9 @@ ALTER TABLE activity_log DROP COLUMN IF EXISTS admin_username;
 -- ============================================================
 -- STEP 3: ENABLE ROW LEVEL SECURITY AND CREATE POLICIES
 -- ============================================================
+
+-- Drop old notification table if it still exists
+DROP TABLE IF EXISTS notifications;
 
 -- Enable RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -155,8 +149,6 @@ DROP POLICY IF EXISTS "Enable full access for admins" ON court_bookings;
 DROP POLICY IF EXISTS "Enable read access for all users" ON users;
 DROP POLICY IF EXISTS "Enable read access for all users" ON activity_log;
 DROP POLICY IF EXISTS "Enable write access for admins" ON activity_log;
-DROP POLICY IF EXISTS "Enable read access for all users" ON notifications;
-DROP POLICY IF EXISTS "Enable write access for all users" ON notifications;
 
 -- Users Table Policies
 CREATE POLICY "Enable read access for all users" ON users FOR SELECT USING (true);
@@ -189,10 +181,6 @@ CREATE POLICY "Enable full access for admins" ON court_bookings FOR ALL USING (E
 -- Activity Log Policies
 CREATE POLICY "Enable read access for all users" ON activity_log FOR SELECT USING (true);
 CREATE POLICY "Enable write access for admins" ON activity_log FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
-
--- Notifications Policies
-CREATE POLICY "Enable read access for all users" ON notifications FOR SELECT USING (true);
-CREATE POLICY "Enable write access for all users" ON notifications FOR ALL USING (true);
 
 
 -- ============================================================
