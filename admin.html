@@ -266,174 +266,6 @@
             background: var(--danger-bg);
         }
 
-        .notification-badge {
-            cursor: pointer;
-            font-size: 20px;
-            position: relative;
-            display: block; /* Always visible, loadAdminNotifications manages the counter */
-        }
-
-        .notification-badge::after {
-            content: attr(data-count);
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--danger);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .notification-badge.no-count::after {
-            display: none !important;
-        }
-
-        /* NOTIFICATION DROPDOWN */
-        .notification-dropdown {
-            position: absolute;
-            top: 60px;
-            right: 0;
-            width: 320px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            animation: dropdownFadeIn 0.2s ease forwards;
-            transform-origin: top right;
-        }
-
-        @keyframes dropdownFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .notification-dropdown-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8fafc;
-        }
-
-        .notification-dropdown-header h4 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .notification-dropdown-body {
-            max-height: 380px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .notification-item {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            gap: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-            color: var(--text);
-            position: relative;
-        }
-
-        .notification-item:hover {
-            background: #f1f5f9;
-        }
-
-        .notification-item.unread {
-            background: #f0f9ff;
-        }
-
-        .notification-item.unread::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 16px;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #3b82f6;
-        }
-
-        .notif-icon-wrap {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .notif-icon-wrap.concern {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .notif-icon-wrap.request {
-            background: #ffedd5;
-            color: #f97316;
-        }
-
-        .notif-icon-wrap.booking {
-            background: #dbeafe;
-            color: #3b82f6;
-        }
-
-        .notif-content {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .notif-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text);
-            line-height: 1.3;
-        }
-
-        .notif-time {
-            font-size: 11px;
-            color: var(--muted);
-            font-weight: 500;
-        }
-
-        .notification-dropdown-empty {
-            padding: 32px 16px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
 
         /* CONTENT */
         .dashboard-content {
@@ -1519,6 +1351,27 @@
         }
 
 
+        /* Dark mode button in admin header */
+        .admin-dark-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--muted);
+        }
+        .admin-dark-toggle:hover {
+            background: var(--green-50);
+            border-color: var(--green-200);
+            color: var(--green-dark);
+        }
+
         /* Calendar styles like user dashboard */
         .calendar-day:hover {
             transform: scale(1.05);
@@ -1593,27 +1446,8 @@
                     <span class="user-name" id="userName">Administrator</span>
                     <span class="user-role">Official</span>
                 </div>
-                <div style="position: relative;">
-                    <div class="notification-badge" id="notificationBadge" data-count="0"
-                        onclick="toggleNotificationDropdown(event)">
-                        🔔</div>
-
-                    <div id="notificationDropdown" class="notification-dropdown">
-                        <div class="notification-dropdown-header">
-                            <h4>Notifications</h4>
-                            <!-- Could add a "mark all read" button here in the future -->
-                        </div>
-                        <div class="notification-dropdown-body" id="notificationDropdownBody">
-                            <div class="notification-dropdown-empty">
-                                <span style="font-size:24px;">📭</span>
-                                <span>No new notifications</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="user-avatar" id="userAvatar">A</div>
-                <button class="admin-dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode"
-                    style="display:none;">🌙</button>
+                <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn">🌙</button>
                 <a href="admin-settings.html" class="logout-btn"
                     style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
