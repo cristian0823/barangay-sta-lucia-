@@ -149,6 +149,8 @@ DROP POLICY IF EXISTS "Enable full access for admins" ON court_bookings;
 DROP POLICY IF EXISTS "Enable read access for all users" ON users;
 DROP POLICY IF EXISTS "Enable read access for all users" ON activity_log;
 DROP POLICY IF EXISTS "Enable write access for admins" ON activity_log;
+DROP POLICY IF EXISTS "Enable update access for users own profile" ON users;
+DROP POLICY IF EXISTS "Enable full access for admins" ON users;
 
 -- Users Table Policies
 CREATE POLICY "Enable read access for all users" ON users FOR SELECT USING (true);
