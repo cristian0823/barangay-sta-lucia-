@@ -1537,6 +1537,78 @@
         /* Calendar */
         [data-theme="dark"] #adminCalendarGrid > div { filter: brightness(0.85); }
 
+        /* ── DARK MODE — Extra overrides for inline-style white elements ── */
+
+        /* Catch ALL remaining inline background:#fff / background:#ffffff */
+        [data-theme="dark"] [style*="background:#fff"],
+        [data-theme="dark"] [style*="background: #fff"],
+        [data-theme="dark"] [style*="background:#ffffff"],
+        [data-theme="dark"] [style*="background: #ffffff"],
+        [data-theme="dark"] [style*="background:white"] {
+            background: #1a1d27 !important;
+            color: #e2e8f0 !important;
+            border-color: #2d3148 !important;
+        }
+
+        /* Light-colored inline backgrounds (stat icons, pending rows, etc.) */
+        [data-theme="dark"] [style*="background:#f0fdf4"],
+        [data-theme="dark"] [style*="background:#ecfdf5"],
+        [data-theme="dark"] [style*="background:#fef2f2"],
+        [data-theme="dark"] [style*="background:#fffbeb"],
+        [data-theme="dark"] [style*="background:#eff6ff"],
+        [data-theme="dark"] [style*="background:#fff7ed"],
+        [data-theme="dark"] [style*="background:#faf5ff"],
+        [data-theme="dark"] [style*="background:#f8fafc"],
+        [data-theme="dark"] [style*="background:#f1f5f9"],
+        [data-theme="dark"] [style*="background:#f9fafb"] {
+            background: #232736 !important;
+            border-color: #2d3148 !important;
+        }
+
+        /* Quick action cards (overview row) */
+        [data-theme="dark"] .quick-action-card {
+            background: #1a1d27 !important;
+            border-color: #2d3148 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-theme="dark"] .qa-label { color: #e2e8f0 !important; }
+        [data-theme="dark"] .qa-sub   { color: #94a3b8 !important; }
+
+        /* Stat cards */
+        [data-theme="dark"] .stat-card {
+            background: #1a1d27 !important;
+            border-color: #2d3148 !important;
+        }
+        [data-theme="dark"] .stat-card h3 { color: #94a3b8 !important; }
+
+        /* Pending actions / recent activity cards in overview */
+        [data-theme="dark"] [style*="background: #fffbeb"],
+        [data-theme="dark"] [style*="background:#fffbeb"],
+        [data-theme="dark"] [style*="background: #fef2f2"],
+        [data-theme="dark"] [style*="background:#fef2f2"],
+        [data-theme="dark"] [style*="background: #eff6ff"],
+        [data-theme="dark"] [style*="background:#eff6ff"] {
+            background: #232736 !important;
+        }
+
+        /* Modal content box */
+        [data-theme="dark"] .modal-content {
+            background: #1a1d27 !important;
+            border-color: #2d3148 !important;
+        }
+
+        /* Text in inline styles */
+        [data-theme="dark"] [style*="color:#6b7280"],
+        [data-theme="dark"] [style*="color: #6b7280"],
+        [data-theme="dark"] [style*="color:#1e293b"],
+        [data-theme="dark"] [style*="color: #1e293b"],
+        [data-theme="dark"] [style*="color:#0f172a"],
+        [data-theme="dark"] [style*="color: #0f172a"],
+        [data-theme="dark"] [style*="color:#334155"],
+        [data-theme="dark"] [style*="color:#374151"] {
+            color: #e2e8f0 !important;
+        }
+
         /* Responsive Grid for Admin Calendar */
         @media (max-width: 900px) {
             .admin-cal-grid {
