@@ -140,7 +140,7 @@
                 <div class="flex items-start">
                     <input type="checkbox" id="agreeTerms" required class="w-4 h-4 mt-1">
                     <label for="agreeTerms" class="ml-2 text-sm text-gray-600">
-                        I agree to the <a href="terms.html" target="_blank" class="text-green-600 hover:underline">Terms and Conditions</a>
+                        I agree to the <a href="#" onclick="showTermsModal(); return false;" class="text-green-600 hover:underline">Terms and Conditions</a>
                     </label>
                 </div>
 
@@ -159,7 +159,93 @@
 
     <!-- Toast Notification -->
     <div id="toast"
-        class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300">
+        class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-50">
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="hideTermsModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col relative z-10 transform scale-95 opacity-0 transition-all duration-200" id="termsModalContent">
+            
+            <!-- Header -->
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-xl">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Terms and Conditions</h2>
+                    <p class="text-sm text-gray-500">Barangay Sta. Lucia Management System</p>
+                </div>
+                <button onclick="hideTermsModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Scrollable Body -->
+            <div class="p-6 overflow-y-auto" style="scrollbar-width: thin;">
+                <div class="space-y-6 text-gray-600 text-sm leading-relaxed">
+                    <p>Welcome to the Barangay Sta. Lucia Portal! By creating an account and using our online services, you agree to follow the rules outlined below.</p>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">1. Acceptance of Terms</h3>
+                        <p>By registering, you agree to these Terms and Conditions. If you do not agree, please do not use the portal.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">2. User Accounts & Eligibility</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>You must be a verified resident of Barangay Sta. Lucia.</li>
+                            <li>You must provide true and accurate information during registration.</li>
+                            <li>You are fully responsible for all activities under your account. Do not share your password.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">3. Equipment Borrowing Rules</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>All equipment remains the official property of the Barangay.</li>
+                            <li>You are responsible for picking up and returning the equipment on the exact dates agreed upon.</li>
+                            <li><strong>Liability:</strong> If equipment is lost or damaged while in your care, you will be required to pay for repairs or replacement.</li>
+                            <li>Late returns may result in a temporary ban from borrowing.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">4. Court Booking Rules</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>The court is for community and recreational use.</li>
+                            <li>Bookings are subject to approval. Official barangay events always take priority.</li>
+                            <li>Vandalism, fighting, or consuming alcohol on the premises is strictly prohibited.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">5. Reporting Concerns</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Use this feature strictly for legitimate barangay issues.</li>
+                            <li>Spamming or submitting fake reports will result in immediate account suspension.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">6. Data Privacy</h3>
+                        <p>Personal data collected is used solely to verify residency and improve services. We will not sell or share your data, in accordance with the Data Privacy Act.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-gray-800 font-bold mb-2">7. Account Suspension</h3>
+                        <p>The Barangay Administrator reserves the right to suspend any account that violates these rules or abuses barangay privileges.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-xl flex justify-end sticky bottom-0">
+                <button onclick="hideTermsModal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-sm focus:ring-4 focus:ring-emerald-500/20">
+                    I Understand
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -246,10 +332,34 @@
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const colors = { success: 'bg-green-500', error: 'bg-red-500' };
-            toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300`;
+            toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300 z-[200]`;
             toast.textContent = message;
             toast.style.transform = 'translateY(0)';
             setTimeout(() => { toast.style.transform = 'translateY(5rem)'; }, 3000);
+        }
+
+        // Modal Logic
+        function showTermsModal() {
+            const modal = document.getElementById('termsModal');
+            const content = document.getElementById('termsModalContent');
+            modal.classList.remove('hidden');
+            // small delay for animation
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.style.overflow = 'hidden'; // prevent background scrolling
+        }
+
+        function hideTermsModal() {
+            const modal = document.getElementById('termsModal');
+            const content = document.getElementById('termsModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
         }
 
         document.addEventListener('DOMContentLoaded', function () {
