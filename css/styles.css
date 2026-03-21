@@ -2083,4 +2083,73 @@ img {
         align-items: flex-end !important; /* align to bottom for bottom sheet effect */
         padding: 0 !important;
     }
+
+    /* --- SPECIFIC LAYOUT FIXES FOR HEADERS AND GRIDS --- */
+    
+    /* Header layout fixes to stop hiding buttons off screen */
+    .dashboard-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 12px 16px !important;
+        height: auto !important;
+    }
+    
+    .dashboard-nav {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+    
+    .user-menu {
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin-top: 12px !important;
+        padding-top: 12px !important;
+        border-top: 1px solid rgba(0,0,0,0.08) !important;
+    }
+    
+    /* Hide the text info so toggle and action buttons fit cleanly on small screens */
+    .user-info {
+        display: none !important;
+    }
+
+    /* Keep logout/settings visible and properly sized */
+    .logout-btn {
+        flex: 1 !important;
+        justify-content: center !important;
+        min-width: max-content !important;
+        padding: 10px 14px !important;
+    }
+
+    /* Admin Settings Header Fix */
+    .header {
+        height: auto !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 16px !important;
+        gap: 12px !important;
+    }
+    
+    .header-right {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    /* Force stubborn inline grids (Pending Actions / Recent Activity) to stack */
+    div[style*="grid-template-columns:1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr"],
+    div[style*="grid-template-columns:1fr 1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    /* Specific adjust for the inner flexbox rows inside widgets */
+    div[style*="justify-content:space-between"] {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
 }
