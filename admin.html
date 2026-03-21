@@ -2112,9 +2112,70 @@
 
                     <!-- Activity Log Section (Premium) -->
                     <div id="activity-log-section" class="section-container" style="display: none;">
+                        <style>
+                            /* ── Activity Log Dark Mode Overrides ── */
+                            [data-theme="dark"] #activity-log-section .premium-card {
+                                background: #1e293b !important;
+                                border-color: #334155 !important;
+                            }
+                            [data-theme="dark"] #activity-log-section .section-header {
+                                background: #1e293b !important;
+                                border-color: #334155 !important;
+                                color: #f1f5f9 !important;
+                            }
+                            [data-theme="dark"] #activity-log-section .section-header h3 {
+                                color: #10b981 !important;
+                            }
+                            /* Filter bar */
+                            [data-theme="dark"] #activity-log-section > .premium-card > div:nth-child(2) {
+                                background: #0f172a !important;
+                                border-color: #334155 !important;
+                            }
+                            /* Inactive filter buttons */
+                            [data-theme="dark"] #logFilter-inventory,
+                            [data-theme="dark"] #logFilter-requests,
+                            [data-theme="dark"] #logFilter-bookings,
+                            [data-theme="dark"] #logFilter-concerns {
+                                background: #1e293b !important;
+                                border-color: #334155 !important;
+                                color: #94a3b8 !important;
+                            }
+                            /* Search input */
+                            [data-theme="dark"] #logSearchInput {
+                                background: #1e293b !important;
+                                border-color: #334155 !important;
+                                color: #f1f5f9 !important;
+                            }
+                            [data-theme="dark"] #logSearchInput::placeholder {
+                                color: #64748b !important;
+                            }
+                            /* Table */
+                            [data-theme="dark"] #activity-log-section table thead tr {
+                                background: #0f172a !important;
+                            }
+                            [data-theme="dark"] #activity-log-section table thead th {
+                                color: #94a3b8 !important;
+                                border-color: #334155 !important;
+                            }
+                            [data-theme="dark"] #activity-log-section table tbody tr {
+                                border-color: #334155 !important;
+                            }
+                            [data-theme="dark"] #activity-log-section table tbody tr:hover {
+                                background: #334155 !important;
+                            }
+                            [data-theme="dark"] #activity-log-section table tbody td {
+                                color: #cbd5e1 !important;
+                                border-color: #334155 !important;
+                            }
+                            /* Empty state */
+                            [data-theme="dark"] #noActivityLog {
+                                color: #64748b !important;
+                            }
+                        </style>
                         <div class="premium-card">
                             <div class="section-header"
                                 style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
+
                                 <h3 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--green-xl);">
                                     System &amp; Transaction History</h3>
                                 <button class="btn btn-primary btn-small" onclick="loadActivityLog()">🔄
