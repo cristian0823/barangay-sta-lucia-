@@ -53,10 +53,10 @@
         }
 
         .left-sidebar {
-            width: 240px;
+            width: 220px;
             flex-shrink: 0;
-            background: #fff;
-            border-right: 1.5px solid var(--border);
+            background: #0f172a;
+            border-right: none;
             display: flex;
             flex-direction: column;
             position: sticky;
@@ -67,69 +67,82 @@
         }
 
         .left-sidebar-top {
-            padding: 18px 14px 10px;
-            border-bottom: 1px solid var(--border);
+            padding: 20px 16px 12px;
+            border-bottom: 1px solid #1e293b;
         }
 
         .left-sidebar-label {
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--muted);
-            padding: 0 6px;
-            margin-bottom: 6px;
+            letter-spacing: 1.5px;
+            color: #475569;
+            padding: 0 8px;
+            margin-bottom: 4px;
             display: block;
         }
 
         .left-sidebar-nav {
-            padding: 10px;
+            padding: 12px 10px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
             flex: 1;
         }
 
         .sidebar-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
             width: 100%;
-            padding: 10px 12px;
-            border-radius: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
             border: none;
             background: transparent;
-            color: #4b5563;
+            color: #94a3b8;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s ease;
             font-family: inherit;
             text-align: left;
         }
 
-        .sidebar-btn .nav-icon {
+        .sidebar-btn .nav-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
-            width: 24px;
-            text-align: center;
             flex-shrink: 0;
+            transition: all 0.2s ease;
         }
 
         .sidebar-btn:hover {
-            color: var(--green-xl);
-            background: var(--green-50);
+            color: #e2e8f0;
+            background: #1e293b;
+        }
+
+        .sidebar-btn:hover .nav-icon-box {
+            background: #334155;
         }
 
         .sidebar-btn.active {
-            background: var(--green-50);
-            color: var(--green-xl);
-            border-left: 3px solid var(--green);
-            padding-left: 9px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.35);
+        }
+
+        .sidebar-btn.active .nav-icon-box {
+            background: rgba(255,255,255,0.2);
         }
 
         .left-sidebar-footer {
             padding: 10px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid #1e293b;
         }
 
         .main-content {
@@ -1674,28 +1687,28 @@
                 </div>
                 <nav class="left-sidebar-nav">
                     <button class="sidebar-btn active" onclick="switchSection('overview', this)">
-                        <span class="nav-icon">🌍</span> Overview
+                        <span class="nav-icon-box">🌍</span> Overview
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">
-                        <span class="nav-icon">🏀</span> Court Bookings
+                        <span class="nav-icon-box">🏀</span> Court Bookings
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('requests', this)">
-                        <span class="nav-icon">📦</span> Equipment Requests
+                        <span class="nav-icon-box">📦</span> Equipment Requests
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('concerns', this)">
-                        <span class="nav-icon">📋</span> Concerns
+                        <span class="nav-icon-box">📋</span> Concerns
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('events', this)">
-                        <span class="nav-icon">📅</span> Court Events
+                        <span class="nav-icon-box">📅</span> Court Events
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('equipment', this)">
-                        <span class="nav-icon">🪑</span> Equipment
+                        <span class="nav-icon-box">🪑</span> Equipment
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('reports', this)">
-                        <span class="nav-icon">📊</span> Reports
+                        <span class="nav-icon-box">📊</span> Reports
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('activity-log', this)">
-                        <span class="nav-icon">📝</span> Activity Log
+                        <span class="nav-icon-box">📝</span> Activity Log
                     </button>
                 </nav>
             </aside>
