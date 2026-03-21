@@ -55,8 +55,8 @@
         .left-sidebar {
             width: 220px;
             flex-shrink: 0;
-            background: #0f172a;
-            border-right: none;
+            background: #fff;
+            border-right: 1.5px solid var(--border);
             display: flex;
             flex-direction: column;
             position: sticky;
@@ -68,7 +68,7 @@
 
         .left-sidebar-top {
             padding: 20px 16px 12px;
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid var(--border);
         }
 
         .left-sidebar-label {
@@ -76,7 +76,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            color: #475569;
+            color: var(--muted);
             padding: 0 8px;
             margin-bottom: 4px;
             display: block;
@@ -99,7 +99,7 @@
             border-radius: 14px;
             border: none;
             background: transparent;
-            color: #94a3b8;
+            color: #4b5563;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
@@ -112,7 +112,8 @@
             width: 38px;
             height: 38px;
             border-radius: 12px;
-            background: #1e293b;
+            background: #f0fdf4;
+            border: 1.5px solid #bbf7d0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -122,12 +123,13 @@
         }
 
         .sidebar-btn:hover {
-            color: #e2e8f0;
-            background: #1e293b;
+            color: var(--green-xl);
+            background: var(--green-50);
         }
 
         .sidebar-btn:hover .nav-icon-box {
-            background: #334155;
+            background: #dcfce7;
+            border-color: #86efac;
         }
 
         .sidebar-btn.active {
@@ -137,13 +139,53 @@
         }
 
         .sidebar-btn.active .nav-icon-box {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.3);
         }
 
         .left-sidebar-footer {
             padding: 10px;
-            border-top: 1px solid #1e293b;
+            border-top: 1px solid var(--border);
         }
+
+        /* ── Dark Mode Sidebar ── */
+        [data-theme="dark"] .left-sidebar {
+            background: #0f172a;
+            border-right-color: #1e293b;
+        }
+        [data-theme="dark"] .left-sidebar-top {
+            border-bottom-color: #1e293b;
+        }
+        [data-theme="dark"] .left-sidebar-label {
+            color: #475569;
+        }
+        [data-theme="dark"] .sidebar-btn {
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .sidebar-btn .nav-icon-box {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        [data-theme="dark"] .sidebar-btn:hover {
+            color: #e2e8f0;
+            background: #1e293b;
+        }
+        [data-theme="dark"] .sidebar-btn:hover .nav-icon-box {
+            background: #334155;
+            border-color: #475569;
+        }
+        [data-theme="dark"] .sidebar-btn.active {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+        }
+        [data-theme="dark"] .sidebar-btn.active .nav-icon-box {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.2);
+        }
+        [data-theme="dark"] .left-sidebar-footer {
+            border-top-color: #1e293b;
+        }
+
 
         .main-content {
             flex: 1;
