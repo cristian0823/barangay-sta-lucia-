@@ -3902,13 +3902,34 @@
             async function loadEquipment() {
                 // Bootstrap Icon map by equipment name — guaranteed to render on all browsers
                 const EQUIP_ICON_MAP = {
-                    'Chairs':       { icon: 'bi-back',           bg: '#eff6ff', color: '#2563eb' },
-                    'Tables':       { icon: 'bi-table',          bg: '#f0fdf4', color: '#059669' },
-                    'Tents':        { icon: 'bi-house-fill',     bg: '#fdf4ff', color: '#9333ea' },
-                    'Ladder':       { icon: 'bi-ladder',         bg: '#fff7ed', color: '#d97706' },
-                    'Microphone':   { icon: 'bi-mic-fill',       bg: '#fef2f2', color: '#dc2626' },
-                    'Speaker':      { icon: 'bi-volume-up-fill', bg: '#f0fdf4', color: '#059669' },
-                    'Electric Fan': { icon: 'bi-fan',            bg: '#eff6ff', color: '#3b82f6' },
+                    'Chairs': {
+                        html: `🪑`,
+                        bg: '#eff6ff', border: '#bfdbfe'
+                    },
+                    'Tables': {
+                        html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`,
+                        bg: '#f0fdf4', border: '#6ee7b7'
+                    },
+                    'Tents': {
+                        html: `⛺`,
+                        bg: '#fdf4ff', border: '#e9d5ff'
+                    },
+                    'Ladder': {
+                        html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#d97706"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`,
+                        bg: '#fff7ed', border: '#fed7aa'
+                    },
+                    'Microphone': {
+                        html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#dc2626;"></i>`,
+                        bg: '#fef2f2', border: '#fca5a5'
+                    },
+                    'Speaker': {
+                        html: `<i class="bi bi-speaker-fill" style="font-size:20px;color:#7c3aed;"></i>`,
+                        bg: '#faf5ff', border: '#c4b5fd'
+                    },
+                    'Electric Fan': {
+                        html: `<i class="bi bi-fan" style="font-size:20px;color:#3b82f6;"></i>`,
+                        bg: '#eff6ff', border: '#bfdbfe'
+                    },
                 };
 
                 const equipment = await getEquipment();
@@ -3931,11 +3952,9 @@
                         statusBadge = '<span class="status-badge status-approved">✅ Available</span>';
                     }
                     const iconDef = EQUIP_ICON_MAP[e.name];
-                    const iconHtml = iconDef
-                        ? `<i class="bi ${iconDef.icon}" style="font-size:20px;color:${iconDef.color};"></i>`
-                        : (e.icon || '📦');
-                    const iconBg  = iconDef ? iconDef.bg  : '#f0fdf4';
-                    const iconBorder = iconDef ? iconDef.color + '44' : '#bbf7d0';
+                    const iconHtml = iconDef ? iconDef.html : (e.icon || '📦');
+                    const iconBg     = iconDef ? iconDef.bg     : '#f0fdf4';
+                    const iconBorder = iconDef ? iconDef.border  : '#bbf7d0';
                     return `
                 <tr style="${e.isArchived ? 'opacity: 0.6;background:#fafafa;' : ''}">
                     <td>
