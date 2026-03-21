@@ -156,35 +156,41 @@ DROP POLICY IF EXISTS "Enable full access for admins" ON users;
 
 -- Users Table Policies
 CREATE POLICY "Enable read access for all users" ON users FOR SELECT USING (true);
-CREATE POLICY "Enable update access for users own profile" ON users FOR UPDATE USING (id::text = current_setting('request.jwt.claims', true)::json->>'sub');
-CREATE POLICY "Enable full access for admins" ON users FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable update access for all users" ON users FOR UPDATE USING (true);
+CREATE POLICY "Enable insert access for all users" ON users FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable delete access for all users" ON users FOR DELETE USING (true);
 
 -- Equipment Table Policies
 CREATE POLICY "Enable read access for all users" ON equipment FOR SELECT USING (true);
-CREATE POLICY "Enable write access for admins" ON equipment FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable write access for all users" ON equipment FOR ALL USING (true);
 
 -- Events Table Policies
 CREATE POLICY "Enable read access for all users" ON events FOR SELECT USING (true);
-CREATE POLICY "Enable write access for admins" ON events FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable write access for all users" ON events FOR ALL USING (true);
 
 -- Borrowings Table Policies
-CREATE POLICY "Enable read access for users own borrowings" ON borrowings FOR SELECT USING (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub' OR EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
-CREATE POLICY "Enable insert for authenticated users" ON borrowings FOR INSERT WITH CHECK (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub');
-CREATE POLICY "Enable full access for admins" ON borrowings FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable read access for all users" ON borrowings FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users" ON borrowings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON borrowings FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON borrowings FOR DELETE USING (true);
 
 -- Concerns Table Policies
-CREATE POLICY "Enable read access for users own concerns" ON concerns FOR SELECT USING (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub' OR EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
-CREATE POLICY "Enable insert for authenticated users" ON concerns FOR INSERT WITH CHECK (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub');
-CREATE POLICY "Enable full access for admins" ON concerns FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable read access for all users" ON concerns FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users" ON concerns FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON concerns FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON concerns FOR DELETE USING (true);
 
 -- Court Bookings Policies
-CREATE POLICY "Enable read access for users own bookings" ON court_bookings FOR SELECT USING (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub' OR EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
-CREATE POLICY "Enable insert for authenticated users" ON court_bookings FOR INSERT WITH CHECK (user_id::text = current_setting('request.jwt.claims', true)::json->>'sub');
-CREATE POLICY "Enable full access for admins" ON court_bookings FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable read access for all users" ON court_bookings FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users" ON court_bookings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON court_bookings FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON court_bookings FOR DELETE USING (true);
 
 -- Activity Log Policies
 CREATE POLICY "Enable read access for all users" ON activity_log FOR SELECT USING (true);
-CREATE POLICY "Enable write access for admins" ON activity_log FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE id::text = current_setting('request.jwt.claims', true)::json->>'sub' AND role = 'admin'));
+CREATE POLICY "Enable insert for all users" ON activity_log FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON activity_log FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON activity_log FOR DELETE USING (true);
 
 
 -- ============================================================
