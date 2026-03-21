@@ -1151,6 +1151,31 @@ async function cancelCourtBooking(bookingId) {
     }
 }
 
+async function deleteCourtBooking(bookingId) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Please login first' };
+
+    const supabaseAvailable = await isSupabaseAvailable();
+
+    if (supabaseAvailable) {
+        let query = supabase.from('court_bookings').delete().eq('id', bookingId);
+        if (user.role !== 'admin') query = query.eq('user_id', user.id);
+
+        const { error } = await query;
+        return { success: !error, message: error ? error.message : 'Record permanently deleted' };
+    } else {
+        let bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+        const index = bookings.findIndex(b => b.id === bookingId);
+        if (index === -1) return { success: false, message: 'Booking not found' };
+        if (user.role !== 'admin' && bookings[index].userId !== user.id) {
+            return { success: false, message: 'Unauthorized' };
+        }
+        bookings.splice(index, 1);
+        localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        return { success: true, message: 'Record permanently deleted' };
+    }
+}
+
 async function addAdminComment(bookingId, comment) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('court_bookings').update({ admin_comment: comment }).eq('id', bookingId);

@@ -275,11 +275,22 @@
                 </div>
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
-                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Reservations</h3>
-                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your court bookings.</p>
+                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Active Reservations</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming court bookings.</p>
                     </div>
                     <div class="p-6">
                         <div id="myReservationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><p style="color: var(--text-muted);" class="italic text-sm">Loading reservations...</p></div>
+                    </div>
+                </div>
+                
+                <div class="glass-card overflow-hidden mt-6">
+                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">🕰️ Transaction History</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Past, cancelled, and rejected court bookings.</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="bookingHistoryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><p style="color: var(--text-muted);" class="italic text-sm">Loading history...</p></div>
                     </div>
                 </div>
             </div>
@@ -1015,7 +1026,7 @@
             const bookings = await getCourtBookings(); const events = await getEvents();
             const approvedEvents = events.filter(e => e.status === 'approved');
             const eventDates = {}; approvedEvents.forEach(e => { eventDates[e.date] = e; });
-            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue);
+            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'rejected' && b.venue === selectedVenue);
             const bookedDates = venueBookings.map(b => b.date);
             grid.innerHTML = '';
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -1062,21 +1073,66 @@
                 grid.appendChild(dayDiv);
             }
             const myContainer = document.getElementById('myReservationsList');
+            const historyContainer = document.getElementById('bookingHistoryList');
+            
             const myBookings = bookings.filter(b => b.userId === user.id);
-            if (myBookings.length === 0) { myContainer.innerHTML = '<p class="text-gray-500 italic py-4 col-span-full">You have no reservations.</p>'; }
-            else {
-                myBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
-                myContainer.innerHTML = myBookings.map(b => {
-                    const statusClass = b.status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800';
-                    const statusText = b.status === 'cancelled' ? 'Cancelled' : 'Booked';
-                    return '<div class="border rounded-xl p-4 transition shadow-sm ' + (b.status === 'cancelled' ? 'opacity-60' : '') + '" style="background-color: var(--panel-bg); border-color: var(--border-color);">' +
+            const activeBookings = myBookings.filter(b => b.status === 'pending' || b.status === 'approved');
+            const historyBookings = myBookings.filter(b => b.status === 'cancelled' || b.status === 'rejected' || b.status === 'completed');
+
+            // Render Active
+            if (activeBookings.length === 0) { 
+                myContainer.innerHTML = '<p class="text-gray-500 italic py-4 col-span-full">You have no active reservations.</p>'; 
+            } else {
+                activeBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                myContainer.innerHTML = activeBookings.map(b => {
+                    const statusClass = b.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
+                    const statusText = b.status.charAt(0).toUpperCase() + b.status.slice(1);
+                    return '<div class="border rounded-xl p-4 shadow-sm" style="background-color: var(--panel-bg); border-color: var(--border-color);">' +
                         '<div class="flex justify-between mb-2 border-b pb-2" style="border-color: var(--border-color);"><h4 class="font-bold" style="color: var(--text-main);">📅 ' + formatDate(b.date) + '</h4><span class="px-2 py-0.5 rounded text-xs font-bold ' + statusClass + '">' + statusText + '</span></div>' +
                         '<p class="text-xs mb-1" style="color: var(--text-muted);">⏰ ' + b.time + ' - ' + (b.end_time || '') + '</p>' +
                         '<p class="text-xs text-blue-600 font-bold mb-2">🏢 ' + b.venueName + '</p>' +
                         '<p class="text-xs italic" style="color: var(--text-muted);">Purpose: ' + b.purpose + '</p>' +
-                        (b.status !== 'cancelled' ? '<button onclick="cancelMyReservation(' + b.id + ')" class="mt-3 w-full py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded transition">Cancel Reservation</button>' : '') +
+                        '<button onclick="cancelMyReservation(' + b.id + ')" class="mt-3 w-full py-1.5 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded transition">Cancel Reservation</button>' +
                         '</div>';
                 }).join('');
+            }
+
+            // Render History
+            if (historyContainer) {
+                if (historyBookings.length === 0) { 
+                    historyContainer.innerHTML = '<p class="text-gray-500 italic py-4 col-span-full">No history found.</p>'; 
+                } else {
+                    historyBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    historyContainer.innerHTML = historyBookings.map(b => {
+                        let statusClass = 'bg-gray-100 text-gray-800';
+                        let statusText = b.status.charAt(0).toUpperCase() + b.status.slice(1);
+                        if (b.status === 'cancelled') { statusClass = 'bg-gray-100 text-gray-600'; }
+                        if (b.status === 'rejected') { statusClass = 'bg-red-100 text-red-800'; }
+                        
+                        const comment = b.admin_comment ? '<div class="mt-2 p-2 bg-red-50 text-red-700 text-[10px] rounded border border-red-100 text-left"><strong>Admin:</strong> ' + b.admin_comment + '</div>' : '';
+
+                        return '<div class="border rounded-xl p-4 transition shadow-sm opacity-80" style="background-color: var(--panel-bg); border-color: var(--border-color);">' +
+                            '<div class="flex justify-between mb-2 border-b pb-2" style="border-color: var(--border-color);"><h4 class="font-bold" style="color: var(--text-main);">📅 ' + formatDate(b.date) + '</h4><span class="px-2 py-0.5 rounded text-xs font-bold ' + statusClass + '">' + statusText + '</span></div>' +
+                            '<p class="text-xs mb-1" style="color: var(--text-muted);">⏰ ' + b.time + ' - ' + (b.end_time || '') + '</p>' +
+                            '<p class="text-xs text-gray-600 font-bold mb-2">🏢 ' + b.venueName + '</p>' +
+                            '<p class="text-xs italic" style="color: var(--text-muted);">Purpose: ' + b.purpose + '</p>' +
+                            comment +
+                            '<button onclick="deleteMyReservation(' + b.id + ')" class="mt-3 w-full py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded transition">Delete Record</button>' +
+                            '</div>';
+                    }).join('');
+                }
+            }
+        }
+
+        async function deleteMyReservation(id) {
+            if (!confirm("Permanently delete this record from your history?")) return;
+            const res = await deleteCourtBooking(id);
+            if (res.success) { 
+                showToast("Record deleted", 'success'); 
+                loadBookingView(); 
+                loadDashboardStats(); 
+            } else { 
+                showToast(res.message, 'error'); 
             }
         }
 
