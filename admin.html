@@ -3920,7 +3920,15 @@
                     }
                     return `
                 <tr style="${e.isArchived ? 'opacity: 0.6;background:#fafafa;' : ''}">
-                    <td><strong>${e.icon} ${e.name}</strong><br><span style="font-size:12px;color:#9ca3af;">${e.description || ''}</span></td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:40px;height:40px;border-radius:12px;background:#f0fdf4;border:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${e.icon || '📦'}</div>
+                            <div>
+                                <strong style="font-size:14px;">${e.name}</strong>
+                                ${e.description ? `<br><span style="font-size:12px;color:#9ca3af;">${e.description}</span>` : ''}
+                            </div>
+                        </div>
+                    </td>
                     <td style="text-align: center;">${e.quantity}</td>
                     <td style="text-align: center; font-weight:700;color:#16a34a;">${e.available}</td>
                     <td style="text-align: center; color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
