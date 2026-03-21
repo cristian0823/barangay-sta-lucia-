@@ -394,9 +394,6 @@
             font-family: inherit;
         }
 
-        .btn-promote { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .btn-promote:hover { background: #dbeafe; color: #1e40af; }
-
         .btn-del { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
         .btn-del:hover { background: #fee2e2; color: #991b1b; }
 
@@ -581,7 +578,7 @@
                         <div class="section-hero-icon">👥</div>
                         <div>
                             <div class="section-hero-title">User Management</div>
-                            <div class="section-hero-sub">Manage registered residents and promote administrators</div>
+                            <div class="section-hero-sub">Manage registered residents in the system</div>
                         </div>
                     </div>
                 </div>
@@ -843,25 +840,12 @@
                         <td style="color:var(--muted);font-size:12px;">${joinDate}</td>
                         <td>
                             <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                ${!isAdmin ? `<button class="btn btn-promote" onclick="promoteToAdmin(${user.id}, '${user.username || user.fullName}')"><i class="bi bi-arrow-up-circle"></i> Promote</button>` : ''}
                                 ${!isAdmin ? `<button class="btn btn-del" onclick="deleteUserAccount(${user.id})"><i class="bi bi-trash"></i> Delete</button>` : ''}
                             </div>
                         </td>
                     </tr>
                 `;
             }).join('');
-        }
-
-        async function promoteToAdmin(userId, username) {
-            if (confirm(`Promote "${username}" to Admin? They will gain full administrator access.`)) {
-                const result = await updateUserRole(userId, 'admin');
-                if (result.success) {
-                    showToast(result.message, 'success');
-                    await loadUsers();
-                } else {
-                    showToast(result.message, 'error');
-                }
-            }
         }
 
         async function deleteUserAccount(userId) {

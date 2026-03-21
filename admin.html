@@ -3448,12 +3448,7 @@
                 if (result.success) { loadUsers(); loadStats(); }
             }
 
-            async function adminPromoteUserConfirm(userId, username) {
-                if (!confirm(`Promote "${username}" to Admin? They will gain full admin access.`)) return;
-                const result = await updateUserRole(userId, 'admin');
-                showAlert(result.message, result.success ? 'success' : 'error');
-                if (result.success) { loadUsers(); loadStats(); }
-            }
+
 
             async function loadRequests() {
                 const borrowings = await getAllBorrowings();
