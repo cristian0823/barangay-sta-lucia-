@@ -105,6 +105,8 @@ ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS login_fail_count INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMPTZ DEFAULT NULL;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
 ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
@@ -312,7 +314,3 @@ BEGIN
     RETURN json_build_object('success', true, 'message', 'Equipment marked as returned successfully.');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Brute-force protection columns
-ALTER TABLE users ADD COLUMN IF NOT EXISTS login_fail_count INTEGER DEFAULT 0;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMPTZ DEFAULT NULL;
