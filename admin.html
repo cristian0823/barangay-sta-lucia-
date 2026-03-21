@@ -3899,6 +3899,17 @@
             }
 
             async function loadEquipment() {
+                // Bootstrap Icon map by equipment name — guaranteed to render on all browsers
+                const EQUIP_ICON_MAP = {
+                    'Chairs':       { icon: 'bi-back',           bg: '#eff6ff', color: '#2563eb' },
+                    'Tables':       { icon: 'bi-table',          bg: '#f0fdf4', color: '#059669' },
+                    'Tents':        { icon: 'bi-house-fill',     bg: '#fdf4ff', color: '#9333ea' },
+                    'Ladder':       { icon: 'bi-ladder',         bg: '#fff7ed', color: '#d97706' },
+                    'Microphone':   { icon: 'bi-mic-fill',       bg: '#fef2f2', color: '#dc2626' },
+                    'Speaker':      { icon: 'bi-volume-up-fill', bg: '#f0fdf4', color: '#059669' },
+                    'Electric Fan': { icon: 'bi-fan',            bg: '#eff6ff', color: '#3b82f6' },
+                };
+
                 const equipment = await getEquipment();
                 const container = document.getElementById('equipmentTable');
                 container.innerHTML = equipment.map(e => {
@@ -3918,11 +3929,17 @@
                     } else {
                         statusBadge = '<span class="status-badge status-approved">✅ Available</span>';
                     }
+                    const iconDef = EQUIP_ICON_MAP[e.name];
+                    const iconHtml = iconDef
+                        ? `<i class="bi ${iconDef.icon}" style="font-size:20px;color:${iconDef.color};"></i>`
+                        : (e.icon || '📦');
+                    const iconBg  = iconDef ? iconDef.bg  : '#f0fdf4';
+                    const iconBorder = iconDef ? iconDef.color + '44' : '#bbf7d0';
                     return `
                 <tr style="${e.isArchived ? 'opacity: 0.6;background:#fafafa;' : ''}">
                     <td>
                         <div style="display:flex;align-items:center;gap:12px;">
-                            <div style="width:40px;height:40px;border-radius:12px;background:#f0fdf4;border:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${e.icon || '📦'}</div>
+                            <div style="width:40px;height:40px;border-radius:12px;background:${iconBg};border:1.5px solid ${iconBorder};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${iconHtml}</div>
                             <div>
                                 <strong style="font-size:14px;">${e.name}</strong>
                                 ${e.description ? `<br><span style="font-size:12px;color:#9ca3af;">${e.description}</span>` : ''}
