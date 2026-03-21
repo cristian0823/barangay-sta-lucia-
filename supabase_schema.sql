@@ -214,9 +214,9 @@ DELETE FROM equipment;
 -- 5c: Re-insert the CORRECT equipment with EXACT quantities
 INSERT INTO equipment (name, quantity, available, broken, icon, description) VALUES
 ('Chairs',       150, 150, 0, '🪑', 'Plastic folding chairs'),
-('Tables',         3,   3, 0, '🪵', 'Foldable tables'),
+('Tables',         3,   3, 0, '🗂️', 'Foldable tables'),
 ('Tents',          5,   5, 0, '⛺', 'Event tents'),
-('Ladder',         1,   1, 0, '🪜', 'Barangay use only'),
+('Ladder',         1,   1, 0, '🔧', 'Barangay use only'),
 ('Microphone',     1,   1, 0, '🎤', 'Barangay use only'),
 ('Speaker',        1,   1, 0, '🔊', 'For big events'),
 ('Electric Fan',   5,   5, 0, '🌀', 'For big events');
