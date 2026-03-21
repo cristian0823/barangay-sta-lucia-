@@ -15,20 +15,20 @@
             --input-bg: #f9fafb; --input-border: #d1fae5; --input-focus: #059669;
         }
         [data-theme="dark"] {
-            --bg-color: #022c22; --sidebar-bg: #064e3b; --text-main: #f1f5f9;
-            --text-muted: #9ca3af; --panel-bg: #064e3b; --border-color: #14532d;
-            --primary: #10b981; --nav-hover-bg: #14532d;
+            --bg-color: #0f172a; --sidebar-bg: #1e293b; --text-main: #f1f5f9;
+            --text-muted: #94a3b8; --panel-bg: #1e293b; --border-color: #334155;
+            --primary: #10b981; --nav-hover-bg: #334155;
             --nav-active-bg: linear-gradient(135deg, #059669, #047857); --nav-active-text: #ffffff;
-            --input-bg: #0d2818; --input-border: #14532d; --input-focus: #10b981;
+            --input-bg: #0f172a; --input-border: #334155; --input-focus: #10b981;
         }
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
-        [data-theme="dark"] .dashboard-header { background-color: #064e3b; border-color: #14532d; box-shadow: none; }
-        [data-theme="dark"] .sidebar { background-color: #064e3b; border-color: #14532d; }
-        [data-theme="dark"] .nav-item { color: #a7f3d0; }
-        [data-theme="dark"] .nav-item:hover { background-color: #14532d; color: #6ee7b7; }
-        [data-theme="dark"] .nav-item .nav-icon { background-color: #0d2818; color: #10b981; }
-        [data-theme="dark"] .nav-item:hover .nav-icon { background-color: #065f46; }
+        [data-theme="dark"] .dashboard-header { background-color: #1e293b; border-color: #334155; box-shadow: none; }
+        [data-theme="dark"] .sidebar { background-color: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .nav-item { color: #cbd5e1; }
+        [data-theme="dark"] .nav-item:hover { background-color: #334155; color: #e2e8f0; }
+        [data-theme="dark"] .nav-item .nav-icon { background-color: #0f172a; color: #10b981; }
+        [data-theme="dark"] .nav-item:hover .nav-icon { background-color: #1e3a5f; }
         .nav-item.active { background: var(--nav-active-bg) !important; color: var(--nav-active-text) !important; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
         .nav-item.active .nav-icon { background: rgba(255,255,255,0.2) !important; color: white !important; }
         .content-panel { display: none; animation: fadeIn 0.3s ease; }
@@ -44,11 +44,11 @@
         /* Section headers */
         .panel-header { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
         .panel-subheader { font-size: 14px; color: var(--text-muted); }
-        [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: #0d2818; color: #f1f5f9; border-color: #14532d; }
-        [data-theme="dark"] .bg-white { background-color: #064e3b !important; }
+        [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: #0f172a; color: #f1f5f9; border-color: #334155; }
+        [data-theme="dark"] .bg-white { background-color: #1e293b !important; }
         [data-theme="dark"] .text-gray-800 { color: #f1f5f9 !important; }
         [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
-        [data-theme="dark"] .bg-gray-50 { background-color: #022c22 !important; }
+        [data-theme="dark"] .bg-gray-50 { background-color: #0f172a !important; }
     </style>
 </head>
 <body class="flex flex-col h-screen w-full">
@@ -116,11 +116,11 @@
                     <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-emerald-500 opacity-20 blur-3xl"></div>
                     <div class="absolute bottom-0 right-40 w-60 h-60 rounded-full bg-teal-400 opacity-20 blur-2xl"></div>
                 </div>
-                <h3 class="text-xl font-bold mb-4" style="color: var(--text-main);">At a Glance</h3>
+                <h3 class="text-2xl font-bold mb-4" style="color: var(--text-main);">At a Glance</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="glass-card p-6 flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-3xl shadow-sm">📦</div><div><p class="text-3xl font-black text-gray-800" id="stat-equipment">0</p><p class="text-sm font-semibold text-gray-500">Active Borrowings</p></div></div>
-                    <div class="glass-card p-6 flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl shadow-sm">💬</div><div><p class="text-3xl font-black text-gray-800" id="stat-concerns">0</p><p class="text-sm font-semibold text-gray-500">Pending Concerns</p></div></div>
-                    <div class="glass-card p-6 flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-3xl shadow-sm">📅</div><div><p class="text-3xl font-black text-gray-800" id="stat-bookings">0</p><p class="text-sm font-semibold text-gray-500">Upcoming Bookings</p></div></div>
+                    <div class="glass-card p-8 flex items-center gap-5"><div class="w-16 h-16 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-4xl shadow-sm">📦</div><div><p class="text-4xl font-black text-gray-800" id="stat-equipment">0</p><p class="text-base font-semibold text-gray-500">Active Borrowings</p></div></div>
+                    <div class="glass-card p-8 flex items-center gap-5"><div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-4xl shadow-sm">💬</div><div><p class="text-4xl font-black text-gray-800" id="stat-concerns">0</p><p class="text-base font-semibold text-gray-500">Pending Concerns</p></div></div>
+                    <div class="glass-card p-8 flex items-center gap-5"><div class="w-16 h-16 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-4xl shadow-sm">📅</div><div><p class="text-4xl font-black text-gray-800" id="stat-bookings">0</p><p class="text-base font-semibold text-gray-500">Upcoming Bookings</p></div></div>
                 </div>
             </div>
 

@@ -312,3 +312,7 @@ BEGIN
     RETURN json_build_object('success', true, 'message', 'Equipment marked as returned successfully.');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Brute-force protection columns
+ALTER TABLE users ADD COLUMN IF NOT EXISTS login_fail_count INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMPTZ DEFAULT NULL;

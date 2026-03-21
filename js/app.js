@@ -204,6 +204,12 @@ async function loginUser(username, password, rememberMe = false) {
             .maybeSingle();
 
         if (data) {
+            // Check server-side lockout before granting access
+            if (data.lockout_until && new Date(data.lockout_until) > new Date()) {
+                return { success: false, message: 'Account temporarily locked. Try again later.' };
+            }
+            // Reset fail count on successful login
+            await supabase.from('users').update({ login_fail_count: 0, lockout_until: null }).eq('id', data.id);
             const sessionData = {
                 ...mapRecords([data])[0],
                 loginTime: new Date().toISOString()
@@ -221,8 +227,23 @@ async function loginUser(username, password, rememberMe = false) {
             return { success: true, user: sessionData };
         }
 
+        // Track failed login server-side and apply lockout after 5 attempts
+        const { data: failedUser } = await supabase
+            .from('users')
+            .select('id, login_fail_count, lockout_until')
+            .eq('username', username)
+            .maybeSingle();
+        if (failedUser) {
+            const newCount = (failedUser.login_fail_count || 0) + 1;
+            const updates = { login_fail_count: newCount };
+            if (newCount >= 5) {
+                updates.lockout_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+            }
+            await supabase.from('users').update(updates).eq('id', failedUser.id);
+        }
+
         if (error) {
-            console.error("Supabase Login Error:", error);
+            console.error('Supabase Login Error:', error);
         }
 
         console.warn("User not found in remote Supabase. Attempting local storage fallback...");
