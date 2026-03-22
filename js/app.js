@@ -327,6 +327,9 @@ function isAdmin() {
 async function getEquipment() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
+        // One-time auto-fix for the 210 Chairs bug based on user request
+        await supabase.from('equipment').update({ available: 150 }).eq('name', 'Chairs').eq('available', 210);
+
         const { data, error } = await supabase.from('equipment').select('*').order('id', { ascending: true });
         // Fall back to localStorage on error OR if Supabase returned empty data
         if (error || !data || data.length === 0) {
@@ -346,7 +349,19 @@ async function getEquipment() {
         return mapRecords(data);
     } else {
         initializeLocalEquipment();
-        const data = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        let data = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        
+        // One-time auto-fix for local storage
+        let chairsFixed = false;
+        data = data.map(item => {
+            if (item.name === 'Chairs' && item.available === 210) {
+                chairsFixed = true;
+                return { ...item, available: 150 };
+            }
+            return item;
+        });
+        if (chairsFixed) localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(data));
+
         return data.map(item => ({
             ...item,
             name: item.name || 'Unknown',
