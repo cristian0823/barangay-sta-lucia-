@@ -478,8 +478,8 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         if (!item) return { success: false, message: 'Equipment not found' };
         if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available` };
 
-        // Update available count
-        // We no longer deduct here! Admin approval will handle the deduction.
+        // Deduct available count immediately upon request (User preference)
+        await supabase.from('equipment').update({ available: item.available - quantity }).eq('id', equipmentId);
 
         // Insert borrowing
         const { error } = await supabase.from('borrowings').insert([{
@@ -505,8 +505,9 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         if (!item) return { success: false, message: 'Equipment not found' };
         if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available` };
 
-        // Update available count
-        // We no longer deduct here! Admin approval will handle the deduction locally.
+        // Update available count immediately
+        item.available -= quantity;
+        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
 
         // Add borrowing record
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
@@ -608,12 +609,12 @@ async function approveEquipmentRequest(borrowingId) {
     
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.rpc('approve_equipment_request', { borrowing_id: borrowingId, admin_user_id: user.id });
+        // Update the status to approved (We bypass the RPC because stock is already deducted at request time)
+        const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
-        if (!data.success) return data;
         
         await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
-        return data; 
+        return { success: true, message: 'Status updated to approved' }; 
     } else {
         // Local fallback
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
@@ -623,14 +624,7 @@ async function approveEquipmentRequest(borrowingId) {
         borrowings[index].status = 'approved';
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
         
-        // Update stock
-        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
-        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
-        if (itemIndex !== -1) {
-            equipment[itemIndex].available -= borrowings[index].quantity;
-            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-        }
-
+        // Stock was already deducted at request time, no need to deduct here
         logActivity(`Borrow Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to approved` };
     }
@@ -676,6 +670,12 @@ async function rejectEquipmentRequest(borrowingId, reason) {
         const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
         if (!borrowing) return { success: false, message: 'Borrowing record not found' };
 
+        // Restore stock since request was rejected
+        const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
+        if (item) {
+            await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
+        }
+
         const { error } = await supabase.from('borrowings').update({ status: 'rejected', rejection_reason: reason }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
         
@@ -691,6 +691,14 @@ async function rejectEquipmentRequest(borrowingId, reason) {
         borrowings[index].rejection_reason = reason;
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
         
+        // Restore stock
+        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
+        if (itemIndex !== -1) {
+            equipment[itemIndex].available += borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        }
+
         logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to rejected` };
     }
@@ -707,8 +715,11 @@ async function cancelBorrowingRequest(borrowingId) {
         if (!borrowing) return { success: false, message: 'Request not found' };
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // Remove equipment availability increment because it wasn't deducted pending admin approval
+        // Restore stock since it was deducted when requested
         const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
+        if (item) {
+            await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
+        }
 
         await supabase.from('borrowings').delete().eq('id', borrowingId);
         await logActivity('Borrow Cancelled', `User ${user.fullName || user.username} cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
@@ -720,9 +731,13 @@ async function cancelBorrowingRequest(borrowingId) {
         if (index === -1) return { success: false, message: 'Request not found' };
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // Remove equipment availability increment because it wasn't deducted locally until approved
+        // Restore equipment availability because it was deducted when initially requested
         const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
         const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
+        if (itemIndex !== -1) {
+            equipment[itemIndex].available += borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        }
 
         borrowings.splice(index, 1);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
