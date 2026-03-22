@@ -105,9 +105,19 @@ async function isSupabaseAvailable() {
 initializeLocalUsers();
 
 // Auth Functions
+// Security Utility
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function registerUser(userData) {
     // Try Supabase first, fallback to local
     const supabaseAvailable = await isSupabaseAvailable();
+    const hashedPassword = await hashPassword(userData.password);
 
     if (supabaseAvailable) {
         const { data: existingUsername } = await supabase
@@ -132,7 +142,7 @@ async function registerUser(userData) {
             .from('users')
             .insert([{
                 username: userData.username,
-                password: userData.password,
+                password: hashedPassword,
                 full_name: userData.fullName,
                 email: userData.email,
                 role: 'user',
@@ -157,7 +167,7 @@ async function registerUser(userData) {
         const newUser = {
             id: Date.now(),
             username: userData.username,
-            password: userData.password,
+            password: hashedPassword,
             fullName: userData.fullName,
             email: userData.email,
             role: 'user',
@@ -181,13 +191,15 @@ async function loginUser(username, password, rememberMe = false) {
             { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', avatar: 'B' },
             { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' }
         ];
+        const hashedPassword = await hashPassword(password);
         const matchedDefault = defaultAccounts.find(a => a.username === username && a.password === password);
         if (matchedDefault) {
             const { data: checkUser } = await supabase.from('users').select('*').eq('username', username).maybeSingle();
             if (!checkUser) {
+                const defaultHashed = await hashPassword(matchedDefault.password);
                 await supabase.from('users').insert([{
                     username: matchedDefault.username,
-                    password: matchedDefault.password,
+                    password: defaultHashed,
                     full_name: matchedDefault.fullName,
                     email: matchedDefault.email,
                     role: matchedDefault.role,
@@ -196,12 +208,22 @@ async function loginUser(username, password, rememberMe = false) {
             }
         }
 
-        const { data, error } = await supabase
+        const { data: usersData, error } = await supabase
             .from('users')
             .select('*')
-            .eq('username', username)
-            .eq('password', password)
-            .maybeSingle();
+            .eq('username', username);
+
+        let data = null;
+        if (usersData && usersData.length > 0) {
+            const userMatch = usersData.find(u => u.password === password || u.password === hashedPassword);
+            if (userMatch) {
+                data = userMatch;
+                // Migrate plain text password to hash silently
+                if (userMatch.password === password && password !== hashedPassword) {
+                    await supabase.from('users').update({ password: hashedPassword }).eq('id', userMatch.id);
+                }
+            }
+        }
 
         if (data) {
             // Check server-side lockout before granting access
@@ -255,7 +277,13 @@ async function loginUser(username, password, rememberMe = false) {
 
     // Map legacy 'admin' handle to 'admin1' to prevent lockout
     const searchUsername = username === 'admin' ? 'admin1' : username;
-    const user = users.find(u => u.username === searchUsername && u.password === password);
+    const localHashedPassword = await hashPassword(password);
+    const user = users.find(u => u.username === searchUsername && (u.password === password || u.password === localHashedPassword));
+
+    if (user && user.password === password && password !== localHashedPassword) {
+        user.password = localHashedPassword;
+        localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+    }
 
     if (user) {
         const sessionData = {
