@@ -707,11 +707,8 @@ async function cancelBorrowingRequest(borrowingId) {
         if (!borrowing) return { success: false, message: 'Request not found' };
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // Return equipment
+        // Remove equipment availability increment because it wasn't deducted pending admin approval
         const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
-        if (item) {
-            await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
-        }
 
         await supabase.from('borrowings').delete().eq('id', borrowingId);
         await logActivity('Borrow Cancelled', `User ${user.fullName || user.username} cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
@@ -723,13 +720,9 @@ async function cancelBorrowingRequest(borrowingId) {
         if (index === -1) return { success: false, message: 'Request not found' };
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // Return equipment
+        // Remove equipment availability increment because it wasn't deducted locally until approved
         const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
         const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
-        if (itemIndex !== -1) {
-            equipment[itemIndex].available += borrowings[index].quantity;
-            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-        }
 
         borrowings.splice(index, 1);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));

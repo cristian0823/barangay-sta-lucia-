@@ -3000,11 +3000,34 @@
                     allEvents = _e;
                     allBookings = _b;
                     const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
-                    _e.filter(e => e.status === 'approved').forEach(e => {
+                    
+                    // Helper to check if time has passed
+                    function isBookingTimePassed(dateStr, timeStr) {
+                        const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
+                        if (dateStr < todayStr) return true;
+                        if (dateStr > todayStr) return false;
+                        if (!timeStr) return false;
+                        let endTimeStr = timeStr;
+                        if (timeStr.includes('-')) {
+                            endTimeStr = timeStr.split('-')[1].trim();
+                        }
+                        const match = endTimeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                        if (!match) return false;
+                        let h = parseInt(match[1]);
+                        let m = parseInt(match[2]);
+                        if (match[3].toUpperCase() === 'PM' && h < 12) h += 12;
+                        if (match[3].toUpperCase() === 'AM' && h === 12) h = 0;
+                        const now = new Date();
+                        if (now.getHours() > h) return true;
+                        if (now.getHours() === h && now.getMinutes() >= m) return true;
+                        return false;
+                    }
+
+                    _e.filter(e => e.status === 'approved' && !isBookingTimePassed(e.date, e.time || e.endTime)).forEach(e => {
                         eventDates[e.date] = eventDates[e.date] || [];
                         eventDates[e.date].push(e);
                     });
-                    _b.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue).forEach(b => {
+                    _b.filter(b => (b.status === 'approved' || b.status === 'pending') && b.venue === selectedVenue && !isBookingTimePassed(b.date, b.time)).forEach(b => {
                         bookingDates[b.date] = bookingDates[b.date] || [];
                         bookingDates[b.date].push(b);
                     });
@@ -3080,8 +3103,8 @@
                     const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
                     const todayStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     
-                    const upcomingBooks = allBookings.filter(b => b.date >= todayStr && b.status !== 'rejected' && b.status !== 'cancelled' && (b.venue === venue || b.venueName === venueLabel));
-                    const upcomingEvents = allEvents.filter(e => e.date >= todayStr && e.status === 'approved');
+                    const upcomingBooks = allBookings.filter(b => b.date >= todayStr && (b.status === 'approved' || b.status === 'pending') && (b.venue === venue || b.venueName === venueLabel) && !isBookingTimePassed(b.date, b.time));
+                    const upcomingEvents = allEvents.filter(e => e.date >= todayStr && e.status === 'approved' && !isBookingTimePassed(e.date, e.time || e.endTime));
 
                     const combined = [];
                     upcomingBooks.forEach(b => combined.push({ type: 'booking', date: b.date, time: b.time, label: b.userName || 'Resident', sub: b.venueName || b.venue }));
