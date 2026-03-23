@@ -102,6 +102,9 @@
             <button onclick="showPanel('events')" id="nav-events" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
                 <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">🎉</div> Events
             </button>
+            <button onclick="showPanel('history')" id="nav-history" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
+                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">📜</div> My History
+            </button>
         </aside>
 
         <!-- MAIN CONTENT AREA -->
@@ -505,6 +508,28 @@
     </div>
     </div>
 
+            <!-- PANEL 6: MY HISTORY -->
+            <div id="panel-history" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="panel-header text-emerald-600">📜 My Activity History</h2>
+                    <p class="panel-subheader">A complete record of your borrowings, concerns, and court bookings.</p>
+                </div>
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-5 border-b flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50" style="border-color: var(--border-color);">
+                        <div>
+                            <h3 class="text-base font-bold" style="color: var(--text-main);">Activity Timeline</h3>
+                            <p class="text-xs mt-0.5" style="color: var(--text-muted);">Recent activities across all services.</p>
+                        </div>
+                        <button onclick="loadHistoryView()" class="px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg text-xs font-bold transition border-none cursor-pointer">Refresh</button>
+                    </div>
+                    <div class="p-6">
+                        <div id="unifiedHistoryList" class="space-y-4">
+                            <p style="color: var(--text-muted);" class="italic text-sm">Loading history...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
     <!-- ===== DAY SCHEDULE POPUP (New) ===== -->
     <div id="dayScheduleModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]" style="max-height:90vh;">
@@ -597,6 +622,7 @@
                 case 'concerns': loadConcernsView(); break;
                 case 'booking': loadBookingView(); break;
                 case 'events': loadEventsView(); break;
+                case 'history': loadHistoryView(); break;
                 case 'settings': loadSettingsView(); break;
             }
         }
@@ -1373,6 +1399,32 @@
             }).join('');
         }
 
+
+        // ==========================================
+        // 5.5 MY HISTORY
+        // ==========================================
+        async function loadHistoryView() {
+            const container = document.getElementById('unifiedHistoryList');
+            container.innerHTML = '<p class="text-gray-500 italic text-sm">Loading history...</p>';
+            try {
+                const results = await Promise.allSettled([
+                    typeof getUserBorrowings === 'function' ? getUserBorrowings(user.id) : Promise.resolve([]),
+                    typeof getUserConcerns === 'function' ? getUserConcerns(user.id) : Promise.resolve([]),
+                    typeof getCourtBookings === 'function' ? getCourtBookings(user.id) : Promise.resolve([])
+                ]);
+                const bor = results[0].status === 'fulfilled' ? (results[0].value || []) : [];
+                const con = results[1].status === 'fulfilled' ? (results[1].value || []) : [];
+                const boo = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
+                
+                let all = [];
+                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '📦', color: 'blue' }));
+                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', color: 'amber' }));
+                boo.forEach(b => all.push({ type: 'Court Booking', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', color: 'emerald' }));
+                all.sort((a,b) => b.date - a.date);
+                if (all.length === 0) { container.innerHTML = '<p class="text-gray-500 italic text-sm">No activity history found yet.</p>'; return; }
+                container.innerHTML = all.map(a => `<div class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:shadow-md transition bg-gray-50/50 dark:bg-slate-800/50 dark:border-slate-700"><div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-${a.color}-100 text-${a.color}-600 shrink-0">${a.icon}</div><div class="flex-1"><div class="flex justify-between items-start flex-wrap gap-2"><h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${a.title}</h4><span class="text-xs font-bold px-2 py-1 rounded-md capitalize ${a.status==='approved'||a.status==='resolved'?'text-green-600 bg-green-50':a.status==='rejected'?'text-red-600 bg-red-50':'text-orange-600 bg-orange-50'}">${a.status||'pending'}</span></div><div class="flex items-center gap-3 mt-2 text-xs text-gray-500 font-medium"><span class="bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">${a.type}</span><span>${isNaN(a.date.getTime())?'Unknown Date':a.date.toLocaleDateString()+' '+a.date.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div></div></div>`).join('');
+            } catch(e) { console.error(e); container.innerHTML = '<p class="text-red-500 text-sm">Error loading history.</p>'; }
+        }
 
         // ==========================================
         // 6. SETTINGS PANEL

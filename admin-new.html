@@ -3534,8 +3534,43 @@
         };
 
         window.closeAdminDayPopup = function () {
-            document.getElementById('adminDayScheduleModal').style.display = 'none';
+            document.getElementById('adminDayScheduleModal').style.visibility = 'hidden';
+            document.getElementById('adminDayScheduleModal').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('adminDayScheduleModal').style.display = 'none';
+            }, 300);
+            
+            const wrap = document.getElementById('adsEventFormWrap');
+            if (wrap) wrap.style.display = 'none';
+            const btn = document.getElementById('adsToggleFormBtn');
+            if (btn) {
+                btn.innerHTML = '➕ Add Official Event';
+                btn.style.borderStyle = 'dashed';
+                btn.style.borderColor = '#cbd5e1';
+                btn.style.background = 'none';
+            }
+            const form = document.getElementById('adsEventForm');
+            if (form) form.reset();
+            
             renderAdminCalendar();
+        };
+
+        window.toggleAdsEventForm = function () {
+            const wrap = document.getElementById('adsEventFormWrap');
+            const btn = document.getElementById('adsToggleFormBtn');
+            if (wrap.style.display === 'none') {
+                wrap.style.display = 'block';
+                btn.innerHTML = '▲ Hide Form';
+                btn.style.borderStyle = 'solid';
+                btn.style.borderColor = '#94a3b8';
+                btn.style.background = '#f8fafc';
+            } else {
+                wrap.style.display = 'none';
+                btn.innerHTML = '➕ Add Official Event';
+                btn.style.borderStyle = 'dashed';
+                btn.style.borderColor = '#cbd5e1';
+                btn.style.background = 'none';
+            }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -3612,16 +3647,21 @@
                 </div>
 
                 <!-- Bottom: Add Event Form -->
-                <div style="padding:24px;background:#fff;">
+                <div style="padding:24px;background:#fff;border-top:1px solid #e2e8f0;">
                     
-                    <div id="adsEventFormWrap">
+                    <button id="adsToggleFormBtn" type="button" onclick="toggleAdsEventForm()"
+                        style="width:100%;margin:0;background:none;border:2px dashed #cbd5e1;color:#475569;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+                        ➕ Add Official Event
+                    </button>
+
+                    <div id="adsEventFormWrap" style="display:none;margin-top:20px;">
                         <form id="adsEventForm" style="display:flex;flex-direction:column;gap:16px;">
                             <input type="hidden" id="adsDate">
                             <input type="hidden" id="adsVenue">
 
                             <div>
                                 <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Event Title</label>
-                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Fiesta, Liga"
+                                <input type="text" id="adsEventTitle" required
                                     style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;transition:all 0.2s;box-sizing:border-box;">
                             </div>
 
@@ -3640,7 +3680,7 @@
 
                             <div>
                                 <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Organizer</label>
-                                <input type="text" id="adsOrganizer" required placeholder="Official/Group Name" value="Barangay Council"
+                                <input type="text" id="adsOrganizer" required value="Barangay Council"
                                     style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;transition:all 0.2s;box-sizing:border-box;">
                             </div>
 
