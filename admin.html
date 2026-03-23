@@ -4923,57 +4923,11 @@
                 } else { showAlert('Error: ' + res.message, 'error'); }
             };
 
-            window.toggleAdsEventForm = function () {
-                const wrap = document.getElementById('adsEventFormWrap');
-                const btn = document.getElementById('adsToggleEventBtn');
-                if (wrap.classList.contains('hidden')) {
-                    wrap.classList.remove('hidden');
-                    btn.textContent = '▲ Hide Form';
-                } else {
-                    wrap.classList.add('hidden');
-                    btn.textContent = '＋ Add Official Event';
-                }
-            };
-
             window.closeAdminDayPopup = function () {
                 document.getElementById('adminDayScheduleModal').style.display = 'none';
                 adminSelectedDate = null;
                 renderAdminCalendar();
             };
-
-            document.getElementById('adsEventForm').addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
-                btn.disabled = true; btn.textContent = 'Scheduling...';
-
-                const dateStr = document.getElementById('adsDate').value;
-                const venue = document.getElementById('adsVenue').value;
-
-                const eventData = {
-                    title: document.getElementById('adsEventTitle').value,
-                    date: dateStr,
-                    time: document.getElementById('adsStartTime').value,
-                    end_time: document.getElementById('adsEndTime').value,
-                    organizer: document.getElementById('adsOrganizer').value,
-                    location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
-                    status: 'approved',
-                    description: 'Official Barangay Event'
-                };
-
-                const result = await createEvent(eventData);
-                btn.disabled = false; btn.textContent = '🎉 Schedule Event';
-
-                if (result.success) {
-                    showAlert('Event scheduled!', 'success');
-                    this.reset();
-                    document.getElementById('adsEventFormWrap').classList.add('hidden');
-                    document.getElementById('adsToggleEventBtn').textContent = '＋ Add Official Event';
-                    await refreshAdminDaySchedule(dateStr, venue);
-                    renderAdminCalendar();
-                } else {
-                    showAlert('Error: ' + result.message, 'error');
-                }
-            });
 
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
@@ -5192,60 +5146,7 @@
                     </div>
                 </div>
 
-                <!-- Add Official Event Section -->
-                <div style="padding:16px 24px 24px; flex-shrink:0; border-top:1px solid #f1f5f9;">
-                    <button id="adsToggleEventBtn" onclick="toggleAdsEventForm()"
-                        style="width:100%; padding:14px; background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(139,92,246,0.25); transition:transform 0.15s;"
-                        onmouseover="this.style.transform='translateY(-2px)'"
-                        onmouseout="this.style.transform='translateY(0)'">
-                        ＋ Add Official Event
-                    </button>
 
-                    <form id="adsEventForm" style="display:contents;">
-                        <div id="adsEventFormWrap" class="hidden"
-                            style="margin-top:20px; display:flex; flex-direction:column; gap:16px;">
-                            <input type="hidden" id="adsDate">
-                            <input type="hidden" id="adsVenue">
-
-                            <div>
-                                <label
-                                    style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Event
-                                    Title</label>
-                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Fiesta, Liga"
-                                    style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
-                            </div>
-
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                <div>
-                                    <label
-                                        style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Start
-                                        Time</label>
-                                    <select id="adsStartTime" required
-                                        style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
-                                </div>
-                                <div>
-                                    <label
-                                        style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">End
-                                        Time</label>
-                                    <select id="adsEndTime" required
-                                        style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; background:#f8fafc; cursor:pointer;"></select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label
-                                    style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase;">Organizer</label>
-                                <input type="text" id="adsOrganizer" required placeholder="Official/Group Name"
-                                    style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box;">
-                            </div>
-
-                            <button type="submit"
-                                style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-size:15px; font-weight:700; border:none; border-radius:14px; cursor:pointer; box-shadow:0 8px 16px rgba(16,185,129,0.25); margin-top:8px;">
-                                🎉 Schedule Event
-                            </button>
-                        </div>
-                    </form>
-                </div>
 
             </div>
         </div>
