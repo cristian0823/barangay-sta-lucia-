@@ -4796,13 +4796,12 @@
                 document.getElementById('adsVenue').value = venue;
 
                 const modal = document.getElementById('adminDayScheduleModal');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                modal.style.display = 'flex';
 
                 // Reset form state
                 const wrap = document.getElementById('adsEventFormWrap');
                 const btn = document.getElementById('adsToggleFormBtn');
-                if (wrap) wrap.classList.add('hidden');
+                if (wrap) wrap.style.display = 'none';
                 if (btn) btn.innerHTML = '<span>＋ Add Court Event</span>';
 
                 await refreshAdminDaySchedule(dateStr, venue);
@@ -4927,12 +4926,10 @@
             };
 
             window.closeAdminDayPopup = function () {
-                const modal = document.getElementById('adminDayScheduleModal');
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                document.getElementById('adminDayScheduleModal').style.display = 'none';
                 const wrap = document.getElementById('adsEventFormWrap');
                 const btn = document.getElementById('adsToggleFormBtn');
-                if (wrap) wrap.classList.add('hidden');
+                if (wrap) wrap.style.display = 'none';
                 if (btn) btn.innerHTML = '<span>＋ Add Court Event</span>';
                 const form = document.getElementById('adsEventForm');
                 if (form) form.reset();
@@ -4943,11 +4940,11 @@
             window.toggleAdsEventForm = function () {
                 const wrap = document.getElementById('adsEventFormWrap');
                 const btn = document.getElementById('adsToggleFormBtn');
-                if (wrap.classList.contains('hidden')) {
-                    wrap.classList.remove('hidden');
+                if (wrap.style.display === 'none' || wrap.style.display === '') {
+                    wrap.style.display = 'block';
                     btn.innerHTML = '<span>▲ Hide Form</span>';
                 } else {
-                    wrap.classList.add('hidden');
+                    wrap.style.display = 'none';
                     btn.innerHTML = '<span>＋ Add Court Event</span>';
                 }
             };
@@ -5170,61 +5167,73 @@
         <!-- ========================================== -->
         <!-- ADMIN DAY SCHEDULE POPUP -->
         <!-- ========================================== -->
-        <div id="adminDayScheduleModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden" style="max-height:90vh;">
+        <div id="adminDayScheduleModal"
+            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:#fff;border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;max-height:90vh;">
 
                 <!-- Header -->
-                <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
-                    <button onclick="closeAdminDayPopup()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
-                    <div class="text-3xl mb-2">📅</div>
-                    <h3 id="adsDayTitle" class="text-xl font-extrabold text-white mb-0.5"></h3>
-                    <p id="adsDayVenue" class="text-sm text-white/80 m-0"></p>
+                <div style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);padding:24px;position:relative;flex-shrink:0;">
+                    <button onclick="closeAdminDayPopup()"
+                        style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.35)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                    <div style="font-size:32px;margin-bottom:8px;">📅</div>
+                    <h3 id="adsDayTitle" style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px 0;"></h3>
+                    <p id="adsDayVenue" style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;"></p>
                 </div>
 
                 <!-- Schedule List -->
-                <div class="overflow-y-auto flex-grow px-6 pt-5 pb-2">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Schedule For This Day</p>
-                    <div id="adsScheduleList" class="space-y-3 mb-4"></div>
-                    <div id="adsEmptyState" class="hidden text-center py-6">
-                        <div class="text-4xl mb-2">🟢</div>
-                        <p class="text-sm font-semibold text-gray-500">No bookings or events for this day.</p>
-                        <p class="text-xs text-gray-400">All time slots are available!</p>
+                <div style="padding:20px 24px 8px;overflow-y:auto;flex-grow:1;">
+                    <p style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px 0;">Schedule For This Day</p>
+                    <div id="adsScheduleList" style="display:flex;flex-direction:column;gap:10px;"></div>
+                    <div id="adsEmptyState" style="display:none;text-align:center;padding:28px 0;">
+                        <div style="font-size:40px;margin-bottom:10px;">🟢</div>
+                        <p style="font-size:14px;font-weight:700;color:#64748b;margin:0 0 4px 0;">No bookings or events for this day.</p>
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">All time slots are available!</p>
                     </div>
                 </div>
 
                 <!-- Add Event Section -->
-                <div class="px-6 pb-6 flex-shrink-0 border-t border-gray-100 pt-4">
-                    <button id="adsToggleFormBtn" onclick="toggleAdsEventForm()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
+                <div style="padding:16px 24px 24px;flex-shrink:0;border-top:1px solid #f1f5f9;">
+                    <button id="adsToggleFormBtn" onclick="toggleAdsEventForm()"
+                        style="width:100%;padding:14px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(59,130,246,0.3);">
                         <span>＋ Add Court Event</span>
                     </button>
 
-                    <div id="adsEventFormWrap" class="hidden mt-4">
-                        <form id="adsEventForm" class="space-y-3">
+                    <div id="adsEventFormWrap" style="display:none;margin-top:16px;">
+                        <form id="adsEventForm" style="display:flex;flex-direction:column;gap:14px;">
                             <input type="hidden" id="adsDate">
                             <input type="hidden" id="adsVenue">
 
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Event Title</label>
-                                <input type="text" id="adsEventTitle" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
+                                <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Event Title</label>
+                                <input type="text" id="adsEventTitle" required
+                                    style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+                                    onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
                             </div>
 
-                            <div class="grid grid-cols-2 gap-3">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Start Time</label>
-                                    <select id="adsStartTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
+                                    <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Start Time</label>
+                                    <select id="adsStartTime" required
+                                        style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;"></select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">End Time</label>
-                                    <select id="adsEndTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
+                                    <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">End Time</label>
+                                    <select id="adsEndTime" required
+                                        style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;"></select>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Organizer</label>
-                                <input type="text" id="adsOrganizer" required value="Barangay Council" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
+                                <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Organizer</label>
+                                <input type="text" id="adsOrganizer" required value="Barangay Council"
+                                    style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+                                    onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
                             </div>
 
-                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
+                            <button type="submit"
+                                style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
                                 🎉 Schedule Event
                             </button>
                         </form>
@@ -5232,9 +5241,6 @@
                 </div>
             </div>
         </div>
-
-
-
 
 
         <script src="js/darkmode.js" style="display:none"></script>
