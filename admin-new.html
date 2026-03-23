@@ -3397,21 +3397,22 @@
             return `${h12}:${m} ${ampm}`;
         }
 
-        async function openAdminDayPopup(dateStr) {
-            const venue = document.getElementById('adminSelectedVenue').value || 'basketball';
-            const venueLabel = venue === 'basketball' ? '🏀 Basketball Court' : '🏢 Multi-Purpose Hall';
-            const d = new Date(dateStr + 'T00:00:00');
-            const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        async function openAdminDayPopup(dateStr, venue) {
+            venue = venue || document.getElementById('adminSelectedVenue').value || 'basketball'; // Ensure venue is passed or defaults
+            const modal = document.getElementById('adminDayScheduleModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
 
-            document.getElementById('adsDayTitle').textContent = dateFmt;
-            document.getElementById('adsDayVenue').textContent = venueLabel;
+            const titleEl = document.getElementById('adsDayTitle');
+            const venueEl = document.getElementById('adsDayVenue');
+            const dateObj = new Date(dateStr + 'T00:00:00');
+            const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            titleEl.textContent = dateObj.toLocaleDateString(undefined, opts);
+            const venueLabel = venue === 'basketball' ? '🏀 Basketball Court' : '🏢 Multi-Purpose Hall';
+            venueEl.textContent = venueLabel;
+
             document.getElementById('adsDate').value = dateStr;
             document.getElementById('adsVenue').value = venue;
-
-            const modal = document.getElementById('adminDayScheduleModal');
-            modal.style.display = 'flex';
-            modal.style.opacity = '1';
-            modal.style.visibility = 'visible';
 
             await refreshAdminDaySchedule(dateStr, venue);
         }
@@ -3534,42 +3535,33 @@
         };
 
         window.closeAdminDayPopup = function () {
-            document.getElementById('adminDayScheduleModal').style.visibility = 'hidden';
-            document.getElementById('adminDayScheduleModal').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('adminDayScheduleModal').style.display = 'none';
-            }, 300);
-            
+            const modal = document.getElementById('adminDayScheduleModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
             const wrap = document.getElementById('adsEventFormWrap');
-            if (wrap) wrap.style.display = 'none';
+            if (wrap) {
+                wrap.classList.add('hidden');
+            }
             const btn = document.getElementById('adsToggleFormBtn');
             if (btn) {
-                btn.innerHTML = '➕ Add Official Event';
-                btn.style.borderStyle = 'dashed';
-                btn.style.borderColor = '#cbd5e1';
-                btn.style.background = 'none';
+                btn.innerHTML = '<span>＋ Add Court Event</span>';
             }
             const form = document.getElementById('adsEventForm');
             if (form) form.reset();
-            
+
             renderAdminCalendar();
         };
 
         window.toggleAdsEventForm = function () {
             const wrap = document.getElementById('adsEventFormWrap');
             const btn = document.getElementById('adsToggleFormBtn');
-            if (wrap.style.display === 'none') {
-                wrap.style.display = 'block';
-                btn.innerHTML = '▲ Hide Form';
-                btn.style.borderStyle = 'solid';
-                btn.style.borderColor = '#94a3b8';
-                btn.style.background = '#f8fafc';
+            if (wrap.classList.contains('hidden')) {
+                wrap.classList.remove('hidden');
+                btn.innerHTML = '<span>▲ Hide Form</span>';
             } else {
-                wrap.style.display = 'none';
-                btn.innerHTML = '➕ Add Official Event';
-                btn.style.borderStyle = 'dashed';
-                btn.style.borderColor = '#cbd5e1';
-                btn.style.background = 'none';
+                wrap.classList.add('hidden');
+                btn.innerHTML = '<span>＋ Add Court Event</span>';
             }
         };
 
@@ -3612,86 +3604,69 @@
         // --- END INJECTED DAY POPUP JS ---
     </script>
 
-    <!-- Admin Day Schedule Modal -->
-    <div id="adminDayScheduleModal"
-        style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s ease;padding:20px;">
-        <div
-            style="background:#f4f7f6;width:100%;max-width:550px;border-radius:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;display:flex;flex-direction:column;max-height:90vh;animation:modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+    <!-- Admin Day Schedule Modal (matches user dashboard style) -->
+    <div id="adminDayScheduleModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden" style="max-height:90vh;">
+
             <!-- Header -->
-            <div
-                style="background:#1e293b;color:white;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
-                <div>
-                    <h2 id="adsDayTitle" style="font-size:20px;font-weight:800;margin:0;letter-spacing:-0.5px;"></h2>
-                    <p id="adsDayVenue"
-                        style="margin:4px 0 0 0;font-size:13px;color:#94a3b8;font-weight:600;">
-                    </p>
-                </div>
-                <button onclick="closeAdminDayPopup()"
-                    style="background:rgba(255,255,255,0.1);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;">×</button>
+            <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
+                <button onclick="closeAdminDayPopup()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
+                <div class="text-3xl mb-2">📅</div>
+                <h3 id="adsDayTitle" class="text-xl font-extrabold text-white mb-0.5"></h3>
+                <p id="adsDayVenue" class="text-sm text-white/80 m-0"></p>
             </div>
 
-            <div style="display:flex;flex-direction:column;overflow-y:auto;flex:1;">
-                <!-- Top: Schedule List -->
-                <div style="padding:24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
-                    <h3
-                        style="margin:0 0 16px 0;font-size:16px;font-weight:800;color:#334155;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:0.5px;">
-                        <span>📋</span> Today's Schedule
-                    </h3>
-                    <div id="adsScheduleList" style="display:flex;flex-direction:column;gap:10px;"></div>
-                    <div id="adsEmptyState"
-                        style="text-align:center;padding:30px 20px;background:#fff;border-radius:12px;border:2px dashed #cbd5e1;margin-top:10px;">
-                        <span style="font-size:32px;display:block;margin-bottom:8px;">✨</span>
-                        <p style="margin:0;color:#64748b;font-weight:600;font-size:14px;">No bookings or events today.
-                        </p>
-                    </div>
+            <!-- Schedule List -->
+            <div class="overflow-y-auto flex-grow px-6 pt-5 pb-2">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Schedule For This Day</p>
+                <div id="adsScheduleList" class="space-y-3 mb-4"></div>
+                <div id="adsEmptyState" class="hidden text-center py-6">
+                    <div class="text-4xl mb-2">🟢</div>
+                    <p class="text-sm font-semibold text-gray-500">No bookings or events for this day.</p>
+                    <p class="text-xs text-gray-400">All time slots are available!</p>
                 </div>
+            </div>
 
-                <!-- Bottom: Add Event Form -->
-                <div style="padding:24px;background:#fff;border-top:1px solid #e2e8f0;">
-                    
-                    <button id="adsToggleFormBtn" type="button" onclick="toggleAdsEventForm()"
-                        style="width:100%;margin:0;background:none;border:2px dashed #cbd5e1;color:#475569;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;">
-                        ➕ Add Official Event
-                    </button>
+            <!-- Add Event Section -->
+            <div class="px-6 pb-6 flex-shrink-0 border-t border-gray-100 pt-4">
+                <button id="adsToggleFormBtn" onclick="toggleAdsEventForm()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
+                    <span>＋ Add Court Event</span>
+                </button>
 
-                    <div id="adsEventFormWrap" style="display:none;margin-top:20px;">
-                        <form id="adsEventForm" style="display:flex;flex-direction:column;gap:16px;">
-                            <input type="hidden" id="adsDate">
-                            <input type="hidden" id="adsVenue">
+                <div id="adsEventFormWrap" class="hidden mt-4">
+                    <form id="adsEventForm" class="space-y-3">
+                        <input type="hidden" id="adsDate">
+                        <input type="hidden" id="adsVenue">
 
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Event Title</label>
+                            <input type="text" id="adsEventTitle" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Event Title</label>
-                                <input type="text" id="adsEventTitle" required
-                                    style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;transition:all 0.2s;box-sizing:border-box;">
+                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Start Time</label>
+                                <select id="adsStartTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
                             </div>
-
-                            <div style="display:flex;gap:16px;">
-                                <div style="flex:1;">
-                                    <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Start Time</label>
-                                    <select id="adsStartTime" required
-                                        style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer;"></select>
-                                </div>
-                                <div style="flex:1;">
-                                    <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">End Time</label>
-                                    <select id="adsEndTime" required
-                                        style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer;"></select>
-                                </div>
-                            </div>
-
                             <div>
-                                <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Organizer</label>
-                                <input type="text" id="adsOrganizer" required value="Barangay Council"
-                                    style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;transition:all 0.2s;box-sizing:border-box;">
+                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">End Time</label>
+                                <select id="adsEndTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
                             </div>
+                        </div>
 
-                            <button type="submit"
-                                style="margin-top:8px;background:#10b981;color:white;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;box-shadow:0 4px 6px -1px rgba(16, 185, 129, 0.2);">🎉 Schedule Event</button>
-                        </form>
-                    </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Organizer</label>
+                            <input type="text" id="adsOrganizer" required value="Barangay Council" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
+                            🎉 Schedule Event
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </body>
 
-</html>
+</html>
