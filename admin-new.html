@@ -3579,76 +3579,73 @@
 
     <!-- Admin Day Schedule Modal -->
     <div id="adminDayScheduleModal"
-        style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s ease;">
+        style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s ease;padding:20px;">
         <div
-            style="background:#fff;width:95%;max-width:900px;border-radius:24px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;display:flex;flex-direction:column;max-height:90vh;animation:modalSlideIn 0.3s ease forwards;">
+            style="background:#f4f7f6;width:100%;max-width:550px;border-radius:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;display:flex;flex-direction:column;max-height:90vh;animation:modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
             <!-- Header -->
             <div
-                style="background:linear-gradient(135deg, #4f46e5, #7c3aed);color:white;padding:24px 30px;display:flex;justify-content:space-between;align-items:flex-start;">
+                style="background:#1e293b;color:white;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
                 <div>
-                    <h2 id="adsDayTitle" style="font-size:24px;font-weight:900;margin:0;letter-spacing:-0.5px;"></h2>
+                    <h2 id="adsDayTitle" style="font-size:20px;font-weight:800;margin:0;letter-spacing:-0.5px;"></h2>
                     <p id="adsDayVenue"
-                        style="margin:8px 0 0 0;font-size:14px;background:rgba(255,255,255,0.2);display:inline-block;padding:4px 12px;border-radius:20px;font-weight:600;">
+                        style="margin:4px 0 0 0;font-size:13px;color:#94a3b8;font-weight:600;">
                     </p>
                 </div>
                 <button onclick="closeAdminDayPopup()"
-                    style="background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;">×</button>
+                    style="background:rgba(255,255,255,0.1);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;">×</button>
             </div>
 
-            <div style="display:flex;flex-direction:row;overflow:hidden;flex:1;">
-                <!-- Left: Schedule List -->
-                <div style="flex:1;padding:30px;overflow-y:auto;background:#f9fafb;border-right:1px solid #e5e7eb;">
+            <div style="display:flex;flex-direction:column;overflow-y:auto;flex:1;">
+                <!-- Top: Schedule List -->
+                <div style="padding:24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
                     <h3
-                        style="margin:0 0 16px 0;font-size:18px;font-weight:800;color:#111827;display:flex;align-items:center;gap:8px;">
+                        style="margin:0 0 16px 0;font-size:16px;font-weight:800;color:#334155;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:0.5px;">
                         <span>📋</span> Today's Schedule
                     </h3>
-                    <div id="adsScheduleList" style="display:flex;flex-direction:column;gap:12px;"></div>
+                    <div id="adsScheduleList" style="display:flex;flex-direction:column;gap:10px;"></div>
                     <div id="adsEmptyState"
-                        style="text-align:center;padding:40px 20px;background:#fff;border-radius:16px;border:2px dashed #e5e7eb;margin-top:10px;">
-                        <span style="font-size:40px;display:block;margin-bottom:12px;">✨</span>
-                        <p style="margin:0;color:#6b7280;font-weight:600;font-size:15px;">No bookings or events today.
+                        style="text-align:center;padding:30px 20px;background:#fff;border-radius:12px;border:2px dashed #cbd5e1;margin-top:10px;">
+                        <span style="font-size:32px;display:block;margin-bottom:8px;">✨</span>
+                        <p style="margin:0;color:#64748b;font-weight:600;font-size:14px;">No bookings or events today.
                         </p>
                     </div>
                 </div>
 
-                <!-- Right: Add Event Form -->
-                <div style="flex:1;padding:30px;overflow-y:auto;background:#fff;">
-                    <h3
-                        style="margin:0 0 16px 0;font-size:18px;font-weight:800;color:#111827;display:flex;align-items:center;gap:8px;">
-                        <span>➕</span> Add Official Event
-                    </h3>
+                <!-- Bottom: Add Event Form -->
+                <div style="padding:24px;background:#fff;">
+                    
                     <div id="adsEventFormWrap">
                         <form id="adsEventForm" style="display:flex;flex-direction:column;gap:16px;">
                             <input type="hidden" id="adsDate">
                             <input type="hidden" id="adsVenue">
 
                             <div>
-                                <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700;color:#374151;">Event Title</label>
-                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Assembly"
-                                    style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;outline:none;transition:border-color 0.2s;box-sizing:border-box;">
+                                <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Event Title</label>
+                                <input type="text" id="adsEventTitle" required placeholder="e.g. Barangay Fiesta, Liga"
+                                    style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;transition:all 0.2s;box-sizing:border-box;">
                             </div>
 
-                            <div style="display:flex;gap:12px;">
+                            <div style="display:flex;gap:16px;">
                                 <div style="flex:1;">
-                                    <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700;color:#374151;">Start Time</label>
+                                    <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Start Time</label>
                                     <select id="adsStartTime" required
-                                        style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;"></select>
+                                        style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer;"></select>
                                 </div>
                                 <div style="flex:1;">
-                                    <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700;color:#374151;">End Time</label>
+                                    <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">End Time</label>
                                     <select id="adsEndTime" required
-                                        style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;"></select>
+                                        style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer;"></select>
                                 </div>
                             </div>
 
                             <div>
-                                <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700;color:#374151;">Organizer / Sponsor</label>
-                                <input type="text" id="adsOrganizer" required placeholder="e.g. SK Council" value="Barangay Council"
-                                    style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;outline:none;transition:border-color 0.2s;box-sizing:border-box;">
+                                <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Organizer</label>
+                                <input type="text" id="adsOrganizer" required placeholder="Official/Group Name" value="Barangay Council"
+                                    style="width:100%;padding:12px 16px;background:#1e293b;border:1px solid #334155;color:#f8fafc;border-radius:12px;font-size:14px;outline:none;transition:all 0.2s;box-sizing:border-box;">
                             </div>
 
                             <button type="submit"
-                                style="margin-top:8px;background:linear-gradient(135deg, #8b5cf6, #6d28d9);color:white;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:transform 0.1s;box-shadow:0 4px 12px rgba(109,40,217,0.3);">🎉 Schedule Event</button>
+                                style="margin-top:8px;background:#10b981;color:white;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.2s;box-shadow:0 4px 6px -1px rgba(16, 185, 129, 0.2);">🎉 Schedule Event</button>
                         </form>
                     </div>
                 </div>
