@@ -1687,6 +1687,7 @@
         </div>
         <div class="mobile-sidebar-nav" id="mobileSidebarNav">
             <button onclick="mobileSwitchSection('court-bookings')">🏀 Court Bookings</button>
+     <button onclick="mobileSwitchSection('multipurpose-bookings')">🏢 Multi-Purpose Hall</button>
             <button onclick="mobileSwitchSection('requests')">📦 Equipment Requests</button>
             <button onclick="mobileSwitchSection('concerns')">📋 Concerns</button>
             <button onclick="mobileSwitchSection('events')">📅 Court Events</button>
@@ -1734,6 +1735,9 @@
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">
                         <span class="nav-icon-box">🏀</span> Court Bookings
+                    </button>
+                    <button class="sidebar-btn" onclick="switchSection('multipurpose-bookings', this)">
+                        <span class="nav-icon-box">🏢</span> Multi-Purpose Hall
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('requests', this)">
                         <span class="nav-icon-box">📦</span> Equipment Requests
@@ -1972,7 +1976,37 @@
                         </div>
                     </div>
 
-                    <!-- Reject Reason Modal -->
+                    <!-- ===== MULTI-PURPOSE HALL BOOKINGS SECTION ===== -->
+                    <div id="multipurpose-bookings-section" class="section-container" style="display: none;">
+                        <div class="section-header">
+                            <div>
+                                <h3>🏢 Multi-Purpose Hall Bookings</h3>
+                                <p style="margin-top: 5px; font-size: 13px; color: var(--muted);">Review and manage Multi-Purpose Hall booking requests from residents.</p>
+                            </div>
+                            <button class="btn btn-small btn-light" onclick="loadMultipurposeBookings()">🔄 Refresh</button>
+                        </div>
+                        <div class="section-content" style="padding: 0;">
+                            <div class="admin-tables">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Resident</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Purpose</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="multipurposeBookingsTable"></tbody>
+                                </table>
+                                <div id="noMultipurposeBookings" class="empty-state" style="display:none;">
+                                    <div class="empty-state-icon">🏢</div>
+                                    <p>No Multi-Purpose Hall bookings yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="rejectReasonModal"
                         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9000; align-items:center; justify-content:center;">
                         <div
@@ -2032,18 +2066,6 @@
                     <div id="events-section" class="section-container" style="display: none;">
                         <div class="section-content" style="padding: 24px;">
 
-                            <!-- Venue Toggle -->
-                            <div style="display:flex; justify-content:center; margin-bottom:28px;">
-                                <div
-                                    style="background:#f1f5f9; border-radius:50px; padding:6px; display:inline-flex; gap:0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);">
-                                    <button onclick="adminSelectVenue('basketball')" id="admin-venue-basketball"
-                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.3);">🏀
-                                        Basketball Court</button>
-                                    <button onclick="adminSelectVenue('multipurpose')" id="admin-venue-multipurpose"
-                                        style="padding:10px 24px; border-radius:50px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.3s ease; background:transparent; color:#64748b;">🏢
-                                        Multi-Purpose Hall</button>
-                                </div>
-                            </div>
                             <input type="hidden" id="adminSelectedVenue" value="basketball">
 
                             <!-- Two Column Layout -->
@@ -3202,7 +3224,7 @@
             function switchSection(section, btn) {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
-                const allSections = ['overview', 'court-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'reports', 'activity-log', 'profile', 'system'];
+                const allSections = ['overview', 'court-bookings', 'multipurpose-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'reports', 'activity-log', 'profile', 'system'];
                 allSections.forEach(s => {
                     const el = document.getElementById(s + '-section');
                     if (el) el.style.display = 'none';
@@ -3212,6 +3234,8 @@
                 // Auto-load section data on switch
                 if (section === 'activity-log') loadActivityLog();
                 if (section === 'users') loadUsers();
+                if (section === 'court-bookings') loadAdminBookings();
+                if (section === 'multipurpose-bookings') loadMultipurposeBookings();
                 if (section === 'events') { renderAdminCalendar(); renderAdminAllBookings(); }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -4365,6 +4389,40 @@
             // ==========================================
 
             let _rejectBookingId = null;
+
+            async function loadMultipurposeBookings() {
+                const tbody = document.getElementById('multipurposeBookingsTable');
+                const empty = document.getElementById('noMultipurposeBookings');
+                if (!tbody) return;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
+
+                const allBookings = await getCourtBookings();
+                const mpBookings = allBookings.filter(b =>
+                    b.venue === 'multipurpose' ||
+                    (b.venueName && b.venueName.toLowerCase().includes('multi'))
+                );
+                mpBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (!mpBookings.length) {
+                    tbody.innerHTML = '';
+                    empty.style.display = 'block';
+                    return;
+                }
+                empty.style.display = 'none';
+
+                const statusColors = { pending: { bg: '#fef9c3', color: '#854d0e' }, approved: { bg: '#dcfce7', color: '#166534' }, booked: { bg: '#dcfce7', color: '#166534' }, rejected: { bg: '#fee2e2', color: '#991b1b' }, cancelled: { bg: '#f1f5f9', color: '#475569' } };
+                tbody.innerHTML = mpBookings.map(b => {
+                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
+                    const statusBadge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${b.status}</span>`;
+                    const timeStr = b.timeRange || b.time || '—';
+                    const residentName = b.userName || b.user_name || b.username || 'Unknown';
+                    const isPending = b.status === 'pending' || b.status === 'booked';
+                    const actions = isPending
+                        ? `<div style="display:flex;gap:6px;flex-wrap:wrap;"><button onclick="approveAdminBooking(${b.id})" style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✅ Approve</button><button onclick="openRejectModal(${b.id})" style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">❌ Reject</button></div>`
+                        : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
+                    return `<tr><td style="font-weight:600;">${residentName}</td><td>${b.date}</td><td>${timeStr}</td><td>${b.purpose || '—'}</td><td>${statusBadge}</td><td>${actions}</td></tr>`;
+                }).join('');
+            }
 
             async function loadAdminBookings() {
                 const tbody = document.getElementById('courtBookingsTable');
