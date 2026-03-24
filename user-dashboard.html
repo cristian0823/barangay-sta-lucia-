@@ -211,63 +211,26 @@
 
             <!-- PANEL 3: CONCERNS -->
             <div id="panel-concerns" class="content-panel">
-                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="panel-header text-amber-500">💬 Submit a Concern</h2>
-                    <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                    <!-- Concern Form -->
-                    <div class="lg:col-span-1 glass-card overflow-hidden">
-                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(135deg, #fffbeb, #fef3c7);">
-                            <h3 class="text-base font-bold text-amber-700">📝 New Report</h3>
-                            <p class="text-xs text-amber-600 mt-0.5">Fill out the form below to submit your concern.</p>
-                        </div>
-                        <div class="p-6">
-                        <form id="concernForm" class="space-y-4">
-                            <div class="form-field">
-                                <label class="form-label">Title</label>
-                                <input type="text" id="concernTitle" required class="form-input" placeholder="e.g. Broken street light on Purok 3">
-                            </div>
-                            <div class="form-field">
-                                <label class="form-label">Category</label>
-                                <select id="concernCategory" required class="form-input">
-                                    <option value="" disabled selected>Select a category...</option>
-                                    <option value="Road Issue">🚧 Road Issue / Pothole</option>
-                                    <option value="Electric">⚡ Electric / Power Outage</option>
-                                    <option value="Fire">🔥 Fire Hazard / Emergency</option>
-                                    <option value="Water Leak">💧 Water Leak / Broken Pipe</option>
-                                    <option value="Waste & Cleanliness">🗑️ Waste & Cleanliness</option>
-                                    <option value="Safety & Security">🛡️ Safety & Security</option>
-                                    <option value="Noise Complaint">🔊 Noise Complaint</option>
-                                    <option value="Other">📝 Other</option>
-                                </select>
-                            </div>
-                            <div class="form-field">
-                                <label class="form-label">Specific Location <span class="normal-case font-normal">(Optional)</span></label>
-                                <input type="text" id="concernLocation" class="form-input" placeholder="e.g. Purok 4, near intersection">
-                            </div>
-                            <div class="form-field">
-                                <label class="form-label">Detailed Description</label>
-                                <textarea id="concernDescription" required class="form-input form-textarea" placeholder="Please describe your concern in detail..."></textarea>
-                            </div>
-                            <div class="form-field">
-                                <label class="form-label">📷 Attach Photo <span class="normal-case font-normal">(Optional)</span></label>
-                                <p class="text-xs mt-0.5 mb-2" style="color: var(--text-muted);">Adding an image helps the admin understand and address your concern faster.</p>
-                                <input type="file" id="concernImage" accept="image/*" class="w-full text-sm cursor-pointer file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition">
-                            </div>
-                            <button type="submit" id="submitConcernBtn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5 hover:shadow-lg border-none cursor-pointer">Submit Report →</button>
-                        </form>
-                        </div>
+                <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="panel-header text-amber-500">💬 My Concerns</h2>
+                        <p class="panel-subheader">Track your reports and view admin responses.</p>
                     </div>
-                    <!-- My Submitted Concerns -->
-                    <div class="lg:col-span-2 glass-card overflow-hidden">
-                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
-                            <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Submitted Concerns</h3>
-                            <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track the status of your submitted reports.</p>
-                        </div>
-                        <div class="p-6">
-                            <div id="myConcernsList" class="space-y-4"><p style="color: var(--text-muted);" class="italic text-sm">Loading concerns...</p></div>
-                        </div>
+                    <div>
+                        <button onclick="openAddConcernModal()" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-md transition-all transform hover:-translate-y-0.5 border-none cursor-pointer flex items-center gap-2">
+                            <span class="text-lg leading-none">＋</span> Report Issue
+                        </button>
+                    </div>
+                </div>
+
+                <!-- My Submitted Concerns List -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);">
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 Report History</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="myConcernsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"><p style="color: var(--text-muted);" class="italic text-sm">Loading concerns...</p></div>
                     </div>
                 </div>
             </div>
@@ -1009,9 +972,18 @@
         async function loadConcernsView() {
             const concerns = await getMyConcerns();
             const container = document.getElementById('myConcernsList');
-            if (!concerns || concerns.length === 0) { container.innerHTML = '<p class="text-gray-500 italic py-4">You have not submitted any concerns yet.</p>'; return; }
+            // Add a button to open the concern modal
+            let headerHtml = '<div class="flex justify-between items-center mb-6">' +
+                             '<h3 class="text-xl font-bold text-gray-800 dark:text-white">My Concerns</h3>' +
+                             '<button onclick="openAddConcernModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition-all shadow-md">＋ Report New Concern</button>' +
+                             '</div>';
+
+            if (!concerns || concerns.length === 0) {
+                container.innerHTML = headerHtml + '<p class="text-gray-500 italic py-4">You have not submitted any concerns yet.</p>';
+                return;
+            }
             const sorted = [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            container.innerHTML = sorted.map(c => {
+            container.innerHTML = headerHtml + sorted.map(c => {
                 let statusBadge = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-md text-xs font-bold border border-amber-200">⏳ Pending</span>';
                 if (c.status === 'in-progress') statusBadge = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-xs font-bold border border-blue-200">🔄 In Progress</span>';
                 if (c.status === 'resolved') statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-xs font-bold border border-emerald-200">✅ Resolved</span>';
@@ -1029,6 +1001,41 @@
                     (c.response ? '<div class="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-lg mt-3"><p class="text-xs font-bold text-emerald-700 mb-1">🏛️ Admin Response:</p><p class="text-sm text-emerald-800">' + c.response + '</p></div>' : '') +
                     '</div>';
             }).join('');
+        }
+
+        // ==========================================
+        // SUBMIT CONCERN MODAL LOGIC
+        // ==========================================
+        function openAddConcernModal() {
+            document.getElementById('addConcernModal').classList.remove('hidden');
+            document.getElementById('addConcernModal').classList.add('flex');
+        }
+
+        function closeAddConcernModal() {
+            document.getElementById('addConcernModal').classList.add('hidden');
+            document.getElementById('addConcernModal').classList.remove('flex');
+            document.getElementById('concernForm').reset();
+        }
+
+        // ==========================================
+        // HISTORY / ACTIVITY PANEL LOGIC
+        // ==========================================
+        async function openBorrowModalWithEquip(equipId) {
+            const list = await getEquipment();
+            const item = list.find(e => e.id === equipId);
+            if (!item) return;
+            document.getElementById('borrowModalTitle').innerHTML = 'Borrow ' + item.name + ' ' + item.icon;
+            document.getElementById('borrowEquipmentId').value = equipId;
+            document.getElementById('borrowEquipmentName').value = item.name;
+            document.getElementById('borrowQty').max = item.available;
+            document.getElementById('borrowQty').value = 1;
+            document.getElementById('borrowMaxHelp').innerHTML = '📦 Max: ' + item.available + ' units available';
+            document.getElementById('borrowPurpose').value = '';
+            document.getElementById('borrowerFullName').value = user.name || '';
+            document.getElementById('borrowerContact').value = '';
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
+            document.getElementById('borrowModal').classList.remove('hidden');
         }
 
         document.getElementById('concernForm').addEventListener('submit', async function (e) {
@@ -1055,6 +1062,7 @@
             if (res.success) { 
                 showToast('Concern successfully reported!', 'success'); 
                 this.reset(); 
+                closeAddConcernModal(); // Close the modal on success
                 await loadConcernsView(); 
                 await loadDashboardStats(); 
             } else { 
@@ -1566,5 +1574,60 @@
         </button>
     </nav>
 
-</body>
+        <!-- ========================================== -->
+        <!-- SUBMIT CONCERN MODAL POPUP -->
+        <!-- ========================================== -->
+        <div id="addConcernModal" class="hidden fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-6 relative shrink-0">
+                    <button onclick="closeAddConcernModal()" class="absolute top-4 right-4 text-white/80 hover:text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition focus:outline-none">✕</button>
+                    <div class="text-3xl mb-2">📢</div>
+                    <h3 class="text-xl font-extrabold text-white m-0">Report an Issue</h3>
+                    <p class="text-amber-100 text-sm m-0 mt-1 opacity-90">Please provide details to help us resolve the problem.</p>
+                </div>
+                
+                <div class="p-6 overflow-y-auto">
+                    <form id="concernForm" class="space-y-5">
+                        <div class="space-y-1.5">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Title <span class="text-red-500">*</span></label>
+                            <input type="text" id="concernTitle" required class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none" placeholder="e.g. Broken street light">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Category <span class="text-red-500">*</span></label>
+                            <select id="concernCategory" required class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 transition-all outline-none">
+                                <option value="" disabled selected>Select a category...</option>
+                                <option value="Road Issue">🚧 Road Issue / Pothole</option>
+                                <option value="Electric">⚡ Electric / Power Outage</option>
+                                <option value="Fire">🔥 Fire Hazard / Emergency</option>
+                                <option value="Water Leak">💧 Water Leak / Broken Pipe</option>
+                                <option value="Waste & Cleanliness">🗑️ Waste & Cleanliness</option>
+                                <option value="Safety & Security">🛡️ Safety & Security</option>
+                                <option value="Noise Complaint">🔊 Noise Complaint</option>
+                                <option value="Other">📝 Other</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Specific Location <span class="font-normal text-gray-400 text-xs italic ml-1">(Optional)</span></label>
+                            <input type="text" id="concernLocation" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none" placeholder="e.g. Purok 4, near intersection">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Detailed Description <span class="text-red-500">*</span></label>
+                            <textarea id="concernDescription" required rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none resize-y" placeholder="Please describe your concern in detail..."></textarea>
+                        </div>
+                        <div class="space-y-1.5 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                            <label class="block text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">📷 Attach Photo <span class="font-normal opacity-70 text-xs italic ml-1">(Optional)</span></label>
+                            <p class="text-xs text-amber-700 dark:text-amber-300 mb-3 leading-relaxed">Adding an image helps the admin understand and address your concern faster.</p>
+                            <input type="file" id="concernImage" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-white dark:file:bg-gray-800 file:text-amber-600 dark:file:text-amber-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
+                        </div>
+                        <div class="pt-4 mt-2 flex gap-3 border-t border-gray-100 dark:border-gray-700">
+                            <button type="button" onclick="closeAddConcernModal()" class="flex-1 px-4 py-3 rounded-xl font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 transition-colors cursor-pointer">Cancel</button>
+                            <button type="submit" id="submitConcernBtn" class="flex-[2] px-4 py-3 rounded-xl font-bold bg-amber-500 text-white hover:bg-amber-600 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </body>
 </html>
+```

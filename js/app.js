@@ -810,15 +810,16 @@ async function submitConcern(category, title, description, address, imageFile = 
                 .upload(filePath, imageFile);
 
             if (uploadError) {
-                console.error("Storage upload error:", uploadError);
-                return { success: false, message: "Failed to upload image: " + uploadError.message };
+                console.warn("Storage upload warning, submitting without image:", uploadError);
+                // Instead of failing the entire concern submission, we just skip the image.
+                imageUrl = null; 
+            } else {
+                const { data: urlData } = supabase.storage
+                    .from('concerns_images')
+                    .getPublicUrl(filePath);
+                    
+                imageUrl = urlData.publicUrl;
             }
-
-            const { data: urlData } = supabase.storage
-                .from('concerns_images')
-                .getPublicUrl(filePath);
-                
-            imageUrl = urlData.publicUrl;
         }
 
         const payload = {
