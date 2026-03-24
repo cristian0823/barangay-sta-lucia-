@@ -810,9 +810,15 @@ async function submitConcern(category, title, description, address, imageFile = 
                 .upload(filePath, imageFile);
 
             if (uploadError) {
-                console.warn("Storage upload warning, submitting without image:", uploadError);
-                // Instead of failing the entire concern submission, we just skip the image.
-                imageUrl = null; 
+                console.warn("Storage upload warning, falling back to Base64:", uploadError);
+                // Fallback: Convert the image directly to a Base64 Data URL so it is guaranteed to work 
+                // and show up in the Admin Dashboard even if the Supabase bucket doesn't exist.
+                imageUrl = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(imageFile);
+                });
             } else {
                 const { data: urlData } = supabase.storage
                     .from('concerns_images')
@@ -828,8 +834,7 @@ async function submitConcern(category, title, description, address, imageFile = 
             title: title,
             description: description,
             address: address,
-            status: 'pending',
-            date: new Date().toISOString().split('T')[0] // Ensure date is provided as it's NOT NULL in DB
+            status: 'pending'
         };
         
         if (imageUrl) {
