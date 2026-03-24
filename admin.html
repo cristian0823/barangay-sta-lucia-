@@ -1089,7 +1089,7 @@
             }
 
             .hamburger-btn {
-                display: flex;
+                display: none; /* Hidden, moved to bottom nav */
             }
 
             .mobile-sidebar {
@@ -1107,7 +1107,7 @@
 
             /* Content */
             .dashboard-content {
-                padding: 12px 12px 20px;
+                padding: 12px 12px 85px; /* Added padding for bottom tab bar */
             }
 
             /* Welcome */
@@ -1300,6 +1300,73 @@
                 to {
                     transform: translateY(0);
                 }
+            }
+
+            /* ── BOTTOM TAB NAVIGATION ── */
+            .bottom-tab-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: #fff;
+                border-top: 1px solid var(--border);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                padding: 8px 0;
+                height: 65px;
+                z-index: 150;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            }
+
+            [data-theme="dark"] .bottom-tab-nav {
+                background: #1a1d27;
+                border-top-color: #2d3148;
+            }
+
+            .tab-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                flex: 1;
+                background: transparent;
+                border: none;
+                color: var(--muted);
+                cursor: pointer;
+                transition: color 0.2s ease;
+                gap: 4px;
+            }
+
+            [data-theme="dark"] .tab-btn {
+                color: #94a3b8;
+            }
+
+            .tab-btn .tab-icon {
+                font-size: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+            }
+
+            .tab-btn span {
+                font-size: 10px;
+                font-weight: 600;
+                font-family: inherit;
+            }
+
+            .tab-btn.active {
+                color: var(--green-xl);
+            }
+
+            [data-theme="dark"] .tab-btn.active {
+                color: #34d399;
+            }
+
+            .tab-btn:active {
+                transform: scale(0.95);
             }
         }
 
@@ -5302,6 +5369,44 @@
 
 
         <script src="js/darkmode.js" style="display:none"></script>
+
+        <!-- ── BOTTOM TAB BAR (MOBILE ONLY) ── -->
+        <nav class="bottom-tab-nav" style="display: none;" id="mobileBottomNav">
+            <button class="tab-btn active" onclick="mobileSwitchSection('overview'); activateBottomTab(this)">
+                <span class="tab-icon">🏠</span>
+                <span>Home</span>
+            </button>
+            <button class="tab-btn" onclick="mobileSwitchSection('court-bookings'); activateBottomTab(this)">
+                <span class="tab-icon">🏀</span>
+                <span>Bookings</span>
+            </button>
+            <button class="tab-btn" onclick="mobileSwitchSection('requests'); activateBottomTab(this)">
+                <span class="tab-icon">📦</span>
+                <span>Requests</span>
+            </button>
+            <button class="tab-btn" onclick="mobileSwitchSection('concerns'); activateBottomTab(this)">
+                <span class="tab-icon">📋</span>
+                <span>Concerns</span>
+            </button>
+            <button class="tab-btn" onclick="openMobileSidebar()">
+                <span class="tab-icon">☰</span>
+                <span>Menu</span>
+            </button>
+        </nav>
+
+        <style>
+            @media (max-width: 768px) {
+                #mobileBottomNav {
+                    display: flex !important;
+                }
+            }
+        </style>
+        <script>
+            function activateBottomTab(element) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+            }
+        </script>
 </body>
 
 </html>
