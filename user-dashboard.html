@@ -50,8 +50,6 @@
         [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
         [data-theme="dark"] .bg-gray-50 { background-color: #0f172a !important; }
 
-        #historySidebar.desktop-active { display: flex !important; }
-
         /* ── RESPONSIVE MOBILE ── */
         @media (max-width: 768px) {
             .dashboard-header .header-brand, .dashboard-header .header-right { display: none !important; }
@@ -83,19 +81,6 @@
             .tab-btn .tab-icon { font-size: 20px; line-height: 1; display:flex; align-items:center; justify-content:center; }
             .tab-btn span.tab-label { font-size: 10px; font-weight: 600; font-family: inherit; }
             .tab-btn.active { color: var(--primary); }
-            
-            #historySidebar {
-                display: none;
-                position: fixed;
-                top: 0; left: 0; right: 0; bottom: 0;
-                width: 100%; height: 100%;
-                z-index: 200;
-                background: var(--bg-color);
-                padding-bottom: 80px; /* Space for bottom nav if nav is above, but history might cover it */
-            }
-            #historySidebar.mobile-active {
-                display: flex !important;
-            }
         }
     </style>
     <link rel="icon" type="image/jpeg" href="barangay.jpg">
@@ -437,29 +422,27 @@
                 </div>
             </div>
 
+            <!-- PANEL 7: HISTORY -->
+            <div id="panel-history" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="text-3xl font-extrabold text-emerald-600 mb-2">📜 My Activity</h2>
+                    <p style="color: var(--text-muted);">View all your borrowings, concerns, and court bookings.</p>
+                </div>
+                
+                <div class="glass-card p-6 min-h-[500px]">
+                    <div class="flex justify-end mb-6">
+                        <button onclick="loadHistoryView()" class="px-5 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-emerald-600 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
+                            🔄 Refresh Log
+                        </button>
+                    </div>
+                    <div id="unifiedHistoryList" class="space-y-4">
+                        <p class="text-gray-400 italic text-sm">Loading history...</p>
+                    </div>
+                </div>
+            </div>
 
     </div>
     </main>
-
-    <!-- RIGHT HISTORY PANEL (Desktop & Mobile Sheet) -->
-    <aside id="historySidebar" class="w-[320px] bg-white border-l border-gray-200 p-6 flex-col gap-2 overflow-y-auto hidden relative z-10 transition-transform shadow-[-8px_0_40px_rgba(0,0,0,0.05)]" style="height: calc(100vh - 70px);">
-        <!-- Drawer Header -->
-        <div class="mb-4 flex-shrink-0 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
-            <button onclick="document.getElementById('historySidebar').classList.remove('mobile-active')" class="md:hidden absolute top-4 right-4 bg-black/10 hover:bg-black/20 border-none text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition">✕</button>
-            <div class="text-3xl mb-2">📜</div>
-            <h3 class="font-extrabold text-xl m-0">My Activity</h3>
-            <p class="text-emerald-50 text-xs mt-1 mb-0 font-medium">Borrowings, concerns &amp; bookings</p>
-        </div>
-        <!-- Drawer Body -->
-        <div class="flex-1 overflow-y-auto -mx-2 px-2">
-            <div class="flex justify-end mb-4">
-                <button onclick="loadHistoryView()" class="px-3 py-1.5 bg-emerald-50 text-emerald-800 border-[1.5px] border-emerald-100 rounded-lg text-xs font-bold cursor-pointer hover:bg-emerald-100 transition shadow-sm">🔄 Refresh</button>
-            </div>
-            <div id="unifiedHistoryList" class="flex flex-col gap-3">
-                <p class="text-gray-400 italic text-sm">Loading history...</p>
-            </div>
-        </div>
-    </aside>
     </div> <!-- END dashboard-container -->
 
     <!-- BORROW MODAL -->
@@ -660,40 +643,20 @@
 
         // Panel routing
         function showPanel(panelId) {
-            const historySidebar = document.getElementById('historySidebar');
-            if (panelId === 'history') {
-                if (historySidebar) {
-                    historySidebar.classList.toggle('mobile-active');
-                    historySidebar.classList.toggle('desktop-active');
-                }
-                loadHistoryView();
-                
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                const tabBtn = document.getElementById('tab-' + panelId);
-                if (tabBtn) tabBtn.classList.add('active');
-
-                const navLink = document.getElementById('nav-history');
-                if (navLink) navLink.classList.toggle('active');
-                return;
-            }
-            if (historySidebar) {
-                historySidebar.classList.remove('mobile-active');
-                historySidebar.classList.remove('desktop-active');
-            }
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
             const p = document.getElementById('panel-' + panelId);
-            if (p) {
-                document.querySelectorAll('.content-panel').forEach(cp => cp.classList.remove('active'));
-                p.classList.add('active');
-            }
+            if (p) p.classList.add('active');
 
-            document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
             const navLink = document.getElementById('nav-' + panelId);
             if (navLink) navLink.classList.add('active');
 
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             const tabBtn = document.getElementById('tab-' + panelId);
             if (tabBtn) tabBtn.classList.add('active');
+
+            if (panelId === 'history') loadHistoryView();
 
             switch (panelId) {
                 case 'dashboard': loadDashboardStats(); break;
@@ -704,6 +667,7 @@
                 case 'settings': loadSettingsView(); break;
             }
         }
+
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
