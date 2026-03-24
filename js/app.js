@@ -810,15 +810,9 @@ async function submitConcern(category, title, description, address, imageFile = 
                 .upload(filePath, imageFile);
 
             if (uploadError) {
-                console.warn("Storage upload warning, falling back to Base64:", uploadError);
-                // Fallback: Convert the image directly to a Base64 Data URL so it is guaranteed to work 
-                // and show up in the Admin Dashboard even if the Supabase bucket doesn't exist.
-                imageUrl = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = () => resolve(null);
-                    reader.readAsDataURL(imageFile);
-                });
+                console.warn("Storage upload warning, falling back to compressed Base64:", uploadError);
+                // Fallback: Compress the image and convert to Base64 so it easily fits in the DB without breaking payload limits
+                imageUrl = await compressImageAndToBase64(imageFile);
             } else {
                 const { data: urlData } = supabase.storage
                     .from('concerns_images')
@@ -850,6 +844,12 @@ async function submitConcern(category, title, description, address, imageFile = 
     } else {
         // Local fallback
         const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
+        
+        let imageUrl = null;
+        if (imageFile) {
+            imageUrl = await compressImageAndToBase64(imageFile);
+        }
+
         const newConcern = {
             id: Date.now(),
             userId: user.id,
@@ -860,7 +860,7 @@ async function submitConcern(category, title, description, address, imageFile = 
             address: address,
             status: 'pending',
             date: new Date().toISOString().split('T')[0],
-            imageUrl: imageFile ? "local_image_placeholder.jpg" : null, // Mock image URL for local
+            imageUrl: imageUrl || (imageFile ? "local_image_placeholder.jpg" : null), 
             createdAt: new Date().toISOString()
         };
         concerns.push(newConcern);
@@ -869,6 +869,40 @@ async function submitConcern(category, title, description, address, imageFile = 
         await addNotification('admin', 'concern', `Local User ${user.fullName || user.username} submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     }
+}
+
+// Helper function to dynamically compress image using Canvas to ensure it fits in DB
+async function compressImageAndToBase64(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; // Resize to max 800px width
+                let width = img.width;
+                let height = img.height;
+
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Compress heavily to JPEG (score 0.6) to guarantee small base64 size
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                resolve(dataUrl);
+            };
+            img.onerror = () => resolve(null);
+            img.src = event.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+    });
 }
 
 async function getMyConcerns() {

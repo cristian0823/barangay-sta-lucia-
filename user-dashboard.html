@@ -255,6 +255,10 @@
                                 <div class="space-y-1.5 p-4 bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100 rounded-xl border border-amber-100 dark:border-amber-800/30">
                                     <label class="block text-sm font-bold mb-1">📷 Attach Photo <span class="font-normal opacity-70 text-xs italic ml-1">(Optional)</span></label>
                                     <p class="text-[11px] opacity-80 mb-3 leading-relaxed">Adding an image helps the admin understand and address your concern faster.</p>
+                                    <div id="imagePreviewContainer" class="hidden mb-3 relative inline-block">
+                                        <img id="concernImagePreview" src="" alt="Preview" class="max-w-full h-32 rounded-lg border-2 border-amber-300 dark:border-amber-600 shadow-sm object-cover">
+                                        <button type="button" onclick="clearImagePreview()" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">✕</button>
+                                    </div>
                                     <input type="file" id="concernImage" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white dark:file:bg-gray-800 file:text-amber-600 dark:file:text-amber-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
                                 </div>
                                 
@@ -1087,6 +1091,7 @@
             if (res.success) { 
                 showToast('Concern successfully reported!', 'success'); 
                 this.reset(); 
+                clearImagePreview();
                 await loadConcernsView(); 
                 await loadDashboardStats(); 
             } else { 
@@ -1094,8 +1099,31 @@
             }
             
             btn.disabled = false; 
-            btn.innerHTML = 'Submit Report';
+            btn.innerHTML = 'Submit Report →';
         });
+
+        // Image Preview Logic
+        document.getElementById('concernImage')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const container = document.getElementById('imagePreviewContainer');
+            const img = document.getElementById('concernImagePreview');
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    container.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                clearImagePreview();
+            }
+        });
+
+        function clearImagePreview() {
+            document.getElementById('concernImage').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            document.getElementById('concernImagePreview').src = '';
+        }
 
         async function deleteMyConcern(id) {
             if (!confirm("Delete this concern?")) return;
