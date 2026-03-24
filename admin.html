@@ -5120,6 +5120,7 @@
             // ==========================================
 
             let _currentConcernId = null;
+            let _allAdminConcerns = [];
 
             async function loadConcerns() {
                 const tbody = document.getElementById('concernsTable');
@@ -5127,6 +5128,7 @@
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
                 const concerns = await getAllConcerns();
+                _allAdminConcerns = concerns;
 
                 if (!concerns.length) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">📋 No concerns submitted yet</td></tr>';
@@ -5163,9 +5165,31 @@
 
             function openConcernRespond(concernId) {
                 _currentConcernId = concernId;
+                const concern = _allAdminConcerns.find(c => c.id === concernId);
+                
+                const detailsDiv = document.getElementById('adminConcernDetailsDiv');
+                if (detailsDiv && concern) {
+                    let html = `
+                        <div style="margin-bottom:15px; padding:15px; background:#f9fafb; border-radius:10px; border: 1.5px solid #e5e7eb;">
+                            <p style="margin:0 0 10px 0; font-size:13px; color:#4b5563; line-height:1.5;"><strong>Description:</strong><br>${concern.description || 'No description provided.'}</p>
+                    `;
+                    if (concern.imageUrl) {
+                        html += `
+                            <div style="margin-top:10px; border-top: 1px dashed #e5e7eb; padding-top: 10px;">
+                                <p style="margin:0 0 8px 0; font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase;">Attached Photo</p>
+                                <a href="${concern.imageUrl}" target="_blank">
+                                    <img src="${concern.imageUrl}" style="max-width:100%; max-height:220px; object-fit:contain; border-radius:8px; border:1px solid #e5e7eb; display:block;" alt="Concern attachment" />
+                                </a>
+                            </div>
+                        `;
+                    }
+                    html += `</div>`;
+                    detailsDiv.innerHTML = html;
+                }
+
                 document.getElementById('adminConcernId').value = concernId;
-                document.getElementById('adminConcernStatus').value = 'in-progress';
-                document.getElementById('adminConcernAssignee').value = '';
+                document.getElementById('adminConcernStatus').value = concern ? concern.status : 'in-progress';
+                document.getElementById('adminConcernAssignee').value = concern ? concern.assignedTo : '';
                 document.getElementById('adminConcernResponse').value = '';
                 document.getElementById('adminConcernModal').style.display = 'flex';
             }
@@ -5241,6 +5265,7 @@
                     <button onclick="closeAdminConcernModal()"
                         style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">✕</button>
                 </div>
+                <div id="adminConcernDetailsDiv"></div>
                 <form id="adminConcernResponseForm">
                     <input type="hidden" id="adminConcernId">
 

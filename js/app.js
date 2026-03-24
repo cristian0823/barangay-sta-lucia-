@@ -885,6 +885,7 @@ async function getMyConcerns() {
             status: item.status || 'pending',
             response: item.response || '',
             assignedTo: item.assigned_to || '',
+            imageUrl: item.image_url || null,
             createdAt: item.created_at || new Date().toISOString()
         }));
     } else {
@@ -892,6 +893,7 @@ async function getMyConcerns() {
         return concerns.filter(c => c.userId === user.id).map(item => ({
             ...item,
             userName: item.userName || item.user_name || 'Unknown',
+            imageUrl: item.imageUrl || item.image_url || null,
             createdAt: item.createdAt || item.created_at || new Date().toISOString()
         }));
     }
@@ -906,6 +908,7 @@ async function getAllConcerns() {
             return localData.map(item => ({
                 ...item,
                 userName: item.userName || item.user_name || 'Unknown',
+                imageUrl: item.imageUrl || item.image_url || null,
                 createdAt: item.createdAt || item.created_at || new Date().toISOString()
             }));
         }
@@ -921,6 +924,7 @@ async function getAllConcerns() {
             status: item.status || 'pending',
             response: item.response || '',
             assignedTo: item.assigned_to || '',
+            imageUrl: item.image_url || null,
             createdAt: item.created_at || new Date().toISOString()
         }));
     } else {
@@ -928,6 +932,7 @@ async function getAllConcerns() {
         return data.map(item => ({
             ...item,
             userName: item.userName || item.user_name || 'Unknown',
+            imageUrl: item.imageUrl || item.image_url || null,
             createdAt: item.createdAt || item.created_at || new Date().toISOString()
         }));
     }
