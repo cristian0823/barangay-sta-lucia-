@@ -50,6 +50,8 @@
         [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
         [data-theme="dark"] .bg-gray-50 { background-color: #0f172a !important; }
 
+        #historySidebar.desktop-active { display: flex !important; }
+
         /* ── RESPONSIVE MOBILE ── */
         @media (max-width: 768px) {
             .dashboard-header .header-brand, .dashboard-header .header-right { display: none !important; }
@@ -147,6 +149,9 @@
             </button>
             <button onclick="showPanel('events')" id="nav-events" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
                 <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">🎉</div> Events
+            </button>
+            <button onclick="showPanel('history')" id="nav-history" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
+                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">📜</div> My History
             </button>
         </aside>
 
@@ -437,7 +442,7 @@
     </main>
 
     <!-- RIGHT HISTORY PANEL (Desktop & Mobile Sheet) -->
-    <aside id="historySidebar" class="w-[320px] bg-white border-l border-gray-200 p-6 flex flex-col gap-2 overflow-y-auto hidden lg:flex relative z-10 transition-transform shadow-[-8px_0_40px_rgba(0,0,0,0.05)]" style="height: calc(100vh - 70px);">
+    <aside id="historySidebar" class="w-[320px] bg-white border-l border-gray-200 p-6 flex-col gap-2 overflow-y-auto hidden relative z-10 transition-transform shadow-[-8px_0_40px_rgba(0,0,0,0.05)]" style="height: calc(100vh - 70px);">
         <!-- Drawer Header -->
         <div class="mb-4 flex-shrink-0 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
             <button onclick="document.getElementById('historySidebar').classList.remove('mobile-active')" class="md:hidden absolute top-4 right-4 bg-black/10 hover:bg-black/20 border-none text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition">✕</button>
@@ -657,14 +662,24 @@
         function showPanel(panelId) {
             const historySidebar = document.getElementById('historySidebar');
             if (panelId === 'history') {
-                if (historySidebar) historySidebar.classList.toggle('mobile-active');
+                if (historySidebar) {
+                    historySidebar.classList.toggle('mobile-active');
+                    historySidebar.classList.toggle('desktop-active');
+                }
                 loadHistoryView();
+                
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 const tabBtn = document.getElementById('tab-' + panelId);
                 if (tabBtn) tabBtn.classList.add('active');
+
+                const navLink = document.getElementById('nav-history');
+                if (navLink) navLink.classList.toggle('active');
                 return;
             }
-            if (historySidebar) historySidebar.classList.remove('mobile-active');
+            if (historySidebar) {
+                historySidebar.classList.remove('mobile-active');
+                historySidebar.classList.remove('desktop-active');
+            }
 
             const p = document.getElementById('panel-' + panelId);
             if (p) {
