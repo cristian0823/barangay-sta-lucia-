@@ -3861,32 +3861,6 @@
                 }
             }
 
-            async function loadConcerns() {
-                const concerns = await getAllConcerns();
-                const container = document.getElementById('concernsTable');
-
-                if (concerns.length === 0) {
-                    container.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No concerns</td></tr>';
-                    return;
-                }
-
-                container.innerHTML = concerns.map(c => `
-                <tr>
-                    <td><strong>${c.userName}</strong></td>
-                    <td>${c.address || 'N/A'}</td>
-                    <td>${c.category}</td>
-                    <td>${c.title}</td>
-                    <td>${c.assignedTo || 'Unassigned'}</td>
-                    <td>${formatDate(c.createdAt)}</td>
-                    <td>${getStatusBadge(c.status)}</td>
-                    <td class="admin-actions">
-                        <button class="btn btn-small btn-primary" onclick="openConcernModal(${c.id})">Respond</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteConcernAdmin(${c.id})">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-            }
-
             async function openConcernModal(concernId) {
                 const concerns = await getAllConcerns();
                 const concern = concerns.find(c => c.id === concernId);
@@ -5119,8 +5093,8 @@
             // CONCERNS ADMIN MANAGEMENT
             // ==========================================
 
-            let _currentConcernId = null;
-            let _allAdminConcerns = [];
+            var _currentConcernId = null;
+            var _allAdminConcerns = [];
 
             async function loadConcerns() {
                 const tbody = document.getElementById('concernsTable');
