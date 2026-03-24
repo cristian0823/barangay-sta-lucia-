@@ -822,20 +822,19 @@ async function submitConcern(category, title, description, address, imageFile = 
             }
         }
 
+        let finalDescription = description;
+        if (imageUrl) {
+            finalDescription += "\n[ATTACHED_IMAGE_DATA]\n" + imageUrl;
+        }
+
         const payload = {
             user_id: user.id,
             category: category,
             title: title,
-            description: description,
+            description: finalDescription,
             address: address,
             status: 'pending'
         };
-        
-        if (imageUrl) {
-            payload.image_url = imageUrl;
-        }
-
-        const { error } = await supabase.from('concerns').insert([payload]);
 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User ${user.fullName || user.username} submitted a concern: ${title}`);

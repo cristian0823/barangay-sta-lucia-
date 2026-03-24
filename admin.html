@@ -5169,16 +5169,25 @@
                 
                 const detailsDiv = document.getElementById('adminConcernDetailsDiv');
                 if (detailsDiv && concern) {
+                    let actualDesc = concern.description || 'No description provided.';
+                    let imageUrl = concern.imageUrl || null;
+                    
+                    if (actualDesc.includes('[ATTACHED_IMAGE_DATA]')) {
+                        const parts = actualDesc.split('[ATTACHED_IMAGE_DATA]');
+                        actualDesc = parts[0].trim();
+                        imageUrl = parts[1].trim();
+                    }
+
                     let html = `
                         <div style="margin-bottom:15px; padding:15px; background:#f9fafb; border-radius:10px; border: 1.5px solid #e5e7eb;">
-                            <p style="margin:0 0 10px 0; font-size:13px; color:#4b5563; line-height:1.5;"><strong>Description:</strong><br>${concern.description || 'No description provided.'}</p>
+                            <p style="margin:0 0 10px 0; font-size:13px; color:#4b5563; line-height:1.5;"><strong>Description:</strong><br>${actualDesc}</p>
                     `;
-                    if (concern.imageUrl) {
+                    if (imageUrl) {
                         html += `
                             <div style="margin-top:10px; border-top: 1px dashed #e5e7eb; padding-top: 10px;">
                                 <p style="margin:0 0 8px 0; font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase;">Attached Photo</p>
-                                <a href="${concern.imageUrl}" target="_blank">
-                                    <img src="${concern.imageUrl}" style="max-width:100%; max-height:220px; object-fit:contain; border-radius:8px; border:1px solid #e5e7eb; display:block;" alt="Concern attachment" />
+                                <a href="${imageUrl}" target="_blank">
+                                    <img src="${imageUrl}" style="max-width:100%; max-height:220px; object-fit:contain; border-radius:8px; border:1px solid #e5e7eb; display:block;" alt="Concern attachment" />
                                 </a>
                             </div>
                         `;
