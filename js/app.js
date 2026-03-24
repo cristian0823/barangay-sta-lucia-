@@ -836,6 +836,8 @@ async function submitConcern(category, title, description, address, imageFile = 
             status: 'pending'
         };
 
+        const { error } = await supabase.from('concerns').insert([payload]);
+
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User ${user.fullName || user.username} submitted a concern: ${title}`);
         await addNotification('admin', 'concern', `User ${user.fullName || user.username} submitted a concern: ${title}`);

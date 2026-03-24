@@ -1106,6 +1106,7 @@
                 clearImagePreview();
                 await loadConcernsView(); 
                 await loadDashboardStats(); 
+                if (typeof loadHistoryView === 'function') await loadHistoryView();
             } else { 
                 showToast(res.message, 'error'); 
             }
