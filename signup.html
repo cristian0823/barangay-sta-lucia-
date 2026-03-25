@@ -104,6 +104,18 @@
                 </div>
 
                 <div>
+                    <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="e.g. 09123456789" class="input-field"
+                        maxlength="15">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Address</label>
+                    <input type="text" id="address" required placeholder="Enter your full address in Sta. Lucia" class="input-field"
+                        maxlength="200">
+                </div>
+
+                <div>
                     <label class="block text-gray-700 font-medium mb-2">Password</label>
                     <input type="password" id="password" required placeholder="Create a strong password"
                         class="input-field" minlength="8" maxlength="128">
@@ -400,6 +412,8 @@
             const fullName = sanitizeInput(document.getElementById('fullName').value.trim());
             const email = sanitizeInput(document.getElementById('email').value.trim());
             const username = sanitizeInput(document.getElementById('username').value.trim());
+            const phone = sanitizeInput(document.getElementById('phone').value.trim());
+            const address = sanitizeInput(document.getElementById('address').value.trim());
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const agreeTerms = document.getElementById('agreeTerms').checked;
@@ -416,6 +430,16 @@
 
             if (!validateUsername(username)) {
                 showToast('Invalid username format', 'error');
+                return;
+            }
+            
+            if (!phone || phone.length < 10) {
+                showToast('Please enter a valid phone number', 'error');
+                return;
+            }
+            
+            if (!address || address.length < 5) {
+                showToast('Please enter your full address', 'error');
                 return;
             }
 
@@ -439,6 +463,8 @@
                 fullName,
                 email,
                 username,
+                phone,
+                address,
                 password: password,
                 createdAt: new Date().toISOString()
             };

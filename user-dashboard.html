@@ -1323,10 +1323,10 @@
                     dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed'; 
                 }
                 else if (hasEvent) { 
-                    // Official Events make the date purple. Still clickable.
-                    dayDiv.className += 'bg-purple-100 text-purple-800 border-2 border-purple-400 cursor-pointer hover:bg-purple-200 hover:scale-105'; 
-                    dayDiv.title = 'Barangay Event: ' + hasEvent.title + '. Click to see schedule.'; 
-                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
+                    // Official Events block the date completely for users.
+                    dayDiv.className += 'bg-purple-200 text-purple-900 border-2 border-purple-500 cursor-not-allowed opacity-90'; 
+                    dayDiv.title = 'Blocked: ' + hasEvent.title; 
+                    dayDiv.onclick = () => showToast('Date blocked due to official Barangay Event', 'error');
                 }
                 else if (bookedDates.includes(dateStr)) { 
                     dayDiv.className += 'bg-red-100 text-red-700 border-2 border-red-300 cursor-pointer hover:bg-red-200 hover:scale-105'; 
@@ -1719,7 +1719,157 @@
         showPanel('dashboard');
         loadHistoryView();
 
+        // Real-time synchronization for events
+        if (typeof subscribeToEvents === 'function') {
+            subscribeToEvents(() => {
+                // If a new event is scheduled or changed, re-fetch and re-render
+                loadEventsView();
+                loadBookingView();
+                loadDashboardStats();
+            });
+        }
+
+        // ==========================================
+        // CANCELLATION NOTIFICATIONS
+        // ==========================================
+        let userCancellationNotifications = [];
+        let curCancelNotif = null;
+
+        async function checkPendingNotifications() {
+            if (!window.user) return;
+            if (typeof getPendingCancellationNotifications === 'function') {
+                userCancellationNotifications = await getPendingCancellationNotifications(window.user.id);
+                showNextNotification();
+            }
+        }
+
+        function showNextNotification() {
+            const modal = document.getElementById('rescheduleCancelModal');
+            if (!modal) return;
+            if (userCancellationNotifications.length === 0) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                return;
+            }
+            curCancelNotif = userCancellationNotifications[0];
+            const msgEl = document.getElementById('rcmMessage');
+            if (msgEl) msgEl.textContent = curCancelNotif.message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function confirmCancelCompletely() {
+            const rcm = document.getElementById('rescheduleCancelModal');
+            if (rcm) { rcm.classList.add('hidden'); rcm.classList.remove('flex'); }
+            
+            const ccm = document.getElementById('cancelConfirmModal');
+            if (ccm) { ccm.classList.remove('hidden'); ccm.classList.add('flex'); }
+        }
+
+        function cancelConfirmationNo() {
+            const ccm = document.getElementById('cancelConfirmModal');
+            if (ccm) { ccm.classList.add('hidden'); ccm.classList.remove('flex'); }
+            
+            const rcm = document.getElementById('rescheduleCancelModal');
+            if (rcm) { rcm.classList.remove('hidden'); rcm.classList.add('flex'); }
+        }
+
+        async function handleCancelCompletely() {
+            if (!curCancelNotif) return;
+            const btn = document.querySelector('#cancelConfirmModal button.bg-red-500');
+            if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+            const btn = document.getElementById('rcmCancelBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+            
+            await markUserNotificationAsRead(curCancelNotif.id);
+            if (btn) { btn.disabled = false; btn.textContent = 'Cancel Completely'; }
+            
+            showToast('Booking cancelled completely.', 'info');
+            
+            const ccm = document.getElementById('cancelConfirmModal');
+            if (ccm) { ccm.classList.add('hidden'); ccm.classList.remove('flex'); }
+            
+            userCancellationNotifications.shift();
+            showNextNotification();
+            loadHistoryView();
+            loadBookingView();
+        }
+
+        async function handleReschedule() {
+            if (!curCancelNotif) return;
+            const btn = document.getElementById('rcmRescheduleBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+            
+            await markUserNotificationAsRead(curCancelNotif.id);
+            if (btn) { btn.disabled = false; btn.textContent = 'Reschedule'; }
+            
+            const venueMeta = curCancelNotif.meta?.venue || '';
+            const venueKey = venueMeta.includes('Basketball') ? 'basketball' : 'multipurpose';
+            
+            userCancellationNotifications.shift();
+            const modal = document.getElementById('rescheduleCancelModal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            
+            showPanel('booking');
+            switchVenue(venueKey);
+            
+            setTimeout(() => {
+                showToast('Please select a new date for your booking.', 'info');
+            }, 300);
+            
+            showNextNotification();
+        }
+
+        // Trigger on load
+        setTimeout(checkPendingNotifications, 500);
+
     </script>
+    
+    <!-- ========================================== -->
+    <!-- RESCHEDULE / CANCEL MODAL -->
+    <!-- ========================================== -->
+    <div id="rescheduleCancelModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-3xl text-red-600 mx-auto mb-4">
+                ⚠️
+            </div>
+            <h3 class="text-xl font-black text-gray-900 dark:text-white mb-2">Booking Cancelled</h3>
+            <p id="rcmMessage" class="text-sm text-gray-600 dark:text-gray-300 mb-6 px-2"></p>
+            
+            <p class="text-xs text-gray-500 font-medium mb-4 italic">Would you like to reschedule this booking for another day, or cancel it completely?</p>
+            
+            <div class="flex gap-3">
+                <button id="rcmCancelBtn" onclick="confirmCancelCompletely()" class="flex-1 py-3 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Cancel Completely
+                </button>
+                <button id="rcmRescheduleBtn" onclick="handleReschedule()" class="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition">
+                    📅 Reschedule
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CANCEL CONFIRMATION MODAL -->
+    <!-- ========================================== -->
+    <div id="cancelConfirmModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden p-6 text-center transform transition-all">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-3xl text-red-600 mx-auto mb-4">
+                ⛔
+            </div>
+            <h3 class="text-xl font-black text-gray-900 dark:text-white mb-2">Are you sure?</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-6 px-2">Do you really want to cancel this booking permanently? This action cannot be undone.</p>
+            
+            <div class="flex gap-3">
+                <button onclick="cancelConfirmationNo()" class="flex-1 py-3 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    No, Go Back
+                </button>
+                <button onclick="handleCancelCompletely()" class="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl shadow-lg hover:bg-red-600 transform hover:-translate-y-0.5 transition">
+                    Yes, Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MOBILE BOTTOM TAB NAVIGATION -->
     <nav class="bottom-tab-nav md:hidden">

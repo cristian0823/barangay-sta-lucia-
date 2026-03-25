@@ -94,6 +94,15 @@ CREATE TABLE IF NOT EXISTS activity_log (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+CREATE TABLE IF NOT EXISTS user_notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    meta JSONB,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
 
 -- ============================================================
 -- STEP 2: PATCH MISSING COLUMNS & CLEANUP (safe to re-run)
@@ -110,6 +119,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMPTZ DEFAULT NUL
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
 ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
 
 -- Remove redundant username columns, keeping relations only
 ALTER TABLE borrowings DROP COLUMN IF EXISTS user_name;
@@ -133,26 +143,66 @@ ALTER TABLE concerns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE court_bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if any to prevent errors
+-- Users
+DROP POLICY IF EXISTS "Enable read access for all users" ON users;
+DROP POLICY IF EXISTS "Enable update access for all users" ON users;
+DROP POLICY IF EXISTS "Enable insert access for all users" ON users;
+DROP POLICY IF EXISTS "Enable delete access for all users" ON users;
+DROP POLICY IF EXISTS "Enable update access for users own profile" ON users;
+DROP POLICY IF EXISTS "Enable full access for admins" ON users;
+
+-- Equipment
 DROP POLICY IF EXISTS "Enable read access for all users" ON equipment;
+DROP POLICY IF EXISTS "Enable write access for all users" ON equipment;
 DROP POLICY IF EXISTS "Enable write access for admins" ON equipment;
+
+-- Events
+DROP POLICY IF EXISTS "Enable read access for all users" ON events;
+DROP POLICY IF EXISTS "Enable write access for all users" ON events;
+DROP POLICY IF EXISTS "Enable write access for admins" ON events;
+
+-- Borrowings
+DROP POLICY IF EXISTS "Enable read access for all users" ON borrowings;
+DROP POLICY IF EXISTS "Enable insert for all users" ON borrowings;
+DROP POLICY IF EXISTS "Enable update for all users" ON borrowings;
+DROP POLICY IF EXISTS "Enable delete for all users" ON borrowings;
 DROP POLICY IF EXISTS "Enable read access for users own borrowings" ON borrowings;
 DROP POLICY IF EXISTS "Enable insert for authenticated users" ON borrowings;
 DROP POLICY IF EXISTS "Enable full access for admins" ON borrowings;
-DROP POLICY IF EXISTS "Enable read access for all users" ON events;
-DROP POLICY IF EXISTS "Enable write access for admins" ON events;
+
+-- Concerns
+DROP POLICY IF EXISTS "Enable read access for all users" ON concerns;
+DROP POLICY IF EXISTS "Enable insert for all users" ON concerns;
+DROP POLICY IF EXISTS "Enable update for all users" ON concerns;
+DROP POLICY IF EXISTS "Enable delete for all users" ON concerns;
 DROP POLICY IF EXISTS "Enable read access for users own concerns" ON concerns;
 DROP POLICY IF EXISTS "Enable insert for authenticated users" ON concerns;
 DROP POLICY IF EXISTS "Enable full access for admins" ON concerns;
+
+-- Court Bookings
+DROP POLICY IF EXISTS "Enable read access for all users" ON court_bookings;
+DROP POLICY IF EXISTS "Enable insert for all users" ON court_bookings;
+DROP POLICY IF EXISTS "Enable update for all users" ON court_bookings;
+DROP POLICY IF EXISTS "Enable delete for all users" ON court_bookings;
 DROP POLICY IF EXISTS "Enable read access for users own bookings" ON court_bookings;
 DROP POLICY IF EXISTS "Enable insert for authenticated users" ON court_bookings;
 DROP POLICY IF EXISTS "Enable full access for admins" ON court_bookings;
-DROP POLICY IF EXISTS "Enable read access for all users" ON users;
+
+-- Activity Log
 DROP POLICY IF EXISTS "Enable read access for all users" ON activity_log;
+DROP POLICY IF EXISTS "Enable insert for all users" ON activity_log;
+DROP POLICY IF EXISTS "Enable update for all users" ON activity_log;
+DROP POLICY IF EXISTS "Enable delete for all users" ON activity_log;
 DROP POLICY IF EXISTS "Enable write access for admins" ON activity_log;
-DROP POLICY IF EXISTS "Enable update access for users own profile" ON users;
-DROP POLICY IF EXISTS "Enable full access for admins" ON users;
+
+-- User Notifications
+DROP POLICY IF EXISTS "Enable read access for all users" ON user_notifications;
+DROP POLICY IF EXISTS "Enable insert for all users" ON user_notifications;
+DROP POLICY IF EXISTS "Enable update for all users" ON user_notifications;
+DROP POLICY IF EXISTS "Enable delete for all users" ON user_notifications;
 
 -- Users Table Policies
 CREATE POLICY "Enable read access for all users" ON users FOR SELECT USING (true);
@@ -191,6 +241,12 @@ CREATE POLICY "Enable read access for all users" ON activity_log FOR SELECT USIN
 CREATE POLICY "Enable insert for all users" ON activity_log FOR INSERT WITH CHECK (true);
 CREATE POLICY "Enable update for all users" ON activity_log FOR UPDATE USING (true);
 CREATE POLICY "Enable delete for all users" ON activity_log FOR DELETE USING (true);
+
+-- User Notifications Policies
+CREATE POLICY "Enable read access for all users" ON user_notifications FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users" ON user_notifications FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON user_notifications FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON user_notifications FOR DELETE USING (true);
 
 
 -- ============================================================

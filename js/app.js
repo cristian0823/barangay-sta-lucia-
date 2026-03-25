@@ -145,6 +145,8 @@ async function registerUser(userData) {
                 password: hashedPassword,
                 full_name: userData.fullName,
                 email: userData.email,
+                phone: userData.phone || null,
+                address: userData.address || null,
                 role: 'user',
                 avatar: userData.fullName.charAt(0).toUpperCase()
             }]);
@@ -170,6 +172,8 @@ async function registerUser(userData) {
             password: hashedPassword,
             fullName: userData.fullName,
             email: userData.email,
+            phone: userData.phone || null,
+            address: userData.address || null,
             role: 'user',
             avatar: userData.fullName.charAt(0).toUpperCase()
         };
@@ -1055,7 +1059,22 @@ async function getEvents() {
     }
 }
 
+// Realtime Events Subscription Subscription
+async function subscribeToEvents(callback) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (!supabaseAvailable) return null;
 
+    return supabase.channel('events-db-changes')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'events' },
+            (payload) => {
+                console.log('Realtime events payload received:', payload);
+                if (typeof callback === 'function') callback(payload);
+            }
+        )
+        .subscribe();
+}
 
 // Court Bookings
 function parseBookingTime(timeStr) {
@@ -1163,9 +1182,19 @@ async function checkTimeOverlap(date, venue, startTime, endTime) {
 }
 
 
+async function getBlockedDates() {
+    const events = await getEvents();
+    return events.filter(e => e.status === 'approved').map(e => e.date);
+}
+
 async function bookCourt(bookingData) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
+
+    const blockedDates = await getBlockedDates();
+    if (blockedDates.includes(bookingData.date)) {
+        return { success: false, message: 'This date is blocked due to an official Barangay Event.' };
+    }
 
     const venue = bookingData.venue || 'basketball';
     const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
@@ -1295,6 +1324,69 @@ async function deleteBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('court_bookings').delete().eq('id', bookingId);
     return { success: !error, message: error ? error.message : 'Booking deleted' };
+}
+
+async function adminCancelBookingsForDay(date, venue, reason) {
+    if (!isAdmin()) return { success: false, message: 'Admin access required' };
+
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (!supabaseAvailable) return { success: false, message: 'Online access required' };
+
+    const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+    
+    // 1. Fetch bookings
+    const { data: bookings, error: fetchErr } = await supabase.from('court_bookings')
+        .select('*')
+        .eq('date', date)
+        .in('status', ['pending', 'approved']);
+        
+    if (fetchErr) return { success: false, message: fetchErr.message };
+
+    // Filter by venue
+    const affected = bookings.filter(b => b.venue === venue || b.venue_name === venueLabel || String(b.time).includes(venueLabel));
+    if (affected.length === 0) return { success: true, message: 'No bookings to cancel' };
+
+    // 2. Perform updates and create notifications
+    for (const b of affected) {
+        await supabase.from('court_bookings').update({
+            status: 'admin_cancelled',
+            cancellation_reason: reason
+        }).eq('id', b.id);
+        
+        await supabase.from('user_notifications').insert([{
+            user_id: b.user_id,
+            type: 'booking_cancelled',
+            message: `Your court booking on ${date} for ${venueLabel} was cancelled by the admin.`,
+            meta: { booking_id: b.id, date: date, venue: venueLabel, original_time: b.time, reason: reason },
+            is_read: false
+        }]);
+    }
+    
+    await logActivity('Mass Booking Cancellation', `Admin cancelled all "${venueLabel}" bookings on ${date}. Reason: ${reason}`);
+    return { success: true, message: 'Bookings cancelled and users notified' };
+}
+
+async function getPendingCancellationNotifications(userId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (!supabaseAvailable) return [];
+    
+    const { data, error } = await supabase.from('user_notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('type', 'booking_cancelled')
+        .eq('is_read', false)
+        .order('created_at', { ascending: false });
+        
+    if (error) { console.error('Error fetching notifications:', error); return []; }
+    return data || [];
+}
+
+async function markUserNotificationAsRead(id) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (!supabaseAvailable) return false;
+    
+    const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('id', id);
+    return !error;
 }
 
 async function getAllUsers() {
