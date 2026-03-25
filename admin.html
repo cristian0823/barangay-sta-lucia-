@@ -3961,9 +3961,15 @@
                 btn.innerHTML = originalText;
 
                 if (result.success) {
-                    showAlert('Event created', 'success');
+                    // Show custom success modal
+                    document.getElementById('adminEventSuccessModal').style.display = 'flex';
+                    this.reset();
                     closeModal('eventModal');
                     await loadEvents();
+                    // Load overview if exists
+                    if (typeof loadOverview === 'function') await loadOverview();
+                } else {
+                    showAlert('Error: ' + result.message, 'error');
                 }
             });
 
