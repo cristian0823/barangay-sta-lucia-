@@ -5064,6 +5064,7 @@
                     this.reset();
                     await refreshAdminDaySchedule(dateStr, venue);
                     renderAdminCalendar();
+                    await loadOverview();
                 } else {
                     showAlert('Error: ' + result.message, 'error');
                 }
