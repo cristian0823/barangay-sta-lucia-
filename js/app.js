@@ -311,10 +311,17 @@ async function loginUser(username, password, rememberMe = false) {
     return { success: false, message: 'Invalid username or password' };
 }
 
-function logoutUser() {
+async function logoutUser() {
+    try {
+        if (window.supabase) {
+            await window.supabase.auth.signOut();
+        }
+    } catch(err) {
+        console.error('Supabase signout error:', err);
+    }
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
 }
 
 function redirectToDashboard() {
