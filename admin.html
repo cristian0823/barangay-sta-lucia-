@@ -2357,7 +2357,15 @@
                                 </div>
                                 <input id="logSearchInput" type="text" placeholder="🔍 Search logs..."
                                     oninput="renderActivityTable()"
-                                    style="flex:1; min-width:200px; padding:7px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:13px; outline:none; background:#fff;">
+                                    style="flex:1; min-width:160px; padding:7px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:13px; outline:none; background:#fff;">
+                                <input id="logNameSearchInput" type="text" placeholder="👤 Search by name..."
+                                    oninput="renderActivityTable()"
+                                    style="flex:1; min-width:160px; padding:7px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:13px; outline:none; background:#fff;"
+                                    onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#d1fae5'">
+                                <button onclick="clearLogFilters()" title="Clear all filters"
+                                    style="padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">
+                                    ✕ Clear
+                                </button>
                             </div>
                             <div class="admin-tables" style="overflow-x: auto; padding: 0 24px 24px;">
                                 <table class="activity-log-table">
@@ -3001,7 +3009,8 @@
             document.getElementById('adminSidebarEventForm')?.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const venue = document.getElementById('adminSelectedVenue').value;
-                const venueName = venue === 'basketball' ? 'Basketball Court, Barangay Sta. Lucia' : 'Multi-Purpose Hall, Barangay Sta. Lucia';
+                const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                const venueName = venueLabel + ', Barangay Sta. Lucia';
 
                 const eventData = {
                     title: document.getElementById('adminSidebarEventTitle').value,
@@ -3014,7 +3023,8 @@
                 };
 
                 const result = await createEvent(eventData);
-                document.getElementById('adminBookingMessage').innerHTML = result.success
+                const msgBox = document.getElementById('adminBookingMessage');
+                msgBox.innerHTML = result.success
                     ? '<div class="bg-green-100 text-green-700 p-3 rounded">✅ Event Created</div>'
                     : '<div class="bg-red-100 text-red-700 p-3 rounded">❌ ' + result.message + '</div>';
 
@@ -3022,8 +3032,61 @@
                     adminHideEventForm();
                     await renderAdminCalendar();
                     if (typeof loadEvents === 'function') await loadEvents();
+
+                    // --- Check for conflicting bookings and show warning ---
+                    try {
+                        const allBookings = await getCourtBookings();
+                        const conflicting = allBookings.filter(b =>
+                            b.date === eventData.date &&
+                            b.status !== 'cancelled' && b.status !== 'rejected' && b.status !== 'admin_cancelled' &&
+                            (b.venue === venue || (b.venueName || '').includes(venueLabel))
+                        );
+
+                        if (conflicting.length > 0) {
+                            let warningHtml = `<div style="margin-top:16px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:16px;">
+                                <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;">⚠️ ${conflicting.length} existing booking(s) conflict with this event:</div>
+                                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">`;
+                            conflicting.forEach(b => {
+                                warningHtml += `<div style="font-size:12px;background:#fff;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;color:#78350f;">
+                                    👤 <strong>${b.userName || 'Resident'}</strong> — ${b.timeRange || b.time}
+                                </div>`;
+                            });
+                            warningHtml += `</div>
+                                <button id="notifyConflictBtn" onclick="notifyConflictingUsers(${JSON.stringify(conflicting).replace(/"/g, '&quot;')}, '${eventData.title.replace(/'/g, "\\'")}')"
+                                    style="width:100%;padding:10px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">
+                                    📣 Notify All Affected Users
+                                </button>
+                            </div>`;
+                            msgBox.innerHTML += warningHtml;
+                        }
+                    } catch(err) { console.warn('Conflict check failed:', err); }
                 }
             });
+
+            async function notifyConflictingUsers(bookings, eventTitle) {
+                const btn = document.getElementById('notifyConflictBtn');
+                if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+                try {
+                    const available = await isSupabaseAvailable();
+                    if (!available) { showAlert('Supabase required to send notifications', 'error'); return; }
+                    for (const b of bookings) {
+                        const uid = b.userId || b.user_id;
+                        if (!uid) continue;
+                        await supabase.from('user_notifications').insert([{
+                            user_id: uid,
+                            type: 'event_conflict',
+                            message: `Your court booking on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been affected by an official event: "${eventTitle}". Please reschedule or cancel your booking.`,
+                            meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, event_title: eventTitle },
+                            is_read: false
+                        }]);
+                    }
+                    if (btn) { btn.textContent = '✅ Notifications Sent!'; btn.style.background = '#16a34a'; }
+                    await logActivity('Event Conflict Notified', `Notified ${bookings.length} user(s) about conflict with event: ${eventTitle}`);
+                } catch(err) {
+                    if (btn) { btn.textContent = '❌ Failed'; btn.disabled = false; }
+                    console.error('Notify error:', err);
+                }
+            }
 
             // Handle admin booking form
             document.getElementById('adminBookingForm')?.addEventListener('submit', async function (e) {
@@ -3442,10 +3505,19 @@
                 renderActivityTable();
             }
 
+            function clearLogFilters() {
+                const searchInput = document.getElementById('logSearchInput');
+                const nameInput = document.getElementById('logNameSearchInput');
+                if (searchInput) searchInput.value = '';
+                if (nameInput) nameInput.value = '';
+                setLogFilter('all');
+            }
+
             function renderActivityTable() {
                 const tbody = document.getElementById('activityLogTable');
                 const emptyState = document.getElementById('noActivityLog');
                 const search = (document.getElementById('logSearchInput')?.value || '').toLowerCase();
+                const nameSearch = (document.getElementById('logNameSearchInput')?.value || '').toLowerCase();
 
                 let filtered = _allActivityLogs;
 
@@ -3459,6 +3531,13 @@
                         (log.action || '').toLowerCase().includes(search) ||
                         (log.details || '').toLowerCase().includes(search) ||
                         (log.adminUsername || '').toLowerCase().includes(search)
+                    );
+                }
+
+                if (nameSearch) {
+                    filtered = filtered.filter(log =>
+                        (log.details || '').toLowerCase().includes(nameSearch) ||
+                        (log.adminUsername || '').toLowerCase().includes(nameSearch)
                     );
                 }
 

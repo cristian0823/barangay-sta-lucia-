@@ -299,15 +299,15 @@
                                     </select>
                                 </div>
                                 <div class="space-y-1.5">
-                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Specific Location <span class="font-normal text-gray-400 text-xs italic ml-1">(Optional)</span></label>
-                                    <input type="text" id="concernLocation" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Specific Location <span class="text-red-500">*</span></label>
+                                    <input type="text" id="concernLocation" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Detailed Description <span class="text-red-500">*</span></label>
                                     <textarea id="concernDescription" required rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
                                 </div>
                                 <div class="space-y-1.5 p-4 bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100 rounded-xl border border-amber-100 dark:border-amber-800/30">
-                                    <label class="block text-sm font-bold mb-1">📷 Attach Photo <span class="font-normal opacity-70 text-xs italic ml-1">(Optional)</span></label>
+                                    <label class="block text-sm font-bold mb-1">📷 Attach Photo <span class="text-red-500">*</span></label>
                                     <p class="text-[11px] opacity-80 mb-3 leading-relaxed">Adding an image helps the admin understand and address your concern faster.</p>
                                     <div id="imagePreviewContainer" class="hidden mb-3 relative inline-block">
                                         <img id="concernImagePreview" src="" alt="Preview" class="max-w-full h-32 rounded-lg border-2 border-amber-300 dark:border-amber-600 shadow-sm object-cover">
@@ -341,8 +341,8 @@
             <div id="panel-booking" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 class="panel-header text-blue-600">📅 Court Booking</h2>
-                        <p class="panel-subheader">Reserve the basketball court or multi-purpose hall.</p>
+                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Booking</h2>
+                        <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1 rounded-xl gap-1" style="background-color: var(--border-color);">
                         <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer">🏀 Basketball Court</button>
@@ -763,6 +763,51 @@
             </div>
         </div>
     </div>
+    <!-- ========== BOOKING CONFLICT NOTIFICATION MODAL ========== -->
+    <div id="conflictNotifModal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" style="animation:fadeInUp 0.3s ease;">
+            <!-- Header -->
+            <div style="background:linear-gradient(135deg,#f59e0b,#ef4444);padding:28px 24px 20px;">
+                <div style="font-size:36px;margin-bottom:8px;">⚠️</div>
+                <h3 style="font-size:20px;font-weight:800;color:#fff;margin:0 0 4px;">Booking Conflict</h3>
+                <p id="conflictNotifMsg" style="font-size:13px;color:rgba(255,255,255,0.85);margin:0;line-height:1.5;"></p>
+            </div>
+            <!-- Actions -->
+            <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+                <button id="conflictRescheduleBtn" onclick="handleConflictReschedule()"
+                    style="width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-weight:700;font-size:14px;border-radius:14px;border:none;cursor:pointer;transition:all 0.2s;">
+                    📅 Reschedule My Booking
+                </button>
+                <button id="conflictCancelBtn" onclick="handleConflictCancel()"
+                    style="width:100%;padding:14px;background:#fef2f2;color:#dc2626;font-weight:700;font-size:14px;border-radius:14px;border:1.5px solid #fecaca;cursor:pointer;transition:all 0.2s;">
+                    ❌ Cancel Booking Completely
+                </button>
+                <p style="font-size:11px;color:#9ca3af;text-align:center;margin:0;">You can reschedule your booking using the Court Booking panel.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CANCEL CONFIRMATION MODAL ========== -->
+    <div id="conflictConfirmModal" class="fixed inset-0 z-[400] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-xs overflow-hidden" style="animation:fadeInUp 0.3s ease;">
+            <div style="padding:28px 24px;text-align:center;">
+                <div style="font-size:42px;margin-bottom:12px;">🗑️</div>
+                <h3 style="font-size:18px;font-weight:800;color:#1f2937;margin:0 0 8px;">Are you sure?</h3>
+                <p style="font-size:13px;color:#6b7280;margin:0 0 24px;line-height:1.6;">This will permanently cancel your court booking. This action cannot be undone.</p>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="confirmCancelBooking()"
+                        style="flex:1;padding:13px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;font-size:14px;border-radius:12px;border:none;cursor:pointer;transition:all 0.2s;">
+                        Yes, Cancel
+                    </button>
+                    <button onclick="backToConflictChoice()"
+                        style="flex:1;padding:13px;background:#f9fafb;color:#374151;font-weight:700;font-size:14px;border-radius:12px;border:1.5px solid #e5e7eb;cursor:pointer;transition:all 0.2s;">
+                        No, Go Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
@@ -858,7 +903,77 @@
                 const myBookings = bookingsRaw ? bookingsRaw.filter(b => b.userId === user.id && b.status !== 'cancelled') : [];
                 const today = new Date(); today.setHours(0, 0, 0, 0);
                 document.getElementById('stat-bookings').textContent = myBookings.filter(b => new Date(b.date) >= today).length;
+                // Check for event conflict notifications
+                await checkConflictNotifications();
             } catch (e) { console.error("Error loading stats", e); }
+        }
+
+        // ==========================================
+        // BOOKING CONFLICT NOTIFICATION FLOW
+        // ==========================================
+        let _activeConflictNotif = null;
+
+        async function checkConflictNotifications() {
+            try {
+                if (typeof getPendingCancellationNotifications !== 'function') return;
+                const notifs = await getPendingCancellationNotifications(user.id);
+                const conflicts = notifs.filter(n => n.type === 'event_conflict');
+                if (conflicts.length === 0) return;
+                _activeConflictNotif = conflicts[0];
+                const meta = _activeConflictNotif.meta || {};
+                const msgEl = document.getElementById('conflictNotifMsg');
+                if (msgEl) msgEl.textContent = _activeConflictNotif.message ||
+                    `Your court booking on ${meta.date || 'a scheduled date'} conflicts with an official event: "${meta.event_title || 'Barangay Event'}". Please reschedule or cancel your booking.`;
+                const modal = document.getElementById('conflictNotifModal');
+                if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            } catch(err) { console.warn('Conflict notification check failed:', err); }
+        }
+
+        function handleConflictReschedule() {
+            // Close the conflict modal, mark as read, open Court Booking panel
+            const modal = document.getElementById('conflictNotifModal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            if (_activeConflictNotif && typeof markUserNotificationAsRead === 'function') {
+                markUserNotificationAsRead(_activeConflictNotif.id);
+            }
+            _activeConflictNotif = null;
+            showPanel('booking');
+            showToast('Please pick a new date to reschedule your booking.', 'success');
+        }
+
+        function handleConflictCancel() {
+            // Step 1: Close choice modal, show confirmation dialog
+            const choiceModal = document.getElementById('conflictNotifModal');
+            if (choiceModal) { choiceModal.classList.add('hidden'); choiceModal.classList.remove('flex'); }
+            const confirmModal = document.getElementById('conflictConfirmModal');
+            if (confirmModal) { confirmModal.classList.remove('hidden'); confirmModal.classList.add('flex'); }
+        }
+
+        async function confirmCancelBooking() {
+            const confirmModal = document.getElementById('conflictConfirmModal');
+            if (confirmModal) { confirmModal.classList.add('hidden'); confirmModal.classList.remove('flex'); }
+            if (!_activeConflictNotif) return;
+            const meta = _activeConflictNotif.meta || {};
+            const bookingId = meta.booking_id;
+            if (bookingId && typeof cancelCourtBooking === 'function') {
+                const res = await cancelCourtBooking(bookingId);
+                if (!res.success) { showToast('Could not cancel booking: ' + res.message, 'error'); return; }
+            }
+            if (typeof markUserNotificationAsRead === 'function') {
+                await markUserNotificationAsRead(_activeConflictNotif.id);
+            }
+            _activeConflictNotif = null;
+            showToast('Your booking has been cancelled.', 'success');
+            await loadBookingView();
+            await loadDashboardStats();
+        }
+
+        function backToConflictChoice() {
+            // Step: "No" on confirmation → go back to Reschedule/Cancel choice
+            const confirmModal = document.getElementById('conflictConfirmModal');
+            if (confirmModal) { confirmModal.classList.add('hidden'); confirmModal.classList.remove('flex'); }
+            const choiceModal = document.getElementById('conflictNotifModal');
+            if (choiceModal) { choiceModal.classList.remove('hidden'); choiceModal.classList.add('flex'); }
         }
 
         // ==========================================
@@ -1287,9 +1402,21 @@
         // ==========================================
         function switchVenue(venue) {
             selectedVenue = venue;
-            document.getElementById('sel-basketball').className = venue === 'basketball' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition' : 'px-5 py-2 rounded-lg font-bold text-sm text-gray-500 hover:text-gray-800 transition';
-            document.getElementById('sel-multipurpose').className = venue === 'multipurpose' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition' : 'px-5 py-2 rounded-lg font-bold text-sm text-gray-500 hover:text-gray-800 transition';
-            document.getElementById('bookingVenueInput').value = venue;
+            document.getElementById('sel-basketball').className = venue === 'basketball' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer' : 'px-5 py-2 rounded-lg font-bold text-sm transition border-none cursor-pointer';
+            document.getElementById('sel-multipurpose').className = venue === 'multipurpose' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer' : 'px-5 py-2 rounded-lg font-bold text-sm transition border-none cursor-pointer';
+            document.getElementById('sel-basketball').style.color = venue === 'basketball' ? '' : 'var(--text-muted)';
+            document.getElementById('sel-multipurpose').style.color = venue === 'multipurpose' ? '' : 'var(--text-muted)';
+            // Update panel title dynamically
+            const titleEl = document.getElementById('bookingPanelTitle');
+            const subtitleEl = document.getElementById('bookingPanelSubtitle');
+            if (venue === 'basketball') {
+                if (titleEl) titleEl.innerHTML = '📅 Court Booking';
+                if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay basketball court.';
+            } else {
+                if (titleEl) titleEl.innerHTML = '🏢 Hall Booking';
+                if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay multi-purpose hall.';
+            }
+            if (document.getElementById('bookingVenueInput')) document.getElementById('bookingVenueInput').value = venue;
             loadBookingView();
         }
 
@@ -1323,10 +1450,10 @@
                     dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed'; 
                 }
                 else if (hasEvent) { 
-                    // Official Events block the date completely for users.
-                    dayDiv.className += 'bg-purple-200 text-purple-900 border-2 border-purple-500 cursor-not-allowed opacity-90'; 
-                    dayDiv.title = 'Blocked: ' + hasEvent.title; 
-                    dayDiv.onclick = () => showToast('Date blocked due to official Barangay Event', 'error');
+                    // Official Events — clicking shows the schedule so user can see what's on
+                    dayDiv.className += 'bg-purple-200 text-purple-900 border-2 border-purple-500 cursor-pointer opacity-90'; 
+                    dayDiv.title = 'Brgy Event: ' + hasEvent.title; 
+                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 else if (bookedDates.includes(dateStr)) { 
                     dayDiv.className += 'bg-red-100 text-red-700 border-2 border-red-300 cursor-pointer hover:bg-red-200 hover:scale-105'; 
@@ -1420,6 +1547,11 @@
             modal.classList.add('flex');
 
             await refreshDsSchedule(dateStr, selectedVenue);
+
+            // Hide 'Add Booking' button if day is fully blocked by an official event
+            const evForDay = (await getEvents()).filter(ev => ev.date === dateStr && ev.status === 'approved');
+            const toggleBtn = document.getElementById('dsToggleFormBtn');
+            if (toggleBtn) toggleBtn.style.display = evForDay.length > 0 ? 'none' : '';
         }
 
         async function refreshDsSchedule(dateStr, venue) {
@@ -1444,7 +1576,8 @@
             });
             dayEvents.forEach(e => {
                 const timeStr = e.time + (e.end_time ? ' – ' + e.end_time : '');
-                entries.push({ type: 'event', timeStr, label: e.title, purpose: e.organizer ? 'By ' + e.organizer : '' });
+                const venueEvLabel = (e.venue === 'multipurpose' || (e.location && e.location.includes('Multi-Purpose'))) ? '🏢 Multi-Purpose Hall' : '🏀 Basketball Court';
+                entries.push({ type: 'event', timeStr, label: e.title, purpose: (e.organizer ? 'By ' + e.organizer + ' · ' : '') + venueEvLabel });
             });
 
             if (entries.length === 0) {
