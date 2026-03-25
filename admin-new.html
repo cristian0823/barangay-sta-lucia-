@@ -1103,17 +1103,28 @@
 
         @media (max-width: 768px) {
             .dashboard-header {
-                padding: 0 16px;
-                height: auto;
-                flex-direction: column;
-                gap: 12px;
-                padding: 12px;
+                padding: 0 12px;
+                height: 58px;
+                flex-direction: row;
+                gap: 0;
+                justify-content: space-between;
             }
 
-            .header-left,
+            /* Hide verbose text, keep logo and buttons compact */
+            .header-brand .subtitle { display: none; }
+            .header-brand .brand { font-size: 14px; }
+
             .header-right {
-                width: 100%;
-                justify-content: center;
+                gap: 6px;
+            }
+
+            /* Hide user name/role text on mobile to save space */
+            .user-info { display: none; }
+
+            /* Make Settings + Logout buttons icon-size */
+            .header-right .btn {
+                padding: 6px 10px;
+                font-size: 12px;
             }
 
             .user-menu {
@@ -1135,6 +1146,8 @@
 
             .main-content {
                 padding: 16px;
+                padding-bottom: 32px;
+                -webkit-overflow-scrolling: touch;
             }
 
             .form-row {
@@ -1243,6 +1256,15 @@
             /* Override any specific modal widths for mobile to ensure edge-to-edge */
             [style*="max-width:"] {
                 max-width: 100% !important;
+            }
+
+            /* Make section tables horizontally scrollable on mobile */
+            .section-content {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            table:not(.activity-log-table) {
+                min-width: 520px;
             }
 
             @keyframes slideUp {

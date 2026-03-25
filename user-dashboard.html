@@ -55,12 +55,12 @@
             .dashboard-header .header-brand, .dashboard-header .header-right { display: none !important; }
             .dashboard-header { height: 60px; padding: 0 16px; }
             .sidebar { display: none !important; }
-            .main-content { padding: 16px 16px 85px !important; } /* Space for bottom nav */
+            .main-content { padding: 16px 16px calc(120px + env(safe-area-inset-bottom)) !important; -webkit-overflow-scrolling: touch; } /* Space for bottom nav */
             .glass-card { border-radius: 16px; padding: 16px !important; }
             .panel-header { font-size: 22px; }
 
             /* Grid to feed */
-            .grid { grid-template-columns: 1fr !important; }
+            .grid:not(.grid-cols-7):not(.grid-cols-2) { grid-template-columns: 1fr !important; }
 
             /* Bottom Tab Nav */
             .bottom-tab-nav {
@@ -368,6 +368,9 @@
                             </button>
                             <button onclick="showSettingsTab('account')" id="stab-account" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50">
                                 🛡️ Account Info
+                            </button>
+                            <button id="mobileLogoutBtn" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all bg-red-50 text-red-600 hover:bg-red-500 hover:text-white md:hidden">
+                                🚪 Logout
                             </button>
                         </div>
                         <!-- Quick Stats -->
@@ -682,6 +685,7 @@
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
+        document.getElementById('mobileLogoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
 
         // ==========================================
         // GLOBAL VARIABLES

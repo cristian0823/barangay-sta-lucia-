@@ -516,7 +516,52 @@
         @media (max-width: 900px) {
             .profile-grid { grid-template-columns: 1fr; }
             .sidebar { display: none; }
-            .main { padding: 16px; }
+            .main { padding: 16px; padding-bottom: 80px; -webkit-overflow-scrolling: touch; }
+
+            /* Header mobile: keep it single row, hide user info text */
+            .header { padding: 0 12px; height: 56px; }
+            .header-user-info { display: none; }
+            .header-badge { display: none; }
+            .header-logo-text { font-size: 13px; }
+
+            /* Back button: icon-only on mobile */
+            .back-btn .back-text { display: none; }
+            .back-btn { padding: 7px 10px; font-size: 15px; }
+            .back-btn::after { content: 'Back'; font-size: 12px; font-weight: 600; margin-left: 4px; }
+
+            /* Mobile section tabs shown as horizontal scroller row */
+            .mobile-section-tabs {
+                display: flex !important;
+                gap: 8px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 12px 0 8px;
+                margin-bottom: 16px;
+                scrollbar-width: none;
+            }
+            .mobile-section-tabs::-webkit-scrollbar { display: none; }
+            .mobile-section-tab {
+                flex-shrink: 0;
+                padding: 8px 16px;
+                border-radius: 20px;
+                border: 1.5px solid var(--border);
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                background: #fff;
+                color: var(--muted);
+                font-family: inherit;
+            }
+            .mobile-section-tab.active {
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: #fff;
+                border-color: transparent;
+            }
+
+            /* Logout button visible on mobile */
+            .mobile-logout-btn {
+                display: flex !important;
+            }
         }
     </style>
     <link rel="icon" type="image/jpeg" href="barangay.jpg">
@@ -544,10 +589,18 @@
                 <div class="header-avatar" id="topUserAvatar">A</div>
             </div>
             <a class="back-btn" href="admin.html">
-                <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+                <i class="bi bi-arrow-left-circle"></i><span class="back-text"> Back to Dashboard</span>
             </a>
+            <button class="mobile-logout-btn" onclick="logoutUser ? logoutUser() : window.location.href='index.html'" style="display:none; align-items:center; gap:6px; padding:7px 14px; border-radius:10px; border:none; background:#fef2f2; color:#b91c1c; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">🚪 Logout</button>
         </div>
     </header>
+
+    <!-- MOBILE SECTION TABS -->
+    <div class="mobile-section-tabs" style="display:none; padding: 10px 14px 0;">
+        <button class="mobile-section-tab active" onclick="showSection('users'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👥 Users</button>
+        <button class="mobile-section-tab" onclick="showSection('profile'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👤 Profile</button>
+        <button class="mobile-section-tab" onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">📊 System</button>
+    </div>
 
     <div class="layout">
         <!-- SIDEBAR -->
