@@ -145,6 +145,7 @@
                 <div class="mobile-header-avatar" onclick="showPanel('settings')" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
                 <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
                 <button class="mobile-header-btn" onclick="showPanel('settings')" title="Settings">⚙️</button>
+                <button class="mobile-header-btn" id="mobileHeaderLogoutBtn" title="Logout" style="background:#fef2f2;border-color:#fecaca;color:#dc2626;font-size:14px;" onclick="logoutUser()">🚪</button>
             </div>
         </div>
         <div class="header-right flex items-center gap-3 hidden md:flex">
@@ -793,6 +794,11 @@
 
             const tabBtn = document.getElementById('tab-' + panelId);
             if (tabBtn) tabBtn.classList.add('active');
+
+            // Scroll to top of main content area on every panel switch
+            const mainEl = document.querySelector('.main-content');
+            if (mainEl) mainEl.scrollTop = 0;
+            window.scrollTo(0, 0);
 
             if (panelId === 'history') loadHistoryView();
 

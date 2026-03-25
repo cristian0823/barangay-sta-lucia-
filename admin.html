@@ -4663,6 +4663,10 @@
             const _origSwitchSection = window.switchSection;
             window.switchSection = function (name, btn) {
                 if (_origSwitchSection) _origSwitchSection(name, btn);
+                // Reset scroll position to top on every section switch
+                const mainEl = document.querySelector('.main-content');
+                if (mainEl) mainEl.scrollTop = 0;
+                window.scrollTo(0, 0);
                 if (name === 'overview') loadOverview();
                 if (name === 'court-bookings') loadAdminBookings();
                 if (name === 'requests') loadRequests();
