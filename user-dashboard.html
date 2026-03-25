@@ -136,7 +136,12 @@
     <header class="dashboard-header bg-white border-b border-emerald-200 px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100] shadow-sm">
         <div class="header-left flex items-center gap-4">
             <img src="barangay.jpg" alt="Logo" class="w-[46px] h-[46px] rounded-xl border-2 border-emerald-200 object-cover">
-            <div class="header-brand flex flex-col">
+            <!-- Mobile name shown next to logo -->
+            <div class="flex flex-col md:hidden">
+                <span class="text-[13px] font-extrabold text-emerald-800 leading-tight" id="mobileUserName">Resident</span>
+                <span class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Resident Portal</span>
+            </div>
+            <div class="header-brand flex flex-col hidden md:flex">
                 <span class="brand text-[18px] font-extrabold text-emerald-800">Barangay Sta. Lucia</span>
                 <span class="subtitle text-[11px] text-gray-500 uppercase tracking-widest font-semibold">Resident Portal</span>
             </div>
@@ -145,7 +150,7 @@
                 <div class="mobile-header-avatar" onclick="showPanel('settings')" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
                 <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
                 <button class="mobile-header-btn" onclick="showPanel('settings')" title="Settings">⚙️</button>
-                <button class="mobile-header-btn" id="mobileHeaderLogoutBtn" title="Logout" style="background:#fef2f2;border-color:#fecaca;color:#dc2626;font-size:14px;" onclick="logoutUser()">🚪</button>
+                <button id="mobileHeaderLogoutBtn" title="Logout" style="height:36px;padding:0 14px;border-radius:10px;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;" onclick="logoutUser()">Logout</button>
             </div>
         </div>
         <div class="header-right flex items-center gap-3 hidden md:flex">
@@ -776,9 +781,11 @@
         document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('welcomeName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('userInitial').textContent = (user.name || user.email)[0].toUpperCase();
-        // Mobile header avatar
+        // Mobile header avatar & name
         const mobileAvatar = document.getElementById('mobileHeaderAvatar');
         if (mobileAvatar) mobileAvatar.textContent = (user.name || user.email)[0].toUpperCase();
+        const mobileNameEl = document.getElementById('mobileUserName');
+        if (mobileNameEl) mobileNameEl.textContent = user.name || user.username || user.email.split('@')[0];
 
         // Panel routing
         function showPanel(panelId) {

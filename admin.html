@@ -1782,7 +1782,10 @@
                 </button>
                 <div class="dashboard-logo">
                     <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
-                    <span>Admin Dashboard</span>
+                    <div style="display:flex;flex-direction:column;line-height:1.2;">
+                        <span id="adminMobileName" style="font-size:14px;font-weight:800;color:inherit;">Admin</span>
+                        <span style="font-size:10px;opacity:0.6;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Admin Portal</span>
+                    </div>
                 </div>
             </div>
             <div class="user-menu" style="display:flex; align-items:center; gap:12px;">
@@ -1793,7 +1796,7 @@
                 <div class="user-avatar" id="userAvatar">A</div>
                 <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn">🌙</button>
                 <a href="admin-settings.html" class="logout-btn"
-                    style="text-decoration:none; display:flex; align-items:center; gap:6px;">⚙️ Settings</a>
+                    style="text-decoration:none; display:flex; align-items:center; gap:6px;">Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
             </div>
         </header>
@@ -5096,6 +5099,18 @@
 
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
+                // Populate admin name next to logo from registered account
+                const adminUser = getCurrentUser();
+                if (adminUser) {
+                    const adminNameEl = document.getElementById('adminMobileName');
+                    if (adminNameEl) adminNameEl.textContent = adminUser.fullName || adminUser.name || adminUser.username || 'Admin';
+                    const userNameEl = document.getElementById('userName');
+                    if (userNameEl && userNameEl.textContent === 'Administrator') {
+                        userNameEl.textContent = adminUser.fullName || adminUser.name || adminUser.username || 'Administrator';
+                    }
+                    const avatarEl = document.getElementById('userAvatar');
+                    if (avatarEl) avatarEl.textContent = (adminUser.fullName || adminUser.name || adminUser.username || 'A')[0].toUpperCase();
+                }
                 initWelcomeClock();
                 loadOverview();
                 loadAdminNotifications();
