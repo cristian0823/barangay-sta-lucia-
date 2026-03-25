@@ -50,10 +50,47 @@
         [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
         [data-theme="dark"] .bg-gray-50 { background-color: #0f172a !important; }
 
+        /* ── MOBILE HEADER CONTROLS ── */
+        .mobile-header-controls {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+        .mobile-header-btn {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .mobile-header-btn:hover, .mobile-header-btn.active-btn {
+            background: var(--nav-hover-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .mobile-header-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 14px;
+            border: 2px solid var(--input-border);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
         /* ── RESPONSIVE MOBILE ── */
         @media (max-width: 768px) {
             .dashboard-header .header-brand, .dashboard-header .header-right { display: none !important; }
             .dashboard-header { height: 60px; padding: 0 16px; }
+            .dashboard-header .header-left { gap: 12px; width: 100%; }
+            .mobile-header-controls { display: flex !important; }
             .sidebar { display: none !important; }
             .main-content { padding: 16px 16px calc(120px + env(safe-area-inset-bottom)) !important; -webkit-overflow-scrolling: touch; } /* Space for bottom nav */
             .glass-card { border-radius: 16px; padding: 16px !important; }
@@ -81,6 +118,14 @@
             .tab-btn .tab-icon { font-size: 20px; line-height: 1; display:flex; align-items:center; justify-content:center; }
             .tab-btn span.tab-label { font-size: 10px; font-weight: 600; font-family: inherit; }
             .tab-btn.active { color: var(--primary); }
+
+            /* ── SETTINGS PANEL MOBILE ── */
+            .settings-hero { padding: 20px 18px !important; border-radius: 16px !important; }
+            .settings-hero-title { font-size: 18px !important; }
+            .settings-tabs-strip { padding: 12px 0 4px !important; }
+            .settings-card-head { padding: 13px 16px !important; }
+            .settings-card-body { padding: 16px !important; }
+            .settings-stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
         }
     </style>
     <link rel="icon" type="image/jpeg" href="barangay.jpg">
@@ -95,9 +140,12 @@
                 <span class="brand text-[18px] font-extrabold text-emerald-800">Barangay Sta. Lucia</span>
                 <span class="subtitle text-[11px] text-gray-500 uppercase tracking-widest font-semibold">Resident Portal</span>
             </div>
-            <button onclick="showPanel('settings')" class="md:hidden ml-auto flex items-center justify-center p-2 rounded-lg text-xl hover:bg-gray-50 bg-white border border-gray-200 shadow-sm transition-colors text-gray-600">
-                ⚙️
-            </button>
+            <!-- MOBILE RIGHT CONTROLS -->
+            <div class="mobile-header-controls">
+                <div class="mobile-header-avatar" onclick="showPanel('settings')" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
+                <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
+                <button class="mobile-header-btn" onclick="showPanel('settings')" title="Settings">⚙️</button>
+            </div>
         </div>
         <div class="header-right flex items-center gap-3 hidden md:flex">
             <div class="user-menu flex items-center gap-3 pr-3 border-r border-gray-200">
@@ -352,88 +400,161 @@
 
             <!-- PANEL 6: SETTINGS -->
             <div id="panel-settings" class="content-panel">
-                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="text-3xl font-extrabold text-gray-700 mb-2" style="color: var(--text-main);">⚙️ Profile Settings</h2>
-                    <p style="color: var(--text-muted);">Manage your personal information and account.</p>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Sidebar Tabs -->
-                    <div class="lg:col-span-1 space-y-3">
-                        <div class="glass-card p-4 space-y-2">
-                            <button onclick="showSettingsTab('profile')" id="stab-profile" class="settings-tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all bg-emerald-500 text-white">
-                                👤 Profile Info
-                            </button>
-                            <button onclick="showSettingsTab('password')" id="stab-password" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50">
-                                🔑 Change Password
-                            </button>
-                            <button onclick="showSettingsTab('account')" id="stab-account" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50">
-                                🛡️ Account Info
-                            </button>
-                            <button id="mobileLogoutBtn" class="settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all bg-red-50 text-red-600 hover:bg-red-500 hover:text-white md:hidden">
-                                🚪 Logout
-                            </button>
-                        </div>
-                        <!-- Quick Stats -->
-                        <div class="glass-card p-5">
-                            <h4 class="text-sm font-bold mb-3 text-gray-500 uppercase tracking-wider">My Activity</h4>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="bg-emerald-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-emerald-600" id="s-statRequests">0</div><div class="text-xs text-gray-500 mt-1">Requests</div></div>
-                                <div class="bg-amber-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-amber-600" id="s-statConcerns">0</div><div class="text-xs text-gray-500 mt-1">Concerns</div></div>
-                                <div class="bg-blue-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-blue-600" id="s-statBookings">0</div><div class="text-xs text-gray-500 mt-1">Bookings</div></div>
-                                <div class="bg-purple-50 rounded-xl p-3 text-center"><div class="text-2xl font-black text-purple-600" id="s-statApproved">0</div><div class="text-xs text-gray-500 mt-1">Approved</div></div>
-                            </div>
+
+                <!-- Hero Banner (matches admin-settings style) -->
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                    <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(16,185,129,0.2) 0%,transparent 70%);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-60px;left:30%;width:300px;height:150px;background:radial-gradient(ellipse,rgba(59,130,246,0.1) 0%,transparent 70%);"></div>
+                    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">⚙️</div>
+                        <div>
+                            <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Settings</div>
+                            <div style="font-size:13px;color:#94a3b8;">Manage your profile, security, and account preferences</div>
                         </div>
                     </div>
-                    <!-- Main Settings Content -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Profile Tab -->
-                        <div id="stab-content-profile">
-                            <div class="glass-card p-6">
-                                <h3 class="text-lg font-bold mb-5 flex items-center gap-2" style="color: var(--text-main);">👤 Personal Information</h3>
-                                <form id="settingsProfileForm" class="space-y-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Full Name</label><input type="text" id="s-fullName" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition"></div>
-                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Email</label><input type="email" id="s-email" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition"></div>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Contact Number</label><input type="text" id="s-phone" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition" placeholder="09XX XXX XXXX"></div>
-                                        <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Address / Location</label><input type="text" id="s-address" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-emerald-500 focus:outline-none transition" placeholder="e.g. Block 5, Purok 3"></div>
-                                    </div>
-                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Username</label><input type="text" id="s-username" disabled class="w-full border-2 border-gray-100 bg-gray-50 rounded-xl px-4 py-3 text-gray-400 cursor-not-allowed"></div>
-                                    <button type="submit" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-md">✔ Save Changes</button>
-                                </form>
-                            </div>
+                </div>
+
+                <!-- Horizontal Tab Strip (mobile-friendly, like admin-settings mobile tabs) -->
+                <div class="settings-tabs-strip" style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0 12px;margin-bottom:16px;scrollbar-width:none;">
+                    <button id="stab-profile" onclick="showSettingsTab('profile')" class="settings-tab-pill active" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid #10b981;font-size:13px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:inherit;transition:all 0.2s;">👤 Profile</button>
+                    <button id="stab-password" onclick="showSettingsTab('password')" class="settings-tab-pill" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;cursor:pointer;background:var(--panel-bg);color:var(--text-muted);font-family:inherit;transition:all 0.2s;">🔑 Password</button>
+                    <button id="stab-account" onclick="showSettingsTab('account')" class="settings-tab-pill" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;cursor:pointer;background:var(--panel-bg);color:var(--text-muted);font-family:inherit;transition:all 0.2s;">🛡️ Account</button>
+                </div>
+
+                <!-- My Activity Stats Row -->
+                <div class="settings-stats-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📦</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#059669;line-height:1;" id="s-statRequests">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Requests</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💬</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#d97706;line-height:1;" id="s-statConcerns">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Concerns</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📅</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#1d4ed8;line-height:1;" id="s-statBookings">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Bookings</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✅</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#7c3aed;line-height:1;" id="s-statApproved">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Approved</div></div>
+                    </div>
+                </div>
+
+                <!-- ── PROFILE TAB ── -->
+                <div id="stab-content-profile">
+                    <!-- Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                            <span style="font-size:15px;">👤</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
                         </div>
-                        <!-- Password Tab -->
-                        <div id="stab-content-password" class="hidden">
-                            <div class="glass-card p-6">
-                                <h3 class="text-lg font-bold mb-5 flex items-center gap-2" style="color: var(--text-main);">🔑 Change Password</h3>
-                                <form id="settingsPasswordForm" class="space-y-4 max-w-md">
-                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Current Password</label><input type="password" id="s-currentPassword" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none transition" placeholder="Enter current password"></div>
-                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">New Password</label><input type="password" id="s-newPassword" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none transition" placeholder="Enter new password"></div>
-                                    <div><label class="block text-sm font-bold mb-1" style="color: var(--text-muted);">Confirm New Password</label><input type="password" id="s-confirmPassword" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:outline-none transition" placeholder="Confirm new password"></div>
-                                    <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-md">🔑 Change Password</button>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Account Tab -->
-                        <div id="stab-content-account" class="hidden">
-                            <div class="glass-card p-6 mb-6">
-                                <h3 class="text-lg font-bold mb-5 flex items-center gap-2" style="color: var(--text-main);">🛡️ Account Details</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl" style="background-color: var(--bg-color);"><span class="text-sm font-medium text-gray-500">Account Type</span><span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">👤 Resident</span></div>
-                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl" style="background-color: var(--bg-color);"><span class="text-sm font-medium text-gray-500">Status</span><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">✅ Active</span></div>
-                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl" style="background-color: var(--bg-color);"><span class="text-sm font-medium text-gray-500">Member Since</span><span class="font-bold text-gray-700" id="s-memberSince">-</span></div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="settingsProfileForm">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Full Name</label>
+                                        <input type="text" id="s-fullName" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Email Address</label>
+                                        <input type="email" id="s-email" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="glass-card p-6 border-red-200" style="border-color: #fecaca;">
-                                <h3 class="text-lg font-bold mb-2 text-red-600">⚠️ Danger Zone</h3>
-                                <p class="text-sm text-gray-500 mb-4">Once deleted, your account cannot be recovered.</p>
-                                <button onclick="deleteSettingsAccount()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md">🗑️ Delete My Account</button>
-                            </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Contact Number</label>
+                                        <input type="text" id="s-phone" placeholder="09XX XXX XXXX" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Address / Location</label>
+                                        <input type="text" id="s-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Username</label>
+                                    <input type="text" id="s-username" disabled style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-muted);background:var(--bg-color);cursor:not-allowed;outline:none;">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;">✔ Save Changes</button>
+                            </form>
                         </div>
                     </div>
                 </div>
+
+                <!-- ── PASSWORD TAB ── -->
+                <div id="stab-content-password" class="hidden">
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(59,130,246,0.06),transparent);">
+                            <span style="font-size:15px;">🔑</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Change Password</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="settingsPasswordForm" style="max-width:420px;">
+                                <div style="margin-bottom:16px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Current Password</label>
+                                    <input type="password" id="s-currentPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <div style="margin-bottom:16px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">New Password</label>
+                                    <input type="password" id="s-newPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Confirm New Password</label>
+                                    <input type="password" id="s-confirmPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3);transition:all 0.2s;">🔑 Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── ACCOUNT TAB ── -->
+                <div id="stab-content-account" class="hidden">
+                    <!-- Account Details Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                            <span style="font-size:15px;">🛡️</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Account Details</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:10px;">
+                                <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Account Type</span>
+                                <span style="padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #bbf7d0;">👤 Resident</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:10px;">
+                                <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Status</span>
+                                <span style="padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #bbf7d0;">✅ Active</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;">
+                                <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Member Since</span>
+                                <span style="font-size:13px;font-weight:700;color:var(--text-main);" id="s-memberSince">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Logout Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(239,68,68,0.04),transparent);">
+                            <span style="font-size:15px;">🚪</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Session</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Sign out of your account on this device.</p>
+                            <button id="mobileLogoutBtn" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#fef2f2;color:#b91c1c;border:1.5px solid #fecaca;transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">🚪 Logout</button>
+                        </div>
+                    </div>
+                    <!-- Danger Zone Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid #fecaca;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid #fecaca;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(239,68,68,0.06),transparent);">
+                            <span style="font-size:15px;">⚠️</span>
+                            <span style="font-size:14px;font-weight:700;color:#dc2626;">Danger Zone</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Once your account is deleted, it cannot be recovered.</p>
+                            <button onclick="deleteSettingsAccount()" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#ef4444;color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3);transition:all 0.2s;">🗑️ Delete My Account</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- PANEL 7: HISTORY -->
@@ -654,6 +775,9 @@
         document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('welcomeName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('userInitial').textContent = (user.name || user.email)[0].toUpperCase();
+        // Mobile header avatar
+        const mobileAvatar = document.getElementById('mobileHeaderAvatar');
+        if (mobileAvatar) mobileAvatar.textContent = (user.name || user.email)[0].toUpperCase();
 
         // Panel routing
         function showPanel(panelId) {
@@ -1552,10 +1676,19 @@
             ['profile','password','account'].forEach(t => {
                 document.getElementById('stab-content-' + t).classList.add('hidden');
                 const btn = document.getElementById('stab-' + t);
-                btn.className = 'settings-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all text-gray-600 hover:bg-gray-50';
+                if (btn) {
+                    btn.style.background = 'var(--panel-bg)';
+                    btn.style.color = 'var(--text-muted)';
+                    btn.style.borderColor = 'var(--border-color)';
+                }
             });
             document.getElementById('stab-content-' + tab).classList.remove('hidden');
-            document.getElementById('stab-' + tab).className = 'settings-tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all bg-emerald-500 text-white';
+            const activeBtn = document.getElementById('stab-' + tab);
+            if (activeBtn) {
+                activeBtn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+                activeBtn.style.color = '#fff';
+                activeBtn.style.borderColor = '#10b981';
+            }
         }
 
         async function loadSettingsView() {
