@@ -3968,6 +3968,7 @@
                     await loadEvents();
                     // Load overview if exists
                     if (typeof loadOverview === 'function') await loadOverview();
+                    if (typeof renderAdminCalendar === 'function') await renderAdminCalendar();
                 } else {
                     showAlert('Error: ' + result.message, 'error');
                 }
@@ -4590,18 +4591,19 @@
             }
 
             async function loadOverview() {
-                const [users, borrowings, bookings, concerns] = await Promise.all([
-                    getAllUsers(), getAllBorrowings(), getCourtBookings(), getAllConcerns()
+                const [users, borrowings, bookings, concerns, events] = await Promise.all([
+                    getAllUsers(), getAllBorrowings(), getCourtBookings(), getAllConcerns(), getEvents()
                 ]);
 
                 const pendingReqs = borrowings.filter(b => b.status === 'pending').length;
                 const pendingCons = concerns.filter(c => c.status === 'pending').length;
                 const activeBooks = bookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
+                const activeEvents = events.filter(e => e.status === 'approved').length;
 
                 const el = (id) => document.getElementById(id);
                 if (el('pendingRequests')) el('pendingRequests').textContent = pendingReqs;
                 if (el('pendingConcerns')) el('pendingConcerns').textContent = pendingCons;
-                if (el('upcomingEvents')) el('upcomingEvents').textContent = activeBooks;
+                if (el('upcomingEvents')) el('upcomingEvents').textContent = activeEvents;
                 if (el('totalUsers')) el('totalUsers').textContent = users.length;
 
                 // Glance row
