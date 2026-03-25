@@ -657,6 +657,10 @@
                                 <input type="text" id="borrowerContact" required class="form-input" placeholder="09XX XXX XXXX">
                             </div>
                         </div>
+                        <div class="form-field">
+                            <label class="form-label">Address where item will be used</label>
+                            <input type="text" id="borrowerAddress" required class="form-input" placeholder="e.g. Purok 3, Brgy. Sta. Lucia">
+                        </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="form-field">
                                 <label class="form-label">Borrow Time</label>
@@ -1102,6 +1106,7 @@
             const purposeStr = document.getElementById('borrowPurpose').value;
             const fullName = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
+            const address = document.getElementById('borrowerAddress').value;
             
             const borrowTime = document.getElementById('borrowTime').value;
             const returnTime = document.getElementById('returnTime').value;
@@ -1125,7 +1130,7 @@
                 return `${h}:${m} ${ampm}`;
             };
             
-            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact}`;
+            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact} | Address: ${address}`;
             const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
             
             if (result.success) { 
