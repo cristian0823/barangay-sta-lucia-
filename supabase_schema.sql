@@ -376,3 +376,9 @@ BEGIN
     RETURN json_build_object('success', true, 'message', 'Equipment marked as returned successfully.');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- ============================================================
+-- STEP 7: ENABLE REALTIME SYNC FOR USER DASHBOARDS
+-- ============================================================
+ALTER PUBLICATION supabase_realtime ADD TABLE events;
