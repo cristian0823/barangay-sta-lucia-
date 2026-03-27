@@ -1147,7 +1147,7 @@ function timeToMinutes(t) {
     return h * 60 + m;
 }
 
-async function checkTimeOverlap(date, venue, startTime, endTime) {
+async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings = false) {
     const reqStart = timeToMinutes(startTime);
     const reqEnd = timeToMinutes(endTime || startTime);
     if (reqStart >= reqEnd && endTime) {
@@ -1155,19 +1155,21 @@ async function checkTimeOverlap(date, venue, startTime, endTime) {
     }
     
     // Check bookings
-    const allBookings = await getCourtBookings();
-    const venueLabelCheck = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
-    for (const b of allBookings) {
-        if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled') {
-            if (venue === 'all' || b.venue === venue || b.venueName === venueLabelCheck) {
-                let tRange = b.timeRange || b.time; 
-                if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-                let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
-                if (!eTime) eTime = sTime; 
-                const eStart = timeToMinutes(sTime);
-                const eEnd = timeToMinutes(eTime);
-                if (reqStart < eEnd && reqEnd > eStart) {
-                    return { success: false, message: `Time slot overlaps with an existing booking (${tRange})` };
+    if (!ignoreBookings) {
+        const allBookings = await getCourtBookings();
+        const venueLabelCheck = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+        for (const b of allBookings) {
+            if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled') {
+                if (venue === 'all' || b.venue === venue || b.venueName === venueLabelCheck) {
+                    let tRange = b.timeRange || b.time; 
+                    if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                    let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
+                    if (!eTime) eTime = sTime; 
+                    const eStart = timeToMinutes(sTime);
+                    const eEnd = timeToMinutes(eTime);
+                    if (reqStart < eEnd && reqEnd > eStart) {
+                        return { success: false, message: `Time slot overlaps with an existing booking (${tRange})` };
+                    }
                 }
             }
         }
@@ -1281,6 +1283,52 @@ async function cancelCourtBooking(bookingId) {
         bookings[index].status = 'cancelled';
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
         return { success: true, message: 'Booking cancelled' };
+    }
+}
+
+async function getPendingCancellationNotifications(userId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { data, error } = await supabase
+            .from('user_notifications')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('type', 'booking_cancelled')
+            .eq('is_read', false)
+            .order('created_at', { ascending: false });
+        if (error) { console.warn('Notifications fetch error:', error); return []; }
+        return (data || []).map(n => ({
+            id: n.id,
+            message: n.message,
+            meta: n.meta || {},
+            createdAt: n.created_at
+        }));
+    } else {
+        const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+        return notifs.filter(n =>
+            String(n.userId) === String(userId) &&
+            n.type === 'booking_cancelled' &&
+            !n.isRead
+        ).map(n => ({
+            id: n.id,
+            message: n.message,
+            meta: n.meta || {},
+            createdAt: n.createdAt
+        }));
+    }
+}
+
+async function markUserNotificationAsRead(notifId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        await supabase.from('user_notifications').update({ is_read: true }).eq('id', notifId);
+    } else {
+        const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+        const idx = notifs.findIndex(n => String(n.id) === String(notifId));
+        if (idx !== -1) {
+            notifs[idx].isRead = true;
+            localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+        }
     }
 }
 
@@ -1538,19 +1586,102 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     }
 }
 
-async function createEvent(eventData) {
-    const overlapCheck = await checkTimeOverlap(eventData.date, 'all', eventData.time, eventData.end_time);
+async function adminCancelOverlappingBookings(eventData) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    const reqStart = timeToMinutes(eventData.time);
+    const reqEnd = timeToMinutes(eventData.end_time || eventData.time);
+    const date = eventData.date;
+    const reason = `Cancelled due to unexpected Barangay Event: ${eventData.title}`;
+
+    if (supabaseAvailable) {
+        const { data: bookings } = await supabase.from('court_bookings')
+            .select('*')
+            .eq('date', date)
+            .in('status', ['pending', 'approved']);
+            
+        if (bookings) {
+            for (const b of bookings) {
+                let tRange = b.timeRange || b.time; 
+                if (tRange && tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                if (!tRange) continue;
+                let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
+                if (!eTime) eTime = sTime; 
+                const eStart = timeToMinutes(sTime);
+                const eEnd = timeToMinutes(eTime);
+                
+                if (reqStart < eEnd && reqEnd > eStart) {
+                    await supabase.from('court_bookings').update({
+                        status: 'cancelled_by_admin',
+                        admin_comment: reason
+                    }).eq('id', b.id);
+                    await logActivity('Booking Cancelled by Admin', `Cancelled booking ID: ${b.id} due to event ${eventData.title}`);
+                    
+                    const venueLabel = b.venue === 'basketball' || b.venueName === 'Basketball Court' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                    await supabase.from('user_notifications').insert([{
+                        user_id: b.user_id,
+                        type: 'booking_cancelled',
+                        message: `Your court booking on ${date} was cancelled by the admin due to ${eventData.title}.`,
+                        meta: { booking_id: b.id, date: date, venue: venueLabel, original_time: b.time, reason: reason },
+                        is_read: false
+                    }]);
+                }
+            }
+        }
+    } else {
+        const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+        for (const b of bookings) {
+            if (b.date === date && (b.status === 'pending' || b.status === 'approved')) {
+                let tRange = b.timeRange || b.time; 
+                if (tRange && tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                if (!tRange) continue;
+                let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
+                if (!eTime) eTime = sTime; 
+                const eStart = timeToMinutes(sTime);
+                const eEnd = timeToMinutes(eTime);
+                
+                if (reqStart < eEnd && reqEnd > eStart) {
+                    b.status = 'cancelled_by_admin';
+                    b.adminComment = reason;
+                    logActivity('Booking Cancelled by Admin', `Cancelled booking ID: ${b.id} due to event ${eventData.title}`);
+                    
+                    const venueLabel = b.venue === 'basketball' || b.venueName === 'Basketball Court' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                    const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+                    notifs.unshift({
+                        id: Date.now() + Math.random(),
+                        userId: String(b.userId),
+                        type: 'booking_cancelled',
+                        message: `Your court booking on ${date} was cancelled by the admin due to ${eventData.title}.`,
+                        meta: { booking_id: b.id, date: date, venue: venueLabel, original_time: b.time, reason: reason },
+                        isRead: false,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+                }
+            }
+        }
+        localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+    }
+}
+
+async function createEvent(eventData, massCancel = false) {
+    const overlapCheck = await checkTimeOverlap(eventData.date, 'all', eventData.time, eventData.end_time, massCancel);
     if (!overlapCheck.success) return overlapCheck;
 
     const supabaseAvailable = await isSupabaseAvailable();
 
     // Admin-created events should be automatically approved
     const eventWithStatus = { ...eventData, status: 'approved' };
+    let success = false;
+    let errorMsg = '';
 
     if (supabaseAvailable) {
         const { error } = await supabase.from('events').insert([eventWithStatus]);
-        if (!error) await logActivity('Event Created', `Created event: ${eventData.title} on ${eventData.date}`);
-        return { success: !error, message: error ? error.message : 'Event created successfully' };
+        if (!error) {
+            await logActivity('Event Created', `Created event: ${eventData.title} on ${eventData.date}`);
+            success = true;
+        } else {
+            errorMsg = error.message;
+        }
     } else {
         const events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
         const newEvent = {
@@ -1561,8 +1692,14 @@ async function createEvent(eventData) {
         events.push(newEvent);
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
         logActivity('Event Created', `Created event: ${eventData.title} on ${eventData.date}`);
-        return { success: true, message: 'Event created successfully' };
+        success = true;
     }
+
+    if (success && massCancel) {
+        await adminCancelOverlappingBookings(eventData);
+    }
+
+    return { success, message: errorMsg || 'Event created successfully' };
 }
 
 async function editEvent(eventId, eventData) {
@@ -1581,6 +1718,37 @@ async function editEvent(eventId, eventData) {
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
         logActivity('Event Updated', `Updated event: ${eventData.title}`);
         return { success: true, message: 'Event updated successfully' };
+    }
+}
+
+async function updateCourtBookingDateTime(bookingId, newDate, newTime, newEndTime, newStatus) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    const combinedTime = newEndTime ? `${newTime} – ${newEndTime}` : newTime; // Simplified, or use full venue + time if needed
+    // Usually combined time has venue, so let's just let the caller construct it properly OR fetch venue first
+    if (supabaseAvailable) {
+        // Fetch current venue
+        const { data: b } = await supabase.from('court_bookings').select('venue, venueName').eq('id', bookingId).single();
+        if(!b) return { success: false, message: 'Booking not found' };
+        const vName = b.venueName || (b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall');
+        const formattedTime = `${vName} | ${newTime}` + (newEndTime ? ` – ${newEndTime}` : '');
+        
+        const { error } = await supabase.from('court_bookings')
+            .update({ date: newDate, time: formattedTime, status: newStatus || 'pending' })
+            .eq('id', bookingId);
+        return { success: !error, message: error ? error.message : 'Booking rescheduled' };
+    } else {
+        const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+        const index = bookings.findIndex(bk => bk.id === bookingId);
+        if (index === -1) return { success: false, message: 'Booking not found' };
+        
+        const vName = bookings[index].venueName || (bookings[index].venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall');
+        const formattedTime = `${vName} | ${newTime}` + (newEndTime ? ` – ${newEndTime}` : '');
+        
+        bookings[index].date = newDate;
+        bookings[index].time = formattedTime;
+        bookings[index].status = newStatus || 'pending';
+        localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        return { success: true, message: 'Booking rescheduled' };
     }
 }
 

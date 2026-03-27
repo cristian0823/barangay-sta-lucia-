@@ -1430,7 +1430,7 @@
             const bookings = await getCourtBookings(); const events = await getEvents();
             const approvedEvents = events.filter(e => e.status === 'approved');
             const eventDates = {}; approvedEvents.forEach(e => { eventDates[e.date] = e; });
-            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'rejected' && b.venue === selectedVenue);
+            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' && b.venue === selectedVenue);
             const bookedDates = venueBookings.map(b => b.date);
             grid.innerHTML = '';
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -1539,7 +1539,13 @@
 
             // Hide form by default
             document.getElementById('dsBookingForm').classList.add('hidden');
-            document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+            if (window.rescheduleState && window.rescheduleState.active) {
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Reschedule Here</span>';
+                document.getElementById('dsBookingForm').classList.remove('hidden'); // auto open
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>▲ Hide Form</span>';
+            } else {
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+            }
 
             // Show modal
             const modal = document.getElementById('dayScheduleModal');
@@ -1560,7 +1566,7 @@
 
             const dayBookings = allBookings.filter(b =>
                 b.date === dateStr &&
-                b.status !== 'cancelled' && b.status !== 'rejected' &&
+                b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' &&
                 (b.venue === venue || b.venueName === venueLabel)
             );
             const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
@@ -1625,7 +1631,7 @@
                 let taken = false;
 
                 for (const b of allBookings) {
-                    if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' &&
+                    if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' &&
                         (b.venue === venue || b.venueName === venueLabel)) {
                         let tRange = b.timeRange || b.time;
                         if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
@@ -1656,7 +1662,11 @@
             modal.classList.remove('flex');
             document.getElementById('dsBookingForm').reset();
             document.getElementById('dsBookingForm').classList.add('hidden');
-            document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+            if (window.rescheduleState && window.rescheduleState.active) {
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Reschedule Here</span>';
+            } else {
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+            }
         }
 
         function toggleDsForm() {
@@ -1667,7 +1677,7 @@
                 btn.innerHTML = '<span>▲ Hide Form</span>';
             } else {
                 form.classList.add('hidden');
-                btn.innerHTML = '<span>＋ Add Court Booking</span>';
+                btn.innerHTML = (window.rescheduleState && window.rescheduleState.active) ? '<span>🔄 Reschedule Here</span>' : '<span>＋ Add Court Booking</span>';
             }
         }
 
@@ -1683,22 +1693,32 @@
             const name = document.getElementById('dsName').value;
             const purpose = document.getElementById('dsPurpose').value;
 
-            const result = await bookCourt({
-                user_id: user.id,
-                username: name,
-                date,
-                time: startTime,
-                end_time: endTime,
-                venue,
-                venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
-                purpose,
-                status: 'pending'
-            });
+            let result;
+
+            if (window.rescheduleState && window.rescheduleState.active) {
+                result = await updateCourtBookingDateTime(window.rescheduleState.bookingId, date, startTime, endTime, 'pending');
+                if (result.success) {
+                    window.rescheduleState = { active: false, bookingId: null };
+                    showToast('Booking successfully rescheduled!', 'success');
+                }
+            } else {
+                result = await bookCourt({
+                    user_id: user.id,
+                    username: name,
+                    date,
+                    time: startTime,
+                    end_time: endTime,
+                    venue,
+                    venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                    purpose,
+                    status: 'pending'
+                });
+                if (result.success) showToast('Booking submitted!', 'success');
+            }
 
             btn.disabled = false; btn.innerHTML = '✅ Confirm Booking';
 
             if (result.success) {
-                showToast('Booking submitted!', 'success');
                 document.getElementById('dsPurpose').value = '';
                 document.getElementById('dsStartTime').value = '';
                 document.getElementById('dsEndTime').value = '';
@@ -1914,6 +1934,11 @@
             const cancelBtn = document.getElementById('rcmCancelBtn');
             if (cancelBtn) { cancelBtn.disabled = true; cancelBtn.textContent = 'Processing...'; }
             
+            // Actually cancel the booking
+            if (curCancelNotif.meta && curCancelNotif.meta.booking_id) {
+                await cancelCourtBooking(curCancelNotif.meta.booking_id);
+            }
+            
             await markUserNotificationAsRead(curCancelNotif.id);
             if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Yes, Cancel'; }
             if (cancelBtn) { cancelBtn.disabled = false; cancelBtn.textContent = 'Cancel Completely'; }
@@ -1940,7 +1965,9 @@
             const venueMeta = curCancelNotif.meta?.venue || '';
             const venueKey = venueMeta.includes('Basketball') ? 'basketball' : 'multipurpose';
             
+            window.rescheduleState = { active: true, bookingId: curCancelNotif.meta.booking_id };
             userCancellationNotifications.shift();
+            
             const modal = document.getElementById('rescheduleCancelModal');
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
             
@@ -1948,7 +1975,7 @@
             switchVenue(venueKey);
             
             setTimeout(() => {
-                showToast('Please select a new date for your booking.', 'info');
+                showToast('Reschedule Mode: Please select a new date and time for your booking.', 'info');
             }, 300);
             
             showNextNotification();

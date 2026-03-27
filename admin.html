@@ -3287,20 +3287,57 @@
                 adminSelectedDate = dateStr;
                 renderAdminCalendar();
 
-                // Show the form and hide the empty state
-                const emptyState = document.getElementById('adminEventEmptyState');
-                const form = document.getElementById('adminSidebarEventForm');
-                const dateDisplay = document.getElementById('adminEventSelectedDateDisplay');
-                const hiddenDateInput = document.getElementById('adminSidebarEventDate');
+                // Format and display date for modal
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = new Date(dateStr).toLocaleDateString('en-US', options);
 
-                if (emptyState && form && dateDisplay && hiddenDateInput) {
-                    emptyState.style.display = 'none';
-                    form.style.display = 'flex';
+                const actionModal = document.getElementById('adminEventActionModal');
+                const actionModalText = document.getElementById('actionModalDateText');
+                if(actionModal && actionModalText) {
+                    actionModalText.textContent = formattedDate;
+                    actionModal.style.display = 'flex';
+                }
+            }
 
-                    // Format and display date
-                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                    dateDisplay.textContent = new Date(dateStr).toLocaleDateString('en-US', options);
-                    hiddenDateInput.value = dateStr;
+            function openAdminCancelBookingsEventFlow() {
+                document.getElementById('adminEventActionModal').style.display = 'none';
+                
+                const modal = document.getElementById('adminDayScheduleModal');
+                const formWrap = document.getElementById('adsEventFormWrap');
+                const form = document.getElementById('adsEventForm');
+                const btn = document.getElementById('adsToggleFormBtn');
+                
+                if (modal) modal.style.display = 'flex';
+                if (form) form.dataset.massCancel = 'true';
+                if (formWrap) formWrap.style.display = 'block';
+                if (btn) btn.innerHTML = '<span>▲ Hide Form (Cancelling Bookings)</span>';
+                
+                const dateInput = document.getElementById('adsDate');
+                if (dateInput) dateInput.value = adminSelectedDate;
+                
+                if (typeof refreshAdminDaySchedule === 'function') {
+                    refreshAdminDaySchedule(adminSelectedDate, (document.getElementById('adminSelectedVenue') || {}).value || 'basketball');
+                }
+            }
+
+            function openAdminJustAddEventFlow() {
+                document.getElementById('adminEventActionModal').style.display = 'none';
+                
+                const modal = document.getElementById('adminDayScheduleModal');
+                const formWrap = document.getElementById('adsEventFormWrap');
+                const form = document.getElementById('adsEventForm');
+                const btn = document.getElementById('adsToggleFormBtn');
+                
+                if (modal) modal.style.display = 'flex';
+                if (form) form.dataset.massCancel = 'false';
+                if (formWrap) formWrap.style.display = 'block';
+                if (btn) btn.innerHTML = '<span>▲ Hide Form</span>';
+                
+                const dateInput = document.getElementById('adsDate');
+                if (dateInput) dateInput.value = adminSelectedDate;
+                
+                if (typeof refreshAdminDaySchedule === 'function') {
+                    refreshAdminDaySchedule(adminSelectedDate, (document.getElementById('adminSelectedVenue') || {}).value || 'basketball');
                 }
             }
 
@@ -5202,7 +5239,8 @@
                     status: 'approved'
                 };
 
-                const result = await createEvent(eventData);
+                const massCancel = this.dataset.massCancel === 'true';
+                const result = await createEvent(eventData, massCancel);
                 btn.disabled = false; btn.textContent = '🎉 Schedule Event';
 
                 if (result.success) {
@@ -5638,6 +5676,31 @@
                         style="width:100%;padding:12px;background:#fff;border:1.5px solid #d1d5db;border-radius:12px;font-weight:700;color:#4b5563;cursor:pointer;font-family:inherit;font-size:14px;transition:background 0.2s;"
                         onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'">
                         Close Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ACTION MODAL FOR CALENDAR CLICK (Bookings vs Event) -->
+        <!-- ========================================== -->
+        <div id="adminEventActionModal"
+            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:#fff;border-radius:24px;width:100%;max-width:480px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);padding:32px;">
+                <h3 style="font-size:22px;font-weight:800;color:#111;margin-bottom:12px;text-align:center;">📅 Date Selected</h3>
+                <p style="font-size:15px;color:#4b5563;margin-bottom:28px;text-align:center;">What would you like to do on <strong id="actionModalDateText"></strong>?</p>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                    <button onclick="openAdminCancelBookingsEventFlow()"
+                        style="padding:16px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        ⚠️ Cancel Existing Bookings & Add Event
+                    </button>
+                    <button onclick="openAdminJustAddEventFlow()"
+                        style="padding:16px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;box-shadow:0 4px 12px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        🎉 Just Add an Event
+                    </button>
+                    <button onclick="document.getElementById('adminEventActionModal').style.display='none'"
+                        style="padding:14px;background:#f3f4f6;color:#4b5563;border:none;border-radius:14px;font-weight:600;cursor:pointer;font-family:inherit;font-size:15px;margin-top:8px;transition:all 0.2s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                        Cancel
                     </button>
                 </div>
             </div>
