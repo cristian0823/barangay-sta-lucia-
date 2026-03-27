@@ -3721,8 +3721,8 @@
 
                 noBookings.style.display = 'none';
 
-                // Sort by date (upcoming first)
-                bookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+                // Sort newest first (by id descending)
+                bookings.sort((a, b) => (b.id || 0) - (a.id || 0));
 
                 container.innerHTML = bookings.map(booking => {
                     const statusClass = booking.status === 'cancelled'

@@ -1516,9 +1516,12 @@
                     getMyConcerns ? getMyConcerns() : Promise.resolve([])
                 ]);
                 const uid = String(user.id);
-                const myBookings = allBookings.filter(b =>
-                    String(b.user_id) === uid || String(b.userId) === uid
-                );
+                const uname = (user.username || user.name || '').toLowerCase();
+                const myBookings = allBookings.filter(b => {
+                    if (String(b.user_id) === uid || String(b.userId) === uid) return true;
+                    const bName = (b.userName || b.username || '').toLowerCase();
+                    return uname && bName && bName.includes(uname);
+                });
                 const activeBookings = myBookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
                 const activeBorrowings = (allBorrowings || []).filter(b => b.status === 'pending' || b.status === 'approved').length;
                 const pendingConcerns = (allConcerns || []).filter(c => c.status === 'pending').length;
