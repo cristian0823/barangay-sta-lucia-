@@ -381,4 +381,36 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- ============================================================
 -- STEP 7: ENABLE REALTIME SYNC FOR USER DASHBOARDS
 -- ============================================================
-ALTER PUBLICATION supabase_realtime ADD TABLE events;
+DO $$ BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE events;
+EXCEPTION WHEN sqlstate '42710' THEN NULL; END $$;
+
+
+-- ============================================================
+-- STEP 8: USER NOTIFICATIONS (Admin Cancellation Alerts)
+-- ============================================================
+
+-- Table for notifying residents when their booking is cancelled by admin
+CREATE TABLE IF NOT EXISTS user_notifications (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id text NOT NULL,
+    type text NOT NULL DEFAULT 'booking_cancelled',
+    message text,
+    meta jsonb,
+    is_read boolean DEFAULT false,
+    created_at timestamptz DEFAULT now()
+);
+
+-- Index for fast unread notification lookups per user
+CREATE INDEX IF NOT EXISTS idx_user_notifications_user_unread
+    ON user_notifications(user_id, is_read)
+    WHERE is_read = false;
+
+-- Add admin_comment column to court_bookings (used when admin cancels a booking)
+ALTER TABLE court_bookings
+    ADD COLUMN IF NOT EXISTS admin_comment text;
+
+-- Enable realtime sync for notifications
+DO $$ BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE user_notifications;
+EXCEPTION WHEN sqlstate '42710' THEN NULL; END $$;
