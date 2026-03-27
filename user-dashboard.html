@@ -270,10 +270,10 @@
                     <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
                 </div>
                 
-                <div class="flex flex-col xl:flex-row gap-8 items-start">
+                <div class="flex flex-col gap-8 items-stretch">
                     
                     <!-- Form Secton -->
-                    <div class="w-full xl:w-1/3 glass-card overflow-hidden shrink-0">
+                    <div class="w-full glass-card overflow-hidden">
                         <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-5 border-b" style="border-color: var(--border-color);">
                             <h3 class="text-base font-extrabold text-white">📝 New Report</h3>
                             <p class="text-xs text-amber-100 mt-0.5">Please provide details about your concern.</p>
@@ -324,7 +324,7 @@
                     </div>
 
                     <!-- History Section -->
-                    <div class="flex-1 w-full glass-card overflow-hidden">
+                    <div class="w-full glass-card overflow-hidden">
                         <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);">
                             <h3 class="text-base font-bold" style="color: var(--text-main);">📋 Report History</h3>
                             <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
@@ -389,10 +389,45 @@
             <!-- PANEL 5: EVENTS -->
             <div id="panel-events" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2">🎉 Upcoming Court Events</h2>
+                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2">🎉 Court Events</h2>
                     <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
                 </div>
-                <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"><p class="text-gray-500 italic col-span-full">Loading events...</p></div>
+
+                <!-- Events Calendar -->
+                <div class="glass-card p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="eventsCalendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
+                        <div class="flex gap-2">
+                            <button onclick="changeEventsMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">←</button>
+                            <button onclick="changeEventsMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">→</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 mb-3">
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
+                    </div>
+                    <div id="eventsCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
+                    <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-purple-200 border border-purple-400 rounded"></div>Has Event</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>No Events</div>
+                    </div>
+                </div>
+
+                <!-- Events Schedule List -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 Schedule Overview</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">All upcoming official barangay events.</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="upcomingEventsContainer"><p class="text-gray-500 italic text-sm">Loading events...</p></div>
+                    </div>
+                </div>
             </div>
 
             <!-- PANEL 6: SETTINGS -->
@@ -924,26 +959,37 @@
             try {
                 if (typeof getPendingCancellationNotifications !== 'function') return;
                 const notifs = await getPendingCancellationNotifications(user.id);
-                const conflicts = notifs.filter(n => n.type === 'event_conflict');
+                // Also check event_conflict for legacy, but primarily booking_cancelled
+                const conflicts = notifs.filter(n => n.type === 'booking_cancelled' || n.type === 'event_conflict');
                 if (conflicts.length === 0) return;
                 _activeConflictNotif = conflicts[0];
                 const meta = _activeConflictNotif.meta || {};
                 const msgEl = document.getElementById('conflictNotifMsg');
                 if (msgEl) msgEl.textContent = _activeConflictNotif.message ||
-                    `Your court booking on ${meta.date || 'a scheduled date'} conflicts with an official event: "${meta.event_title || 'Barangay Event'}". Please reschedule or cancel your booking.`;
+                    `Your court booking on ${meta.date || 'a scheduled date'} was cancelled due to an official event: "${meta.event_title || 'Barangay Event'}". Please reschedule.`;
                 const modal = document.getElementById('conflictNotifModal');
                 if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
             } catch(err) { console.warn('Conflict notification check failed:', err); }
         }
 
         function handleConflictReschedule() {
-            // Close the conflict modal, mark as read, open Court Booking panel
+            // Close the conflict modal
             const modal = document.getElementById('conflictNotifModal');
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            
+            // Save metadata for 1-click reschedule auto-fill
+            if (_activeConflictNotif && _activeConflictNotif.meta) {
+                 window.pendingRescheduleData = _activeConflictNotif.meta;
+                 console.log("Reschedule Data Saved:", window.pendingRescheduleData);
+            }
+            
+            // Mark as read
             if (_activeConflictNotif && typeof markUserNotificationAsRead === 'function') {
                 markUserNotificationAsRead(_activeConflictNotif.id);
             }
             _activeConflictNotif = null;
+            
+            // Navigate to booking panel
             showPanel('booking');
             showToast('Please pick a new date to reschedule your booking.', 'success');
         }
@@ -962,10 +1008,13 @@
             if (!_activeConflictNotif) return;
             const meta = _activeConflictNotif.meta || {};
             const bookingId = meta.booking_id;
-            if (bookingId && typeof cancelCourtBooking === 'function') {
-                const res = await cancelCourtBooking(bookingId);
-                if (!res.success) { showToast('Could not cancel booking: ' + res.message, 'error'); return; }
+            
+            // Completely delete the booking so it is entirely wiped from the system
+            if (bookingId && typeof deleteCourtBooking === 'function') {
+                const res = await deleteCourtBooking(bookingId);
+                // We ignore 'not found' errors since the admin might have already deleted it natively
             }
+            
             if (typeof markUserNotificationAsRead === 'function') {
                 await markUserNotificationAsRead(_activeConflictNotif.id);
             }
@@ -1575,12 +1624,26 @@
 
             // Hide form by default
             document.getElementById('dsBookingForm').classList.add('hidden');
-            if (window.rescheduleState && window.rescheduleState.active) {
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Reschedule Here</span>';
+            if (window.pendingRescheduleData) {
+                const m = window.pendingRescheduleData;
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Confirm Reschedule</span>';
                 document.getElementById('dsBookingForm').classList.remove('hidden'); // auto open
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>▲ Hide Form</span>';
+                
+                document.getElementById('dsPurpose').value = "Rescheduled: " + (m.event_title || ""); 
+                
+                let banner = document.getElementById('dsRescheduleBanner');
+                if(!banner) {
+                    banner = document.createElement('div');
+                    banner.id = 'dsRescheduleBanner';
+                    banner.className = 'bg-blue-50 text-blue-800 p-3 rounded-lg mb-4 text-sm font-bold border border-blue-200';
+                    document.getElementById('dsBookingForm').prepend(banner);
+                }
+                banner.innerHTML = `🔄 Rescheduling Mode Active:<br><span class="text-xs font-normal text-blue-700">Original Time: ${m.original_time}. Review time and confirm.</span>`;
+                banner.classList.remove('hidden');
             } else {
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+                let banner = document.getElementById('dsRescheduleBanner');
+                if(banner) banner.classList.add('hidden');
             }
 
             // Show modal
@@ -1698,8 +1761,8 @@
             modal.classList.remove('flex');
             document.getElementById('dsBookingForm').reset();
             document.getElementById('dsBookingForm').classList.add('hidden');
-            if (window.rescheduleState && window.rescheduleState.active) {
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Reschedule Here</span>';
+            if (window.pendingRescheduleData) {
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Confirm Reschedule</span>';
             } else {
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
             }
@@ -1713,7 +1776,7 @@
                 btn.innerHTML = '<span>▲ Hide Form</span>';
             } else {
                 form.classList.add('hidden');
-                btn.innerHTML = (window.rescheduleState && window.rescheduleState.active) ? '<span>🔄 Reschedule Here</span>' : '<span>＋ Add Court Booking</span>';
+                btn.innerHTML = (window.pendingRescheduleData) ? '<span>🔄 Confirm Reschedule</span>' : '<span>＋ Add Court Booking</span>';
             }
         }
 
@@ -1731,10 +1794,23 @@
 
             let result;
 
-            if (window.rescheduleState && window.rescheduleState.active) {
-                result = await updateCourtBookingDateTime(window.rescheduleState.bookingId, date, startTime, endTime, 'pending');
+            if (window.pendingRescheduleData) {
+                // Since the original was completely deleted, rescheduling is submitting a fresh booking
+                result = await bookCourt({
+                    user_id: user.id,
+                    username: name,
+                    date,
+                    time: startTime,
+                    end_time: endTime,
+                    venue,
+                    venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                    purpose,
+                    status: 'pending'
+                });
                 if (result.success) {
-                    window.rescheduleState = { active: false, bookingId: null };
+                    window.pendingRescheduleData = null;
+                    let banner = document.getElementById('dsRescheduleBanner');
+                    if(banner) banner.classList.add('hidden');
                     showToast('Booking successfully rescheduled!', 'success');
                 }
             } else {
@@ -1811,26 +1887,90 @@
         // ==========================================
         // 5. EVENTS
         // ==========================================
+        let eventsCurrentMonth = new Date().getMonth();
+        let eventsCurrentYear = new Date().getFullYear();
+        let _allEventsCache = [];
+
+        async function changeEventsMonth(delta) {
+            eventsCurrentMonth += delta;
+            if (eventsCurrentMonth > 11) { eventsCurrentMonth = 0; eventsCurrentYear++; }
+            else if (eventsCurrentMonth < 0) { eventsCurrentMonth = 11; eventsCurrentYear--; }
+            await loadEventsView();
+        }
+
         async function loadEventsView() {
-            const container = document.getElementById('upcomingEventsContainer');
             const eventsRaw = await getEvents();
-            const events = eventsRaw.filter(e => e.status === 'approved');
+            _allEventsCache = eventsRaw.filter(e => e.status === 'approved');
+
+            // --- Render Calendar ---
+            const grid = document.getElementById('eventsCalendarGrid');
+            const monthTitle = document.getElementById('eventsCalendarMonthTitle');
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            monthTitle.textContent = months[eventsCurrentMonth] + ' ' + eventsCurrentYear;
+
+            const eventDateMap = {};
+            _allEventsCache.forEach(e => { if (!eventDateMap[e.date]) eventDateMap[e.date] = []; eventDateMap[e.date].push(e); });
+
+            grid.innerHTML = '';
+            const firstDay = new Date(eventsCurrentYear, eventsCurrentMonth, 1).getDay();
+            const daysInMonth = new Date(eventsCurrentYear, eventsCurrentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
-            const upcoming = events.filter(e => new Date(e.date + 'T00:00:00') >= today);
-            if (upcoming.length === 0) { container.innerHTML = '<div class="col-span-full py-10 text-center"><p class="text-gray-500">No upcoming events.</p></div>'; return; }
+
+            for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = eventsCurrentYear + '-' + String(eventsCurrentMonth+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+                const dateObj = new Date(eventsCurrentYear, eventsCurrentMonth, day);
+                const hasEvent = eventDateMap[dateStr];
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'p-3 rounded-lg text-center font-bold text-sm transition transform ';
+
+                if (dateObj < today) {
+                    dayDiv.className += 'bg-gray-100 text-gray-400 cursor-default';
+                } else if (hasEvent) {
+                    dayDiv.className += 'bg-purple-200 text-purple-900 border-2 border-purple-500 cursor-pointer hover:bg-purple-300 hover:scale-105';
+                    dayDiv.title = hasEvent.map(e => e.title).join(', ');
+                    dayDiv.onclick = () => scrollToEventDate(dateStr);
+                } else {
+                    dayDiv.className += 'bg-gray-50 text-gray-400 cursor-default';
+                }
+
+                if (dateObj.getTime() === today.getTime()) dayDiv.className += ' ring-2 ring-purple-400 ring-offset-2';
+                dayDiv.textContent = day;
+                grid.appendChild(dayDiv);
+            }
+
+            // --- Render Schedule List ---
+            const container = document.getElementById('upcomingEventsContainer');
+            const today2 = new Date(); today2.setHours(0,0,0,0);
+            const upcoming = _allEventsCache.filter(e => new Date(e.date + 'T00:00:00') >= today2);
             upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (upcoming.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 italic text-sm py-4">No upcoming events scheduled.</p>';
+                return;
+            }
+
             container.innerHTML = upcoming.map(e => {
-                const timeStr = e.end_time ? e.time + ' - ' + e.end_time : e.time;
-                return '<div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">' +
-                    '<div class="flex justify-between items-start mb-4"><span class="bg-white text-purple-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span></div>' +
-                    '<h3 class="text-2xl font-black mb-1 line-clamp-2">' + e.title + '</h3>' +
-                    '<p class="text-indigo-100 font-medium mb-4 text-sm flex items-center gap-1">📍 ' + e.location + '</p>' +
-                    '<div class="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">' +
-                    '<div class="flex items-center gap-2 mb-2"><span class="text-xl">📅</span><span class="font-bold">' + formatDate(e.date) + '</span></div>' +
-                    '<div class="flex items-center gap-2 mb-2"><span class="text-xl">⏰</span><span class="font-bold">' + timeStr + '</span></div>' +
-                    '<div class="flex items-center gap-2"><span class="text-xl">👤</span><span class="text-sm">By ' + e.organizer + '</span></div>' +
-                    '</div></div>';
+                const timeStr = e.end_time ? e.time + ' – ' + e.end_time : e.time;
+                return `<div class="event-list-item flex items-start gap-4 p-4 rounded-2xl border border-purple-100 bg-purple-50/60 dark:bg-purple-900/10 dark:border-purple-900/30 mb-3 hover:shadow-md transition" data-date="${e.date}">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex flex-col items-center justify-center shrink-0 shadow">
+                        <div class="text-xs font-bold uppercase opacity-80">${months[new Date(e.date+'T00:00:00').getMonth()].substring(0,3)}</div>
+                        <div class="text-2xl font-black leading-none">${new Date(e.date+'T00:00:00').getDate()}</div>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-extrabold text-purple-900 dark:text-purple-200 text-base">${e.title}</h4>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 font-medium mt-0.5">⏰ ${timeStr} &nbsp;&bull;&nbsp; 📍 ${e.location || 'Barangay Court'}</p>
+                        <p class="text-xs text-gray-500 mt-1">👤 Organized by ${e.organizer || 'Barangay Administration'}</p>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-200 text-purple-900 self-start whitespace-nowrap">Official Event</span>
+                </div>`;
             }).join('');
+        }
+
+        function scrollToEventDate(dateStr) {
+            const el = document.querySelector(`[data-date="${dateStr}"]`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
 

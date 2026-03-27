@@ -1421,29 +1421,6 @@ async function adminCancelBookingsForDay(date, venue, reason) {
     return { success: true, message: 'Bookings cancelled and users notified' };
 }
 
-async function getPendingCancellationNotifications(userId) {
-    const supabaseAvailable = await isSupabaseAvailable();
-    if (!supabaseAvailable) return [];
-    
-    const { data, error } = await supabase.from('user_notifications')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('type', 'booking_cancelled')
-        .eq('is_read', false)
-        .order('created_at', { ascending: false });
-        
-    if (error) { console.error('Error fetching notifications:', error); return []; }
-    return data || [];
-}
-
-async function markUserNotificationAsRead(id) {
-    const supabaseAvailable = await isSupabaseAvailable();
-    if (!supabaseAvailable) return false;
-    
-    const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('id', id);
-    return !error;
-}
-
 async function getAllUsers() {
     // First check if admin
     if (!isAdmin()) {
@@ -1610,11 +1587,8 @@ async function adminCancelOverlappingBookings(eventData) {
                 const eEnd = timeToMinutes(eTime);
                 
                 if (reqStart < eEnd && reqEnd > eStart) {
-                    await supabase.from('court_bookings').update({
-                        status: 'cancelled_by_admin',
-                        admin_comment: reason
-                    }).eq('id', b.id);
-                    await logActivity('Booking Cancelled by Admin', `Cancelled booking ID: ${b.id} due to event ${eventData.title}`);
+                    await supabase.from('court_bookings').delete().eq('id', b.id);
+                    await logActivity('Booking Cancelled by Admin', `Deleted booking ID: ${b.id} due to event ${eventData.title}`);
                     
                     const venueLabel = b.venue === 'basketball' || b.venueName === 'Basketball Court' ? 'Basketball Court' : 'Multi-Purpose Hall';
                     await supabase.from('user_notifications').insert([{
@@ -1640,9 +1614,8 @@ async function adminCancelOverlappingBookings(eventData) {
                 const eEnd = timeToMinutes(eTime);
                 
                 if (reqStart < eEnd && reqEnd > eStart) {
-                    b.status = 'cancelled_by_admin';
-                    b.adminComment = reason;
-                    logActivity('Booking Cancelled by Admin', `Cancelled booking ID: ${b.id} due to event ${eventData.title}`);
+                    b._markedForDeletion = true;
+                    logActivity('Booking Cancelled by Admin', `Deleted booking ID: ${b.id} due to event ${eventData.title}`);
                     
                     const venueLabel = b.venue === 'basketball' || b.venueName === 'Basketball Court' ? 'Basketball Court' : 'Multi-Purpose Hall';
                     const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
@@ -1659,6 +1632,7 @@ async function adminCancelOverlappingBookings(eventData) {
                 }
             }
         }
+        bookings = bookings.filter(b => !b._markedForDeletion);
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
     }
 }

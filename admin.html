@@ -3072,16 +3072,24 @@
                     for (const b of bookings) {
                         const uid = b.userId || b.user_id;
                         if (!uid) continue;
+                        
+                        // 1. Fully delete the conflicting booking from the database so it disappears completely
+                        await supabase.from('court_bookings').delete().eq('id', b.id);
+                        
+                        // 2. Insert notification so the user gets the popup
                         await supabase.from('user_notifications').insert([{
                             user_id: uid,
-                            type: 'event_conflict',
-                            message: `Your court booking on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been affected by an official event: "${eventTitle}". Please reschedule or cancel your booking.`,
-                            meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, event_title: eventTitle },
+                            type: 'booking_cancelled',
+                            message: `Your court booking on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to an official event: "${eventTitle}". Please reschedule.`,
+                            meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventTitle },
                             is_read: false
                         }]);
                     }
-                    if (btn) { btn.textContent = '✅ Notifications Sent!'; btn.style.background = '#16a34a'; }
-                    await logActivity('Event Conflict Notified', `Notified ${bookings.length} user(s) about conflict with event: ${eventTitle}`);
+                    if (btn) { btn.textContent = '✅ Cancelled & Notified!'; btn.style.background = '#16a34a'; }
+                    await logActivity('Event Conflict Managed', `Cancelled and notified ${bookings.length} user(s) due to conflict with event: ${eventTitle}`);
+                    
+                    // Re-render calendar so the deleted bookings disappear instantly
+                    await renderAdminCalendar();
                 } catch(err) {
                     if (btn) { btn.textContent = '❌ Failed'; btn.disabled = false; }
                     console.error('Notify error:', err);
