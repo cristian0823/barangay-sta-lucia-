@@ -413,8 +413,9 @@
                     </div>
                     <div id="eventsCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
                     <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>No Events</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-purple-200 border border-purple-400 rounded"></div>Has Event</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>No Events</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
                     </div>
                 </div>
 
@@ -1923,22 +1924,32 @@
                 const dateObj = new Date(eventsCurrentYear, eventsCurrentMonth, day);
                 const hasEvent = eventDateMap[dateStr];
                 const dayDiv = document.createElement('div');
+
+                // Base class — matches Court Booking exactly
                 dayDiv.className = 'p-3 rounded-lg text-center font-bold text-sm transition transform ';
 
                 if (dateObj < today) {
-                    dayDiv.className += 'bg-gray-100 text-gray-400 cursor-default';
+                    // Past — greyed out, no click
+                    dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed';
                 } else if (hasEvent) {
-                    dayDiv.className += 'bg-purple-200 text-purple-900 border-2 border-purple-500 cursor-pointer hover:bg-purple-300 hover:scale-105';
-                    dayDiv.title = hasEvent.map(e => e.title).join(', ');
+                    // Has an official Barangay event — purple highlight
+                    dayDiv.className += 'bg-purple-200 text-purple-900 border-2 border-purple-500 cursor-pointer opacity-90 hover:bg-purple-300 hover:scale-105';
+                    dayDiv.title = 'Event: ' + hasEvent.map(e => e.title).join(', ');
                     dayDiv.onclick = () => scrollToEventDate(dateStr);
                 } else {
-                    dayDiv.className += 'bg-gray-50 text-gray-400 cursor-default';
+                    // Available future day — match Court Booking "available" style
+                    dayDiv.className += 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200 cursor-default hover:scale-105';
                 }
 
-                if (dateObj.getTime() === today.getTime()) dayDiv.className += ' ring-2 ring-purple-400 ring-offset-2';
+                // Today ring — matches Court Booking
+                if (dateObj.getTime() === today.getTime()) {
+                    dayDiv.className += ' ring-2 ring-purple-500 ring-offset-2';
+                }
+
                 dayDiv.textContent = day;
                 grid.appendChild(dayDiv);
             }
+
 
             // --- Render Schedule List ---
             const container = document.getElementById('upcomingEventsContainer');
