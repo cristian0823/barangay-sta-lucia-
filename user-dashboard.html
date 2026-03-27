@@ -1489,8 +1489,8 @@
                 myContainer.innerHTML = '<p class="text-gray-500 italic py-4 col-span-full">You have no active reservations.</p>'; 
             } else {
                 activeBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
-                // Count cancelled bookings to enforce limit
-                const cancelledCount = myBookings.filter(b => b.status === 'cancelled').length;
+                // Only count bookings the USER cancelled (not admin-cancelled)
+                const cancelledCount = myBookings.filter(b => b.status === 'cancelled' && !b.admin_comment).length;
                 const atLimit = cancelledCount >= 3;
                 myContainer.innerHTML = activeBookings.map(b => {
                     const statusClass = b.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
@@ -1769,7 +1769,7 @@
             const allBookings = await getCourtBookings();
             const uid = String(user.id);
             const myBookings = allBookings.filter(b => String(b.user_id) === uid || String(b.userId) === uid);
-            const cancelledCount = myBookings.filter(b => b.status === 'cancelled').length;
+            const cancelledCount = myBookings.filter(b => b.status === 'cancelled' && !b.admin_comment).length;
             if (cancelledCount >= 3) {
                 showToast('You have reached the 3-cancellation limit. You can book again tomorrow.', 'error');
                 return;
