@@ -2008,7 +2008,7 @@
         }
 
         function showNextNotification() {
-            const modal = document.getElementById('conflictNotifModal');
+            const modal = document.getElementById('rescheduleCancelModal');
             if (!modal) return;
             if (userCancellationNotifications.length === 0) {
                 modal.classList.add('hidden');
@@ -2016,45 +2016,30 @@
                 return;
             }
             curCancelNotif = userCancellationNotifications[0];
-            const msgEl = document.getElementById('conflictNotifMsg');
+            const msgEl = document.getElementById('rcmMessage');
             if (msgEl) msgEl.textContent = curCancelNotif.message;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
 
-        function handleConflictCancel() {
-            const rcm = document.getElementById('conflictNotifModal');
-            if (rcm) { rcm.classList.add('hidden'); rcm.classList.remove('flex'); }
-            
-            const ccm = document.getElementById('conflictConfirmModal');
-            if (ccm) { ccm.classList.remove('hidden'); ccm.classList.add('flex'); }
-        }
-
-        function backToConflictChoice() {
-            const ccm = document.getElementById('conflictConfirmModal');
-            if (ccm) { ccm.classList.add('hidden'); ccm.classList.remove('flex'); }
-            
-            const rcm = document.getElementById('conflictNotifModal');
-            if (rcm) { rcm.classList.remove('hidden'); rcm.classList.add('flex'); }
-        }
-
-        async function confirmCancelBooking() {
+        // ONE-CLICK DISMISSAL (skips confirmation modal!)
+        async function confirmCancelCompletely() {
             if (!curCancelNotif) return;
-            const confirmBtn = document.querySelector('#conflictConfirmModal button[onclick="confirmCancelBooking()"]');
-            if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'Processing...'; }
+            const cancelBtn = document.getElementById('rcmCancelBtn');
+            if (cancelBtn) { cancelBtn.disabled = true; cancelBtn.textContent = 'Processing...'; }
             
-            // Actually cancel the booking completely
+            // Note: Since Admin already 'cancelled' it, it's virtually gone anyway, but we execute the physical cleanup
             if (curCancelNotif.meta && curCancelNotif.meta.booking_id) {
                 await deleteCourtBooking(curCancelNotif.meta.booking_id);
             }
             
             await markUserNotificationAsRead(curCancelNotif.id);
-            if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Yes, Cancel'; }
+            if (cancelBtn) { cancelBtn.disabled = false; cancelBtn.textContent = 'Cancel Completely'; }
             
-            showToast('Booking cancelled completely.', 'info');
+            showToast('Booking completely cancelled. Notification dismissed.', 'info');
             
-            const ccm = document.getElementById('conflictConfirmModal');
-            if (ccm) { ccm.classList.add('hidden'); ccm.classList.remove('flex'); }
+            const rcm = document.getElementById('rescheduleCancelModal');
+            if (rcm) { rcm.classList.add('hidden'); rcm.classList.remove('flex'); }
             
             userCancellationNotifications.shift();
             showNextNotification();
@@ -2062,13 +2047,13 @@
             loadBookingView();
         }
 
-        async function handleConflictReschedule() {
+        async function handleReschedule() {
             if (!curCancelNotif) return;
-            const btn = document.getElementById('conflictRescheduleBtn');
+            const btn = document.getElementById('rcmRescheduleBtn');
             if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
             
             await markUserNotificationAsRead(curCancelNotif.id);
-            if (btn) { btn.disabled = false; btn.innerHTML = '📅 Reschedule My Booking'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '📅 Reschedule'; }
             
             const venueMeta = (curCancelNotif.meta && curCancelNotif.meta.venue) ? curCancelNotif.meta.venue : '';
             const venueKey = venueMeta.includes('Multi') ? 'multipurpose' : 'basketball';
@@ -2076,9 +2061,10 @@
             window.pendingRescheduleData = curCancelNotif.meta;
             userCancellationNotifications.shift();
             
-            const modal = document.getElementById('conflictNotifModal');
+            const modal = document.getElementById('rescheduleCancelModal');
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
             
+            // Immediately navigate the user directly to the booking calendar
             showPanel('booking');
             switchVenue(venueKey);
             
@@ -2091,6 +2077,21 @@
 
         // Trigger on load
         setTimeout(checkPendingNotifications, 500);
+
+        // Real-time live flow: Wait for new notifications immediately
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
+                supabase
+                    .channel('live-notifications')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_notifications' }, payload => {
+                        const newR = payload.new;
+                        if (window.user && newR && String(newR.user_id) === String(window.user.id)) {
+                            checkPendingNotifications();
+                        }
+                    })
+                    .subscribe();
+            }
+        });
 
     </script>
     
