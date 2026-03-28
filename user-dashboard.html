@@ -2008,7 +2008,7 @@
         }
 
         function showNextNotification() {
-            const modal = document.getElementById('rescheduleCancelModal');
+            const modal = document.getElementById('conflictNotifModal');
             if (!modal) return;
             if (userCancellationNotifications.length === 0) {
                 modal.classList.add('hidden');
@@ -2016,47 +2016,44 @@
                 return;
             }
             curCancelNotif = userCancellationNotifications[0];
-            const msgEl = document.getElementById('rcmMessage');
+            const msgEl = document.getElementById('conflictNotifMsg');
             if (msgEl) msgEl.textContent = curCancelNotif.message;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
 
-        function confirmCancelCompletely() {
-            const rcm = document.getElementById('rescheduleCancelModal');
+        function handleConflictCancel() {
+            const rcm = document.getElementById('conflictNotifModal');
             if (rcm) { rcm.classList.add('hidden'); rcm.classList.remove('flex'); }
             
-            const ccm = document.getElementById('cancelConfirmModal');
+            const ccm = document.getElementById('conflictConfirmModal');
             if (ccm) { ccm.classList.remove('hidden'); ccm.classList.add('flex'); }
         }
 
-        function cancelConfirmationNo() {
-            const ccm = document.getElementById('cancelConfirmModal');
+        function backToConflictChoice() {
+            const ccm = document.getElementById('conflictConfirmModal');
             if (ccm) { ccm.classList.add('hidden'); ccm.classList.remove('flex'); }
             
-            const rcm = document.getElementById('rescheduleCancelModal');
+            const rcm = document.getElementById('conflictNotifModal');
             if (rcm) { rcm.classList.remove('hidden'); rcm.classList.add('flex'); }
         }
 
-        async function handleCancelCompletely() {
+        async function confirmCancelBooking() {
             if (!curCancelNotif) return;
-            const confirmBtn = document.querySelector('#cancelConfirmModal button.bg-red-500');
+            const confirmBtn = document.querySelector('#conflictConfirmModal button[onclick="confirmCancelBooking()"]');
             if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'Processing...'; }
-            const cancelBtn = document.getElementById('rcmCancelBtn');
-            if (cancelBtn) { cancelBtn.disabled = true; cancelBtn.textContent = 'Processing...'; }
             
-            // Actually cancel the booking
+            // Actually cancel the booking completely
             if (curCancelNotif.meta && curCancelNotif.meta.booking_id) {
-                await cancelCourtBooking(curCancelNotif.meta.booking_id);
+                await deleteCourtBooking(curCancelNotif.meta.booking_id);
             }
             
             await markUserNotificationAsRead(curCancelNotif.id);
             if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Yes, Cancel'; }
-            if (cancelBtn) { cancelBtn.disabled = false; cancelBtn.textContent = 'Cancel Completely'; }
             
             showToast('Booking cancelled completely.', 'info');
             
-            const ccm = document.getElementById('cancelConfirmModal');
+            const ccm = document.getElementById('conflictConfirmModal');
             if (ccm) { ccm.classList.add('hidden'); ccm.classList.remove('flex'); }
             
             userCancellationNotifications.shift();
@@ -2065,28 +2062,28 @@
             loadBookingView();
         }
 
-        async function handleReschedule() {
+        async function handleConflictReschedule() {
             if (!curCancelNotif) return;
-            const btn = document.getElementById('rcmRescheduleBtn');
+            const btn = document.getElementById('conflictRescheduleBtn');
             if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
             
             await markUserNotificationAsRead(curCancelNotif.id);
-            if (btn) { btn.disabled = false; btn.textContent = 'Reschedule'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '📅 Reschedule My Booking'; }
             
-            const venueMeta = curCancelNotif.meta?.venue || '';
-            const venueKey = venueMeta.includes('Basketball') ? 'basketball' : 'multipurpose';
+            const venueMeta = (curCancelNotif.meta && curCancelNotif.meta.venue) ? curCancelNotif.meta.venue : '';
+            const venueKey = venueMeta.includes('Multi') ? 'multipurpose' : 'basketball';
             
-            window.rescheduleState = { active: true, bookingId: curCancelNotif.meta.booking_id };
+            window.pendingRescheduleData = curCancelNotif.meta;
             userCancellationNotifications.shift();
             
-            const modal = document.getElementById('rescheduleCancelModal');
+            const modal = document.getElementById('conflictNotifModal');
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
             
             showPanel('booking');
             switchVenue(venueKey);
             
             setTimeout(() => {
-                showToast('Reschedule Mode: Please select a new date and time for your booking.', 'info');
+                showToast('Reschedule Mode: Please pick a new date on the calendar.', 'info');
             }, 300);
             
             showNextNotification();

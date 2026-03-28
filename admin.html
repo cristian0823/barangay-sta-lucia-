@@ -3358,21 +3358,12 @@
                 btn.textContent = 'Cancelling...';
 
                 try {
-                    const available = await isSupabaseAvailable();
-                    if (!available) {
-                        showAlert('Supabase required to cancel bookings', 'error');
-                        btn.disabled = false;
-                        btn.textContent = 'Cancel All';
-                        return;
-                    }
-
-                    // 1. Fetch all bookings for this day
-                    const { data: bookings } = await supabase.from('court_bookings')
-                        .select('*')
-                        .eq('date', adminSelectedDate)
-                        .in('status', ['approved', 'pending']);
+                    // 1. Fetch using standard global getter to ensure we match what UI sees
+                    const allBookings = await getCourtBookings();
+                    const dayBookings = allBookings.filter(b => b.date === adminSelectedDate && (b.status === 'approved' || b.status === 'pending'));
                     
                     // 2. Insert the Sudden Event to block the calendar going forward
+                    const available = await isSupabaseAvailable();
                     const newEvent = {
                         title: eventName,
                         date: adminSelectedDate,
@@ -3383,19 +3374,26 @@
                         status: 'approved',
                         created_at: new Date().toISOString()
                     };
-                    const { error: eventErr } = await supabase.from('court_events').insert([newEvent]);
-                    if (eventErr) throw eventErr;
+                    
+                    if (available) {
+                        await supabase.from('court_events').insert([newEvent]);
+                    } else {
+                        const evtList = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+                        newEvent.id = Date.now();
+                        evtList.push(newEvent);
+                        localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(evtList));
+                    }
 
-                    // 3. For each active booking, delete it and dispatch a notification
-                    if (bookings && bookings.length > 0) {
-                        for (const b of bookings) {
+                    // 3. For each active booking, explicitly fully delete it using standard function
+                    if (dayBookings && dayBookings.length > 0) {
+                        for (const b of dayBookings) {
                             const uid = b.userId || b.user_id;
                             
-                            // Delete from court_bookings entirely
-                            await supabase.from('court_bookings').delete().eq('id', b.id);
+                            // Delete from court_bookings using absolute wrapper
+                            await deleteCourtBooking(b.id);
                             
                             // Dispatch user_notification to trigger the popup logic
-                            if (uid) {
+                            if (uid && available) {
                                 await supabase.from('user_notifications').insert([{
                                     user_id: uid,
                                     type: 'booking_cancelled',
@@ -3407,7 +3405,7 @@
                         }
                     }
 
-                    await logActivity('Mass Booking Cancelled', `Cancelled ${bookings ? bookings.length : 0} bookings on ${adminSelectedDate} for event: ${eventName}`);
+                    await logActivity('Mass Booking Cancelled', `Cancelled ${dayBookings.length} bookings on ${adminSelectedDate} for event: ${eventName}`);
 
                     // 4. Success cleanup
                     document.getElementById('adminMassCancelModal').style.display = 'none';
