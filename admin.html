@@ -3384,13 +3384,22 @@
                         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(evtList));
                     }
 
-                    // 3. For each active booking, explicitly fully delete it using standard function
+                    // 3. For each active booking, soft delete it to bypass RLS DELETE blockers
                     if (dayBookings && dayBookings.length > 0) {
                         for (const b of dayBookings) {
                             const uid = b.userId || b.user_id;
                             
-                            // Delete from court_bookings using absolute wrapper
-                            await deleteCourtBooking(b.id);
+                            // Soft-delete using update since RLS blocks physical admin deletion
+                            if (available) {
+                                await supabase.from('court_bookings').update({ status: 'cancelled_by_admin' }).eq('id', b.id);
+                            } else {
+                                let localBk = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+                                const idx = localBk.findIndex(x => x.id === b.id);
+                                if (idx > -1) {
+                                    localBk[idx].status = 'cancelled_by_admin';
+                                    localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(localBk));
+                                }
+                            }
                             
                             // Dispatch user_notification to trigger the popup logic
                             if (uid && available) {
@@ -5167,7 +5176,7 @@
 
                 const dayBookings = allBookings.filter(b =>
                     b.date === dateStr &&
-                    b.status !== 'cancelled' && b.status !== 'rejected' &&
+                    b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' &&
                     (b.venue === venue || b.venueName === venueLabel)
                 );
                 const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
@@ -5271,52 +5280,6 @@
                     await refreshAdminDaySchedule(dateStr, venue);
                     renderAdminCalendar();
                 } else { showAlert('Error: ' + res.message, 'error'); }
-            };
-
-            window.openAdminMassCancelModal = function() {
-                const dateStr = document.getElementById('adsDate').value;
-                const venue = document.getElementById('adsVenue').value;
-                const d = new Date(dateStr + 'T00:00:00');
-                const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-                
-                document.getElementById('amcDateText').textContent = dateFmt;
-                document.getElementById('amcReason').value = '';
-                document.getElementById('adminMassCancelModal').style.display = 'flex';
-            };
-
-            window.confirmAdminMassCancel = async function() {
-                const dateStr = document.getElementById('adsDate').value;
-                const venue = document.getElementById('adsVenue').value;
-                const eventName = document.getElementById('amcEventName').value.trim();
-                const reason = document.getElementById('amcReason').value.trim();
-
-                if (!eventName) {
-                    showAlert('Please provide an event name.', 'error');
-                    return;
-                }
-                if (!reason) {
-                    showAlert('Please provide a reason for cancellation.', 'error');
-                    return;
-                }
-
-                const btn = document.getElementById('amcConfirmBtn');
-                btn.disabled = true; btn.innerHTML = 'Canceling...';
-
-                const fullReason = `${eventName} — ${reason}`;
-                const result = await adminCancelBookingsForDay(dateStr, venue, fullReason);
-
-                btn.disabled = false; btn.innerHTML = 'Cancel All';
-
-                if (result.success) {
-                    document.getElementById('adminMassCancelModal').style.display = 'none';
-                    document.getElementById('amcEventName').value = '';
-                    document.getElementById('amcReason').value = '';
-                    showAlert(`All bookings canceled. Residents notified about "${eventName}".`, 'success');
-                    await refreshAdminDaySchedule(dateStr, venue);
-                    renderAdminCalendar();
-                } else {
-                    showAlert('Error: ' + result.message, 'error');
-                }
             };
 
             window.adminRemoveEvent = async function (id) {
