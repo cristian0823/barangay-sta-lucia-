@@ -3327,6 +3327,108 @@
                 }
             }
 
+            function openAdminMassCancelModal() {
+                const dayModal = document.getElementById('adminDayScheduleModal');
+                if (dayModal) dayModal.style.display = 'none';
+
+                const massCancelModal = document.getElementById('adminMassCancelModal');
+                if (massCancelModal) {
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const formattedDate = new Date(adminSelectedDate).toLocaleDateString('en-US', options);
+                    
+                    document.getElementById('amcDateText').textContent = formattedDate;
+                    document.getElementById('amcEventName').value = '';
+                    document.getElementById('amcReason').value = '';
+                    
+                    massCancelModal.style.display = 'flex';
+                }
+            }
+
+            async function confirmAdminMassCancel() {
+                const eventName = document.getElementById('amcEventName').value.trim();
+                const reason = document.getElementById('amcReason').value.trim();
+                const btn = document.getElementById('amcConfirmBtn');
+
+                if (!eventName || !reason) {
+                    showAlert('Please provide both the Event Name and Reason.', 'error');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Cancelling...';
+
+                try {
+                    const available = await isSupabaseAvailable();
+                    if (!available) {
+                        showAlert('Supabase required to cancel bookings', 'error');
+                        btn.disabled = false;
+                        btn.textContent = 'Cancel All';
+                        return;
+                    }
+
+                    // 1. Fetch all bookings for this day
+                    const { data: bookings } = await supabase.from('court_bookings')
+                        .select('*')
+                        .eq('date', adminSelectedDate)
+                        .in('status', ['approved', 'pending']);
+                    
+                    // 2. Insert the Sudden Event to block the calendar going forward
+                    const newEvent = {
+                        title: eventName,
+                        date: adminSelectedDate,
+                        time: '7:00 AM',
+                        start_time: '7:00 AM',
+                        end_time: '10:00 PM',
+                        organizer: 'Barangay Council',
+                        status: 'approved',
+                        created_at: new Date().toISOString()
+                    };
+                    const { error: eventErr } = await supabase.from('court_events').insert([newEvent]);
+                    if (eventErr) throw eventErr;
+
+                    // 3. For each active booking, delete it and dispatch a notification
+                    if (bookings && bookings.length > 0) {
+                        for (const b of bookings) {
+                            const uid = b.userId || b.user_id;
+                            
+                            // Delete from court_bookings entirely
+                            await supabase.from('court_bookings').delete().eq('id', b.id);
+                            
+                            // Dispatch user_notification to trigger the popup logic
+                            if (uid) {
+                                await supabase.from('user_notifications').insert([{
+                                    user_id: uid,
+                                    type: 'booking_cancelled',
+                                    message: `Your court booking on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to a sudden event: "${eventName}". Reason: ${reason} Please choose to reschedule or cancel completely.`,
+                                    meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventName },
+                                    is_read: false
+                                }]);
+                            }
+                        }
+                    }
+
+                    await logActivity('Mass Booking Cancelled', `Cancelled ${bookings ? bookings.length : 0} bookings on ${adminSelectedDate} for event: ${eventName}`);
+
+                    // 4. Success cleanup
+                    document.getElementById('adminMassCancelModal').style.display = 'none';
+                    const successModal = document.getElementById('adminEventSuccessModal');
+                    if (successModal) {
+                        successModal.querySelector('h3').textContent = 'Bookings Cancelled!';
+                        successModal.querySelector('p').textContent = `All bookings were removed, users were notified, and the event "${eventName}" was scheduled.`;
+                        successModal.style.display = 'flex';
+                    }
+
+                    await renderAdminCalendar();
+
+                } catch (err) {
+                    console.error('Mass Cancel Error:', err);
+                    showAlert('Failed to cancel bookings. Check console.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Cancel All';
+                }
+            }
+
             function openAdminCancelBookingsEventFlow() {
                 document.getElementById('adminEventActionModal').style.display = 'none';
                 
