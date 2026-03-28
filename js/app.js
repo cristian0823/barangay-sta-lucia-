@@ -1159,7 +1159,7 @@ async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings 
         const allBookings = await getCourtBookings();
         const venueLabelCheck = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
         for (const b of allBookings) {
-            if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled') {
+            if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'admin_cancelled') {
                 if (venue === 'all' || b.venue === venue || b.venueName === venueLabelCheck) {
                     let tRange = b.timeRange || b.time; 
                     if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
