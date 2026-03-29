@@ -1600,12 +1600,10 @@
             document.getElementById('dsVenue').value = selectedVenue;
             document.getElementById('dsName').value = user.name || '';
 
-            // Hide form by default
-            document.getElementById('dsBookingForm').classList.add('hidden');
             if (window.pendingRescheduleData) {
                 const m = window.pendingRescheduleData;
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Confirm Reschedule</span>';
-                document.getElementById('dsBookingForm').classList.remove('hidden'); // auto open
+                openDsBookingModal(); // auto open
                 
                 document.getElementById('dsPurpose').value = "Rescheduled: " + (m.event_title || ""); 
                 
@@ -1738,7 +1736,6 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.getElementById('dsBookingForm').reset();
-            document.getElementById('dsBookingForm').classList.add('hidden');
             if (window.pendingRescheduleData) {
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Confirm Reschedule</span>';
             } else {
