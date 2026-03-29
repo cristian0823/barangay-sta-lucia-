@@ -3391,13 +3391,19 @@
                             const uid = b.userId || b.user_id;
                             
                             // Soft-delete using update since RLS blocks physical admin deletion
+                            // Store event name in admin_comment so user dashboard popup can read it
                             if (available) {
-                                await supabase.from('court_bookings').update({ status: 'cancelled_by_admin' }).eq('id', b.id);
+                                await supabase.from('court_bookings').update({ 
+                                    status: 'cancelled_by_admin',
+                                    admin_comment: eventName
+                                }).eq('id', b.id);
                             } else {
                                 let localBk = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
                                 const idx = localBk.findIndex(x => x.id === b.id);
                                 if (idx > -1) {
                                     localBk[idx].status = 'cancelled_by_admin';
+                                    localBk[idx].admin_comment = eventName;
+                                    localBk[idx].adminComment = eventName;
                                     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(localBk));
                                 }
                             }

@@ -2002,9 +2002,32 @@
 
         async function checkPendingNotifications() {
             if (!window.user) return;
-            if (typeof getPendingCancellationNotifications === 'function') {
-                userCancellationNotifications = await getPendingCancellationNotifications(window.user.id);
+            try {
+                // Read directly from court_bookings - bypasses user_notifications table issues
+                const allBookings = await getCourtBookings();
+                const uid = String(window.user.id);
+                const cancelledByAdmin = allBookings.filter(b =>
+                    (String(b.user_id) === uid || String(b.userId) === uid) &&
+                    b.status === 'cancelled_by_admin'
+                );
+                if (cancelledByAdmin.length === 0) return;
+
+                // Build notification objects from the cancelled bookings
+                userCancellationNotifications = cancelledByAdmin.map(b => {
+                    const eventName = b.admin_comment || b.adminComment || 'a Barangay Event';
+                    const timeStr = b.timeRange || b.time || '';
+                    const parsedTime = timeStr.includes(' | ') ? timeStr.split(' | ')[1] : timeStr;
+                    return {
+                        id: b.id,
+                        type: 'booking_cancelled',
+                        isBookingRecord: true, // flag so we handle dismiss differently
+                        message: `Your court booking on ${b.date}${parsedTime ? ' at ' + parsedTime : ''} has been cancelled due to: "${eventName}". Please reschedule or cancel completely.`,
+                        meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: parsedTime, event_title: eventName }
+                    };
+                });
                 showNextNotification();
+            } catch(e) {
+                console.warn('checkPendingNotifications error:', e);
             }
         }
 
@@ -2023,29 +2046,33 @@
             modal.classList.add('flex');
         }
 
-        // ONE-CLICK DISMISSAL (skips confirmation modal!)
+        // ONE-CLICK DISMISSAL
         async function confirmCancelCompletely() {
             if (!curCancelNotif) return;
             const cancelBtn = document.getElementById('rcmCancelBtn');
             if (cancelBtn) { cancelBtn.disabled = true; cancelBtn.textContent = 'Processing...'; }
             
-            // Note: Since Admin already 'cancelled' it, it's virtually gone anyway, but we execute the physical cleanup
-            if (curCancelNotif.meta && curCancelNotif.meta.booking_id) {
-                await deleteCourtBooking(curCancelNotif.meta.booking_id);
+            const bookingId = curCancelNotif.meta && curCancelNotif.meta.booking_id;
+            if (bookingId) {
+                // Mark as fully cancelled (removes from popup list + active bookings)
+                if (typeof cancelCourtBooking === 'function') {
+                    await cancelCourtBooking(bookingId);
+                } else {
+                    await deleteCourtBooking(bookingId);
+                }
             }
             
-            await markUserNotificationAsRead(curCancelNotif.id);
             if (cancelBtn) { cancelBtn.disabled = false; cancelBtn.textContent = 'Cancel Completely'; }
-            
-            showToast('Booking completely cancelled. Notification dismissed.', 'info');
+            showToast('Booking cancelled.', 'success');
             
             const rcm = document.getElementById('rescheduleCancelModal');
             if (rcm) { rcm.classList.add('hidden'); rcm.classList.remove('flex'); }
             
             userCancellationNotifications.shift();
+            curCancelNotif = null;
+            await loadBookingView();
+            await loadDashboardStats();
             showNextNotification();
-            loadHistoryView();
-            loadBookingView();
         }
 
         async function handleReschedule() {
