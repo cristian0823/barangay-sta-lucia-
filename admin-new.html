@@ -2400,6 +2400,18 @@
     <script src="js/app.js"></script>
     <script src="js/darkmode.js"></script>
     <script>
+        function showToast(message, type = 'success') {
+            let toast = document.getElementById('toast');
+            if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; document.body.appendChild(toast); }
+            const colors = { success: 'bg-emerald-500', error: 'bg-red-500' };
+            toast.className = 'fixed bottom-4 right-4 ' + (colors[type] || 'bg-gray-800') + ' text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 z-[9999] opacity-0 transform translate-y-10';
+            toast.textContent = message;
+            void toast.offsetWidth;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'translate-y-10'); }, 3000);
+        }
+
         // Tab switching logic
         window.switchTab = function (panelId) {
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -3059,18 +3071,20 @@
 
                 if (hasEvents && hasBookings) {
                     // Both events and bookings on same date - show both indicators
-                    dayElement.classList.add('bg-gradient-to-br', 'from-purple-50', 'to-red-50');
+                    dayElement.classList.add('bg-gradient-to-br', 'from-purple-50', 'to-red-50', 'hover:opacity-80');
                     dayElement.innerHTML = `<div class="font-bold text-purple-600">${day}</div><div class="text-xs text-purple-500">Event</div><div class="text-xs text-red-500">${bookingDates[dateStr].length} Bookings</div>`;
                 } else if (hasEvents) {
-                    dayElement.classList.add('bg-purple-100');
+                    dayElement.classList.add('bg-purple-100', 'hover:bg-purple-200');
                     dayElement.innerHTML = `<div class="font-bold text-purple-600">${day}</div><div class="text-xs text-purple-500">Event</div>`;
                 } else if (hasBookings) {
-                    dayElement.classList.add('bg-red-100');
+                    dayElement.classList.add('bg-red-100', 'hover:bg-red-200');
                     dayElement.innerHTML = `<div class="font-bold text-red-600">${day}</div><div class="text-xs text-red-500">${bookingDates[dateStr].length} Bookings</div>`;
                 } else {
+                    dayElement.classList.add('hover:bg-gray-100');
                     dayElement.innerHTML = `<div class="font-semibold text-gray-700">${day}</div>`;
-                    dayElement.onclick = () => selectAdminDate(dateStr);
                 }
+                
+                dayElement.onclick = () => selectAdminDate(dateStr);
 
                 grid.appendChild(dayElement);
             }
@@ -3144,14 +3158,7 @@
             document.getElementById('adminSidebarEventOrganizer').value = '';
         }
 
-        function showToast(message, type = 'success') {
-            const t = document.getElementById('toast');
-            if (!t) return;
-            t.className = type;
-            t.textContent = message;
-            t.style.transform = 'translateY(0)';
-            setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
-        }
+        // Removed broken local showToast in favor of app.js showAlert
 
         // Sidebar Booking Form Handler
         document.getElementById('adminBookingForm')?.addEventListener('submit', async function (e) {
@@ -3162,7 +3169,7 @@
             const purpose = document.getElementById('adminBookingPurpose').value;
 
             if (!date || !time || !end_time || !purpose) {
-                showToast("Please fill all booking fields.", "error");
+                showAlert("Please fill all booking fields.", "error");
                 return;
             }
 
@@ -3615,7 +3622,7 @@
 
                     if (!dateStr || !venue) {
                         btn.disabled = false; btn.textContent = '🎉 Schedule Event';
-                        showToast('Could not determine date or venue. Please close and re-open the day schedule.', 'error');
+                        showAlert('Could not determine date or venue. Please close and re-open the day schedule.', 'error');
                         return;
                     }
 
@@ -3624,7 +3631,7 @@
 
                     if (!startTime || !rawEndTime) {
                         btn.disabled = false; btn.textContent = '🎉 Schedule Event';
-                        showToast('Please select both a start time and an end time.', 'error');
+                        showAlert('Please select both a start time and an end time.', 'error');
                         return;
                     }
 
@@ -3665,12 +3672,12 @@
 
                     if (result.success) {
                         closeAdsEventModal();
-                        showToast('Event scheduled!', 'success');
+                        showAlert('Event scheduled!', 'success');
                         this.reset();
                         await refreshAdminDaySchedule(dateStr, venue);
                         renderAdminCalendar();
                     } else {
-                        showToast('Error: ' + result.message, 'error');
+                        showAlert('Error: ' + result.message, 'error');
                     }
                 });
             }
