@@ -1299,6 +1299,7 @@ async function getPendingCancellationNotifications(userId) {
         if (error) { console.warn('Notifications fetch error:', error); return []; }
         return (data || []).map(n => ({
             id: n.id,
+            type: n.type,
             message: n.message,
             meta: n.meta || {},
             createdAt: n.created_at
@@ -1311,6 +1312,7 @@ async function getPendingCancellationNotifications(userId) {
             !n.isRead
         ).map(n => ({
             id: n.id,
+            type: n.type,
             message: n.message,
             meta: n.meta || {},
             createdAt: n.createdAt

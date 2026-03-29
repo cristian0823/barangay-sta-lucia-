@@ -3376,7 +3376,7 @@
                     };
                     
                     if (available) {
-                        await supabase.from('court_events').insert([newEvent]);
+                        await supabase.from('events').insert([newEvent]);
                     } else {
                         const evtList = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
                         newEvent.id = Date.now();
@@ -3402,14 +3402,30 @@
                             }
                             
                             // Dispatch user_notification to trigger the popup logic
-                            if (uid && available) {
-                                await supabase.from('user_notifications').insert([{
-                                    user_id: uid,
-                                    type: 'booking_cancelled',
-                                    message: `Your court booking on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to a sudden event: "${eventName}". Reason: ${reason} Please choose to reschedule or cancel completely.`,
-                                    meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventName },
-                                    is_read: false
-                                }]);
+                            if (uid) {
+                                const notifMsg = `Your court booking on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to a sudden event: "${eventName}". Reason: ${reason} Please choose to reschedule or cancel completely.`;
+                                const notifMeta = { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventName };
+                                if (available) {
+                                    await supabase.from('user_notifications').insert([{
+                                        user_id: uid,
+                                        type: 'booking_cancelled',
+                                        message: notifMsg,
+                                        meta: notifMeta,
+                                        is_read: false
+                                    }]);
+                                } else {
+                                    const localNotifs = JSON.parse(localStorage.getItem('barangay_local_notifications')) || [];
+                                    localNotifs.unshift({
+                                        id: Date.now() + Math.random(),
+                                        userId: String(uid),
+                                        type: 'booking_cancelled',
+                                        message: notifMsg,
+                                        meta: notifMeta,
+                                        isRead: false,
+                                        createdAt: new Date().toISOString()
+                                    });
+                                    localStorage.setItem('barangay_local_notifications', JSON.stringify(localNotifs));
+                                }
                             }
                         }
                     }
