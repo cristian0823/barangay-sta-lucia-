@@ -824,6 +824,7 @@
         // Auth check
         const user = getCurrentUser();
         if (!user) { window.location.href = 'login.html'; }
+        window.user = user; // expose globally so checkPendingNotifications can access window.user.id
 
         document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('welcomeName').textContent = user.name || user.email.split('@')[0];
