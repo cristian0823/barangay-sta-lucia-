@@ -5341,6 +5341,11 @@
             };
 
             window.openAdsEventModal = function () {
+                // Capture current date/venue before opening the modal
+                const allDateEls = document.querySelectorAll('#adsDate');
+                const allVenueEls = document.querySelectorAll('#adsVenue');
+                window._adsCurrentDate = allDateEls[0] ? allDateEls[0].value : '';
+                window._adsCurrentVenue = allVenueEls[0] ? allVenueEls[0].value : '';
                 document.getElementById('adsEventModal').style.display = 'flex';
             };
 
@@ -5354,8 +5359,8 @@
                 const btn = this.querySelector('button[type="submit"]');
                 btn.disabled = true; btn.textContent = 'Scheduling...';
 
-                const dateStr = document.getElementById('adsDate').value;
-                const venue = document.getElementById('adsVenue').value;
+                const dateStr = window._adsCurrentDate || document.getElementById('adsDate').value;
+                const venue = window._adsCurrentVenue || document.getElementById('adsVenue').value;
 
                 let endT = document.getElementById('adsEndTime').value;
                 const cleanupMins = parseInt(document.getElementById('adsCleanupTime').value || '0', 10);

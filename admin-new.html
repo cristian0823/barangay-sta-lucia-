@@ -3585,6 +3585,12 @@
         };
 
         window.openAdsEventModal = function () {
+            // Capture current date/venue from the day schedule modal context
+            const allDateEls = document.querySelectorAll('#adsDate');
+            const allVenueEls = document.querySelectorAll('#adsVenue');
+            // Use first found value (set by the day schedule popup)
+            window._adsCurrentDate = allDateEls[0] ? allDateEls[0].value : '';
+            window._adsCurrentVenue = allVenueEls[0] ? allVenueEls[0].value : '';
             const modal = document.getElementById('adsEventModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -3604,8 +3610,8 @@
                     const btn = this.querySelector('button[type="submit"]');
                     btn.disabled = true; btn.textContent = 'Scheduling...';
 
-                    const dateStr = document.getElementById('adsDate').value;
-                    const venue = document.getElementById('adsVenue').value;
+                    const dateStr = window._adsCurrentDate || document.getElementById('adsDate').value;
+                    const venue = window._adsCurrentVenue || document.getElementById('adsVenue').value;
 
                     let endT = document.getElementById('adsEndTime').value;
                     const cleanupMins = parseInt(document.getElementById('adsCleanupTime').value || '0', 10);
