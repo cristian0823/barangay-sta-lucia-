@@ -40,6 +40,12 @@ const LOCAL_BOOKINGS_KEY = 'barangay_local_bookings';
 const LOCAL_ACTIVITY_LOG_KEY = 'barangay_local_activity_log';
 const LOCAL_NOTIFICATIONS_KEY = 'barangay_local_notifications';
 
+// Cross-tab synchronization channel
+const appSyncChannel = new BroadcastChannel('barangay_app_sync');
+function broadcastSync() {
+    appSyncChannel.postMessage({ type: 'SYNC_NEEDED', timestamp: Date.now() });
+}
+
 function initializeLocalUsers() {
     const stored = localStorage.getItem(LOCAL_USERS_KEY);
     if (!stored) {
@@ -1234,6 +1240,7 @@ async function bookCourt(bookingData) {
             if (error) throw error;
             await logActivity('Court Booking Submitted', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
             await addNotification('admin', 'booking', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
+            broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
             console.error('Supabase booking error:', err.message);
@@ -1257,6 +1264,7 @@ async function bookCourt(bookingData) {
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
     logActivity('Court Booking Submitted', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
     await addNotification('admin', 'booking', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
+    broadcastSync();
     return { success: true, message: 'Venue booked (offline mode)' };
 }
 
@@ -1272,6 +1280,7 @@ async function cancelCourtBooking(bookingId) {
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
         const { error } = await query;
+        if (!error) broadcastSync();
         return { success: !error, message: error ? error.message : 'Booking cancelled' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -1282,6 +1291,7 @@ async function cancelCourtBooking(bookingId) {
         }
         bookings[index].status = 'cancelled';
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        broadcastSync();
         return { success: true, message: 'Booking cancelled' };
     }
 }
@@ -1345,6 +1355,7 @@ async function deleteCourtBooking(bookingId) {
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
         const { error } = await query;
+        if (!error) broadcastSync();
         return { success: !error, message: error ? error.message : 'Record permanently deleted' };
     } else {
         let bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -1355,6 +1366,7 @@ async function deleteCourtBooking(bookingId) {
         }
         bookings.splice(index, 1);
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        broadcastSync();
         return { success: true, message: 'Record permanently deleted' };
     }
 }
@@ -1362,24 +1374,28 @@ async function deleteCourtBooking(bookingId) {
 async function addAdminComment(bookingId, comment) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('court_bookings').update({ admin_comment: comment }).eq('id', bookingId);
+    if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Comment added' };
 }
 
 async function approveCourtBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('court_bookings').update({ status: 'approved' }).eq('id', bookingId);
+    if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Court booking approved' };
 }
 
 async function rejectCourtBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+    if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Court booking rejected and cancelled' };
 }
 
 async function deleteBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
     const { error } = await supabase.from('court_bookings').delete().eq('id', bookingId);
+    if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Booking deleted' };
 }
 
@@ -1420,6 +1436,7 @@ async function adminCancelBookingsForDay(date, venue, reason) {
     }
     
     await logActivity('Mass Booking Cancellation', `Admin cancelled all "${venueLabel}" bookings on ${date}. Reason: ${reason}`);
+    broadcastSync();
     return { success: true, message: 'Bookings cancelled and users notified' };
 }
 
@@ -1675,6 +1692,7 @@ async function createEvent(eventData, massCancel = false) {
         await adminCancelOverlappingBookings(eventData);
     }
 
+    if (success) broadcastSync();
     return { success, message: errorMsg || 'Event created successfully' };
 }
 

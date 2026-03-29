@@ -2920,6 +2920,24 @@
                 
                 await loadSystemStatsForProfile();
 
+                // Cross-tab synchronization
+                if (typeof appSyncChannel !== 'undefined') {
+                    appSyncChannel.addEventListener('message', async (event) => {
+                        if (event.data && event.data.type === 'SYNC_NEEDED') {
+                            await loadOverview();
+                            await loadCourtBookings();
+                            await loadEvents();
+                            await renderAdminCalendar();
+                            const dayModal = document.getElementById('adminDayScheduleModal');
+                            if (dayModal && dayModal.style.display !== 'none') {
+                                const dateStr = document.getElementById('adsDate').value;
+                                const venue = document.getElementById('adsVenue').value;
+                                if (dateStr) refreshAdminDaySchedule(dateStr, venue);
+                            }
+                        }
+                    });
+                }
+
                 // Profile form
                 document.getElementById('profileForm')?.addEventListener('submit', async function (e) {
                     e.preventDefault();
@@ -5339,15 +5357,43 @@
                 const dateStr = document.getElementById('adsDate').value;
                 const venue = document.getElementById('adsVenue').value;
 
+                let endT = document.getElementById('adsEndTime').value;
+                const cleanupMins = parseInt(document.getElementById('adsCleanupTime').value || '0', 10);
+                
+                if (cleanupMins > 0 && endT) {
+                    const match = endT.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                    if (match) {
+                        let h = parseInt(match[1], 10);
+                        let m = parseInt(match[2], 10);
+                        const ampm = match[3];
+                        if (ampm.toUpperCase() === 'PM' && h < 12) h += 12;
+                        if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+                        
+                        const totalMins = h * 60 + m + cleanupMins;
+                        let newH = Math.floor(totalMins / 60) % 24;
+                        const newM = totalMins % 60;
+                        
+                        const newAmpm = newH >= 12 ? 'PM' : 'AM';
+                        let dispH = newH % 12;
+                        if (dispH === 0) dispH = 12;
+                        
+                        endT = `${dispH}:${newM.toString().padStart(2, '0')} ${newAmpm}`;
+                    }
+                }
+
                 const eventData = {
                     title: document.getElementById('adsEventTitle').value,
                     date: dateStr,
                     time: document.getElementById('adsStartTime').value,
-                    end_time: document.getElementById('adsEndTime').value,
+                    end_time: endT,
                     organizer: document.getElementById('adsOrganizer').value,
                     location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
                     status: 'approved'
                 };
+
+                if (cleanupMins > 0) {
+                    eventData.title += ` (+${cleanupMins}m cleanup)`;
+                }
 
                 const massCancel = this.dataset.massCancel === 'true';
                 const result = await createEvent(eventData, massCancel);
@@ -5640,6 +5686,19 @@
                                 <select id="adsEndTime" required
                                     style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;"></select>
                             </div>
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Post-Event Cleanup Extension</label>
+                            <select id="adsCleanupTime"
+                                style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:border-color 0.2s;"
+                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
+                                <option value="0">None</option>
+                                <option value="30">30 Minutes</option>
+                                <option value="60">1 Hour</option>
+                                <option value="90">1.5 Hours</option>
+                                <option value="120">2 Hours</option>
+                            </select>
                         </div>
 
                         <div>

@@ -2003,6 +2003,17 @@
             });
         }
 
+        // Cross-tab synchronization — listen for admin changes from other tabs
+        if (typeof appSyncChannel !== 'undefined') {
+            appSyncChannel.addEventListener('message', async (event) => {
+                if (event.data && event.data.type === 'SYNC_NEEDED') {
+                    await loadBookingView();
+                    await loadEventsView();
+                    await loadDashboardStats();
+                }
+            });
+        }
+
         // ==========================================
         // CANCELLATION NOTIFICATIONS
         // ==========================================

@@ -2564,6 +2564,21 @@
             document.getElementById('userName').textContent = user.fullName || user.username;
             document.getElementById('userAvatar').textContent = (user.fullName || user.username).charAt(0).toUpperCase();
             await loadAllData();
+
+            // Cross-tab synchronization
+            if (typeof appSyncChannel !== 'undefined') {
+                appSyncChannel.addEventListener('message', async (event) => {
+                    if (event.data && event.data.type === 'SYNC_NEEDED') {
+                        await loadAllData();
+                        const dayModal = document.getElementById('adminDayScheduleModal');
+                        if (dayModal && !dayModal.classList.contains('hidden')) {
+                            const dateStr = document.getElementById('adsDate').value;
+                            const venue = document.getElementById('adsVenue').value;
+                            if (dateStr) refreshAdminDaySchedule(dateStr, venue);
+                        }
+                    }
+                });
+            }
         });
 
         async function loadAllData() {
@@ -3592,11 +3607,32 @@
                     const dateStr = document.getElementById('adsDate').value;
                     const venue = document.getElementById('adsVenue').value;
 
+                    let endT = document.getElementById('adsEndTime').value;
+                    const cleanupMins = parseInt(document.getElementById('adsCleanupTime').value || '0', 10);
+
+                    if (cleanupMins > 0 && endT) {
+                        const match = endT.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                        if (match) {
+                            let h = parseInt(match[1], 10);
+                            let m = parseInt(match[2], 10);
+                            const ampm = match[3];
+                            if (ampm.toUpperCase() === 'PM' && h < 12) h += 12;
+                            if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+                            const totalMins = h * 60 + m + cleanupMins;
+                            let newH = Math.floor(totalMins / 60) % 24;
+                            const newM = totalMins % 60;
+                            const newAmpm = newH >= 12 ? 'PM' : 'AM';
+                            let dispH = newH % 12;
+                            if (dispH === 0) dispH = 12;
+                            endT = `${dispH}:${newM.toString().padStart(2, '0')} ${newAmpm}`;
+                        }
+                    }
+
                     const eventData = {
-                        title: document.getElementById('adsEventTitle').value,
+                        title: document.getElementById('adsEventTitle').value + (cleanupMins > 0 ? ` (+${cleanupMins}m cleanup)` : ''),
                         date: dateStr,
                         time: document.getElementById('adsStartTime').value,
-                        end_time: document.getElementById('adsEndTime').value,
+                        end_time: endT,
                         organizer: document.getElementById('adsOrganizer').value,
                         location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
                         status: 'approved',
@@ -3649,6 +3685,17 @@
                             <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">End Time</label>
                             <select id="adsEndTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Post-Event Cleanup Extension 🧹</label>
+                        <select id="adsCleanupTime" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer">
+                            <option value="0">None</option>
+                            <option value="30">30 Minutes</option>
+                            <option value="60">1 Hour</option>
+                            <option value="90">1.5 Hours</option>
+                            <option value="120">2 Hours</option>
+                        </select>
                     </div>
 
                     <div>
