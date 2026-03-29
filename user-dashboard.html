@@ -725,48 +725,60 @@
                 <!-- Add Booking Section -->
                 <div class="border-t border-gray-100 dark:border-gray-700 mt-4 pt-4">
                     <!-- Toggle Button -->
-                    <button id="dsToggleFormBtn" onclick="toggleDsForm()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
+                    <button id="dsToggleFormBtn" onclick="openDsBookingModal()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
                         <span>＋ Add Court Booking</span>
                     </button>
-
-                    <!-- Inline Booking Form (hidden by default) -->
-                    <form id="dsBookingForm" class="hidden mt-4 space-y-3" onsubmit="submitDsBooking(event)">
-                        <input type="hidden" id="dsDate">
-                        <input type="hidden" id="dsVenue">
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Start Time</label>
-                                <select id="dsStartTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">End Time</label>
-                                <select id="dsEndTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Reserved By</label>
-                            <input type="text" id="dsName" required placeholder="Full Name" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Purpose</label>
-                            <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400">
-                        </div>
-
-                        <div class="mt-2 text-[10px] leading-relaxed text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-200 shadow-sm flex items-start gap-2 mb-3">
-                            <span class="text-sm leading-none">ℹ️</span>
-                            <div>
-                                <strong>Cancellation Policy:</strong> You may cancel your booking if needed, but you are limited to a maximum of <strong>3 cancellations</strong>. Once you reach this limit, you won't be able to cancel further bookings.
-                            </div>
-                        </div>
-
-                        <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
-                            ✅ Confirm Booking
-                        </button>
-                    </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADD COURT BOOKING MODAL ===== -->
+    <div id="dsBookingModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]">
+            <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
+                <button onclick="closeDsBookingModal()" type="button" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
+                <div class="text-3xl mb-2">📝</div>
+                <h3 class="text-xl font-extrabold text-white mb-0.5">Add Court Booking</h3>
+                <p class="text-sm text-white/80 m-0">Fill out details to reserve a slot</p>
+            </div>
+            <div class="overflow-y-auto px-6 py-5">
+                <form id="dsBookingForm" class="space-y-3" onsubmit="submitDsBooking(event)">
+                    <input type="hidden" id="dsDate">
+                    <input type="hidden" id="dsVenue">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Start Time</label>
+                            <select id="dsStartTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">End Time</label>
+                            <select id="dsEndTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Reserved By</label>
+                        <input type="text" id="dsName" required placeholder="Full Name" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Purpose</label>
+                        <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+
+                    <div class="mt-2 text-[10px] leading-relaxed text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-200 shadow-sm flex items-start gap-2 mb-3">
+                        <span class="text-sm leading-none">ℹ️</span>
+                        <div>
+                            <strong>Cancellation Policy:</strong> You may cancel your booking if needed, but you are limited to a maximum of <strong>3 cancellations</strong>. Once you reach this limit, you won't be able to cancel further bookings.
+                        </div>
+                    </div>
+
+                    <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
+                        ✅ Confirm Booking
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -1734,16 +1746,16 @@
             }
         }
 
-        function toggleDsForm() {
-            const form = document.getElementById('dsBookingForm');
-            const btn = document.getElementById('dsToggleFormBtn');
-            if (form.classList.contains('hidden')) {
-                form.classList.remove('hidden');
-                btn.innerHTML = '<span>▲ Hide Form</span>';
-            } else {
-                form.classList.add('hidden');
-                btn.innerHTML = (window.pendingRescheduleData) ? '<span>🔄 Confirm Reschedule</span>' : '<span>＋ Add Court Booking</span>';
-            }
+        function openDsBookingModal() {
+            const modal = document.getElementById('dsBookingModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDsBookingModal() {
+            const modal = document.getElementById('dsBookingModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         async function submitDsBooking(e) {
@@ -1800,7 +1812,7 @@
                 document.getElementById('dsPurpose').value = '';
                 document.getElementById('dsStartTime').value = '';
                 document.getElementById('dsEndTime').value = '';
-                document.getElementById('dsBookingForm').classList.add('hidden');
+                closeDsBookingModal();
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
                 await refreshDsSchedule(date, venue);
                 await loadBookingView();

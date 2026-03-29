@@ -3561,30 +3561,22 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
 
-            const wrap = document.getElementById('adsEventFormWrap');
-            if (wrap) {
-                wrap.classList.add('hidden');
-            }
-            const btn = document.getElementById('adsToggleFormBtn');
-            if (btn) {
-                btn.innerHTML = '<span>＋ Add Court Event</span>';
-            }
             const form = document.getElementById('adsEventForm');
             if (form) form.reset();
 
             renderAdminCalendar();
         };
 
-        window.toggleAdsEventForm = function () {
-            const wrap = document.getElementById('adsEventFormWrap');
-            const btn = document.getElementById('adsToggleFormBtn');
-            if (wrap.classList.contains('hidden')) {
-                wrap.classList.remove('hidden');
-                btn.innerHTML = '<span>▲ Hide Form</span>';
-            } else {
-                wrap.classList.add('hidden');
-                btn.innerHTML = '<span>＋ Add Court Event</span>';
-            }
+        window.openAdsEventModal = function () {
+            const modal = document.getElementById('adsEventModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeAdsEventModal = function () {
+            const modal = document.getElementById('adsEventModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -3613,6 +3605,7 @@
                     btn.disabled = false; btn.textContent = '🎉 Schedule Event';
 
                     if (result.success) {
+                        closeAdsEventModal();
                         showToast('Event scheduled!', 'success');
                         this.reset();
                         await refreshAdminDaySchedule(dateStr, venue);
@@ -3625,6 +3618,49 @@
         });
         // --- END INJECTED DAY POPUP JS ---
     </script>
+
+    <!-- ADD COURT EVENT MODAL -->
+    <div id="adsEventModal" class="fixed inset-0 z-[10500] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]">
+            <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
+                <button onclick="closeAdsEventModal()" type="button" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
+                <div class="text-3xl mb-2">📝</div>
+                <h3 class="text-xl font-extrabold text-white mb-0.5">Add Court Event</h3>
+                <p class="text-sm text-white/80 m-0">Schedule a barangay activity</p>
+            </div>
+            <div class="overflow-y-auto px-6 py-5">
+                <form id="adsEventForm" class="space-y-3">
+                    <input type="hidden" id="adsDate">
+                    <input type="hidden" id="adsVenue">
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Event Title</label>
+                        <input type="text" id="adsEventTitle" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Start Time</label>
+                            <select id="adsStartTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">End Time</label>
+                            <select id="adsEndTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Organizer</label>
+                        <input type="text" id="adsOrganizer" required value="Barangay Council" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
+                        🎉 Schedule Event
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Admin Day Schedule Modal (matches user dashboard style) -->
     <div id="adminDayScheduleModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -3651,41 +3687,9 @@
 
             <!-- Add Event Section -->
             <div class="px-6 pb-6 flex-shrink-0 border-t border-gray-100 pt-4">
-                <button id="adsToggleFormBtn" onclick="toggleAdsEventForm()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
+                <button id="adsToggleFormBtn" onclick="openAdsEventModal()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
                     <span>＋ Add Court Event</span>
                 </button>
-
-                <div id="adsEventFormWrap" class="hidden mt-4">
-                    <form id="adsEventForm" class="space-y-3">
-                        <input type="hidden" id="adsDate">
-                        <input type="hidden" id="adsVenue">
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Event Title</label>
-                            <input type="text" id="adsEventTitle" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Start Time</label>
-                                <select id="adsStartTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">End Time</label>
-                                <select id="adsEndTime" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"></select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Organizer</label>
-                            <input type="text" id="adsOrganizer" required value="Barangay Council" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 outline-none focus:ring-2 focus:ring-blue-400">
-                        </div>
-
-                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
-                            🎉 Schedule Event
-                        </button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
