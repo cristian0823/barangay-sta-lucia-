@@ -438,8 +438,8 @@
                 if (dateObj < today) {
                     dayElement.classList.add('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
                 } else if (hasEvent) {
-                    // Date has an event
-                    dayElement.classList.add('bg-purple-100', 'text-purple-700', 'cursor-pointer');
+                    // Date has an event - solid violet
+                    dayElement.classList.add('bg-purple-600', 'text-white', 'cursor-pointer', 'hover:bg-purple-700');
                     dayElement.innerHTML += '<div class="text-xs">🎉 Event</div>';
                     const timeDisplay = hasEvent.end_time ? `${hasEvent.time} - ${hasEvent.end_time}` : hasEvent.time;
                     dayElement.title = `${hasEvent.title} - ${timeDisplay}`;
@@ -457,7 +457,7 @@
 
                 // Check if selected
                 if (selectedDate === dateStr) {
-                    dayElement.classList.remove('bg-green-100', 'bg-gray-200', 'bg-purple-100');
+                    dayElement.classList.remove('bg-green-100', 'bg-gray-200', 'bg-purple-100', 'bg-purple-600', 'text-white', 'hover:bg-purple-700');
                     dayElement.classList.add('selected', 'text-green-700');
                 }
 
@@ -502,29 +502,22 @@
             const submitBtn = document.getElementById('bookingForm').querySelector('button[type="submit"]');
 
             if (eventOnDate) {
-                // Show blocking warning about event
+                // Show informational banner — booking is still allowed outside the event time
                 const timeDisplay = eventOnDate.end_time ? `${eventOnDate.time} - ${eventOnDate.end_time}` : eventOnDate.time;
                 document.getElementById('bookingFormMessage').innerHTML = `
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-sm text-red-800">
-                        <div class="flex items-center mb-2">
-                            <span class="text-xl mr-2">⛔</span>
-                            <h3 class="font-bold text-lg">Booking Unavailable</h3>
-                        </div>
-                        <p class="mb-2">There is an official Barangay Event scheduled on this date.</p>
-                        <div class="bg-white/50 rounded p-2 text-sm">
-                            <p><strong>Event:</strong> ${eventOnDate.title}</p>
-                            <p><strong>Time:</strong> ${timeDisplay}</p>
-                            <p><strong>Organizer:</strong> ${eventOnDate.organizer}</p>
-                        </div>
-                        <p class="text-sm mt-3 font-semibold text-red-700">The court cannot be booked on days with official events to prevent conflicts.</p>
+                    <div style="background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+                        <div style="font-size:14px;font-weight:800;margin-bottom:4px;">🎉 Official Barangay Event on This Day</div>
+                        <p style="margin:0 0 4px;font-size:13px;"><strong>Event:</strong> ${eventOnDate.title}</p>
+                        <p style="margin:0 0 4px;font-size:13px;"><strong>Blocked Time:</strong> ${timeDisplay} (incl. cleanup)</p>
+                        <p style="margin:0;font-size:11px;opacity:0.85;">⚠️ You can still book slots outside this time window. Overlapping time slots will be rejected.</p>
                     </div>
                 `;
 
-                // Disable form submission
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                submitBtn.classList.remove('bg-gradient-to-r', 'hover:scale-105');
-                submitBtn.innerHTML = '🚫 Unavailable';
+                // Still allow form submission — bookCourt will reject overlapping times
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitBtn.classList.add('bg-gradient-to-r', 'hover:scale-105');
+                submitBtn.innerHTML = '✅ Submit Booking';
             } else {
                 document.getElementById('bookingFormMessage').innerHTML = '';
 

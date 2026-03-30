@@ -1206,11 +1206,7 @@ async function bookCourt(bookingData) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
 
-    const blockedDates = await getBlockedDates();
-    if (blockedDates.includes(bookingData.date)) {
-        return { success: false, message: 'This date is blocked due to an official Barangay Event.' };
-    }
-
+    // No full-day block — time-slot overlap is checked below for precise event/cleanup blocking
     const venue = bookingData.venue || 'basketball';
     const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
     const startTime = bookingData.time || '';
