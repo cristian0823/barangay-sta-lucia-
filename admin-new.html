@@ -3371,78 +3371,74 @@
             modal.classList.remove('flex');
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
+        window.handleAdsEventSubmit = async function (e) {
+            e.preventDefault();
             const formObj = document.getElementById('adsEventForm');
-            if (formObj) {
-                formObj.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-                    const btn = this.querySelector('button[type="submit"]');
-                    btn.disabled = true; btn.textContent = 'Scheduling...';
+            const btn = formObj.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.textContent = 'Scheduling...';
 
-                    const dateStr = window._adsCurrentDate || document.getElementById('adsDate').value;
-                    const venue = window._adsCurrentVenue || document.getElementById('adsVenue').value;
+            const dateStr = window._adsCurrentDate || document.getElementById('adsDate').value;
+            const venue = window._adsCurrentVenue || document.getElementById('adsVenue').value;
 
-                    if (!dateStr || !venue) {
-                        btn.disabled = false; btn.textContent = '🎉 Schedule Event';
-                        showAlert('Could not determine date or venue. Please close and re-open the day schedule.', 'error');
-                        return;
-                    }
-
-                    const startTime = document.getElementById('adsStartTime').value;
-                    const rawEndTime = document.getElementById('adsEndTime').value;
-
-                    if (!startTime || !rawEndTime) {
-                        btn.disabled = false; btn.textContent = '🎉 Schedule Event';
-                        showAlert('Please select both a start time and an end time.', 'error');
-                        return;
-                    }
-
-                    let endT = rawEndTime;
-                    const cleanupMins = parseInt(document.getElementById('adsCleanupTime').value || '0', 10);
-
-                    if (cleanupMins > 0 && endT) {
-                        const match = endT.match(/(\d+):(\d+)\s*(AM|PM)/i);
-                        if (match) {
-                            let h = parseInt(match[1], 10);
-                            let m = parseInt(match[2], 10);
-                            const ampm = match[3];
-                            if (ampm.toUpperCase() === 'PM' && h < 12) h += 12;
-                            if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
-                            const totalMins = h * 60 + m + cleanupMins;
-                            let newH = Math.floor(totalMins / 60) % 24;
-                            const newM = totalMins % 60;
-                            const newAmpm = newH >= 12 ? 'PM' : 'AM';
-                            let dispH = newH % 12;
-                            if (dispH === 0) dispH = 12;
-                            endT = `${dispH}:${newM.toString().padStart(2, '0')} ${newAmpm}`;
-                        }
-                    }
-
-                    const eventData = {
-                        title: (document.getElementById('adsEventTitle').value.trim()) + (cleanupMins > 0 ? ` (+${cleanupMins}m cleanup)` : ''),
-                        date: dateStr,
-                        time: startTime,
-                        end_time: endT,
-                        organizer: document.getElementById('adsOrganizer').value,
-                        location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
-                        status: 'approved'
-                    };
-
-                    const result = await createEvent(eventData);
-                    btn.disabled = false; btn.textContent = '🎉 Schedule Event';
-
-                    if (result.success) {
-                        closeAdsEventModal();
-                        openSuccessModal('Success!', 'Your event has been successfully scheduled.');
-                        this.reset();
-                        await refreshAdminDaySchedule(dateStr, venue);
-                        renderAdminCalendar();
-                    } else {
-                        showAlert('Error: ' + result.message, 'error');
-                    }
-                });
+            if (!dateStr || !venue) {
+                btn.disabled = false; btn.textContent = '🎉 Schedule Event';
+                showToast('Could not determine date or venue. Please close and re-open the day schedule.', 'error');
+                return;
             }
-        });
+
+            const startTime = document.getElementById('adsStartTime').value;
+            const rawEndTime = document.getElementById('adsEndTime').value;
+
+            if (!startTime || !rawEndTime) {
+                btn.disabled = false; btn.textContent = '🎉 Schedule Event';
+                showToast('Please select both a start time and an end time.', 'error');
+                return;
+            }
+
+            let endT = rawEndTime;
+            const cleanupMins = parseInt(document.getElementById('adsCleanupTime').value || '0', 10);
+
+            if (cleanupMins > 0 && endT) {
+                const match = endT.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                if (match) {
+                    let h = parseInt(match[1], 10);
+                    let m = parseInt(match[2], 10);
+                    const ampm = match[3];
+                    if (ampm.toUpperCase() === 'PM' && h < 12) h += 12;
+                    if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+                    const totalMins = h * 60 + m + cleanupMins;
+                    let newH = Math.floor(totalMins / 60) % 24;
+                    const newM = totalMins % 60;
+                    const newAmpm = newH >= 12 ? 'PM' : 'AM';
+                    let dispH = newH % 12;
+                    if (dispH === 0) dispH = 12;
+                    endT = `${dispH}:${newM.toString().padStart(2, '0')} ${newAmpm}`;
+                }
+            }
+
+            const eventData = {
+                title: (document.getElementById('adsEventTitle').value.trim()) + (cleanupMins > 0 ? ` (+${cleanupMins}m cleanup)` : ''),
+                date: dateStr,
+                time: startTime,
+                end_time: endT,
+                organizer: document.getElementById('adsOrganizer').value,
+                location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                status: 'approved'
+            };
+
+            const result = await createEvent(eventData);
+            btn.disabled = false; btn.textContent = '🎉 Schedule Event';
+
+            if (result.success) {
+                closeAdsEventModal();
+                openSuccessModal('Success!', 'Your event has been successfully scheduled.');
+                formObj.reset();
+                await refreshAdminDaySchedule(dateStr, venue);
+                renderAdminCalendar();
+            } else {
+                showToast('Error: ' + result.message, 'error');
+            }
+        };
         // --- END INJECTED DAY POPUP JS ---
     </script>
 
@@ -3456,7 +3452,7 @@
                 <p class="text-sm text-white/80 m-0">Schedule a barangay activity</p>
             </div>
             <div class="overflow-y-auto px-6 py-5">
-                <form id="adsEventForm" class="space-y-3">
+                <form id="adsEventForm" class="space-y-3" onsubmit="window.handleAdsEventSubmit(event)">
                     <input type="hidden" id="adsDate">
                     <input type="hidden" id="adsVenue">
 
