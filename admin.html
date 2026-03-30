@@ -2739,7 +2739,7 @@
                     <h3>Add Court Event</h3>
                     <button class="modal-close" onclick="closeModal('eventModal')">&times;</button>
                 </div>
-                <form id="eventForm">
+                <form id="eventForm" onsubmit="window.handleAdminEventSubmit(event)">
                     <div class="form-group">
                         <label for="eventTitle">Event Title</label>
                         <input type="text" id="eventTitle" placeholder="e.g., Basketball Tournament" required>
@@ -4235,9 +4235,10 @@
                 history.pushState({ modal: 'eventModal' }, '', '#eventModal');
             }
 
-            document.getElementById('eventForm').addEventListener('submit', async function (e) {
+            window.handleAdminEventSubmit = async function (e) {
                 e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
+                const formObj = document.getElementById('eventForm');
+                const btn = formObj.querySelector('button[type="submit"]');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = 'Saving...';
@@ -4257,16 +4258,16 @@
                 if (result.success) {
                     // Show custom success modal
                     document.getElementById('adminEventSuccessModal').style.display = 'flex';
-                    this.reset();
+                    formObj.reset();
                     closeModal('eventModal');
-                    await loadEvents();
+                    if (typeof loadEvents === 'function') await loadEvents();
                     // Load overview if exists
                     if (typeof loadOverview === 'function') await loadOverview();
                     if (typeof renderAdminCalendar === 'function') await renderAdminCalendar();
                 } else {
                     showAlert('Error: ' + result.message, 'error');
                 }
-            });
+            };
 
             async function openEditEventModal(eventId) {
                 const events = await getEvents();
@@ -5354,9 +5355,10 @@
             };
 
 
-            document.getElementById('adsEventForm').addEventListener('submit', async function (e) {
+            window.handleAdsEventSubmit = async function (e) {
                 e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
+                const formObj = document.getElementById('adsEventForm');
+                const btn = formObj.querySelector('button[type="submit"]');
                 btn.disabled = true; btn.textContent = 'Scheduling...';
 
                 const dateStr = window._adsCurrentDate || document.getElementById('adsDate').value;
@@ -5413,7 +5415,7 @@
                     status: 'approved'
                 };
 
-                const massCancel = this.dataset.massCancel === 'true';
+                const massCancel = formObj.dataset.massCancel === 'true';
                 const result = await createEvent(eventData, massCancel);
                 btn.disabled = false; btn.textContent = '🎉 Schedule Event';
 
@@ -5422,14 +5424,15 @@
                     closeAdsEventModal();
                     // Show custom success modal
                     document.getElementById('adminEventSuccessModal').style.display = 'flex';
-                    this.reset();
+                    formObj.reset();
                     await refreshAdminDaySchedule(dateStr, venue);
-                    renderAdminCalendar();
-                    await loadOverview();
+                    if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                    if (typeof loadOverview === 'function') await loadOverview();
+                    if (typeof loadEvents === 'function') await loadEvents();
                 } else {
                     showAlert('Error: ' + result.message, 'error');
                 }
-            });
+            };
 
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
@@ -5682,7 +5685,7 @@
                 </div>
                 <!-- Body -->
                 <div style="padding:20px 24px;overflow-y:auto;">
-                    <form id="adsEventForm" style="display:flex;flex-direction:column;gap:14px;">
+                    <form id="adsEventForm" style="display:flex;flex-direction:column;gap:14px;" onsubmit="window.handleAdsEventSubmit(event)">
                         <input type="hidden" id="adsDate">
                         <input type="hidden" id="adsVenue">
 
@@ -5784,15 +5787,15 @@
         <!-- ========================================== -->
         <div id="adminEventSuccessModal"
             style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:#fff;border-radius:24px;width:100%;max-width:380px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);text-align:center;padding:40px 24px;animation:fadeIn 0.3s ease;">
-                <div style="width:72px;height:72px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:#16a34a;margin:0 auto 20px;">
+            <div style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:24px;width:100%;max-width:380px;box-shadow:0 0 40px rgba(0,0,0,0.5);text-align:center;padding:40px 24px;animation:fadeIn 0.3s ease;">
+                <div style="width:80px;height:80px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px;">
                     ✅
                 </div>
-                <h3 style="font-size:22px;font-weight:800;color:#111;margin-bottom:8px;">Event Scheduled!</h3>
-                <p style="font-size:14px;color:#6b7280;margin-bottom:32px;">The event has been successfully added to the calendar and synced to all residents.</p>
-                <button onclick="document.getElementById('adminEventSuccessModal').style.display='none'; closeAdminDayPopup();"
-                    style="width:100%;padding:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(22,163,74,0.3);">
-                    Great, thanks!
+                <h3 style="font-size:24px;font-weight:900;color:#f8fafc;margin-bottom:8px;">Success!</h3>
+                <p style="font-size:15px;font-weight:500;color:#cbd5e1;margin-bottom:32px;">Your event has been successfully scheduled and synced.</p>
+                <button onclick="document.getElementById('adminEventSuccessModal').style.display='none'; if(typeof closeAdminDayPopup==='function') closeAdminDayPopup(); if(typeof closeModal==='function') closeModal('eventModal');"
+                    style="width:100%;padding:14px;background:linear-gradient(to right, #22c55e, #16a34a);color:#fff;border:1px solid rgba(74,222,128,0.2);border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);transition:all 0.2s ease;">
+                    Awesome, got it!
                 </button>
             </div>
         </div>
