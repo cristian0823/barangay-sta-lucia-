@@ -1160,7 +1160,7 @@ async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings 
         return { success: false, message: 'End time must be after start time' };
     }
     
-    // Check bookings
+    // Check bookings (skipped for admin event creation)
     if (!ignoreBookings) {
         const allBookings = await getCourtBookings();
         const venueLabelCheck = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
@@ -1179,18 +1179,18 @@ async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings 
                 }
             }
         }
-    }
 
-    // Check official events (events block all venues)
-    const allEvents = await getEvents();
-    for (const e of allEvents) {
-         if (e.date === date) {
-             const eStart = timeToMinutes(e.time);
-             const eEnd = timeToMinutes(e.end_time || e.time);
-             if (reqStart < eEnd && reqEnd > eStart) {
-                 return { success: false, message: `Time slot overlaps with an official Barangay Event (${e.time} - ${e.end_time || e.time})` };
+        // Also check official events when called for user booking validation
+        const allEvents = await getEvents();
+        for (const e of allEvents) {
+             if (e.date === date && e.status === 'approved') {
+                 const eStart = timeToMinutes(e.time);
+                 const eEnd = timeToMinutes(e.end_time || e.time);
+                 if (reqStart < eEnd && reqEnd > eStart) {
+                     return { success: false, message: `Time slot overlaps with an official Barangay Event (${e.time} - ${e.end_time || e.time})` };
+                 }
              }
-         }
+        }
     }
     
     return { success: true };
@@ -1657,7 +1657,9 @@ async function adminCancelOverlappingBookings(eventData) {
 }
 
 async function createEvent(eventData, massCancel = false) {
-    const overlapCheck = await checkTimeOverlap(eventData.date, 'all', eventData.time, eventData.end_time, massCancel);
+    // Admin events bypass booking overlaps (ignoreBookings=true).
+    // They only check if another APPROVED EVENT already occupies the same slot.
+    const overlapCheck = await checkTimeOverlap(eventData.date, 'all', eventData.time, eventData.end_time, true);
     if (!overlapCheck.success) return overlapCheck;
 
     const supabaseAvailable = await isSupabaseAvailable();
