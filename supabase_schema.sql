@@ -162,6 +162,9 @@ DROP POLICY IF EXISTS "Enable write access for admins" ON equipment;
 -- Events
 DROP POLICY IF EXISTS "Enable read access for all users" ON events;
 DROP POLICY IF EXISTS "Enable write access for all users" ON events;
+DROP POLICY IF EXISTS "Enable insert for all users" ON events;
+DROP POLICY IF EXISTS "Enable update for all users" ON events;
+DROP POLICY IF EXISTS "Enable delete for all users" ON events;
 DROP POLICY IF EXISTS "Enable write access for admins" ON events;
 
 -- Borrowings
@@ -216,7 +219,9 @@ CREATE POLICY "Enable write access for all users" ON equipment FOR ALL USING (tr
 
 -- Events Table Policies
 CREATE POLICY "Enable read access for all users" ON events FOR SELECT USING (true);
-CREATE POLICY "Enable write access for all users" ON events FOR ALL USING (true);
+CREATE POLICY "Enable insert for all users" ON events FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON events FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON events FOR DELETE USING (true);
 
 -- Borrowings Table Policies
 CREATE POLICY "Enable read access for all users" ON borrowings FOR SELECT USING (true);
