@@ -2315,12 +2315,10 @@ function showConfirmModal(message, title = 'Confirmation', confirmText = 'OK', c
 
         // Create Modal Box
         const modal = document.createElement('div');
-        modal.style.backgroundColor = 'white';
-        // Check if dark mode is active roughly
-        if (document.documentElement.classList.contains('dark')) {
-            modal.style.backgroundColor = '#1f2937';
-            modal.style.color = '#f9fafb';
-        }
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || document.body.getAttribute('data-theme') === 'dark';
+        
+        modal.style.backgroundColor = isDark ? '#1e293b' : 'white';
+        modal.style.color = isDark ? '#f8fafc' : '#111827';
         modal.style.borderRadius = '20px';
         modal.style.padding = '32px';
         modal.style.width = '90%';
@@ -2356,10 +2354,10 @@ function showConfirmModal(message, title = 'Confirmation', confirmText = 'OK', c
         contentWrapper.style.textAlign = 'center';
         contentWrapper.innerHTML = `
             ${iconHtml}
-            <h3 style="margin:0 0 12px 0;font-size:22px;font-weight:800;letter-spacing:-0.5px;">${title}</h3>
-            <p style="margin:0 0 32px 0;font-size:15px;color:#6b7280;line-height:1.6;padding:0 10px;">${message}</p>
+            <h3 style="margin:0 0 12px 0;font-size:22px;font-weight:800;letter-spacing:-0.5px;color:${isDark ? '#f8fafc' : '#111827'}">${title}</h3>
+            <p style="margin:0 0 32px 0;font-size:15px;color:${isDark ? '#94a3b8' : '#6b7280'};line-height:1.6;padding:0 10px;">${message}</p>
             <div style="display:flex;justify-content:center;gap:14px;width:100%;">
-                <button id="modal-cancel-btn" style="flex:1;padding:12px 0;border-radius:12px;border:2px solid #e5e7eb;background:transparent;color:#4b5563;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;">${cancelText}</button>
+                <button id="modal-cancel-btn" style="flex:1;padding:12px 0;border-radius:12px;border:2px solid ${isDark ? '#334155' : '#e5e7eb'};background:transparent;color:${isDark ? '#94a3b8' : '#4b5563'};font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;">${cancelText}</button>
                 <button id="modal-confirm-btn" style="flex:1;padding:12px 0;border-radius:12px;border:none;background:${type === 'danger' || type === 'error' ? '#ef4444' : '#10b981'};color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 10px 15px -3px ${type === 'danger' || type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'};">${confirmText}</button>
             </div>
         `;
@@ -2377,17 +2375,15 @@ function showConfirmModal(message, title = 'Confirmation', confirmText = 'OK', c
         // Hover effects handling
         const btnCancel = modal.querySelector('#modal-cancel-btn');
         const btnConfirm = modal.querySelector('#modal-confirm-btn');
-        const isDark = document.documentElement.classList.contains('dark');
-        
         btnCancel.onmouseover = () => {
-            btnCancel.style.backgroundColor = isDark ? '#374151' : '#f3f4f6';
-            btnCancel.style.borderColor = isDark ? '#4b5563' : '#d1d5db';
-            btnCancel.style.color = isDark ? '#fff' : '#111827';
+            btnCancel.style.backgroundColor = isDark ? '#334155' : '#f3f4f6';
+            btnCancel.style.borderColor = isDark ? '#475569' : '#d1d5db';
+            btnCancel.style.color = isDark ? '#f8fafc' : '#111827';
         };
         btnCancel.onmouseout = () => {
             btnCancel.style.backgroundColor = 'transparent';
-            btnCancel.style.borderColor = isDark ? '#374151' : '#e5e7eb';
-            btnCancel.style.color = isDark ? '#9ca3af' : '#4b5563';
+            btnCancel.style.borderColor = isDark ? '#334155' : '#e5e7eb';
+            btnCancel.style.color = isDark ? '#94a3b8' : '#4b5563';
         };
         
         btnConfirm.onmouseover = () => {
