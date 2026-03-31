@@ -28,6 +28,10 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+-- Safely patch live database columns for existing users
+ALTER TABLE users ADD COLUMN IF NOT EXISTS offense_count INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS suspension_end TIMESTAMP WITH TIME ZONE;
+
 CREATE TABLE IF NOT EXISTS equipment (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
