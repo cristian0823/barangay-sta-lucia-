@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     role VARCHAR(50) DEFAULT 'user',
     avatar VARCHAR(10),
+    offense_count INTEGER DEFAULT 0,
+    suspension_end TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
@@ -116,6 +118,8 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS login_fail_count INTEGER DEFAULT 0;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMPTZ DEFAULT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS offense_count INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS suspended_until TIMESTAMPTZ DEFAULT NULL;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
 ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
@@ -350,6 +354,11 @@ DECLARE
     v_equipment_id INTEGER;
     v_borrow_qty INTEGER;
     v_current_status VARCHAR(50);
+    v_borrower_id INTEGER;
+    v_return_date DATE;
+    v_is_late BOOLEAN := false;
+    v_offense_count INTEGER;
+    v_suspension_days INTEGER := 0;
     v_is_admin BOOLEAN;
 BEGIN
     -- Check if user is admin
@@ -359,7 +368,7 @@ BEGIN
     END IF;
 
     -- Lock the borrowing row for update to prevent concurrent race conditions
-    SELECT equipment_id, quantity, status INTO v_equipment_id, v_borrow_qty, v_current_status
+    SELECT equipment_id, quantity, status, user_id, return_date INTO v_equipment_id, v_borrow_qty, v_current_status, v_borrower_id, v_return_date
     FROM borrowings WHERE id = borrowing_id FOR UPDATE;
 
     IF NOT FOUND THEN
@@ -370,15 +379,52 @@ BEGIN
         RETURN json_build_object('success', false, 'message', 'Request is not actively borrowed.');
     END IF;
 
+    -- Check if late (more than 1 day past expected return_date)
+    IF CURRENT_DATE > (v_return_date + INTERVAL '1 day') THEN
+        v_is_late := true;
+        -- Fetch current offense count
+        SELECT COALESCE(offense_count, 0) INTO v_offense_count FROM users WHERE id = v_borrower_id FOR UPDATE;
+        
+        v_offense_count := v_offense_count + 1;
+        
+        -- Progressive Suspensions
+        IF v_offense_count = 1 THEN
+            v_suspension_days := 0; -- Strike 1: Warning
+        ELSIF v_offense_count = 2 THEN
+            v_suspension_days := 3; -- Strike 2: 3 days
+        ELSIF v_offense_count = 3 THEN
+            v_suspension_days := 7; -- Strike 3: 7 days
+        ELSE
+            v_suspension_days := 30; -- Strike 4+: 30 days
+        END IF;
+
+        IF v_suspension_days > 0 THEN
+            UPDATE users SET 
+                offense_count = v_offense_count, 
+                suspension_end = CURRENT_TIMESTAMP + (v_suspension_days || ' days')::INTERVAL
+            WHERE id = v_borrower_id;
+        ELSE
+             UPDATE users SET offense_count = v_offense_count WHERE id = v_borrower_id;
+        END IF;
+    END IF;
+
     -- Update the equipment table, automatically locking it during the transaction
-    UPDATE equipment 
+    UPDATE equipment
     SET available = available + v_borrow_qty
     WHERE id = v_equipment_id;
 
     -- Mark request as returned
     UPDATE borrowings SET status = 'returned' WHERE id = borrowing_id;
 
-    RETURN json_build_object('success', true, 'message', 'Equipment marked as returned successfully.');
+    IF v_is_late THEN
+        IF v_suspension_days > 0 THEN
+             RETURN json_build_object('success', true, 'message', 'Equipment returned. User suspended for ' || v_suspension_days || ' days due to late return (Offense #' || v_offense_count || ').');
+        ELSE
+             RETURN json_build_object('success', true, 'message', 'Equipment returned. User issued a warning for late return (Offense #1).');
+        END IF;
+    ELSE
+        RETURN json_build_object('success', true, 'message', 'Equipment marked as returned successfully.');
+    END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

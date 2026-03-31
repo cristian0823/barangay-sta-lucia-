@@ -87,14 +87,24 @@ const js = `
                 if (pct < 50) { color = 'bg-amber-500'; statusColor = 'text-amber-600'; statusBg = 'bg-amber-50'; statusIcon = '⚠'; }
                 if (pct < 25) { color = 'bg-red-500'; statusColor = 'text-red-600'; statusBg = 'bg-red-50'; statusIcon = '✕'; }
                 const ok = item.available > 0;
-                return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + (ok ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1' : 'border-gray-100 opacity-60') + '">' +
+                let actionBtn = '';
+                if (item.isLocked) {
+                    actionBtn = '<button disabled class="px-3 py-2 bg-gray-200 text-gray-500 text-xs font-bold rounded-xl shadow-inner cursor-not-allowed" title="Temporarily locked due to unreturned items from other users">🔒 System Locked</button>';
+                } else if (ok) {
+                    actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg">📝 Borrow</button>';
+                } else {
+                    actionBtn = '<span class="text-xs font-bold text-red-500">Out of stock</span>';
+                }
+
+                return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + (ok && !item.isLocked ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1' : 'border-gray-100 opacity-70') + '">' +
                     '<div class="absolute top-4 right-4"><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ' + (ok ? statusBg + ' ' + statusColor : 'bg-gray-100 text-gray-500') + '"><span>' + statusIcon + '</span> ' + item.available + ' available</span></div>' +
                     '<div class="flex items-start gap-4 mb-4"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-3xl shadow-sm">' + item.icon + '</div>' +
                     '<div class="flex-1 pt-1"><h4 class="font-bold text-lg text-gray-800 dark:text-white mb-1">' + item.name + '</h4><p class="text-xs text-gray-500 font-medium">' + (item.category || 'Equipment') + '</p></div></div>' +
                     '<div class="mb-3"><div class="flex justify-between items-center mb-2"><span class="text-xs font-semibold text-gray-500">Availability</span><span class="text-xs font-bold ' + statusColor + '">' + pct + '%</span></div>' +
                     '<div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div class="' + color + ' h-full rounded-full transition-all duration-500 shadow-inner" style="width: ' + pct + '%"></div></div></div>' +
-                    '<div class="flex items-center justify-between pt-2 border-t border-gray-100"><div class="flex items-center gap-2"><span class="text-xs font-medium text-gray-500">' + item.quantity + ' total</span></div>' +
-                    (ok ? '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg">📝 Borrow</button>' : '<span class="text-xs font-bold text-red-500">Out of stock</span>') +
+                    '<div class="flex items-center justify-between pt-2 border-t border-gray-100">' +
+                    '<div class="flex items-center gap-2"><span class="text-xs font-medium text-gray-500">' + item.quantity + ' total</span></div>' +
+                    actionBtn +
                     '</div></div>';
             }).join('');
         }

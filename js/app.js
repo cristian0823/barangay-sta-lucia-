@@ -371,6 +371,8 @@ function isAdmin() {
 // Equipment Functions
 async function getEquipment() {
     const supabaseAvailable = await isSupabaseAvailable();
+    let equipmentList = [];
+
     if (supabaseAvailable) {
         // One-time auto-fix for the 210 Chairs bug based on user request
         await supabase.from('equipment').update({ available: 150 }).eq('name', 'Chairs').eq('available', 210);
@@ -380,18 +382,10 @@ async function getEquipment() {
         if (error || !data || data.length === 0) {
             console.log('[getEquipment] Supabase returned empty or error, falling back to localStorage');
             initializeLocalEquipment();
-            const localData = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
-            return localData.map(item => ({
-                ...item,
-                name: item.name || 'Unknown',
-                icon: item.icon || '📦',
-                description: item.description || '',
-                quantity: item.quantity || 0,
-                available: item.available || 0,
-                broken: item.broken || 0
-            }));
+            equipmentList = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        } else {
+            equipmentList = mapRecords(data);
         }
-        return mapRecords(data);
     } else {
         initializeLocalEquipment();
         let data = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
@@ -406,17 +400,46 @@ async function getEquipment() {
             return item;
         });
         if (chairsFixed) localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(data));
-
-        return data.map(item => ({
-            ...item,
-            name: item.name || 'Unknown',
-            icon: item.icon || '📦',
-            description: item.description || '',
-            quantity: item.quantity || 0,
-            available: item.available || 0,
-            broken: item.broken || 0
-        }));
+        equipmentList = data;
     }
+
+    // Process overdue locks
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const lockedNames = new Set();
+    
+    if (supabaseAvailable) {
+        const { data: bData } = await supabase.from('borrowings').select('equipment, return_date').eq('status', 'approved');
+        if (bData) {
+            for (const b of bData) {
+                const retDate = new Date(b.return_date);
+                retDate.setDate(retDate.getDate() + 1); // 1 day tolerance
+                retDate.setHours(23,59,59,999);
+                if (today > retDate) lockedNames.add(b.equipment);
+            }
+        }
+    } else {
+        const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+        for (const b of borrowings) {
+            if (b.status === 'approved') {
+                const retDate = new Date(b.returnDate || b.return_date);
+                retDate.setDate(retDate.getDate() + 1); // 1 day tolerance
+                retDate.setHours(23,59,59,999);
+                if (today > retDate) lockedNames.add(b.equipment);
+            }
+        }
+    }
+
+    return equipmentList.map(item => ({
+        ...item,
+        name: item.name || 'Unknown',
+        icon: item.icon || '📦',
+        description: item.description || '',
+        quantity: item.quantity || 0,
+        available: item.available || 0,
+        broken: item.broken || 0,
+        isLocked: lockedNames.has(item.name || 'Unknown')
+    }));
 }
 
 async function updateEquipment(id, updates) {
@@ -534,12 +557,38 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
     const supabaseAvailable = await isSupabaseAvailable();
 
     if (supabaseAvailable) {
+        // --- SUSPENSION CHECK ---
+        const { data: dbUser } = await supabase.from('users').select('suspension_end').eq('id', user.id).single();
+        if (dbUser && dbUser.suspension_end) {
+            const suspensionDate = new Date(dbUser.suspension_end);
+            if (new Date() < suspensionDate) {
+                const formatter = new Intl.DateTimeFormat('en-PH', { dateStyle: 'medium', timeStyle: 'short' });
+                return { success: false, message: `Your account is temporarily suspended from borrowing equipment until ${formatter.format(suspensionDate)} due to previous late returns.` };
+            }
+        }
+
         const { data: item } = await supabase.from('equipment').select('*').eq('id', equipmentId).single();
         if (!item) return { success: false, message: 'Equipment not found' };
-        if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available` };
 
-        // Deduct available count immediately upon request (User preference)
-        await supabase.from('equipment').update({ available: item.available - quantity }).eq('id', equipmentId);
+        // --- OVERDUE LOCK CHECK ---
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const { data: activeBorrowings } = await supabase.from('borrowings').select('return_date').eq('equipment', item.name).eq('status', 'approved');
+        let isLocked = false;
+        if (activeBorrowings) {
+            for (const b of activeBorrowings) {
+                const retDate = new Date(b.return_date);
+                retDate.setDate(retDate.getDate() + 1); // 1 day extension allowed
+                retDate.setHours(23,59,59,999);
+                if (today > retDate) { isLocked = true; break; }
+            }
+        }
+        if (isLocked) return { success: false, message: `Borrowing for ${item.name} is temporarily disabled system-wide due to unreturned items from other users.` };
+
+        if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available right now` };
+
+        // DO NOT deduct available count immediately upon request. Handled during approval RPC.
+
 
         // Insert borrowing
         const { error } = await supabase.from('borrowings').insert([{
@@ -560,17 +609,41 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
     } else {
         // Local fallback
         initializeLocalEquipment();
+        
+        // Local user suspension check
+        const usersLocal = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
+        const dbUserLocal = usersLocal.find(u => u.id === user.id);
+        if (dbUserLocal && dbUserLocal.suspension_end) {
+            const suspensionDate = new Date(dbUserLocal.suspension_end);
+            if (new Date() < suspensionDate) {
+                const formatter = new Intl.DateTimeFormat('en-PH', { dateStyle: 'medium', timeStyle: 'short' });
+                return { success: false, message: `Your account is temporarily suspended from borrowing equipment until ${formatter.format(suspensionDate)} due to previous late returns.` };
+            }
+        }
+
         const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
         const item = equipment.find(e => e.id === equipmentId);
         if (!item) return { success: false, message: 'Equipment not found' };
-        if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available` };
 
-        // Update available count immediately
-        item.available -= quantity;
-        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+        const today = new Date(); today.setHours(0,0,0,0);
+        let isLocked = false;
+        for (const b of borrowings) {
+            if (b.equipment === item.name && b.status === 'approved') {
+                const retDate = new Date(b.returnDate || b.return_date);
+                retDate.setDate(retDate.getDate() + 1); // 1 day extension
+                retDate.setHours(23,59,59,999);
+                if (today > retDate) { isLocked = true; break; }
+            }
+        }
+        if (isLocked) return { success: false, message: `Borrowing for ${item.name} is temporarily disabled system-wide due to unreturned items.` };
+
+        if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available right now` };
+
+        // Update available count strictly upon approval, not now.
 
         // Add borrowing record
-        const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+        // borrowings array already fetched above
         const newBorrowing = {
             id: Date.now(),
             userId: user.id,
@@ -669,22 +742,33 @@ async function approveEquipmentRequest(borrowingId) {
     
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        // Update the status to approved (We bypass the RPC because stock is already deducted at request time)
-        const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
+        // Use RPC to ensure stock is deducted atomically
+        const { data, error } = await supabase.rpc('approve_equipment_request', { borrowing_id: borrowingId, admin_user_id: user.id });
         if (error) return { success: false, message: error.message };
+        if (data && !data.success) return data;
         
         await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
-        return { success: true, message: 'Status updated to approved' }; 
+        return data || { success: true, message: 'Status updated to approved' }; 
     } else {
         // Local fallback
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
         const index = borrowings.findIndex(b => b.id === borrowingId);
         if (index === -1) return { success: false, message: 'Borrowing record not found' };
 
+        if (borrowings[index].status !== 'pending') return { success: false, message: 'Request is not pending.' };
+
+        // Deduct stock strictly on approval
+        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
+        if (itemIndex !== -1) {
+            if (equipment[itemIndex].available < borrowings[index].quantity) return { success: false, message: 'Not enough equipment available to approve this.' };
+            equipment[itemIndex].available -= borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        }
+
         borrowings[index].status = 'approved';
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
         
-        // Stock was already deducted at request time, no need to deduct here
         logActivity(`Borrow Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to approved` };
     }
@@ -708,6 +792,42 @@ async function returnEquipmentRequest(borrowingId) {
         const index = borrowings.findIndex(b => b.id === borrowingId);
         if (index === -1) return { success: false, message: 'Borrowing record not found' };
 
+        const b = borrowings[index];
+        if (b.status !== 'approved') return { success: false, message: 'Request is not actively borrowed.' };
+
+        // Check for late return penalty
+        let isLate = false;
+        let suspensionDays = 0;
+        let offenseCount = 0;
+        
+        const returnedDate = new Date();
+        const expectedReturn = new Date(b.returnDate || b.return_date);
+        expectedReturn.setDate(expectedReturn.getDate() + 1);
+        expectedReturn.setHours(23, 59, 59, 999);
+
+        if (returnedDate > expectedReturn) {
+            isLate = true;
+            const usersLocal = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
+            const userIndex = usersLocal.findIndex(u => u.id === b.user_id || u.username === b.username);
+            
+            if (userIndex !== -1) {
+                offenseCount = (usersLocal[userIndex].offense_count || 0) + 1;
+                usersLocal[userIndex].offense_count = offenseCount;
+
+                if (offenseCount === 1) suspensionDays = 0;
+                else if (offenseCount === 2) suspensionDays = 3;
+                else if (offenseCount === 3) suspensionDays = 7;
+                else suspensionDays = 30;
+
+                if (suspensionDays > 0) {
+                    const susEnd = new Date();
+                    susEnd.setDate(susEnd.getDate() + suspensionDays);
+                    usersLocal[userIndex].suspension_end = susEnd.toISOString();
+                }
+                localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(usersLocal));
+            }
+        }
+
         borrowings[index].status = 'returned';
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
@@ -720,7 +840,12 @@ async function returnEquipmentRequest(borrowingId) {
         }
         
         logActivity(`Borrow Returned`, `Admin marked request for ${borrowings[index].quantity}x ${borrowings[index].equipment} as returned (Local)`);
-        return { success: true, message: `Status updated to returned` };
+        
+        if (isLate) {
+            if (suspensionDays > 0) return { success: true, message: `Equipment returned. User suspended for ${suspensionDays} days due to late return (Offense #${offenseCount}).` };
+            else return { success: true, message: `Equipment returned. User issued a warning for late return (Offense #1).` };
+        }
+        return { success: true, message: `Equipment marked as returned successfully.` };
     }
 }
 
@@ -730,12 +855,7 @@ async function rejectEquipmentRequest(borrowingId, reason) {
         const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
         if (!borrowing) return { success: false, message: 'Borrowing record not found' };
 
-        // Restore stock since request was rejected
-        const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
-        if (item) {
-            await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
-        }
-
+        // No need to restore stock since request was pending and never deducted
         const { error } = await supabase.from('borrowings').update({ status: 'rejected', rejection_reason: reason }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
         
@@ -750,14 +870,6 @@ async function rejectEquipmentRequest(borrowingId, reason) {
         borrowings[index].status = 'rejected';
         borrowings[index].rejection_reason = reason;
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
-        
-        // Restore stock
-        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
-        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
-        if (itemIndex !== -1) {
-            equipment[itemIndex].available += borrowings[index].quantity;
-            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-        }
 
         logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to rejected` };
@@ -775,12 +887,7 @@ async function cancelBorrowingRequest(borrowingId) {
         if (!borrowing) return { success: false, message: 'Request not found' };
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // Restore stock since it was deducted when requested
-        const { data: item } = await supabase.from('equipment').select('*').eq('name', borrowing.equipment).single();
-        if (item) {
-            await supabase.from('equipment').update({ available: item.available + borrowing.quantity }).eq('id', item.id);
-        }
-
+        // No need to restore stock since it was never deducted
         await supabase.from('borrowings').delete().eq('id', borrowingId);
         await logActivity('Borrow Cancelled', `User ${user.fullName || user.username} cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
@@ -791,14 +898,7 @@ async function cancelBorrowingRequest(borrowingId) {
         if (index === -1) return { success: false, message: 'Request not found' };
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // Restore equipment availability because it was deducted when initially requested
-        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
-        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
-        if (itemIndex !== -1) {
-            equipment[itemIndex].available += borrowings[index].quantity;
-            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-        }
-
+        // No need to restore local stock since it was never deducted
         borrowings.splice(index, 1);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
         logActivity('Borrow Cancelled', `Local User ${user.fullName || user.username} cancelled their request for ${borrowings[index].quantity}x ${borrowings[index].equipment}`);
