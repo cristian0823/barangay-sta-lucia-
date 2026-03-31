@@ -1309,7 +1309,7 @@
         }
 
         async function cancelReq(id) {
-            if (!confirm('Cancel this request?')) return;
+            if (!await showConfirmModal('Cancel this request?', 'Cancel Request', 'Yes, Cancel', 'No', 'warning')) return;
             const result = await cancelBorrowingRequest(id);
             if (result.success) {
                 showToast(result.message, 'success');

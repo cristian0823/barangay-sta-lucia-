@@ -3838,7 +3838,7 @@
             }
 
             async function adminDeleteUserConfirm(userId, username) {
-                if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+                if (!await showConfirmModal(`Delete user "${username}"? This cannot be undone.`, "Delete User", "Yes, Delete", "Cancel", "danger")) return;
                 const result = await deleteUser(userId);
                 showAlert(result.message, result.success ? 'success' : 'error');
                 if (result.success) { loadUsers(); loadStats(); }
@@ -4058,7 +4058,7 @@
             }
 
             async function cancelCourtBookingAdmin(bookingId) {
-                if (confirm('Are you sure you want to cancel this court booking?')) {
+                if (await showConfirmModal('Are you sure you want to cancel this court booking?', 'Cancel Booking', 'Yes, Cancel', 'No', 'warning')) {
                     const result = await cancelCourtBooking(bookingId);
                     if (result.success) {
                         showAlert('Booking cancelled', 'success');
@@ -4070,7 +4070,7 @@
             }
 
             async function deleteCourtBooking(bookingId) {
-                if (confirm('Are you sure you want to permanently delete this court booking?')) {
+                if (await showConfirmModal('Are you sure you want to permanently delete this court booking?', 'Delete Booking', 'Yes, Delete', 'Cancel', 'danger')) {
                     const result = await (typeof window.deleteBooking === 'function' ? window.deleteBooking(bookingId) : supabase.from('court_bookings').delete().eq('id', bookingId));
                     if (result.success || !result.error) {
                         showAlert('Court booking deleted', 'success');
@@ -4083,7 +4083,7 @@
             }
 
             async function deleteConcernAdmin(concernId) {
-                if (confirm('Are you sure you want to permanently delete this concern?')) {
+                if (await showConfirmModal('Are you sure you want to permanently delete this concern?', 'Delete Concern', 'Yes, Delete', 'Cancel', 'danger')) {
                     if (typeof window.deleteConcern === 'function') {
                         const result = await window.deleteConcern(concernId);
                         if (result.success) {
@@ -4103,7 +4103,7 @@
             }
 
             async function approveRequest(id) {
-                if (confirm('Approve this request?')) {
+                if (await showConfirmModal('Approve this request?', 'Approve Request', 'Approve', 'Cancel', 'info')) {
                     const result = await approveEquipmentRequest(id);
                     if (result && result.success) {
                         showAlert('Request approved', 'success');
@@ -4132,7 +4132,7 @@
             async function confirmRejectEq() {
                 const reason = document.getElementById('rejectEqReasonText').value.trim();
                 if (!reason) {
-                    alert('Please enter a reason for rejection.');
+                    showAlert('Please enter a reason for rejection.', 'error');
                     return;
                 }
                 const result = await rejectEquipmentRequest(_currentRejectEqId, reason);
@@ -4148,7 +4148,7 @@
             }
 
             async function returnRequest(id) {
-                if (confirm('Mark this equipment as returned?')) {
+                if (await showConfirmModal('Mark this equipment as returned?', 'Return Equipment', 'Yes, Returned', 'Cancel', 'info')) {
                     const result = await returnEquipmentRequest(id);
                     if (result && result.success) {
                         showAlert('Equipment marked as returned', 'success');
@@ -4331,7 +4331,7 @@
             }
 
             async function handleDeleteEvent(id) {
-                if (confirm('Delete this event?')) {
+                if (await showConfirmModal('Delete this event?', 'Delete Event', 'Yes, Delete', 'Cancel', 'danger')) {
                     const result = await deleteEvent(id);
                     if (result.success !== false) { // Handle both explicit false and undefined success cases
                         showAlert('Event deleted', 'success');
@@ -4601,7 +4601,7 @@
             async function printReport(title, dataPromise, keysToInclude) {
                 const rawData = await dataPromise;
                 if (!rawData || rawData.length === 0) {
-                    alert("No data available to print.");
+                    showAlert("No data available to print.", "warning");
                     return;
                 }
                 // Filter keys
@@ -4827,7 +4827,7 @@
             }
 
             async function approveAdminBooking(bookingId) {
-                if (!confirm('Approve this booking?')) return;
+                if (!await showConfirmModal('Approve this booking?', 'Approve Booking', 'Approve', 'Cancel', 'info')) return;
                 try {
                     const { error } = await supabase.from('court_bookings')
                         .update({ status: 'approved', admin_comment: null })
@@ -4855,7 +4855,7 @@
             async function confirmReject() {
                 const reason = document.getElementById('rejectReasonText').value.trim();
                 if (!reason) {
-                    alert('Please enter a reason for rejection.');
+                    showAlert('Please enter a reason for rejection.', 'error');
                     return;
                 }
                 try {
@@ -5317,7 +5317,7 @@
             }
 
             window.adminRemoveBooking = async function (id) {
-                if (!confirm('Remove this booking?')) return;
+                if (!await showConfirmModal('Remove this booking?', 'Remove Booking', 'Yes, Remove', 'Cancel', 'danger')) return;
                 const res = await cancelCourtBooking(id);
                 if (res.success) {
                     showAlert('Booking removed.', 'success');
@@ -5329,7 +5329,7 @@
             };
 
             window.adminRemoveEvent = async function (id) {
-                if (!confirm('Delete this event?')) return;
+                if (!await showConfirmModal('Delete this event?', 'Delete Event', 'Yes, Delete', 'Cancel', 'danger')) return;
                 const res = await deleteEvent(id);
                 if (res.success) {
                     showAlert('Event removed.', 'success');
@@ -5575,7 +5575,7 @@
                         const response = document.getElementById('adminConcernResponse').value.trim();
 
                         if (!response) {
-                            alert('Please write a response.');
+                            showAlert('Please write a response.', 'warning');
                             return;
                         }
 

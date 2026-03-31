@@ -1307,7 +1307,7 @@
         });
 
         async function cancelEqRequest(id) {
-            if (!confirm("Cancel this equipment request?")) return;
+            if (!await showConfirmModal("Cancel this equipment request?", "Cancel Request", "Yes, Cancel", "No", "warning")) return;
             const res = await cancelBorrowingRequest(id);
             if (res.success) { showToast(res.message, 'success'); loadEquipmentView(); loadDashboardStats(); }
             else { showToast(res.message, 'error'); }
@@ -1438,7 +1438,7 @@
         }
 
         async function deleteMyConcern(id) {
-            if (!confirm("Delete this concern?")) return;
+            if (!await showConfirmModal("Delete this concern?", "Delete Concern", "Yes, Delete", "Cancel", "danger")) return;
             const res = await deleteConcern(id);
             if (res.success) { showToast('Concern deleted'); loadConcernsView(); loadDashboardStats(); }
             else { showToast(res.message, 'error'); }
@@ -1870,7 +1870,7 @@
                 showToast('You have reached the 3-cancellation limit. You can book again tomorrow.', 'error');
                 return;
             }
-            if (!confirm('Are you sure you want to cancel this reservation? This counts toward your 3-cancellation limit.')) return;
+            if (!await showConfirmModal('Are you sure you want to cancel this reservation? This counts toward your 3-cancellation limit.', 'Cancel Reservation', 'Yes, Cancel', 'No', 'warning')) return;
             const res = await cancelCourtBooking(id);
             if (res.success) {
                 showToast('Reservation cancelled (' + (cancelledCount + 1) + '/3 cancellations used).', 'success');
@@ -1889,7 +1889,7 @@
                 showToast('You have reached the 3-cancellation limit for equipment requests.', 'error');
                 return;
             }
-            if (!confirm('Cancel this equipment request? (' + cancelledEqCount + '/3 cancellations used)')) return;
+            if (!await showConfirmModal('Cancel this equipment request? (' + cancelledEqCount + '/3 cancellations used)', 'Cancel Request', 'Yes, Cancel', 'No', 'warning')) return;
             const res = await cancelCourtBooking(id); // borrowings cancel shares same pattern
             if (res.success) {
                 showToast('Equipment request cancelled.', 'success');
@@ -2022,8 +2022,8 @@
         });
 
         async function deleteSettingsAccount() {
-            if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
-            if (!confirm('Final warning: all your data will be permanently deleted.')) return;
+            if (!await showConfirmModal('Are you sure you want to delete your account? This cannot be undone.', 'Delete Account', 'Proceed', 'Cancel', 'danger')) return;
+            if (!await showConfirmModal('Final warning: all your data will be permanently deleted.', 'Final Warning', 'Yes, Delete Completely', 'Cancel', 'danger')) return;
             if (typeof window.deleteUser === 'function') await window.deleteUser(user.id);
             else await supabase.from('users').delete().eq('id', user.id);
             logoutUser();

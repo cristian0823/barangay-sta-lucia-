@@ -840,7 +840,7 @@
         }
 
         async function deleteBooking(bookingId) {
-            if (confirm('Are you sure you want to delete this booking?')) {
+            if (await showConfirmModal('Are you sure you want to delete this booking?', 'Delete Booking', 'Yes, Delete', 'Cancel', 'danger')) {
                 const result = await window.deleteBooking(bookingId); // Avoid self-reference
                 if (result.success) {
                     showToast(result.message, 'success');

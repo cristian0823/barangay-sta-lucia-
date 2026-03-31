@@ -449,8 +449,8 @@
         });
 
         async function deleteMyAccount() {
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                if (confirm('This is your final warning. All your data will be permanently deleted.')) {
+            if (await showConfirmModal('Are you sure you want to delete your account? This action cannot be undone.', 'Delete Account', 'Yes, Delete', 'Cancel', 'danger')) {
+                if (await showConfirmModal('This is your final warning. All your data will be permanently deleted.', 'Final Warning', 'Delete Permanently', 'Cancel', 'danger')) {
                     // Try to delete via supabase users table, assuming deleteUser(id) exists in app.js
                     if (typeof window.deleteUser === 'function') {
                         await window.deleteUser(user.id);

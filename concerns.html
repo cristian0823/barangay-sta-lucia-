@@ -706,7 +706,7 @@
 
         // Delete concern
         async function handleDelete(concernId) {
-            if (!confirm('Delete this concern? This cannot be undone.')) return;
+            if (!await showConfirmModal('Delete this concern? This cannot be undone.', 'Delete Concern', 'Yes, Delete', 'Cancel', 'danger')) return;
             const result = await deleteConcern(concernId);
             if (result.success) {
                 showToast('Concern deleted', 'success');

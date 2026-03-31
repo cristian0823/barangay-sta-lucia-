@@ -625,7 +625,7 @@
                 const returnDate = new Date();
                 returnDate.setDate(returnDate.getDate() + 7);
                 const result = await borrowEquipment(id, parseInt(qty), today, returnDate.toISOString().split('T')[0], 'Personal use');
-                alert(result.message);
+                showAlert(result.message, result.success ? 'success' : 'error');
                 if (result.success) await loadAllData();
             }
         }
@@ -643,7 +643,7 @@
             `).join('');
         }
 
-        async function cancelRequest(id) { if (confirm('Cancel this request?')) { await cancelBorrowingRequest(id); await loadAllData(); }}
+        async function cancelRequest(id) { if (await showConfirmModal('Cancel this request?', 'Cancel', 'Yes, Cancel', 'No', 'warning')) { await cancelBorrowingRequest(id); await loadAllData(); }}
 
         async function loadMyConcerns() {
             const concerns = await getMyConcerns();
@@ -672,7 +672,7 @@
             `).join('');
         }
 
-        async function cancelBooking(id) { if (confirm('Cancel this booking?')) { await cancelCourtBooking(id); await loadAllData(); }}
+        async function cancelBooking(id) { if (await showConfirmModal('Cancel this booking?', 'Cancel', 'Yes, Cancel', 'No', 'warning')) { await cancelCourtBooking(id); await loadAllData(); }}
 
         function showSection(section, btn) {
             document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
@@ -689,7 +689,7 @@
                 document.getElementById('concernDesc').value,
                 document.getElementById('concernAddress').value
             );
-            alert(result.message);
+            showAlert(result.message, result.success ? 'success' : 'error');
             if (result.success) { this.reset(); await loadAllData(); }
         });
 
@@ -702,7 +702,7 @@
                 end_time: document.getElementById('bookingEndTime').value,
                 purpose: document.getElementById('bookingPurpose').value
             });
-            alert(result.message);
+            showAlert(result.message, result.success ? 'success' : 'error');
             if (result.success) { this.reset(); await loadAllData(); }
         });
     </script>

@@ -2162,24 +2162,158 @@ function getStatusBadge(status) {
 function showAlert(message, type = 'success') {
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type}`;
-    alertDiv.textContent = message;
+    
+    // Add an icon based on type
+    const icon = type === 'success' ? '✅ ' : (type === 'error' ? '❌ ' : 'ℹ️ ');
+    alertDiv.innerHTML = `<span style="margin-right:8px">${icon}</span> <span style="font-weight:600">${message}</span>`;
 
-    // Provide basic styling since CSS might miss this
+    // Modern styling for premium aesthetics
     alertDiv.style.position = 'fixed';
-    alertDiv.style.top = '20px';
-    alertDiv.style.right = '20px';
-    alertDiv.style.padding = '15px 25px';
-    alertDiv.style.borderRadius = '5px';
+    alertDiv.style.top = '30px';
+    alertDiv.style.right = '30px';
+    alertDiv.style.padding = '16px 24px';
+    alertDiv.style.borderRadius = '12px';
     alertDiv.style.color = '#fff';
-    alertDiv.style.zIndex = '9999';
-    alertDiv.style.background = type === 'success' ? '#10b981' : '#ef4444';
-    alertDiv.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+    alertDiv.style.zIndex = '10000';
+    alertDiv.style.display = 'flex';
+    alertDiv.style.alignItems = 'center';
+    alertDiv.style.fontFamily = 'inherit';
+    alertDiv.style.background = type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)';
+    alertDiv.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    alertDiv.style.transform = 'translateX(100%) opacity-0';
+    alertDiv.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
 
     document.body.appendChild(alertDiv);
 
+    // Animate in
+    requestAnimationFrame(() => {
+        alertDiv.style.transform = 'translateX(0)';
+        alertDiv.style.opacity = '1';
+    });
+
     setTimeout(() => {
-        alertDiv.remove();
-    }, 3000);
+        alertDiv.style.transform = 'translateX(100%)';
+        alertDiv.style.opacity = '0';
+        setTimeout(() => alertDiv.remove(), 400);
+    }, 3500);
+}
+
+function showConfirmModal(message, title = 'Confirmation', confirmText = 'OK', cancelText = 'Cancel', type = 'warning') {
+    return new Promise((resolve) => {
+        // Create backdrop
+        const backdrop = document.createElement('div');
+        backdrop.style.position = 'fixed';
+        backdrop.style.inset = '0';
+        backdrop.style.zIndex = '10000';
+        backdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.45)';
+        backdrop.style.backdropFilter = 'blur(6px)';
+        backdrop.style.display = 'flex';
+        backdrop.style.alignItems = 'center';
+        backdrop.style.justifyContent = 'center';
+        backdrop.style.opacity = '0';
+        backdrop.style.transition = 'opacity 0.3s ease';
+
+        // Create Modal Box
+        const modal = document.createElement('div');
+        modal.style.backgroundColor = 'white';
+        // Check if dark mode is active roughly
+        if (document.documentElement.classList.contains('dark')) {
+            modal.style.backgroundColor = '#1f2937';
+            modal.style.color = '#f9fafb';
+        }
+        modal.style.borderRadius = '20px';
+        modal.style.padding = '32px';
+        modal.style.width = '90%';
+        modal.style.maxWidth = '420px';
+        modal.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.05)';
+        modal.style.transform = 'scale(0.9) translateY(20px)';
+        modal.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        modal.style.fontFamily = 'inherit';
+        modal.style.position = 'relative';
+        modal.style.overflow = 'hidden';
+
+        // Simple elegant background accent
+        const accent = document.createElement('div');
+        accent.style.position = 'absolute';
+        accent.style.top = '0';
+        accent.style.left = '0';
+        accent.style.right = '0';
+        accent.style.height = '6px';
+        accent.style.background = (type === 'danger' || type === 'error') ? 'linear-gradient(90deg, #ef4444, #f87171)' : 'linear-gradient(90deg, #10b981, #34d399)';
+        modal.appendChild(accent);
+
+        // Icon based on type
+        let iconHtml = '';
+        if (type === 'warning') {
+            iconHtml = `<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #fef3c7, #fde68a);color:#d97706;display:flex;align-items:center;justify-content:center;margin:0 auto 20px auto;font-size:32px;box-shadow:0 4px 6px -1px rgba(217, 119, 6, 0.2);">⚠️</div>`;
+        } else if (type === 'danger' || type === 'error') {
+            iconHtml = `<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #fee2e2, #fca5a5);color:#ef4444;display:flex;align-items:center;justify-content:center;margin:0 auto 20px auto;font-size:32px;box-shadow:0 4px 6px -1px rgba(239, 68, 68, 0.2);">🗑️</div>`;
+        } else {
+            iconHtml = `<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #dbeafe, #bfdbfe);color:#2563eb;display:flex;align-items:center;justify-content:center;margin:0 auto 20px auto;font-size:32px;box-shadow:0 4px 6px -1px rgba(37, 99, 235, 0.2);">❓</div>`;
+        }
+
+        const contentWrapper = document.createElement('div');
+        contentWrapper.style.textAlign = 'center';
+        contentWrapper.innerHTML = `
+            ${iconHtml}
+            <h3 style="margin:0 0 12px 0;font-size:22px;font-weight:800;letter-spacing:-0.5px;">${title}</h3>
+            <p style="margin:0 0 32px 0;font-size:15px;color:#6b7280;line-height:1.6;padding:0 10px;">${message}</p>
+            <div style="display:flex;justify-content:center;gap:14px;width:100%;">
+                <button id="modal-cancel-btn" style="flex:1;padding:12px 0;border-radius:12px;border:2px solid #e5e7eb;background:transparent;color:#4b5563;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;">${cancelText}</button>
+                <button id="modal-confirm-btn" style="flex:1;padding:12px 0;border-radius:12px;border:none;background:${type === 'danger' || type === 'error' ? '#ef4444' : '#10b981'};color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 10px 15px -3px ${type === 'danger' || type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'};">${confirmText}</button>
+            </div>
+        `;
+        modal.appendChild(contentWrapper);
+
+        backdrop.appendChild(modal);
+        document.body.appendChild(backdrop);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            backdrop.style.opacity = '1';
+            modal.style.transform = 'scale(1) translateY(0)';
+        });
+
+        // Hover effects handling
+        const btnCancel = modal.querySelector('#modal-cancel-btn');
+        const btnConfirm = modal.querySelector('#modal-confirm-btn');
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        btnCancel.onmouseover = () => {
+            btnCancel.style.backgroundColor = isDark ? '#374151' : '#f3f4f6';
+            btnCancel.style.borderColor = isDark ? '#4b5563' : '#d1d5db';
+            btnCancel.style.color = isDark ? '#fff' : '#111827';
+        };
+        btnCancel.onmouseout = () => {
+            btnCancel.style.backgroundColor = 'transparent';
+            btnCancel.style.borderColor = isDark ? '#374151' : '#e5e7eb';
+            btnCancel.style.color = isDark ? '#9ca3af' : '#4b5563';
+        };
+        
+        btnConfirm.onmouseover = () => {
+            btnConfirm.style.transform = 'translateY(-2px)';
+            btnConfirm.style.filter = 'brightness(1.1)';
+        };
+        btnConfirm.onmouseout = () => {
+            btnConfirm.style.transform = 'translateY(0)';
+            btnConfirm.style.filter = 'brightness(1)';
+        };
+
+        const close = (result) => {
+            backdrop.style.opacity = '0';
+            modal.style.transform = 'scale(0.9) translateY(20px)';
+            setTimeout(() => {
+                if (backdrop.parentNode) document.body.removeChild(backdrop);
+                resolve(result);
+            }, 300);
+        };
+
+        btnCancel.onclick = () => close(false);
+        btnConfirm.onclick = () => close(true);
+        backdrop.onclick = (e) => {
+            if (e.target === backdrop) close(false);
+        };
+    });
 }
 
 function requireAuth() {

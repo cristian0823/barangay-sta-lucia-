@@ -275,7 +275,7 @@ const js = `
         });
 
         async function cancelEqRequest(id) {
-            if (!confirm("Cancel this equipment request?")) return;
+            if (!await showConfirmModal('Cancel this equipment request?', 'Cancel Request', 'Yes, Cancel', 'No', 'warning')) return;
             const res = await cancelBorrowingRequest(id);
             if (res.success) { showToast(res.message, 'success'); loadEquipmentView(); loadDashboardStats(); }
             else { showToast(res.message, 'error'); }
@@ -318,7 +318,7 @@ const js = `
         });
 
         async function deleteMyConcern(id) {
-            if (!confirm("Delete this concern?")) return;
+            if (!await showConfirmModal('Delete this concern?', 'Delete Concern', 'Yes, Delete', 'Cancel', 'danger')) return;
             const res = await deleteConcern(id);
             if (res.success) { showToast('Concern deleted'); loadConcernsView(); loadDashboardStats(); }
             else { showToast(res.message, 'error'); }
@@ -415,7 +415,7 @@ const js = `
         });
 
         async function cancelMyReservation(id) {
-            if (!confirm("Cancel this reservation?")) return;
+            if (!await showConfirmModal('Cancel this reservation?', 'Cancel Reservation', 'Yes, Cancel', 'No', 'warning')) return;
             const res = await cancelCourtBooking(id);
             if (res.success) { showToast("Reservation cancelled", 'success'); loadBookingView(); loadDashboardStats(); }
             else { showToast(res.message, 'error'); }
