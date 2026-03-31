@@ -34,7 +34,27 @@
         .content-panel { display: none !important; animation: fadeIn 0.3s ease; }
         .content-panel.active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glass-card { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 4px 24px -4px rgba(0,0,0,0.07); }
+        .glass-card { 
+            background-color: var(--panel-bg); 
+            border: 1px solid rgba(0, 0, 0, 0.06); 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), border-box 0 0 0 1px rgba(0,0,0,0.02); 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease; 
+        }
+        [data-theme="dark"] .glass-card {
+            background-color: rgba(31, 41, 55, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08);
+        }
+        [data-theme="dark"] .glass-card:hover {
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
+        }
         /* Professional field styling */
         .form-field { display: flex; flex-direction: column; gap: 6px; }
         .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
@@ -344,9 +364,9 @@
                         <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Booking</h2>
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
-                    <div class="flex p-1 rounded-xl gap-1" style="background-color: var(--border-color);">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer">🏀 Basketball Court</button>
-                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-5 py-2 rounded-lg font-bold text-sm transition border-none cursor-pointer" style="color: var(--text-muted);">🏢 Multi-Purpose Hall</button>
+                    <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95">🏀 Basketball Court</button>
+                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);">🏢 Multi-Purpose Hall</button>
                     </div>
                 </div>
                 <div class="glass-card p-6 mb-8">
@@ -1457,8 +1477,13 @@
         // ==========================================
         function switchVenue(venue) {
             selectedVenue = venue;
-            document.getElementById('sel-basketball').className = venue === 'basketball' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer' : 'px-5 py-2 rounded-lg font-bold text-sm transition border-none cursor-pointer';
-            document.getElementById('sel-multipurpose').className = venue === 'multipurpose' ? 'px-5 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white shadow-sm transition border-none cursor-pointer' : 'px-5 py-2 rounded-lg font-bold text-sm transition border-none cursor-pointer';
+            
+            const activeClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95';
+            const inactiveClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800';
+
+            document.getElementById('sel-basketball').className = venue === 'basketball' ? activeClass : inactiveClass;
+            document.getElementById('sel-multipurpose').className = venue === 'multipurpose' ? activeClass : inactiveClass;
+            
             document.getElementById('sel-basketball').style.color = venue === 'basketball' ? '' : 'var(--text-muted)';
             document.getElementById('sel-multipurpose').style.color = venue === 'multipurpose' ? '' : 'var(--text-muted)';
             // Update panel title dynamically
