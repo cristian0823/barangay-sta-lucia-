@@ -1142,33 +1142,34 @@ async function adminDeleteConcern(concernId) {
 // Events Functions
 async function getEvents() {
     const supabaseAvailable = await isSupabaseAvailable();
+    // Always load localStorage events (these exist when Supabase insert failed as fallback)
+    const localData = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+    const localEvents = localData.map(item => ({
+        ...item,
+        title: item.title || 'Untitled Event',
+        date: item.date || '',
+        time: item.time || '',
+        end_time: item.end_time || '',
+        location: item.location || 'TBD',
+        organizer: item.organizer || 'Barangay',
+        status: item.status || 'approved',
+        _isLocal: true
+    }));
+
     if (supabaseAvailable) {
         const { data, error } = await supabase.from('events').select('*').order('date', { ascending: true });
-        // Only fall back to localStorage on actual error, not on empty results
         if (error) {
-            const localData = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
-            return localData.map(item => ({
-                ...item,
-                title: item.title || 'Untitled Event',
-                date: item.date || '',
-                time: item.time || '',
-                end_time: item.end_time || '',
-                location: item.location || 'TBD',
-                organizer: item.organizer || 'Barangay'
-            }));
+            // Supabase error — return local only
+            return localEvents;
         }
-        return mapRecords(data || []);
+        const remoteEvents = mapRecords(data || []);
+        // Merge: start with remote, then add any local events that don't exist in remote
+        // Match by title + date to avoid duplicates when event was later synced
+        const remoteTitleDates = new Set(remoteEvents.map(e => `${e.title}__${e.date}`));
+        const uniqueLocal = localEvents.filter(e => !remoteTitleDates.has(`${e.title}__${e.date}`));
+        return [...remoteEvents, ...uniqueLocal];
     } else {
-        const data = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
-        return data.map(item => ({
-            ...item,
-            title: item.title || 'Untitled Event',
-            date: item.date || '',
-            time: item.time || '',
-            end_time: item.end_time || '',
-            location: item.location || 'TBD',
-            organizer: item.organizer || 'Barangay'
-        }));
+        return localEvents;
     }
 }
 

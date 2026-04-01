@@ -3364,10 +3364,14 @@
                         return false;
                     }
 
-                    _e.filter(e => e.status === 'approved' && !isBookingTimePassed(e.date, e.time || e.endTime)).forEach(e => {
+                    // For EVENTS: only hide if the date is strictly BEFORE today (not time-based)
+                    // This ensures today's events always show as violet on the calendar
+                    const todayStr = new Date().toLocaleDateString('en-CA');
+                    _e.filter(e => e.status === 'approved' && e.date >= todayStr).forEach(e => {
                         eventDates[e.date] = eventDates[e.date] || [];
                         eventDates[e.date].push(e);
                     });
+                    // For BOOKINGS: still use time-based check (hide once the slot is over)
                     _b.filter(b => (b.status === 'approved' || b.status === 'pending') && b.venue === selectedVenue && !isBookingTimePassed(b.date, b.time)).forEach(b => {
                         bookingDates[b.date] = bookingDates[b.date] || [];
                         bookingDates[b.date].push(b);

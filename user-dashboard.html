@@ -1509,7 +1509,10 @@
             monthTitle.textContent = months[currentMonth] + ' ' + currentYear;
             const bookings = await getCourtBookings(); const events = await getEvents();
             const approvedEvents = events.filter(e => e.status === 'approved');
-            const eventDates = {}; approvedEvents.forEach(e => { eventDates[e.date] = e; });
+            const todayDateStr = new Date().toLocaleDateString('en-CA');
+            const eventDates = {}; 
+            // Only filter by DATE (>= today), not by time — so today's events always show as violet
+            approvedEvents.filter(e => e.date >= todayDateStr).forEach(e => { eventDates[e.date] = e; });
             const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' && b.venue === selectedVenue);
             const bookedDates = venueBookings.map(b => b.date);
             grid.innerHTML = '';
