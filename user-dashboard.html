@@ -879,7 +879,7 @@
                     <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" rows="3" style="color: var(--text-main); background: var(--input-bg);"></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeEditBorrowingModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition" style="color: var(--text-main); border: 1px solid var(--border-color);">Cancel</button>
+                    <button type="button" onclick="closeEditBorrowingModal()" style="padding:8px 18px;background:#ffffff;color:#1f2937;border:2px solid #d1d5db;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#f3f4f6';this.style.borderColor='#10b981';this.style.color='#065f46'" onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1d5db';this.style.color='#1f2937'">Cancel</button>
                     <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Changes</button>
                 </div>
             </form>
@@ -1413,6 +1413,30 @@
             if (empty) empty.style.display = (visible === 0 && query) ? 'block' : 'none';
         }
 
+        function getEquipmentIcon(name) {
+            if (!name) return '📦';
+            const n = name.toLowerCase();
+            if (n.includes('chair')) return '🪑';
+            if (n.includes('table')) return '🪵';
+            if (n.includes('tent')) return '⛺';
+            if (n.includes('ladder')) return '🪜';
+            if (n.includes('microphone') || n.includes('mic')) return '🎤';
+            if (n.includes('speaker')) return '🔊';
+            if (n.includes('fan')) return '🌀';
+            if (n.includes('projector')) return '📽️';
+            if (n.includes('generator')) return '⚡';
+            if (n.includes('extension') || n.includes('cord')) return '🔌';
+            if (n.includes('sound') || n.includes('audio')) return '🎵';
+            if (n.includes('banner') || n.includes('tarpaulin') || n.includes('tarp')) return '🏷️';
+            if (n.includes('light') || n.includes('bulb') || n.includes('lamp')) return '💡';
+            if (n.includes('broom') || n.includes('mop') || n.includes('cleaning')) return '🧹';
+            if (n.includes('basketball') || n.includes('ball')) return '🏀';
+            if (n.includes('camera')) return '📷';
+            if (n.includes('computer') || n.includes('laptop')) return '💻';
+            if (n.includes('umbrella')) return '☂️';
+            return '📦';
+        }
+
         async function loadMyBorrowingsList() {
             const list = await getMyBorrowings();
             const container = document.getElementById('myBorrowingsList');
@@ -1428,8 +1452,9 @@
                 if (b.status === 'rejected') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-700"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>Rejected</span>'; statusBorder = 'border-red-200'; }
                 if (b.status === 'returned') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>Returned</span>'; statusBorder = 'border-blue-200'; }
                 const rejectionMsg = (b.status === 'rejected' && b.rejection_reason) ? '<div class="mt-3 text-xs bg-red-50 p-3 rounded-lg border border-red-100"><strong class="text-red-700">Reason:</strong> <span class="text-red-600">' + b.rejection_reason + '</span></div>' : '';
+                const equipIcon = getEquipmentIcon(b.equipment);
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + statusBorder + ' shadow-sm hover:shadow-md transition-all duration-300">' +
-                    '<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div class="flex items-start gap-4"><div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-2xl shadow-sm">📦</div>' +
+                    '<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div class="flex items-start gap-4"><div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-2xl shadow-sm">' + equipIcon + '</div>' +
                     '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-emerald-600 font-bold">x' + b.quantity + '</span></p></div></div>' +
                     '<div class="flex flex-col items-end gap-2">' + statusBadge + '<div class="text-xs text-gray-400 flex items-center gap-1">📅 ' + formatDate(b.borrowDate) + ' → ' + formatDate(b.returnDate) + '</div></div></div>' +
                     rejectionMsg +
