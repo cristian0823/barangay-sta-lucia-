@@ -4082,9 +4082,12 @@
                 // Sort newest first
                 borrowings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
 
-                container.innerHTML = borrowings.map(b => `
+                container.innerHTML = borrowings.map(b => {
+                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+                    return `
                 <tr>
-                    <td><strong>${b.userName}</strong></td>
+                    <td>${residentDisplay}</td>
                     <td>${b.equipment}</td>
                     <td>${b.quantity}</td>
                     <td>${b.borrowDate} to ${b.returnDate}</td>
@@ -4097,9 +4100,8 @@
                         ` : b.status === 'approved' ? `
                             <button onclick="returnRequest(${b.id})" style="padding:6px 12px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">🔙 Returned</button>
                         ` : '<span style="font-size:12px;color:#9ca3af;padding:6px 0;">—</span>'}
-                    </td>
                 </tr>
-            `).join('');
+            `}).join('');
             }
 
             async function loadCourtBookings() {
@@ -5022,11 +5024,14 @@
                     const statusBadge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${b.status}</span>`;
                     const timeStr = b.timeRange || b.time || '—';
                     const residentName = b.userName || b.user_name || b.username || 'Unknown';
+                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+
                     const isPending = b.status === 'pending' || b.status === 'booked';
                     const actions = isPending
                         ? `<div style="display:flex;gap:6px;flex-wrap:wrap;"><button onclick="approveAdminBooking(${b.id})" style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✅ Approve</button><button onclick="openRejectModal(${b.id})" style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">❌ Reject</button></div>`
                         : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
-                    return `<tr><td style="font-weight:600;">${residentName}</td><td>${b.date}</td><td>${timeStr}</td><td>${b.purpose || '—'}</td><td>${statusBadge}</td><td>${actions}</td></tr>`;
+                    return `<tr><td>${residentDisplay}</td><td>${b.date}</td><td>${timeStr}</td><td>${b.purpose || '—'}</td><td>${statusBadge}</td><td>${actions}</td></tr>`;
                 }).join('');
             }
 
@@ -5080,6 +5085,9 @@
                     const timeStr = b.timeRange || b.time || '—';
 
                     const residentName = b.userName || b.user_name || b.username || 'Unknown';
+                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+
                     const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
 
                     const isPending = b.status === 'pending' || b.status === 'booked';
@@ -5092,7 +5100,7 @@
                     </div>` : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
 
                     return `<tr>
-                    <td><strong>${residentName}</strong></td>
+                    <td>${residentDisplay}</td>
                     <td>${venue}</td>
                     <td>${b.date}</td>
                     <td>${timeStr}</td>
@@ -5777,10 +5785,12 @@
                     tbody.innerHTML = concerns.map(c => {
                         const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#374151' };
                         const badge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${c.status}</span>`;
+                        const submittedAt = c.createdAt || c.created_at ? new Date(c.createdAt || c.created_at).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : '—';
+                        const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || '—'}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
                         const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
                         const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;">✅ Replied</div>` : '';
                         return `<tr>
-                        <td><strong>${c.userName || '—'}</strong></td>
+                        <td>${residentDisplay}</td>
                         <td>${c.address || '—'}</td>
                         <td>${c.category || '—'}</td>
                         <td>${c.title || '—'}${responseNote}</td>
