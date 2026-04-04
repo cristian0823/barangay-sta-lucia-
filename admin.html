@@ -2215,6 +2215,19 @@
                             <button class="btn btn-small btn-light" onclick="loadAdminBookings()">🔄 Refresh</button>
                         </div>
                         <div class="section-content" style="padding: 0;">
+                            <!-- Filter Tabs & Search Bar -->
+                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--border); gap:12px; background:var(--panel-bg);">
+                                <div style="display:flex; gap:8px; flex-wrap:wrap;" id="courtBookingTabs">
+                                    <button class="btn btn-small cb-tab-btn" style="background:var(--primary); color:#fff; border:none;" onclick="setCourtBookingTab('All', this)">All</button>
+                                    <button class="btn btn-small cb-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setCourtBookingTab('Pending', this)">Pending</button>
+                                    <button class="btn btn-small cb-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setCourtBookingTab('Approved', this)">Approved</button>
+                                    <button class="btn btn-small cb-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setCourtBookingTab('Cancelled', this)">Cancelled/Rejected</button>
+                                </div>
+                                <div style="position:relative; max-width:250px; width:100%;">
+                                    <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);">🔍</span>
+                                    <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                                </div>
+                            </div>
                             <div class="admin-tables">
                                 <table class="data-table">
                                     <thead>
@@ -2248,6 +2261,19 @@
                             <button class="btn btn-small btn-light" onclick="loadMultipurposeBookings()">🔄 Refresh</button>
                         </div>
                         <div class="section-content" style="padding: 0;">
+                            <!-- Filter Tabs & Search Bar -->
+                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--border); gap:12px; background:var(--panel-bg);">
+                                <div style="display:flex; gap:8px; flex-wrap:wrap;" id="mpBookingTabs">
+                                    <button class="btn btn-small mp-tab-btn" style="background:var(--primary); color:#fff; border:none;" onclick="setMpBookingTab('All', this)">All</button>
+                                    <button class="btn btn-small mp-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setMpBookingTab('Pending', this)">Pending</button>
+                                    <button class="btn btn-small mp-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setMpBookingTab('Approved', this)">Approved</button>
+                                    <button class="btn btn-small mp-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setMpBookingTab('Cancelled', this)">Cancelled/Rejected</button>
+                                </div>
+                                <div style="position:relative; max-width:250px; width:100%;">
+                                    <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);">🔍</span>
+                                    <input type="text" id="mpBookingSearch" placeholder="Search resident..." oninput="loadMultipurposeBookings()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                                </div>
+                            </div>
                             <div class="admin-tables">
                                 <table class="data-table">
                                     <thead>
@@ -4052,6 +4078,10 @@
                 }
 
                 noRequests.style.display = 'none';
+
+                // Sort newest first
+                borrowings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+
                 container.innerHTML = borrowings.map(b => `
                 <tr>
                     <td><strong>${b.userName}</strong></td>
@@ -4918,6 +4948,34 @@
 
             let _rejectBookingId = null;
 
+            let _cbTabFilter = 'All';
+            function setCourtBookingTab(tab, btn) {
+                _cbTabFilter = tab;
+                document.querySelectorAll('.cb-tab-btn').forEach(b => {
+                    b.style.background = 'var(--bg)';
+                    b.style.color = 'var(--text)';
+                    b.style.border = '1px solid var(--border)';
+                });
+                btn.style.background = 'var(--primary)';
+                btn.style.color = '#fff';
+                btn.style.border = 'none';
+                loadAdminBookings();
+            }
+
+            let _mpTabFilter = 'All';
+            function setMpBookingTab(tab, btn) {
+                _mpTabFilter = tab;
+                document.querySelectorAll('.mp-tab-btn').forEach(b => {
+                    b.style.background = 'var(--bg)';
+                    b.style.color = 'var(--text)';
+                    b.style.border = '1px solid var(--border)';
+                });
+                btn.style.background = 'var(--primary)';
+                btn.style.color = '#fff';
+                btn.style.border = 'none';
+                loadMultipurposeBookings();
+            }
+
             async function loadMultipurposeBookings() {
                 const tbody = document.getElementById('multipurposeBookingsTable');
                 const empty = document.getElementById('noMultipurposeBookings');
@@ -4925,11 +4983,31 @@
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
                 const allBookings = await getCourtBookings();
-                const mpBookings = allBookings.filter(b =>
+                let mpBookings = allBookings.filter(b =>
                     b.venue === 'multipurpose' ||
                     (b.venueName && b.venueName.toLowerCase().includes('multi'))
                 );
-                mpBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // Sort by newest first
+                mpBookings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+
+                // Apply Tab Filter
+                if (_mpTabFilter !== 'All') {
+                    if (_mpTabFilter === 'Cancelled') {
+                        mpBookings = mpBookings.filter(b => b.status === 'cancelled' || b.status === 'rejected');
+                    } else {
+                        mpBookings = mpBookings.filter(b => b.status === _mpTabFilter.toLowerCase());
+                    }
+                }
+
+                // Apply Search
+                const searchTxt = (document.getElementById('mpBookingSearch')?.value || '').toLowerCase();
+                if (searchTxt) {
+                    mpBookings = mpBookings.filter(b => {
+                        const name = (b.userName || b.user_name || b.username || '').toLowerCase();
+                        return name.includes(searchTxt);
+                    });
+                }
 
                 if (!mpBookings.length) {
                     tbody.innerHTML = '';
@@ -4957,8 +5035,28 @@
                 const empty = document.getElementById('noCourtBookings');
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
-                const allBookings = await getCourtBookings();
-                allBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                let allBookings = await getCourtBookings();
+                
+                // Sort by newest first
+                allBookings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+
+                // Apply Tab Filter
+                if (_cbTabFilter !== 'All') {
+                    if (_cbTabFilter === 'Cancelled') {
+                        allBookings = allBookings.filter(b => b.status === 'cancelled' || b.status === 'rejected');
+                    } else {
+                        allBookings = allBookings.filter(b => b.status === _cbTabFilter.toLowerCase());
+                    }
+                }
+
+                // Apply Search
+                const searchTxt = (document.getElementById('courtBookingSearch')?.value || '').toLowerCase();
+                if (searchTxt) {
+                    allBookings = allBookings.filter(b => {
+                        const name = (b.userName || b.user_name || b.username || '').toLowerCase();
+                        return name.includes(searchTxt);
+                    });
+                }
 
                 if (!allBookings.length) {
                     tbody.innerHTML = '';
@@ -5665,6 +5763,9 @@
                         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">📋 No concerns submitted yet</td></tr>';
                         return;
                     }
+
+                    // Sort newest first
+                    concerns.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
 
                     const statusColors = {
                         pending: { bg: '#fef9c3', color: '#854d0e' },
