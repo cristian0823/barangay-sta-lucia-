@@ -3768,8 +3768,15 @@
                 // Auto-load section data on switch
                 if (section === 'activity-log') loadActivityLog();
                 if (section === 'users') loadUsers();
-                if (section === 'court-bookings') loadAdminBookings();
-                if (section === 'multipurpose-bookings') loadMultipurposeBookings();
+                if (section === 'court-bookings') {
+                    loadAdminBookings();
+                    startBookingPolling();
+                } else if (section === 'multipurpose-bookings') {
+                    loadMultipurposeBookings();
+                    startBookingPolling();
+                } else {
+                    stopBookingPolling();
+                }
                 if (section === 'events') { renderAdminCalendar(); }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -4948,6 +4955,27 @@
             // COURT BOOKINGS ADMIN MANAGEMENT
             // ==========================================
 
+            // ── Live Polling for booking sections ──────────────────────
+            let _bookingPollInterval = null;
+
+            function startBookingPolling() {
+                stopBookingPolling(); // clear any existing
+                _bookingPollInterval = setInterval(() => {
+                    const courtVisible   = document.getElementById('court-bookings-section')?.style.display !== 'none';
+                    const mpVisible      = document.getElementById('multipurpose-bookings-section')?.style.display !== 'none';
+                    if (courtVisible)  loadAdminBookings();
+                    if (mpVisible)     loadMultipurposeBookings();
+                }, 15000); // every 15 seconds
+            }
+
+            function stopBookingPolling() {
+                if (_bookingPollInterval) {
+                    clearInterval(_bookingPollInterval);
+                    _bookingPollInterval = null;
+                }
+            }
+            // ────────────────────────────────────────────────────────────
+
             let _rejectBookingId = null;
 
             let _cbTabFilter = 'All';
@@ -5041,7 +5069,23 @@
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
                 let allBookings = await getCourtBookings();
-                
+
+                // Filter to COURT / BASKETBALL only
+                allBookings = allBookings.filter(b =>
+                    b.venue === 'basketball' ||
+                    b.venue === 'court' ||
+                    (b.venueName && (
+                        b.venueName.toLowerCase().includes('basketball') ||
+                        b.venueName.toLowerCase().includes('court')
+                    )) ||
+                    // Include entries where venue is not explicitly multipurpose
+                    (!b.venue && !b.venueName) ||
+                    (b.venue && !b.venue.toLowerCase().includes('multi') && !b.venue.toLowerCase().includes('multipurpose') && b.venue !== 'hall')
+                ).filter(b => !(
+                    (b.venue && (b.venue.toLowerCase().includes('multi') || b.venue === 'hall')) ||
+                    (b.venueName && b.venueName.toLowerCase().includes('multi'))
+                ));
+
                 // Sort oldest first (First Come First Serve)
                 allBookings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
