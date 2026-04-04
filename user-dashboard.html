@@ -857,29 +857,29 @@
             <form id="editBorrowingForm" class="space-y-4">
                 <input type="hidden" id="editBorrowingId">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Equipment</label>
-                    <input type="text" id="editBorrowingItemName" disabled class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:border-gray-600">
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Equipment</label>
+                    <input type="text" id="editBorrowingItemName" disabled class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:border-gray-600" style="color: var(--text-main); background: var(--input-bg);">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Quantity</label>
-                    <input type="number" id="editBorrowingQty" min="1" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Quantity</label>
+                    <input type="number" id="editBorrowingQty" min="1" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" style="color: var(--text-main); background: var(--input-bg);">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Borrow Date</label>
-                        <input type="date" id="editBorrowingStartDate" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                        <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Borrow Date</label>
+                        <input type="date" id="editBorrowingStartDate" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600" style="color: var(--text-main); background: var(--input-bg);">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Return Date</label>
-                        <input type="date" id="editBorrowingEndDate" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                        <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Return Date</label>
+                        <input type="date" id="editBorrowingEndDate" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600" style="color: var(--text-main); background: var(--input-bg);">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Purpose</label>
-                    <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" rows="3"></textarea>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Purpose</label>
+                    <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" rows="3" style="color: var(--text-main); background: var(--input-bg);"></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeEditBorrowingModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg">Cancel</button>
+                    <button type="button" onclick="closeEditBorrowingModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition" style="color: var(--text-main); border: 1px solid var(--border-color);">Cancel</button>
                     <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Changes</button>
                 </div>
             </form>

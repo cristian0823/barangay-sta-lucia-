@@ -914,6 +914,20 @@ async function updateBorrowingRequest(borrowingId, updates) {
         if (!borrowing) return { success: false, message: 'Request not found' };
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be edited' };
 
+        // Validate quantity against available stock
+        if (updates.quantity !== undefined) {
+            const { data: equipItem } = await supabase.from('equipment').select('available, quantity').eq('name', borrowing.equipment).single();
+            if (equipItem) {
+                const maxAllowed = equipItem.quantity; // total stock (admins set quantity on approval, so compare against total)
+                if (updates.quantity > maxAllowed) {
+                    return { success: false, message: `Cannot request more than ${maxAllowed} units. Only ${maxAllowed} ${borrowing.equipment} exist in total.` };
+                }
+                if (updates.quantity < 1) {
+                    return { success: false, message: 'Quantity must be at least 1.' };
+                }
+            }
+        }
+
         const payload = {};
         if (updates.quantity !== undefined) payload.quantity = updates.quantity;
         if (updates.borrowDate !== undefined) payload.borrow_date = updates.borrowDate;
@@ -930,6 +944,21 @@ async function updateBorrowingRequest(borrowingId, updates) {
         const index = borrowings.findIndex(b => b.id === borrowingId && b.userId === user.id);
         if (index === -1) return { success: false, message: 'Request not found' };
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be edited' };
+
+        // Validate quantity against local equipment stock
+        if (updates.quantity !== undefined) {
+            const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+            const equip = equipment.find(e => e.name === borrowings[index].equipment);
+            if (equip) {
+                const maxAllowed = equip.quantity;
+                if (updates.quantity > maxAllowed) {
+                    return { success: false, message: `Cannot request more than ${maxAllowed} units. Only ${maxAllowed} ${borrowings[index].equipment} exist in total.` };
+                }
+                if (updates.quantity < 1) {
+                    return { success: false, message: 'Quantity must be at least 1.' };
+                }
+            }
+        }
 
         if (updates.quantity !== undefined) borrowings[index].quantity = updates.quantity;
         if (updates.borrowDate !== undefined) borrowings[index].borrowDate = updates.borrowDate;
