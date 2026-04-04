@@ -1415,6 +1415,15 @@
 
         function getEquipmentIcon(name) {
             if (!name) return '📦';
+            // 1. Check actual equipment list from DB/localStorage first (exact match)
+            if (allEquipmentList && allEquipmentList.length > 0) {
+                const found = allEquipmentList.find(e => e.name && e.name.toLowerCase() === name.toLowerCase());
+                if (found && found.icon) return found.icon;
+                // Also try partial match
+                const partial = allEquipmentList.find(e => e.name && (name.toLowerCase().includes(e.name.toLowerCase()) || e.name.toLowerCase().includes(name.toLowerCase())));
+                if (partial && partial.icon) return partial.icon;
+            }
+            // 2. Keyword fallback
             const n = name.toLowerCase();
             if (n.includes('chair')) return '🪑';
             if (n.includes('table')) return '🪵';
@@ -1438,6 +1447,10 @@
         }
 
         async function loadMyBorrowingsList() {
+            // Ensure equipment list is loaded so icons work correctly
+            if (!allEquipmentList || allEquipmentList.length === 0) {
+                try { allEquipmentList = await getEquipment(); } catch(e) { /* continue with keyword fallback */ }
+            }
             const list = await getMyBorrowings();
             const container = document.getElementById('myBorrowingsList');
             if (!list || list.length === 0) {
