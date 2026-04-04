@@ -4086,8 +4086,13 @@
 
                 noRequests.style.display = 'none';
 
-                // Sort oldest first (First Come First Serve)
-                borrowings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
+                // Pending first, then oldest within same status (FCFS)
+                const _reqStatusPriority = s => s === 'pending' ? 0 : 1;
+                borrowings.sort((a, b) => {
+                    const sp = _reqStatusPriority(a.status) - _reqStatusPriority(b.status);
+                    if (sp !== 0) return sp;
+                    return new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0);
+                });
 
                 container.innerHTML = borrowings.map(b => {
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
@@ -5086,8 +5091,13 @@
                     (b.venueName && b.venueName.toLowerCase().includes('multi'))
                 ));
 
-                // Sort oldest first (First Come First Serve)
-                allBookings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
+                // Pending first, then oldest within same status (FCFS)
+                const _bookStatusPriority = s => (s === 'pending' || s === 'booked') ? 0 : 1;
+                allBookings.sort((a, b) => {
+                    const sp = _bookStatusPriority(a.status) - _bookStatusPriority(b.status);
+                    if (sp !== 0) return sp;
+                    return new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0);
+                });
 
                 // Apply Tab Filter
                 if (_cbTabFilter !== 'All') {
