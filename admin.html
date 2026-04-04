@@ -4079,12 +4079,12 @@
 
                 noRequests.style.display = 'none';
 
-                // Sort newest first
-                borrowings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                // Sort oldest first (First Come First Serve)
+                borrowings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
                 container.innerHTML = borrowings.map(b => {
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
-                    const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
                     return `
                 <tr>
                     <td>${residentDisplay}</td>
@@ -4117,8 +4117,8 @@
 
                 noBookings.style.display = 'none';
 
-                // Sort newest first (by date created descending)
-                bookings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                // Sort oldest first (First Come First Serve)
+                bookings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
                 container.innerHTML = bookings.map(booking => {
                     const statusClass = booking.status === 'cancelled'
@@ -4990,8 +4990,8 @@
                     (b.venueName && b.venueName.toLowerCase().includes('multi'))
                 );
                 
-                // Sort by newest first
-                mpBookings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                // Sort oldest first (First Come First Serve)
+                mpBookings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
                 // Apply Tab Filter
                 if (_mpTabFilter !== 'All') {
@@ -5025,7 +5025,7 @@
                     const timeStr = b.timeRange || b.time || '—';
                     const residentName = b.userName || b.user_name || b.username || 'Unknown';
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
-                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
 
                     const isPending = b.status === 'pending' || b.status === 'booked';
                     const actions = isPending
@@ -5042,8 +5042,8 @@
 
                 let allBookings = await getCourtBookings();
                 
-                // Sort by newest first
-                allBookings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                // Sort oldest first (First Come First Serve)
+                allBookings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
                 // Apply Tab Filter
                 if (_cbTabFilter !== 'All') {
@@ -5086,7 +5086,7 @@
 
                     const residentName = b.userName || b.user_name || b.username || 'Unknown';
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
-                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
 
                     const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
 
@@ -5772,8 +5772,8 @@
                         return;
                     }
 
-                    // Sort newest first
-                    concerns.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                    // Sort oldest first (First Come First Serve)
+                    concerns.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
                     const statusColors = {
                         pending: { bg: '#fef9c3', color: '#854d0e' },
@@ -5786,7 +5786,7 @@
                         const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#374151' };
                         const badge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${c.status}</span>`;
                         const submittedAt = c.createdAt || c.created_at ? new Date(c.createdAt || c.created_at).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : '—';
-                        const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || '—'}</strong><br><small style="color:#6b7280;font-size:11px;">Req: ${submittedAt}</small></div>`;
+                        const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || '—'}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
                         const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
                         const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;">✅ Replied</div>` : '';
                         return `<tr>
