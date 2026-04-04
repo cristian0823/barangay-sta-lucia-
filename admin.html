@@ -4073,6 +4073,49 @@
 
 
 
+            // ── Instant row-update helpers (no full table reload) ──────────────
+            function _buildStatusBadge(status, colorsMap) {
+                const sc = colorsMap[status] || { bg: '#f1f5f9', color: '#374151' };
+                return `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${status}</span>`;
+            }
+            function _updateReqRow(id, newStatus) {
+                const row = document.querySelector(`tr[data-req-id="${id}"]`);
+                if (!row) return;
+                const cells = row.querySelectorAll('td');
+                const colors = { pending:{bg:'#fef9c3',color:'#854d0e'}, approved:{bg:'#dcfce7',color:'#166534'}, rejected:{bg:'#fee2e2',color:'#991b1b'}, returned:{bg:'#f1f5f9',color:'#374151'}, cancelled:{bg:'#f1f5f9',color:'#475569'} };
+                if (cells[5]) cells[5].innerHTML = _buildStatusBadge(newStatus, colors);
+                if (cells[6]) {
+                    if (newStatus === 'approved') {
+                        cells[6].innerHTML = `<button onclick="returnRequest(${id})" style="padding:6px 12px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🔙 Returned</button>`;
+                    } else {
+                        cells[6].innerHTML = '<span style="font-size:12px;color:#9ca3af;padding:6px 0;">—</span>';
+                    }
+                }
+            }
+            function _updateBookingRow(id, newStatus, reason) {
+                const row = document.querySelector(`tr[data-bid="${id}"]`);
+                if (!row) return;
+                const cells = row.querySelectorAll('td');
+                const colors = { pending:{bg:'#fef9c3',color:'#854d0e'}, approved:{bg:'#dcfce7',color:'#166534'}, booked:{bg:'#dcfce7',color:'#166534'}, rejected:{bg:'#fee2e2',color:'#991b1b'}, cancelled:{bg:'#f1f5f9',color:'#475569'} };
+                if (cells[5]) cells[5].innerHTML = _buildStatusBadge(newStatus, colors);
+                if (reason && cells[4] && !cells[4].innerHTML.includes('Admin:')) {
+                    cells[4].innerHTML += `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${reason}</div>`;
+                }
+                if (cells[6]) cells[6].innerHTML = '<span style="font-size:12px;color:#9ca3af;">—</span>';
+            }
+            function _updateConcernRow(id, newStatus, assignee, hasResponse) {
+                const row = document.querySelector(`tr[data-cid="${id}"]`);
+                if (!row) return;
+                const cells = row.querySelectorAll('td');
+                const colors = { pending:{bg:'#fef9c3',color:'#854d0e'}, 'in-progress':{bg:'#dbeafe',color:'#1e40af'}, resolved:{bg:'#dcfce7',color:'#166534'}, closed:{bg:'#f1f5f9',color:'#475569'} };
+                if (cells[6]) cells[6].innerHTML = _buildStatusBadge(newStatus, colors);
+                if (cells[4] && assignee) cells[4].textContent = assignee;
+                if (cells[3] && hasResponse && !cells[3].querySelector('.replied-note')) {
+                    cells[3].insertAdjacentHTML('beforeend', '<div class="replied-note" style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;">✅ Replied</div>');
+                }
+            }
+            // ────────────────────────────────────────────────────────────────────
+
             async function loadRequests() {
                 const borrowings = await getAllBorrowings();
                 const container = document.getElementById('requestsTable');
@@ -4098,7 +4141,7 @@
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
                     const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
                     return `
-                <tr>
+                <tr data-req-id="${b.id}">
                     <td>${residentDisplay}</td>
                     <td>${b.equipment}</td>
                     <td>${b.quantity}</td>
@@ -4329,10 +4372,9 @@
                 if (await showConfirmModal('Approve this request?', 'Approve Request', 'Approve', 'Cancel', 'info')) {
                     const result = await approveEquipmentRequest(id);
                     if (result && result.success) {
-                        showAlert('Request approved', 'success');
-                        await loadStats();
-                        await loadRequests();
-                        await loadEquipment();
+                        showAlert('Request approved ✅', 'success');
+                        _updateReqRow(id, 'approved');
+                        loadStats();
                     } else if (result) {
                         showAlert(result.message || 'Error approving request', 'error');
                     }
@@ -4358,13 +4400,13 @@
                     showAlert('Please enter a reason for rejection.', 'error');
                     return;
                 }
-                const result = await rejectEquipmentRequest(_currentRejectEqId, reason);
+                const rejEqId = _currentRejectEqId;
+                const result = await rejectEquipmentRequest(rejEqId, reason);
                 if (result && result.success) {
-                    showAlert('Request rejected', 'success');
+                    showAlert('Request rejected ❌', 'success');
                     closeRejectEqModal();
-                    await loadStats();
-                    await loadRequests();
-                    await loadEquipment();
+                    _updateReqRow(rejEqId, 'rejected');
+                    loadStats();
                 } else if (result) {
                     showAlert(result.message || 'Error rejecting request', 'error');
                 }
@@ -4374,10 +4416,9 @@
                 if (await showConfirmModal('Mark this equipment as returned?', 'Return Equipment', 'Yes, Returned', 'Cancel', 'info')) {
                     const result = await returnEquipmentRequest(id);
                     if (result && result.success) {
-                        showAlert('Equipment marked as returned', 'success');
-                        await loadStats();
-                        await loadRequests();
-                        await loadEquipment();
+                        showAlert('Equipment marked as returned 🔙', 'success');
+                        _updateReqRow(id, 'returned');
+                        loadStats();
                     } else if (result) {
                         showAlert(result.message || 'Error returning equipment', 'error');
                     }
@@ -5153,7 +5194,7 @@
                             style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">❌ Reject</button>
                     </div>` : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
 
-                    return `<tr>
+                    return `<tr data-bid="${b.id}">
                     <td>${residentDisplay}</td>
                     <td>${venue}</td>
                     <td>${b.date}</td>
@@ -5173,7 +5214,7 @@
                         .eq('id', bookingId);
                     if (error) throw error;
                     showAlert('✅ Booking approved!', 'success');
-                    await loadAdminBookings();
+                    _updateBookingRow(bookingId, 'approved');
                 } catch (e) {
                     showAlert('Error: ' + e.message, 'error');
                 }
@@ -5202,9 +5243,10 @@
                         .update({ status: 'rejected', admin_comment: reason })
                         .eq('id', _rejectBookingId);
                     if (error) throw error;
+                    const _rejBid = _rejectBookingId;
                     closeRejectModal();
                     showAlert('❌ Booking rejected.', 'success');
-                    await loadAdminBookings();
+                    _updateBookingRow(_rejBid, 'rejected', reason);
                 } catch (e) {
                     showAlert('Error: ' + e.message, 'error');
                 }
@@ -5843,7 +5885,7 @@
                         const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || '—'}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
                         const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
                         const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;">✅ Replied</div>` : '';
-                        return `<tr>
+                        return `<tr data-cid="${c.id}">
                         <td>${residentDisplay}</td>
                         <td>${c.address || '—'}</td>
                         <td>${c.category || '—'}</td>
@@ -5927,7 +5969,7 @@
                         if (ok) {
                             showAlert('✅ Response sent!', 'success');
                             closeAdminConcernModal();
-                            await loadConcerns();
+                            _updateConcernRow(id, status, assignee, !!response);
                         } else {
                             showAlert('Error sending response', 'error');
                         }
