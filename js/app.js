@@ -899,12 +899,49 @@ async function cancelBorrowingRequest(borrowingId) {
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
         // No need to restore local stock since it was never deducted
-        borrowings.splice(index, 1);
-        localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
-        logActivity('Borrow Cancelled', `Local User ${user.fullName || user.username} cancelled their request for ${borrowings[index].quantity}x ${borrowings[index].equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
     }
 }
+
+async function updateBorrowingRequest(borrowingId, updates) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Please login first' };
+
+    const supabaseAvailable = await isSupabaseAvailable();
+
+    if (supabaseAvailable) {
+        const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).eq('user_id', user.id).single();
+        if (!borrowing) return { success: false, message: 'Request not found' };
+        if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be edited' };
+
+        const payload = {};
+        if (updates.quantity !== undefined) payload.quantity = updates.quantity;
+        if (updates.borrowDate !== undefined) payload.borrow_date = updates.borrowDate;
+        if (updates.returnDate !== undefined) payload.return_date = updates.returnDate;
+        if (updates.purpose !== undefined) payload.purpose = updates.purpose;
+
+        const { error } = await supabase.from('borrowings').update(payload).eq('id', borrowingId);
+        if (error) return { success: false, message: error.message };
+
+        await logActivity('Borrow Updated', `User ${user.fullName || user.username} updated their equipment request`);
+        return { success: true, message: 'Request updated successfully' };
+    } else {
+        const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
+        const index = borrowings.findIndex(b => b.id === borrowingId && b.userId === user.id);
+        if (index === -1) return { success: false, message: 'Request not found' };
+        if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be edited' };
+
+        if (updates.quantity !== undefined) borrowings[index].quantity = updates.quantity;
+        if (updates.borrowDate !== undefined) borrowings[index].borrowDate = updates.borrowDate;
+        if (updates.returnDate !== undefined) borrowings[index].returnDate = updates.returnDate;
+        if (updates.purpose !== undefined) borrowings[index].purpose = updates.purpose;
+
+        localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
+        logActivity('Borrow Updated', `Local User ${user.fullName || user.username} updated their equipment request`);
+        return { success: true, message: 'Request updated successfully' };
+    }
+}
+
 
 // Concerns Functions
 async function submitConcern(category, title, description, address, imageFile = null) {
@@ -1116,8 +1153,61 @@ async function deleteConcern(concernId) {
     } else {
         const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
         const filtered = concerns.filter(c => c.id !== concernId || c.userId !== user.id);
-        localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(filtered));
         return { success: true, message: 'Concern deleted successfully' };
+    }
+}
+
+async function updateConcernRequest(concernId, updates) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Please login first' };
+
+    const supabaseAvailable = await isSupabaseAvailable();
+
+    if (supabaseAvailable) {
+        const { data: concern } = await supabase.from('concerns').select('*').eq('id', concernId).eq('user_id', user.id).single();
+        if (!concern) return { success: false, message: 'Concern not found' };
+        if (concern.status !== 'pending') return { success: false, message: 'Only pending concerns can be edited' };
+
+        const payload = {};
+        if (updates.title !== undefined) payload.title = updates.title;
+        if (updates.category !== undefined) payload.category = updates.category;
+        if (updates.address !== undefined) payload.address = updates.address;
+        
+        if (updates.description !== undefined) {
+             let finalDescription = updates.description;
+             if (concern.description && concern.description.includes('[ATTACHED_IMAGE_DATA]')) {
+                 const imgData = concern.description.split('[ATTACHED_IMAGE_DATA]')[1];
+                 finalDescription += "\n[ATTACHED_IMAGE_DATA]" + imgData;
+             }
+             payload.description = finalDescription;
+        }
+
+        const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
+        if (error) return { success: false, message: error.message };
+
+        await logActivity('Concern Updated', `User ${user.fullName || user.username} updated a concern: ${payload.title || concern.title}`);
+        return { success: true, message: 'Concern updated successfully' };
+    } else {
+        const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
+        const index = concerns.findIndex(c => c.id === concernId && c.userId === user.id);
+        if (index === -1) return { success: false, message: 'Concern not found' };
+        if (concerns[index].status !== 'pending') return { success: false, message: 'Only pending concerns can be edited' };
+
+        if (updates.title !== undefined) concerns[index].title = updates.title;
+        if (updates.category !== undefined) concerns[index].category = updates.category;
+        if (updates.address !== undefined) concerns[index].address = updates.address;
+        if (updates.description !== undefined) {
+             let finalDescription = updates.description;
+             if (concerns[index].description && concerns[index].description.includes('[ATTACHED_IMAGE_DATA]')) {
+                 const imgData = concerns[index].description.split('[ATTACHED_IMAGE_DATA]')[1];
+                 finalDescription += "\n[ATTACHED_IMAGE_DATA]" + imgData;
+             }
+             concerns[index].description = finalDescription;
+        }
+
+        localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
+        logActivity('Concern Updated', `Local User ${user.fullName || user.username} updated a concern`);
+        return { success: true, message: 'Concern updated successfully' };
     }
 }
 
@@ -1254,7 +1344,7 @@ function timeToMinutes(t) {
     return h * 60 + m;
 }
 
-async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings = false) {
+async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings = false, excludeBookingId = null) {
     const reqStart = timeToMinutes(startTime);
     const reqEnd = timeToMinutes(endTime || startTime);
     if (reqStart >= reqEnd && endTime) {
@@ -1266,7 +1356,7 @@ async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings 
         const allBookings = await getCourtBookings();
         const venueLabelCheck = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
         for (const b of allBookings) {
-            if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'admin_cancelled') {
+            if (b.date === date && b.status !== 'rejected' && b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'admin_cancelled' && String(b.id) !== String(excludeBookingId)) {
                 if (venue === 'all' || b.venue === venue || b.venueName === venueLabelCheck) {
                     let tRange = b.timeRange || b.time; 
                     if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
@@ -1390,6 +1480,71 @@ async function cancelCourtBooking(bookingId) {
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
         broadcastSync();
         return { success: true, message: 'Booking cancelled' };
+    }
+}
+
+async function updateCourtBooking(bookingId, updates) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Please login first' };
+
+    const supabaseAvailable = await isSupabaseAvailable();
+
+    let allBookings = [];
+    if (supabaseAvailable) {
+        const { data, error } = await supabase.from('court_bookings').select('*').eq('id', bookingId).eq('user_id', user.id).single();
+        if (error) return { success: false, message: 'Booking not found' };
+        allBookings = [data];
+    } else {
+        const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+        const index = bookings.findIndex(b => b.id === bookingId && b.userId === user.id);
+        if (index === -1) return { success: false, message: 'Booking not found' };
+        allBookings = [bookings[index]];
+    }
+
+    const booking = allBookings[0];
+    if (booking.status !== 'pending') return { success: false, message: 'Only pending bookings can be edited' };
+
+    const currentVenue = updates.venue || booking.venue || (booking.time && booking.time.includes('Multi-Purpose') ? 'multipurpose' : 'basketball');
+    const venueLabel = currentVenue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+    
+    let startTime = updates.time;
+    let endTime = updates.end_time;
+    if (!startTime) {
+         let tRange = booking.timeRange || booking.time; 
+         if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+         const parts = tRange.split(' – ').map(s => s.trim());
+         startTime = parts[0];
+         endTime = parts[1] || '';
+    }
+    
+    const overlapCheck = await checkTimeOverlap(booking.date, currentVenue, startTime, endTime, false, bookingId);
+    if (!overlapCheck.success) return overlapCheck;
+
+    const combinedTime = endTime ? `${venueLabel} | ${startTime} – ${endTime}` : `${venueLabel} | ${startTime}`;
+
+    if (supabaseAvailable) {
+        const payload = { time: combinedTime, venue: currentVenue };
+        if (updates.purpose !== undefined) payload.purpose = updates.purpose;
+
+        const { error } = await supabase.from('court_bookings').update(payload).eq('id', bookingId);
+        if (error) return { success: false, message: error.message };
+
+        await logActivity('Court Booking Updated', `User ${user.fullName || user.username} updated their booking for ${combinedTime}`);
+        broadcastSync();
+        return { success: true, message: 'Booking updated successfully' };
+    } else {
+        const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+        const index = bookings.findIndex(b => b.id === bookingId && b.userId === user.id);
+        
+        bookings[index].time = combinedTime;
+        bookings[index].venueName = venueLabel;
+        if (updates.purpose !== undefined) bookings[index].purpose = updates.purpose;
+        if (updates.venue !== undefined) bookings[index].venue = updates.venue;
+
+        localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        logActivity('Court Booking Updated', `Local User ${user.fullName || user.username} updated their booking for ${combinedTime}`);
+        broadcastSync();
+        return { success: true, message: 'Booking updated successfully' };
     }
 }
 

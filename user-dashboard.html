@@ -847,6 +847,291 @@
         </div>
     </div>
 
+    <!-- ========== EDIT BOOKING MODALS ========== -->
+    <div id="editBorrowingModal" class="fixed inset-0 z-[400] flex items-center justify-center hidden" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto" style="border: 1px solid var(--border-color);">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-bold text-xl" style="color: var(--text-main);">✏️ Edit Borrowing</h3>
+                <button onclick="closeEditBorrowingModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">&times;</button>
+            </div>
+            <form id="editBorrowingForm" class="space-y-4">
+                <input type="hidden" id="editBorrowingId">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Equipment</label>
+                    <input type="text" id="editBorrowingItemName" disabled class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:border-gray-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Quantity</label>
+                    <input type="number" id="editBorrowingQty" min="1" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Borrow Date</label>
+                        <input type="date" id="editBorrowingStartDate" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Return Date</label>
+                        <input type="date" id="editBorrowingEndDate" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Purpose</label>
+                    <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeEditBorrowingModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editConcernModal" class="fixed inset-0 z-[400] flex items-center justify-center hidden" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto" style="border: 1px solid var(--border-color);">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-bold text-xl" style="color: var(--text-main);">✏️ Edit Concern</h3>
+                <button onclick="closeEditConcernModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">&times;</button>
+            </div>
+            <form id="editConcernForm" class="space-y-4">
+                <input type="hidden" id="editConcernId">
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Title</label>
+                    <input type="text" id="editConcernTitle" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none w-full" style="background:var(--panel-bg); color:var(--text-main);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Category</label>
+                    <select id="editConcernCategory" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                        <option value="Infrastructure">Infrastructure (Roads, Lights)</option>
+                        <option value="Sanitation">Sanitation (Garbage, Drainage)</option>
+                        <option value="Peace & Order">Peace & Order (Noise, Security)</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Location / Address</label>
+                    <input type="text" id="editConcernAddress" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none w-full" style="background:var(--panel-bg); color:var(--text-main);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Description</label>
+                    <textarea id="editConcernDescription" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" rows="4" style="background:var(--panel-bg); color:var(--text-main);"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Note: Attached images cannot be changed.</p>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeEditConcernModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editCourtBookingModal" class="fixed inset-0 z-[400] flex items-center justify-center hidden" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-6 overflow-hidden" style="border: 1px solid var(--border-color);">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-bold text-xl" style="color: var(--text-main);">✏️ Edit Court Booking</h3>
+                <button onclick="closeEditCourtBookingModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <form id="editCourtBookingForm" class="space-y-4">
+                <input type="hidden" id="editCourtBookingId">
+                <div class="bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-200 text-sm">
+                    <strong>Date:</strong> <span id="editCourtDateDisplay"></span><br>
+                    <span class="text-xs opacity-80">(Cancel and rebook to change dates)</span>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Venue</label>
+                    <select id="editCourtVenue" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                        <option value="basketball">🏀 Basketball Court</option>
+                        <option value="multipurpose">🏢 Multi-Purpose Hall</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Start Time</label>
+                        <select id="editCourtStartTime" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">End Time</label>
+                        <select id="editCourtEndTime" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Purpose</label>
+                    <input type="text" id="editCourtPurpose" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditCourtBookingModal()" class="flex-1 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Modal Handlers for Edit Functionality
+        let allMyBorrowingsCache = [];
+        let allMyConcernsCache = [];
+        let allMyBookingsCache = [];
+
+        async function fetchEditRecords() {
+            allMyBorrowingsCache = await getMyBorrowings();
+            allMyConcernsCache = await getMyConcerns();
+            allMyBookingsCache = await getCourtBookings();
+        }
+
+        async function openEditBorrowingModal(id) {
+            await fetchEditRecords();
+            const record = allMyBorrowingsCache.find(b => b.id === id);
+            if (!record) return showToast('Record not found', 'error');
+
+            document.getElementById('editBorrowingId').value = record.id;
+            document.getElementById('editBorrowingItemName').value = record.equipment;
+            document.getElementById('editBorrowingQty').value = record.quantity;
+            document.getElementById('editBorrowingStartDate').value = record.borrowDate;
+            document.getElementById('editBorrowingEndDate').value = record.returnDate;
+            
+            let purpose = record.purpose || '';
+            const pMatch = purpose.match(/Purpose:\s*(.*)\s*\| Borrower:/);
+            if (pMatch) purpose = pMatch[1].trim();
+            document.getElementById('editBorrowingPurpose').value = purpose;
+
+            document.getElementById('editBorrowingModal').classList.remove('hidden');
+        }
+
+        function closeEditBorrowingModal() { document.getElementById('editBorrowingModal').classList.add('hidden'); }
+
+        document.getElementById('editBorrowingForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editBorrowingId').value);
+            const rawPurpose = document.getElementById('editBorrowingPurpose').value;
+            const record = allMyBorrowingsCache.find(b => b.id === id);
+            let finalPurpose = rawPurpose;
+            if (record && record.purpose) {
+                if (record.purpose.includes('Purpose: ') && record.purpose.includes(' | Borrower:')) {
+                    finalPurpose = record.purpose.replace(/Purpose:\s*(.*)\s*\|\s*Borrower:/, `Purpose: ${rawPurpose} | Borrower:`);
+                }
+            }
+
+            const updates = {
+                quantity: parseInt(document.getElementById('editBorrowingQty').value),
+                borrowDate: document.getElementById('editBorrowingStartDate').value,
+                returnDate: document.getElementById('editBorrowingEndDate').value,
+                purpose: finalPurpose
+            };
+
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = 'Saving...';
+            
+            const res = await updateBorrowingRequest(id, updates);
+            if (res.success) { showToast(res.message, 'success'); closeEditBorrowingModal(); loadMyBorrowingsList(); loadDashboardStats(); }
+            else { showToast(res.message, 'error'); }
+            
+            btn.disabled = false; btn.innerHTML = 'Save Changes';
+        });
+
+        async function openEditConcernModal(id) {
+            await fetchEditRecords();
+            const record = allMyConcernsCache.find(c => c.id === id);
+            if (!record) return showToast('Record not found', 'error');
+
+            document.getElementById('editConcernId').value = record.id;
+            document.getElementById('editConcernTitle').value = record.title;
+            document.getElementById('editConcernCategory').value = record.category;
+            document.getElementById('editConcernAddress').value = record.address;
+            
+            let description = record.description || '';
+            if (description.includes('[ATTACHED_IMAGE_DATA]')) {
+                description = description.split('[ATTACHED_IMAGE_DATA]')[0].trim();
+            }
+            document.getElementById('editConcernDescription').value = description;
+
+            document.getElementById('editConcernModal').classList.remove('hidden');
+        }
+
+        function closeEditConcernModal() { document.getElementById('editConcernModal').classList.add('hidden'); }
+
+        document.getElementById('editConcernForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editConcernId').value);
+            const updates = {
+                title: document.getElementById('editConcernTitle').value,
+                category: document.getElementById('editConcernCategory').value,
+                address: document.getElementById('editConcernAddress').value,
+                description: document.getElementById('editConcernDescription').value
+            };
+
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = 'Saving...';
+            
+            const res = await updateConcernRequest(id, updates);
+            if (res.success) { showToast(res.message, 'success'); closeEditConcernModal(); loadConcernsView(); loadDashboardStats(); }
+            else { showToast(res.message, 'error'); }
+            
+            btn.disabled = false; btn.innerHTML = 'Save Changes';
+        });
+
+        async function openEditCourtBookingModal(id) {
+            await fetchEditRecords();
+            const record = allMyBookingsCache.find(b => b.id === id);
+            if (!record) return showToast('Record not found', 'error');
+
+            document.getElementById('editCourtBookingId').value = record.id;
+            
+            const d = new Date(record.date);
+            document.getElementById('editCourtDateDisplay').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            
+            const venue = record.venue || (record.venueName && record.venueName.includes('Multi-Purpose') ? 'multipurpose' : 'basketball');
+            document.getElementById('editCourtVenue').value = venue;
+
+            const stSelect = document.getElementById('editCourtStartTime');
+            const etSelect = document.getElementById('editCourtEndTime');
+            stSelect.innerHTML = ''; etSelect.innerHTML = '';
+            for (let i = 8; i <= 21; i++) {
+                let h12 = i > 12 ? i - 12 : i;
+                let ampm = i >= 12 ? 'PM' : 'AM';
+                let timeStr = `${h12}:00 ${ampm}`;
+                stSelect.add(new Option(timeStr, timeStr));
+                etSelect.add(new Option(timeStr, timeStr));
+                
+                if (i !== 21) {
+                    timeStr = `${h12}:30 ${ampm}`;
+                    stSelect.add(new Option(timeStr, timeStr));
+                    etSelect.add(new Option(timeStr, timeStr));
+                }
+            }
+
+            let tRange = record.timeRange || record.time; 
+            if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+            const parts = tRange.split(' – ').map(s => s.trim());
+            stSelect.value = parts[0];
+            if (parts[1]) etSelect.value = parts[1];
+
+            document.getElementById('editCourtPurpose').value = record.purpose || '';
+
+            document.getElementById('editCourtBookingModal').classList.remove('hidden');
+        }
+
+        function closeEditCourtBookingModal() { document.getElementById('editCourtBookingModal').classList.add('hidden'); }
+
+        document.getElementById('editCourtBookingForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editCourtBookingId').value);
+            const updates = {
+                venue: document.getElementById('editCourtVenue').value,
+                time: document.getElementById('editCourtStartTime').value,
+                end_time: document.getElementById('editCourtEndTime').value,
+                purpose: document.getElementById('editCourtPurpose').value
+            };
+
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = 'Saving...';
+            
+            const res = await updateCourtBooking(id, updates);
+            if (res.success) { showToast(res.message, 'success'); closeEditCourtBookingModal(); loadBookingView(); loadDashboardStats(); }
+            else { showToast(res.message, 'error'); }
+            
+            btn.disabled = false; btn.innerHTML = 'Save Changes';
+        });
+    </script>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
@@ -1148,7 +1433,7 @@
                     '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-emerald-600 font-bold">x' + b.quantity + '</span></p></div></div>' +
                     '<div class="flex flex-col items-end gap-2">' + statusBadge + '<div class="text-xs text-gray-400 flex items-center gap-1">📅 ' + formatDate(b.borrowDate) + ' → ' + formatDate(b.returnDate) + '</div></div></div>' +
                     rejectionMsg +
-                    (b.status === 'pending' ? '<div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between"><p class="text-xs text-amber-600 font-medium flex items-center gap-1">⏳ Waiting for approval</p><button onclick="cancelEqRequest(' + b.id + ')" class="px-4 py-2 rounded-lg text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Cancel Request</button></div>' : '') +
+                    (b.status === 'pending' ? '<div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between"><p class="text-xs text-amber-600 font-medium flex items-center gap-1">⏳ Waiting for approval</p><div class="flex gap-2"><button onclick="openEditBorrowingModal(' + b.id + ')" class="px-4 py-2 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">✏️ Edit</button><button onclick="cancelEqRequest(' + b.id + ')" class="px-4 py-2 rounded-lg text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Cancel</button></div></div>' : '') +
                     '</div>';
             }).join('');
         }
@@ -1378,7 +1663,7 @@
                     attachedImageHtml + 
                     '<div class="flex items-center justify-between mt-3 pt-3 border-t" style="border-color: var(--border-color);">' +
                     '<div class="flex items-center gap-3 text-xs mt-1" style="color: var(--text-muted);"><span class="bg-gray-100 px-2 py-0.5 rounded">' + c.category + '</span><span>📅 ' + formatDate(c.createdAt) + '</span></div>' +
-                    (c.status === 'pending' ? '<button onclick="deleteMyConcern(' + c.id + ')" class="text-xs text-red-500 hover:text-red-700 font-semibold bg-red-50 px-2 py-1 rounded">Delete</button>' : '') +
+                    (c.status === 'pending' ? '<div class="flex gap-2"><button onclick="openEditConcernModal(' + c.id + ')" class="text-xs text-blue-500 hover:text-blue-700 font-semibold bg-blue-50 px-2 py-1 rounded">✏️ Edit</button><button onclick="deleteMyConcern(' + c.id + ')" class="text-xs text-red-500 hover:text-red-700 font-semibold bg-red-50 px-2 py-1 rounded">Delete</button></div>' : '') +
                     '</div>' +
                     (c.response ? '<div class="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-lg mt-3"><p class="text-xs font-bold text-emerald-700 mb-1">🏛️ Admin Response:</p><p class="text-sm text-emerald-800">' + c.response + '</p></div>' : '') +
                     '</div>';
@@ -1579,8 +1864,10 @@
                         '<div class="flex justify-between mb-2 border-b pb-2" style="border-color: var(--border-color);"><h4 class="font-bold" style="color: var(--text-main);">📅 ' + formatDate(b.date) + '</h4><span class="px-2 py-0.5 rounded text-xs font-bold ' + statusClass + '">' + statusText + '</span></div>' +
                         '<p class="text-xs mb-1" style="color: var(--text-muted);">⏰ ' + b.time + '</p>' +
                         '<p class="text-xs italic" style="color: var(--text-muted);">Purpose: ' + (b.purpose || '') + '</p>' +
-                        '<button onclick="cancelMyReservation(' + b.id + ')" class="mt-3 w-full py-1.5 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded transition">Cancel Reservation</button>' +
-                        '</div>';
+                        '<div class="mt-3 flex gap-2 flex-col">' +
+                        (b.status === 'pending' ? '<button onclick="openEditCourtBookingModal(' + b.id + ')" class="w-full py-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition">✏️ Edit Booking</button>' : '') +
+                        '<button onclick="cancelMyReservation(' + b.id + ')" class="w-full py-1.5 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded transition">Cancel Reservation</button>' +
+                        '</div></div>';
                 }).join('');
             }
         }
