@@ -1321,6 +1321,33 @@ function parseBookingTime(timeStr) {
     return { venueName: 'Basketball Court', timeRange: timeStr };
 }
 
+function getDynamicBookingStatus(item, parsedTimeRange) {
+    let st = item.status || 'pending';
+    if (st !== 'approved' && st !== 'pending') return st;
+    
+    const todayObj = new Date();
+    const y = todayObj.getFullYear();
+    const m = String(todayObj.getMonth() + 1).padStart(2, '0');
+    const d = String(todayObj.getDate()).padStart(2, '0');
+    const todayStr = `${y}-${m}-${d}`;
+    
+    if (item.date < todayStr) return 'completed';
+    
+    if (item.date === todayStr) {
+        let tRange = parsedTimeRange || item.time || '';
+        if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+        let parts = tRange.split(' – ').map(s => s.trim());
+        let endTimeStr = parts[1] || parts[0];
+        
+        if (typeof timeToMinutes === 'function') {
+            const endMins = timeToMinutes(endTimeStr);
+            const currentMins = todayObj.getHours() * 60 + todayObj.getMinutes();
+            if (currentMins >= endMins) return 'completed';
+        }
+    }
+    return st;
+}
+
 async function getCourtBookings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
@@ -1344,7 +1371,7 @@ async function getCourtBookings() {
                 date: item.date,
                 time: item.time,
                 purpose: item.purpose || '',
-                status: item.status || 'pending',
+                status: getDynamicBookingStatus(item, parsed.timeRange),
                 admin_comment: item.admin_comment || ''
             };
         });
@@ -1352,7 +1379,7 @@ async function getCourtBookings() {
         const data = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         return data.map(item => {
             const parsed = parseBookingTime(item.time);
-            return { ...item, venueName: item.venueName || parsed.venueName, timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown' };
+            return { ...item, venueName: item.venueName || parsed.venueName, timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown', status: getDynamicBookingStatus(item, parsed.timeRange) };
         });
     }
 }

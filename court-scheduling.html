@@ -405,7 +405,7 @@
 
             // Filter bookings by selected venue
             const selectedVenue = document.getElementById('selectedVenue').value;
-            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.venue === selectedVenue);
+            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'completed' && b.venue === selectedVenue);
             const bookedDates = venueBookings.map(b => b.date);
 
             grid.innerHTML = '';
