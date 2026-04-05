@@ -38,7 +38,7 @@
             background-color: var(--panel-bg); 
             border: 1px solid rgba(0, 0, 0, 0.06); 
             border-radius: 20px; 
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), border-box 0 0 0 1px rgba(0,0,0,0.02); 
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05); 
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease; 
         }
         [data-theme="dark"] .glass-card {
@@ -55,6 +55,92 @@
         [data-theme="dark"] .glass-card:hover {
             box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
         }
+
+        /* ── USER STAT CARDS ── */
+        .user-stat-card {
+            background: var(--panel-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            cursor: pointer;
+        }
+        .user-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .user-stat-icon {
+            width: 50px; height: 50px;
+            border-radius: 13px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; flex-shrink: 0;
+        }
+        .user-stat-value {
+            font-size: 30px; font-weight: 800; line-height: 1;
+        }
+        .user-stat-label {
+            font-size: 11px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            font-weight: 700; margin-top: 4px;
+        }
+
+        /* ── QUICK ACTION CARDS ── */
+        .user-quick-card {
+            background: var(--panel-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            width: 100%;
+        }
+        .user-quick-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--uqa-color, #10b981);
+        }
+        .user-quick-card:hover {
+            border-color: var(--uqa-color, #10b981);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .uqa-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+        .uqa-label { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+        .uqa-sub { font-size: 12px; color: var(--text-muted); }
+        .uqa-arrow {
+            font-size: 20px; color: var(--uqa-color, #10b981);
+            position: absolute; bottom: 12px; right: 12px;
+            transition: transform 0.2s; display: block;
+        }
+        .user-quick-card:hover .uqa-arrow { transform: translateX(3px); }
+
+        /* ── SIDEBAR NAV ICON BOX (admin style) ── */
+        .nav-item .nav-icon-box {
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            background: #f0fdf4;
+            border: 1.5px solid #bbf7d0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        [data-theme="dark"] .nav-item .nav-icon-box {
+            background: #1e293b; border-color: #334155;
+        }
+        .nav-item:hover .nav-icon-box { background: #dcfce7; border-color: #86efac; }
+        [data-theme="dark"] .nav-item:hover .nav-icon-box { background: #334155; border-color: #475569; }
+        .nav-item.active .nav-icon-box { background: rgba(255,255,255,0.25) !important; border-color: rgba(255,255,255,0.3) !important; }
         /* Professional field styling */
         .form-field { display: flex; flex-direction: column; gap: 6px; }
         .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
@@ -118,6 +204,13 @@
 
             /* Grid to feed */
             .grid:not(.grid-cols-7):not(.grid-cols-2) { grid-template-columns: 1fr !important; }
+            .user-stats-grid { grid-template-columns: 1fr !important; }
+
+            /* Status summary row */
+            #panel-dashboard > div:last-child { grid-template-columns: 1fr !important; }
+
+            /* Quick action grid */
+            #panel-dashboard > div:nth-child(3) { grid-template-columns: repeat(2, 1fr) !important; }
 
             /* Bottom Tab Nav */
             .bottom-tab-nav {
@@ -192,26 +285,30 @@
     <!-- DASHBOARD CONTAINER -->
     <div class="dashboard-container flex flex-1 overflow-hidden">
         <!-- SIDEBAR -->
-        <aside class="sidebar w-[280px] bg-white border-r border-gray-200 p-6 flex flex-col gap-2 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px);">
-            <div class="sidebar-title text-[12px] font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">Navigation</div>
-            <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left active">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">🏠</div> Dashboard
-            </button>
-            <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">📦</div> Equipment
-            </button>
-            <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">💬</div> Concerns
-            </button>
-            <button onclick="showPanel('booking')" id="nav-booking" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">📅</div> Court Booking
-            </button>
-            <button onclick="showPanel('events')" id="nav-events" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">🎉</div> Events
-            </button>
-            <button onclick="showPanel('history')" id="nav-history" class="nav-item group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 text-[15px] font-semibold text-gray-600 w-full text-left hover:bg-emerald-50 hover:text-emerald-800">
-                <div class="nav-icon w-[42px] h-[42px] rounded-xl bg-emerald-100 flex items-center justify-center text-[20px] transition-colors group-hover:bg-emerald-200">📜</div> My Activity
-            </button>
+        <aside class="sidebar w-[240px] border-r flex flex-col gap-1 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background: var(--sidebar-bg); border-color: var(--border-color);">
+            <div style="padding: 18px 14px 8px;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:0 8px;display:block;">Navigation</span>
+            </div>
+            <nav style="padding: 4px 10px; display:flex; flex-direction:column; gap:4px; flex:1;">
+                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left active" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box">🏠</div> Dashboard
+                </button>
+                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box">📦</div> Equipment
+                </button>
+                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box">💬</div> Concerns
+                </button>
+                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box">📅</div> Court Booking
+                </button>
+                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box">🎉</div> Events
+                </button>
+                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box">📜</div> My Activity
+                </button>
+            </nav>
         </aside>
 
         <!-- MAIN CONTENT AREA -->
@@ -219,19 +316,139 @@
 
             <!-- PANEL 1: DASHBOARD -->
             <div id="panel-dashboard" class="content-panel active">
-                <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-3xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h2 class="text-3xl font-extrabold mb-2">Welcome back, <span id="welcomeName">Resident</span>! 👋</h2>
-                        <p class="text-emerald-100 max-w-lg text-lg">Your central hub for barangay services.</p>
+
+                <!-- Welcome Banner (admin-style with clock) -->
+                <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:20px;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;box-shadow:0 6px 24px rgba(5,150,105,0.22);position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:rgba(16,185,129,0.15);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-40px;left:40%;width:220px;height:110px;background:radial-gradient(ellipse,rgba(20,184,166,0.15) 0%,transparent 70%);"></div>
+                    <div style="position:relative;z-index:1;">
+                        <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0 0 3px;">Welcome back, <span id="welcomeName">Resident</span>! 👋</h2>
+                        <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;" id="welcomeDateStr">Loading...</p>
                     </div>
-                    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-emerald-500 opacity-20 blur-3xl"></div>
-                    <div class="absolute bottom-0 right-40 w-60 h-60 rounded-full bg-teal-400 opacity-20 blur-2xl"></div>
+                    <div style="position:relative;z-index:1;text-align:right;">
+                        <div style="font-size:28px;font-weight:800;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums;" id="dashboardClock">--:--</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:1px;text-transform:uppercase;">Barangay Sta. Lucia</div>
+                    </div>
                 </div>
-                <h3 class="text-2xl font-bold mb-4" style="color: var(--text-main);">At a Glance</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="glass-card p-8 flex items-center gap-5"><div class="w-16 h-16 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-4xl shadow-sm">📦</div><div><p class="text-4xl font-black text-gray-800" id="stat-equipment">0</p><p class="text-base font-semibold text-gray-500">Active Borrowings</p></div></div>
-                    <div class="glass-card p-8 flex items-center gap-5"><div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-4xl shadow-sm">💬</div><div><p class="text-4xl font-black text-gray-800" id="stat-concerns">0</p><p class="text-base font-semibold text-gray-500">Pending Concerns</p></div></div>
-                    <div class="glass-card p-8 flex items-center gap-5"><div class="w-16 h-16 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-4xl shadow-sm">📅</div><div><p class="text-4xl font-black text-gray-800" id="stat-bookings">0</p><p class="text-base font-semibold text-gray-500">Upcoming Bookings</p></div></div>
+
+                <!-- Stats Grid (admin-style colored border cards) -->
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;" class="user-stats-grid">
+                    <div class="user-stat-card" onclick="showPanel('equipment')" style="border-left:4px solid #3b82f6;">
+                        <div class="user-stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe;">📦</div>
+                        <div>
+                            <div class="user-stat-label">Active Borrowings</div>
+                            <div class="user-stat-value" id="stat-equipment" style="color:#2563eb;">0</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card" onclick="showPanel('concerns')" style="border-left:4px solid #f59e0b;">
+                        <div class="user-stat-icon" style="background:#fffbeb;border:1px solid #fde68a;">💬</div>
+                        <div>
+                            <div class="user-stat-label">Pending Concerns</div>
+                            <div class="user-stat-value" id="stat-concerns" style="color:#d97706;">0</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card" onclick="showPanel('booking')" style="border-left:4px solid #8b5cf6;">
+                        <div class="user-stat-icon" style="background:#f5f3ff;border:1px solid #ddd6fe;">📅</div>
+                        <div>
+                            <div class="user-stat-label">Upcoming Bookings</div>
+                            <div class="user-stat-value" id="stat-bookings" style="color:#7c3aed;">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;">
+                    <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:#3b82f6;">
+                        <span class="uqa-icon">📦</span>
+                        <div class="uqa-label">Borrow Equipment</div>
+                        <div class="uqa-sub">Request barangay items</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                    <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:#f59e0b;">
+                        <span class="uqa-icon">💬</span>
+                        <div class="uqa-label">Report a Concern</div>
+                        <div class="uqa-sub">Submit issues or feedback</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                    <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:#8b5cf6;">
+                        <span class="uqa-icon">📅</span>
+                        <div class="uqa-label">Book the Court</div>
+                        <div class="uqa-sub">Reserve a time slot</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                    <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:#10b981;">
+                        <span class="uqa-icon">🎉</span>
+                        <div class="uqa-label">Upcoming Events</div>
+                        <div class="uqa-sub">Barangay activities</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                </div>
+
+                <!-- Status Summary Row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <!-- My Status Card -->
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                            <div style="width:36px;height:36px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📊</div>
+                            <div>
+                                <div style="font-size:14px;font-weight:700;color:var(--text-main);">My Overview</div>
+                                <div style="font-size:11px;color:var(--text-muted);">Your service activity</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;" onclick="showPanel('equipment')" class="cursor-pointer">
+                                <span style="font-size:13px;font-weight:600;color:#1e40af;">📦 Active Borrowings</span>
+                                <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:#2563eb;">—</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a;" onclick="showPanel('concerns')" class="cursor-pointer">
+                                <span style="font-size:13px;font-weight:600;color:#92400e;">💬 Open Concerns</span>
+                                <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:#d97706;">—</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f5f3ff;border-radius:10px;border:1px solid #ddd6fe;" onclick="showPanel('booking')" class="cursor-pointer">
+                                <span style="font-size:13px;font-weight:600;color:#5b21b6;">📅 Upcoming Bookings</span>
+                                <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#7c3aed;">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Quick Info Card -->
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏘️</div>
+                                <div>
+                                    <div style="font-size:14px;font-weight:700;color:var(--text-main);">Barangay Services</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Available to residents</div>
+                                </div>
+                            </div>
+                            <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;">ACTIVE</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:16px;">📦</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Equipment Lending</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Chairs, tables & more</div>
+                                </div>
+                                <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:16px;">🏀</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Court Reservations</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Basketball & Multi-purpose</div>
+                                </div>
+                                <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:16px;">💬</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Citizen Concerns</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Report issues 24/7</div>
+                                </div>
+                                <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1152,6 +1369,27 @@
         const mobileNameEl = document.getElementById('mobileUserName');
         if (mobileNameEl) mobileNameEl.textContent = user.name || user.username || user.email.split('@')[0];
 
+        // Live clock + date for welcome banner
+        function updateDashboardClock() {
+            const now = new Date();
+            const clockEl = document.getElementById('dashboardClock');
+            const dateEl = document.getElementById('welcomeDateStr');
+            if (clockEl) {
+                const h = now.getHours(), m = now.getMinutes();
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const hh = ((h % 12) || 12).toString().padStart(2, '0');
+                const mm = m.toString().padStart(2, '0');
+                clockEl.textContent = hh + ':' + mm + ' ' + ampm;
+            }
+            if (dateEl) {
+                const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                dateEl.textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+            }
+        }
+        updateDashboardClock();
+        setInterval(updateDashboardClock, 30000);
+
         // Panel routing
         function showPanel(panelId) {
             document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
@@ -1234,13 +1472,25 @@
         async function loadDashboardStats() {
             try {
                 const eqReqs = await getMyBorrowings();
-                document.getElementById('stat-equipment').textContent = eqReqs ? eqReqs.filter(b => b.status === 'pending' || b.status === 'approved').length : 0;
+                const activeEq = eqReqs ? eqReqs.filter(b => b.status === 'pending' || b.status === 'approved').length : 0;
+                document.getElementById('stat-equipment').textContent = activeEq;
+                const equEl = document.getElementById('dash-statEquip');
+                if (equEl) equEl.textContent = activeEq;
+
                 const concerns = await getMyConcerns();
-                document.getElementById('stat-concerns').textContent = concerns ? concerns.filter(c => c.status === 'pending').length : 0;
+                const pendingConcerns = concerns ? concerns.filter(c => c.status === 'pending').length : 0;
+                document.getElementById('stat-concerns').textContent = pendingConcerns;
+                const conEl = document.getElementById('dash-statConcerns');
+                if (conEl) conEl.textContent = pendingConcerns;
+
                 const bookingsRaw = await getCourtBookings();
                 const myBookings = bookingsRaw ? bookingsRaw.filter(b => b.userId === user.id && b.status !== 'cancelled') : [];
                 const today = new Date(); today.setHours(0, 0, 0, 0);
-                document.getElementById('stat-bookings').textContent = myBookings.filter(b => new Date(b.date) >= today).length;
+                const upcomingCount = myBookings.filter(b => new Date(b.date) >= today).length;
+                document.getElementById('stat-bookings').textContent = upcomingCount;
+                const booEl = document.getElementById('dash-statBookings');
+                if (booEl) booEl.textContent = upcomingCount;
+
                 // Check for event conflict notifications
                 await checkConflictNotifications();
             } catch (e) { console.error("Error loading stats", e); }
