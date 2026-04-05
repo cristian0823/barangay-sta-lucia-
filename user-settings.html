@@ -137,11 +137,26 @@
             font-size: 0.875rem;
             margin-top: 0.25rem;
         }
+        /* Dark Mode Extensions */
+        .dark body { background-color: #111827 !important; color: #f3f4f6 !important; }
+        .dark aside.bg-white, .dark .settings-card, .dark .stat-card { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark .form-input { background-color: #334155 !important; border-color: #475569 !important; color: white !important; }
+        .dark .sidebar-btn { color: #cbd5e1 !important; }
+        .dark .sidebar-btn:hover:not(.active) { background: #334155 !important; }
+        .dark .text-gray-800, .dark .text-gray-700, .dark .info-value { color: #f8fafc !important; }
+        .dark .text-gray-500 { color: #94a3b8 !important; }
+        .dark .info-row { background: #334155 !important; border: 1px solid #475569 !important; }
+        .dark .border-gray-200 { border-color: #334155 !important; }
+        .dark .bg-gray-100 { background-color: #111827 !important; }
     </style>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
     <link rel="icon" type="image/jpeg" href="barangay.jpg">
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-200">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0">
