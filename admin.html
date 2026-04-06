@@ -969,22 +969,27 @@
             color: #10b981;
         }
 
-        .equip-icon-admin {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #d1fae5, #ccfbf1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+        /* Equipment Icons Base & Dark Mode */
+        .eq-icon { width: 40px; height: 40px; border-radius: 12px; border: 1.5px solid; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .eq-icon-lg { width: 44px; height: 44px; border-radius: 14px; font-size: 22px; }
+        
+        .eq-Chairs { background: #eff6ff; border-color: #bfdbfe; }
+        .eq-Tables { background: #f0fdf4; border-color: #6ee7b7; }
+        .eq-Tents { background: #fdf4ff; border-color: #e9d5ff; }
+        .eq-Ladder { background: #fff7ed; border-color: #fed7aa; }
+        .eq-Microphone { background: #fef2f2; border-color: #fca5a5; }
+        .eq-Speaker { background: #faf5ff; border-color: #c4b5fd; }
+        .eq-Fan { background: #eff6ff; border-color: #bfdbfe; }
+        .eq-Default { background: #f0fdf4; border-color: #bbf7d0; }
 
-        [data-theme="dark"] .equip-icon-admin {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(20, 184, 166, 0.2));
-        }
+        [data-theme="dark"] .eq-Chairs { background: rgba(59, 130, 246, 0.1) !important; border-color: rgba(59, 130, 246, 0.2) !important; }
+        [data-theme="dark"] .eq-Tables { background: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 0.2) !important; }
+        [data-theme="dark"] .eq-Tents { background: rgba(217, 70, 239, 0.1) !important; border-color: rgba(217, 70, 239, 0.2) !important; }
+        [data-theme="dark"] .eq-Ladder { background: rgba(245, 158, 11, 0.1) !important; border-color: rgba(245, 158, 11, 0.2) !important; }
+        [data-theme="dark"] .eq-Microphone { background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
+        [data-theme="dark"] .eq-Speaker { background: rgba(139, 92, 246, 0.1) !important; border-color: rgba(139, 92, 246, 0.2) !important; }
+        [data-theme="dark"] .eq-Fan { background: rgba(59, 130, 246, 0.1) !important; border-color: rgba(59, 130, 246, 0.2) !important; }
+        [data-theme="dark"] .eq-Default { background: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 0.2) !important; }
 
         /* MODALS */
         .modal {
@@ -4692,6 +4697,17 @@
             }
 
             async function loadEquipment() {
+                // Bootstrap Icon map by equipment name
+                const EQUIP_ICON_MAP = {
+                    'Chairs': { html: `🪑`, cls: 'eq-Chairs' },
+                    'Tables': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`, cls: 'eq-Tables' },
+                    'Tents': { html: `⛺`, cls: 'eq-Tents' },
+                    'Ladder': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#d97706"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`, cls: 'eq-Ladder' },
+                    'Microphone': { html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#dc2626;"></i>`, cls: 'eq-Microphone' },
+                    'Speaker': { html: `<i class="bi bi-speaker-fill" style="font-size:20px;color:#7c3aed;"></i>`, cls: 'eq-Speaker' },
+                    'Electric Fan': { html: `<i class="bi bi-fan" style="font-size:20px;color:#3b82f6;"></i>`, cls: 'eq-Fan' }
+                };
+
                 const equipment = await getEquipment();
                 const container = document.getElementById('equipmentTable');
                 container.innerHTML = equipment.map(e => {
@@ -4711,12 +4727,14 @@
                     } else {
                         statusBadge = '<span class="status-badge status-approved">✅ Available</span>';
                     }
-                    const iconHtml = e.icon || '📦';
+                    const iconDef = EQUIP_ICON_MAP[e.name];
+                    const iconHtml = iconDef ? iconDef.html : (e.icon || '📦');
+                    const iconCls = iconDef ? iconDef.cls : 'eq-Default';
                     return `
                 <tr style="${e.isArchived ? 'opacity: 0.6;' : ''}">
                     <td>
                         <div style="display:flex;align-items:center;gap:12px;">
-                            <div class="equip-icon-admin">${iconHtml}</div>
+                            <div class="eq-icon ${iconCls}">${iconHtml}</div>
                             <div>
                                 <strong style="font-size:14px;color:var(--text);">${e.name}</strong>
                                 ${e.description ? `<br><span style="font-size:12px;color:#9ca3af;">${e.description}</span>` : ''}
