@@ -370,6 +370,130 @@ async function resetPassword(username, newPassword) {
     }
 }
 
+// ============================================================
+// PASSWORD RESET VIA EMAIL + OTP  (Supabase Edge Function)
+// ============================================================
+// The OTP is sent from a real backend server (Supabase Edge Function)
+// using Resend email API. No third-party SDK needed here.
+
+// Your Supabase project URL (from supabase-config.js)
+const SUPABASE_OTP_FUNCTION_URL = 'https://cojgsyrnexbwgsfttojq.supabase.co/functions/v1/send-otp';
+
+// Sends a 6-digit OTP to the user's registered Gmail address via Edge Function
+async function sendPasswordResetOTP(email) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    email = email.trim().toLowerCase();
+
+    let userFound = false;
+
+    if (supabaseAvailable) {
+        const { data: userRow } = await supabase
+            .from('users')
+            .select('id, email')
+            .ilike('email', email)
+            .maybeSingle();
+        userFound = !!userRow;
+    } else {
+        initializeLocalUsers();
+        const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
+        userFound = users.some(u => (u.email || '').toLowerCase() === email);
+    }
+
+    if (!userFound) {
+        return { success: false, message: 'No account found with that email address.' };
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = Date.now() + 10 * 60 * 1000; // expires in 10 minutes
+
+    // Store OTP session in sessionStorage (client-side only)
+    sessionStorage.setItem('otp_email',  email);
+    sessionStorage.setItem('otp_code',   otp);
+    sessionStorage.setItem('otp_expiry', expiry.toString());
+
+    // Call the Supabase Edge Function to send the real email
+    try {
+        const res = await fetch(SUPABASE_OTP_FUNCTION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to_email: email, otp_code: otp })
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || result.error) {
+            console.error('Edge function error:', result);
+            return { success: false, message: result.error || 'Failed to send email. Please try again.' };
+        }
+
+        return { success: true, message: 'A 6-digit code has been sent to your email.' };
+    } catch (err) {
+        console.error('Network error calling edge function:', err);
+        return { success: false, message: 'Could not reach the email server. Check your internet connection.' };
+    }
+}
+
+// Verifies OTP then resets the password for the matching email
+async function resetPasswordWithOTP(email, enteredCode, newPassword) {
+    email = email.trim().toLowerCase();
+    const storedEmail  = (sessionStorage.getItem('otp_email')  || '').toLowerCase();
+    const storedCode   = sessionStorage.getItem('otp_code')   || '';
+    const storedExpiry = parseInt(sessionStorage.getItem('otp_expiry') || '0', 10);
+
+    if (storedEmail !== email) {
+        return { success: false, message: 'Email mismatch. Please restart the process.' };
+    }
+    if (Date.now() > storedExpiry) {
+        sessionStorage.removeItem('otp_email');
+        sessionStorage.removeItem('otp_code');
+        sessionStorage.removeItem('otp_expiry');
+        return { success: false, message: 'Your code has expired. Please request a new one.' };
+    }
+    if (enteredCode.trim() !== storedCode) {
+        return { success: false, message: 'Incorrect verification code. Please check your email and try again.' };
+    }
+
+    // OTP is valid → reset the password
+    const supabaseAvailable = await isSupabaseAvailable();
+    const hashedPassword = await hashPassword(newPassword);
+
+    if (supabaseAvailable) {
+        const { data: userRow } = await supabase
+            .from('users')
+            .select('id')
+            .ilike('email', email)
+            .maybeSingle();
+
+        if (!userRow) return { success: false, message: 'User not found.' };
+
+        const { error } = await supabase
+            .from('users')
+            .update({ password: hashedPassword })
+            .eq('id', userRow.id);
+
+        if (error) return { success: false, message: 'Failed to reset password. Try again.' };
+    } else {
+        initializeLocalUsers();
+        const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
+        const idx = users.findIndex(u => (u.email || '').toLowerCase() === email);
+        if (idx === -1) return { success: false, message: 'User not found.' };
+        users[idx].password = hashedPassword;
+        localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+    }
+
+    // Clear OTP session
+    sessionStorage.removeItem('otp_email');
+    sessionStorage.removeItem('otp_code');
+    sessionStorage.removeItem('otp_expiry');
+
+    if (typeof logActivity === 'function') {
+        logActivity('Password Reset', `Password reset via email OTP for: ${email}`);
+    }
+
+    return { success: true, message: 'Password reset successfully! You can now log in.' };
+}
+
 async function logoutUser() {
     try {
         if (window.supabase) {
@@ -456,19 +580,26 @@ async function getEquipment() {
         equipmentList = data;
     }
 
-    // Process overdue locks
+    // Process overdue locks AND pending quantities
     const today = new Date();
     today.setHours(0,0,0,0);
     const lockedNames = new Set();
+    const pendingQtyMap = {}; // { equipmentName: totalPendingQty }
     
     if (supabaseAvailable) {
-        const { data: bData } = await supabase.from('borrowings').select('equipment, return_date').eq('status', 'approved');
+        const { data: bData } = await supabase.from('borrowings').select('equipment, return_date, quantity, status').in('status', ['approved', 'pending']);
         if (bData) {
             for (const b of bData) {
-                const retDate = new Date(b.return_date);
-                retDate.setDate(retDate.getDate() + 1); // 1 day tolerance
-                retDate.setHours(23,59,59,999);
-                if (today > retDate) lockedNames.add(b.equipment);
+                if (b.status === 'approved') {
+                    const retDate = new Date(b.return_date);
+                    retDate.setDate(retDate.getDate() + 1); // 1 day tolerance
+                    retDate.setHours(23,59,59,999);
+                    if (today > retDate) lockedNames.add(b.equipment);
+                }
+                if (b.status === 'pending') {
+                    const name = b.equipment;
+                    pendingQtyMap[name] = (pendingQtyMap[name] || 0) + (b.quantity || 0);
+                }
             }
         }
     } else {
@@ -479,6 +610,10 @@ async function getEquipment() {
                 retDate.setDate(retDate.getDate() + 1); // 1 day tolerance
                 retDate.setHours(23,59,59,999);
                 if (today > retDate) lockedNames.add(b.equipment);
+            }
+            if (b.status === 'pending') {
+                const name = b.equipment;
+                pendingQtyMap[name] = (pendingQtyMap[name] || 0) + (b.quantity || 0);
             }
         }
     }
@@ -491,6 +626,7 @@ async function getEquipment() {
         quantity: item.quantity || 0,
         available: item.available || 0,
         broken: item.broken || 0,
+        pending: pendingQtyMap[item.name] || 0,
         isLocked: lockedNames.has(item.name || 'Unknown')
     }));
 }

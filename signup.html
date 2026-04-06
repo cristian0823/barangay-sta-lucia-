@@ -311,6 +311,15 @@
                         </div>
                     </div>
 
+                    <!-- Row 3: Email (full width) -->
+                    <div class="field field-full">
+                        <label>Email Address <span style="color:#ef4444;">*</span></label>
+                        <div class="field-wrap">
+                            <input type="email" id="signupEmail" required placeholder="e.g. juandelacruz@gmail.com" maxlength="255" autocomplete="email">
+                        </div>
+                        <p class="field-hint">Used for password recovery — must be a real email you can access</p>
+                    </div>
+
                     <!-- Password -->
                     <div class="field">
                         <label>Password</label>
@@ -550,8 +559,11 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             const agreeTerms      = document.getElementById('agreeTerms').checked;
 
+            const email           = sanitizeInput(document.getElementById('signupEmail').value.trim());
+
             if (!fullName || fullName.length < 2) { showToast('Please enter a valid full name', 'error'); return; }
             if (!validateUsername(username))        { showToast('Invalid username format', 'error'); return; }
+            if (!email || !email.includes('@'))     { showToast('Please enter a valid email address', 'error'); return; }
             if (!phone || phone.length < 10)        { showToast('Please enter a valid phone number', 'error'); return; }
             if (!address || address.length < 5)     { showToast('Please enter your full address', 'error'); return; }
 
@@ -561,7 +573,7 @@
             if (!agreeTerms)               { showToast('Please agree to the Terms', 'error'); return; }
 
             const userData = {
-                fullName, username, phone, address,
+                fullName, username, email, phone, address,
                 password: password,
                 createdAt: new Date().toISOString()
             };
