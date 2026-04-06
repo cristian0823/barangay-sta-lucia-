@@ -773,6 +773,7 @@
             #court-bookings-section .data-table thead, 
             #multipurpose-bookings-section .data-table thead, 
             #equipment-section .data-table thead,
+            #reports-section .data-table thead,
             #concerns-section .data-table thead {
                 display: none;
             }
@@ -781,6 +782,7 @@
             #court-bookings-section .data-table tbody tr, 
             #multipurpose-bookings-section .data-table tbody tr, 
             #equipment-section .data-table tbody tr,
+            #reports-section .data-table tbody tr,
             #concerns-section .data-table tbody tr {
                 display: flex;
                 flex-direction: column;
@@ -796,6 +798,7 @@
             [data-theme="dark"] #court-bookings-section .data-table tbody tr, 
             [data-theme="dark"] #multipurpose-bookings-section .data-table tbody tr, 
             [data-theme="dark"] #equipment-section .data-table tbody tr,
+            [data-theme="dark"] #reports-section .data-table tbody tr,
             [data-theme="dark"] #concerns-section .data-table tbody tr {
                 background: rgba(31, 41, 55, 0.6);
             }
@@ -804,6 +807,7 @@
             #court-bookings-section .data-table tbody td, 
             #multipurpose-bookings-section .data-table tbody td, 
             #equipment-section .data-table tbody td,
+            #reports-section .data-table tbody td,
             #concerns-section .data-table tbody td {
                 display: flex;
                 justify-content: space-between;
@@ -820,6 +824,7 @@
             [data-theme="dark"] #court-bookings-section .data-table tbody td, 
             [data-theme="dark"] #multipurpose-bookings-section .data-table tbody td, 
             [data-theme="dark"] #equipment-section .data-table tbody td,
+            [data-theme="dark"] #reports-section .data-table tbody td,
             [data-theme="dark"] #concerns-section .data-table tbody td {
                 border-bottom: 1px solid rgba(255,255,255,0.05);
             }
@@ -828,6 +833,7 @@
             #court-bookings-section .data-table tbody td:last-child, 
             #multipurpose-bookings-section .data-table tbody td:last-child, 
             #equipment-section .data-table tbody td:last-child,
+            #reports-section .data-table tbody td:last-child,
             #concerns-section .data-table tbody td:last-child {
                 border-bottom: none;
                 padding-bottom: 0;
@@ -841,6 +847,7 @@
             #court-bookings-section .data-table tbody td::before, 
             #multipurpose-bookings-section .data-table tbody td::before, 
             #equipment-section .data-table tbody td::before,
+            #reports-section .data-table tbody td::before,
             #concerns-section .data-table tbody td::before {
                 font-weight: 700;
                 font-size: 11px;
@@ -852,6 +859,12 @@
             }
 
             /* Responsive Table Labels Injection */
+            #simpleReportTable td:nth-child(1)::before { content: "Date"; }
+            #simpleReportTable td:nth-child(2)::before { content: "Type"; }
+            #simpleReportTable td:nth-child(3)::before { content: "Resident"; }
+            #simpleReportTable td:nth-child(4)::before { content: "Details"; }
+            #simpleReportTable td:nth-child(5)::before { content: "Status"; }
+            
             #requestsTable td:nth-child(1)::before { content: "Resident"; }
             #requestsTable td:nth-child(2)::before { content: "Equipment"; }
             #requestsTable td:nth-child(3)::before { content: "Qty"; }
@@ -2470,7 +2483,7 @@
                         <div class="section-header"
                             style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <h3>📊 Barangay Simple Report</h3>
+                                <h3>📊 Barangay Report</h3>
                                 <span style="font-size:13px;color:var(--muted);">Consolidated timeline of all barangay
                                     transactions (Equipment, Concerns, Bookings)</span>
                             </div>
