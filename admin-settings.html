@@ -518,16 +518,20 @@
             .sidebar { display: none; }
             .main { padding: 16px; padding-bottom: 80px; -webkit-overflow-scrolling: touch; }
 
-            /* Header mobile: keep it single row, hide user info text */
-            .header { padding: 0 12px; height: 56px; }
+            /* Header mobile: keep it single row, hide bulky strings */
+            .header { padding: 0 10px; height: 56px; gap: 8px; }
+            .header-left { gap: 10px; }
             .header-user-info { display: none; }
             .header-badge { display: none; }
-            .header-logo-text { font-size: 13px; }
+            .header-logo-text, .header-logo-sub { display: none; }
 
             /* Back button: icon-only on mobile */
             .back-btn .back-text { display: none; }
-            .back-btn { padding: 7px 10px; font-size: 15px; }
-            .back-btn::after { content: 'Back'; font-size: 12px; font-weight: 600; margin-left: 4px; }
+            .back-btn { padding: 6px; font-size: 18px; background: transparent; border: none; }
+            .back-btn::after { content: none; }
+            
+            /* Smaller top padding so it feels tight and compact */
+            .main { padding: 10px 14px 80px; -webkit-overflow-scrolling: touch; }
 
             /* Mobile section tabs shown as horizontal scroller row */
             .mobile-section-tabs {
@@ -558,7 +562,9 @@
                 border-color: transparent;
             }
 
-            /* Logout button visible on mobile */
+            /* Logout button visible on mobile, icon-only */
+            .mobile-logout-btn { display: flex !important; width: 34px; height: 34px; padding: 0 !important; justify-content: center; border-radius: 50% !important; font-size: 16px !important; }
+            .mobile-logout-btn .logout-text { display: none; }
         }
 
         /* ── DARK MODE THEME ── */
@@ -616,7 +622,7 @@
             <a class="back-btn" href="admin.html">
                 <i class="bi bi-arrow-left-circle"></i><span class="back-text"> Back to Dashboard</span>
             </a>
-            <button class="mobile-logout-btn" onclick="logoutUser ? logoutUser() : window.location.href='index.html'" style="display:none; align-items:center; gap:6px; padding:7px 14px; border-radius:10px; border:none; background:#fef2f2; color:#b91c1c; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">🚪 Logout</button>
+            <button class="mobile-logout-btn" onclick="logoutUser ? logoutUser() : window.location.href='index.html'" style="display:none; align-items:center; gap:6px; padding:7px 14px; border-radius:10px; border:none; background:#fef2f2; color:#b91c1c; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">🚪<span class="logout-text">Logout</span></button>
         </div>
     </header>
 
