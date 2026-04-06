@@ -803,10 +803,13 @@
             #concerns-section .data-table tbody td {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
+                align-items: flex-start;
+                padding: 10px 0;
                 border-bottom: 1px solid rgba(0,0,0,0.05);
                 text-align: right;
+                word-break: break-word;
+                white-space: normal;
+                gap: 16px;
             }
 
             [data-theme="dark"] #requests-section .data-table tbody td, 
@@ -1369,12 +1372,17 @@
 
             /* Tables: horizontal scroll */
             .admin-tables {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+                overflow-x: hidden;
             }
 
             .data-table {
-                min-width: 560px;
+                min-width: 0 !important;
+                width: 100% !important;
+                table-layout: fixed;
+            }
+            
+            .recent-summary-row {
+                grid-template-columns: 1fr !important;
             }
 
             .data-table th,
@@ -1541,11 +1549,12 @@
 
             /* Make all section tables horizontally scrollable on mobile */
             .section-content, .dashboard-content .card-body {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+                overflow-x: hidden;
             }
             .data-table, .activity-log-table {
-                min-width: 560px;
+                min-width: 0 !important;
+                width: 100% !important;
+                table-layout: fixed;
             }
         }
 
@@ -2130,7 +2139,7 @@
                         </div>
 
                         <!-- Recent Summary Row -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="recent-summary-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                             <!-- Pending Actions Card -->
                             <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
