@@ -862,7 +862,8 @@
         }
 
         async function loadUsers() {
-            const users = await getAllUsers();
+            let users = await getAllUsers();
+            users = users.filter(u => u.role !== 'admin');
             const container = document.getElementById('usersTable');
             const noUsers = document.getElementById('noUsers');
             document.getElementById('totalUsers').textContent = users.length;
@@ -949,7 +950,7 @@
             const [users, equipment, borrowings, bookings] = await Promise.all([
                 getAllUsers(), getEquipment(), getAllBorrowings(), getCourtBookings()
             ]);
-            document.getElementById('statTotalUsers').textContent = users.length;
+            document.getElementById('statTotalUsers').textContent = users.filter(u => u.role !== 'admin').length;
             document.getElementById('statRegularUsers').textContent = users.filter(u => u.role === 'user').length;
             document.getElementById('statAdmins').textContent = users.filter(u => u.role === 'admin').length;
             document.getElementById('statEquipment').textContent = equipment.length;

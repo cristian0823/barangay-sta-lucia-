@@ -3798,7 +3798,7 @@
                 document.getElementById('pendingRequests').textContent = pendingReqs.length;
                 document.getElementById('pendingConcerns').textContent = pendingCons.length;
                 document.getElementById('upcomingEvents').textContent = totalBookings;
-                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('totalUsers').textContent = users.filter(u => u.role !== 'admin').length;
 
                 const badge = document.getElementById('notificationBadge');
                 const total = pendingReqs.length + pendingCons.length;
@@ -5287,13 +5287,13 @@
                 if (el('pendingRequests')) el('pendingRequests').textContent = pendingReqs;
                 if (el('pendingConcerns')) el('pendingConcerns').textContent = pendingCons;
                 if (el('upcomingEvents')) el('upcomingEvents').textContent = activeBooks;
-                if (el('totalUsers')) el('totalUsers').textContent = users.length;
+                if (el('totalUsers')) el('totalUsers').textContent = users.filter(u => u.role !== 'admin').length;
 
                 // Glance row
                 if (el('glancePendingReqs')) el('glancePendingReqs').textContent = pendingReqs + ' pending';
                 if (el('glancePendingCons')) el('glancePendingCons').textContent = pendingCons + ' open';
                 if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks + ' active';
-                if (el('glanceUsers')) el('glanceUsers').textContent = users.length + ' total';
+                if (el('glanceUsers')) el('glanceUsers').textContent = users.filter(u => u.role !== 'admin').length + ' total';
 
                 // Recent Activity Feed
                 const feed = document.getElementById('overviewActivityFeed');
