@@ -317,6 +317,59 @@ async function loginUser(username, password, rememberMe = false) {
     return { success: false, message: 'Invalid username or password' };
 }
 
+async function resetPassword(username, newPassword) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    const hashedPassword = await hashPassword(newPassword);
+
+    if (supabaseAvailable) {
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('id')
+            .eq('username', username)
+            .maybeSingle();
+
+        if (!user || error) {
+            return { success: false, message: 'User not found.' };
+        }
+
+        const { error: updateError } = await supabase
+            .from('users')
+            .update({ password: hashedPassword })
+            .eq('id', user.id);
+
+        if (updateError) {
+            console.error('Supabase Reset Password Error:', updateError);
+            return { success: false, message: 'Failed to reset password. Please try again.' };
+        }
+
+        // Log the activity
+        if (typeof logActivity === 'function') {
+            logActivity('Password Reset', `User reset their password: ${username}`);
+        }
+
+        return { success: true, message: 'Password reset successfully!' };
+    } else {
+        // Local fallback
+        initializeLocalUsers();
+        const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
+        const userIndex = users.findIndex(u => u.username === username);
+
+        if (userIndex === -1) {
+            return { success: false, message: 'User not found.' };
+        }
+
+        users[userIndex].password = hashedPassword;
+        localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+
+        // Log the activity
+        if (typeof logActivity === 'function') {
+            logActivity('Password Reset', `Local User reset their password: ${username}`);
+        }
+
+        return { success: true, message: 'Password reset successfully!' };
+    }
+}
+
 async function logoutUser() {
     try {
         if (window.supabase) {
