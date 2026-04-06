@@ -541,52 +541,59 @@
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
-            const username   = sanitizeInput(document.getElementById('username').value.trim());
-            const password   = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            if (!validateUsername(username)) { showToast('Invalid username format.', 'error'); return; }
-            if (!password) { showToast('Please enter your password.', 'error'); return; }
+            try {
+                if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
+                const username   = sanitizeInput(document.getElementById('username').value.trim());
+                const password   = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                if (!validateUsername(username)) { showToast('Invalid username format.', 'error'); return; }
+                if (!password) { showToast('Please enter your password.', 'error'); return; }
 
-            const btn = document.getElementById('loginBtn');
-            btn.disabled = true; btn.textContent = 'Signing in...';
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = true; btn.textContent = 'Signing in...';
 
-            // Pass a flag to loginUser to NOT save session yet (for admins — MFA required)
-            const result = await loginUser(username, password, false, { deferSession: true });
+                // Pass a flag to loginUser to NOT save session yet (for admins — MFA required)
+                const result = await loginUser(username, password, false, { deferSession: true });
 
-            if (result.success) {
-                resetLoginAttempts();
-                // Check if admin — require MFA
-                if (result.user && result.user.role === 'admin') {
-                    _pendingLoginUser = { ...result.user, loginTime: new Date().toISOString() };
-                    // Send MFA code to admin's email
-                    showToast('⏳ Sending verification code...', 'success');
-                    const mfaResult = await sendAdminMFACode(result.user.email || 'admin@barangay.gov');
-                    btn.disabled = false; btn.textContent = 'Sign In';
-                    if (mfaResult.success) {
-                        showMFAPanel(result.user.email || 'admin@barangay.gov');
+                if (result.success) {
+                    resetLoginAttempts();
+                    // Check if admin — require MFA
+                    if (result.user && result.user.role === 'admin') {
+                        _pendingLoginUser = { ...result.user, loginTime: new Date().toISOString() };
+                        // Send MFA code to admin's email
+                        showToast('⏳ Sending verification code...', 'success');
+                        const mfaResult = await sendAdminMFACode(result.user.email || 'admin@barangay.gov');
+                        btn.disabled = false; btn.textContent = 'Sign In';
+                        if (mfaResult.success) {
+                            showMFAPanel(result.user.email || 'admin@barangay.gov');
+                        } else {
+                            // Fallback: still allow login if email fails (log warning)
+                            showToast('⚠️ Could not send MFA code. Logging in without MFA.', 'error');
+                            if (rememberMe) { localStorage.setItem('currentUser', JSON.stringify(_pendingLoginUser)); }
+                            else { sessionStorage.setItem('currentUser', JSON.stringify(_pendingLoginUser)); }
+                            setTimeout(() => redirectToDashboard(), 1500);
+                        }
                     } else {
-                        // Fallback: still allow login if email fails (log warning)
-                        showToast('⚠️ Could not send MFA code. Logging in without MFA.', 'error');
-                        if (rememberMe) { localStorage.setItem('currentUser', JSON.stringify(_pendingLoginUser)); }
-                        else { sessionStorage.setItem('currentUser', JSON.stringify(_pendingLoginUser)); }
-                        setTimeout(() => redirectToDashboard(), 1500);
+                        // Regular user — direct login, save session
+                        if (rememberMe) { localStorage.setItem('currentUser', JSON.stringify({ ...result.user, loginTime: new Date().toISOString() })); }
+                        else { sessionStorage.setItem('currentUser', JSON.stringify({ ...result.user, loginTime: new Date().toISOString() })); }
+                        btn.disabled = false; btn.textContent = 'Sign In';
+                        showToast('✅ Login successful! Redirecting...', 'success');
+                        setTimeout(() => redirectToDashboard(), 1000);
                     }
                 } else {
-                    // Regular user — direct login, save session
-                    if (rememberMe) { localStorage.setItem('currentUser', JSON.stringify({ ...result.user, loginTime: new Date().toISOString() })); }
-                    else { sessionStorage.setItem('currentUser', JSON.stringify({ ...result.user, loginTime: new Date().toISOString() })); }
                     btn.disabled = false; btn.textContent = 'Sign In';
-                    showToast('✅ Login successful! Redirecting...', 'success');
-                    setTimeout(() => redirectToDashboard(), 1000);
+                    recordFailedAttempt(username);
+                    if (typeof logActivity === 'function') {
+                        logActivity('Failed Login', `Failed login attempt for username: ${username}`, 'warning');
+                    }
+                    showToast(result.message, 'error');
                 }
-            } else {
+            } catch (err) {
+                alert("Login Error: " + err.message + "\n" + err.stack);
+                console.error(err);
+                const btn = document.getElementById('loginBtn');
                 btn.disabled = false; btn.textContent = 'Sign In';
-                recordFailedAttempt(username);
-                if (typeof logActivity === 'function') {
-                    logActivity('Failed Login', `Failed login attempt for username: ${username}`, 'warning');
-                }
-                showToast(result.message, 'error');
             }
         });
 
