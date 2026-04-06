@@ -190,7 +190,8 @@ async function registerUser(userData) {
     }
 }
 
-async function loginUser(username, password, rememberMe = false) {
+async function loginUser(username, password, rememberMe = false, options = {}) {
+    const deferSession = options.deferSession === true; // ISO A.9 MFA: don't save session yet
     // Check if Supabase is available
     const supabaseAvailable = await isSupabaseAvailable();
 
@@ -241,20 +242,21 @@ async function loginUser(username, password, rememberMe = false) {
                 return { success: false, message: 'Account temporarily locked. Try again later.' };
             }
             // Reset fail count on successful login
-            await supabase.from('users').update({ login_fail_count: 0, lockout_until: null }).eq('id', data.id);
+            await supabase.from('users').update({ login_fail_count: 0, lockout_until: null, last_login_at: new Date().toISOString() }).eq('id', data.id);
             const sessionData = {
                 ...mapRecords([data])[0],
                 loginTime: new Date().toISOString()
             };
 
-            if (rememberMe) {
-                localStorage.setItem('currentUser', JSON.stringify(sessionData));
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
+            // ISO A.9 MFA: only save session if not deferring (admin MFA not yet verified)
+            if (!deferSession) {
+                if (rememberMe) {
+                    localStorage.setItem('currentUser', JSON.stringify(sessionData));
+                } else {
+                    sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
+                }
+                logActivity('Login', `User logged in: ${sessionData.username}`);
             }
-
-            // Log the activity
-            logActivity('Login', `User logged in: ${sessionData.username}`);
 
             return { success: true, user: sessionData };
         }
@@ -302,14 +304,15 @@ async function loginUser(username, password, rememberMe = false) {
             loginTime: new Date().toISOString()
         };
 
-        if (rememberMe) {
-            localStorage.setItem('currentUser', JSON.stringify(sessionData));
-        } else {
-            sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
+        // ISO A.9 MFA: only save session if not deferring for admin MFA
+        if (!deferSession) {
+            if (rememberMe) {
+                localStorage.setItem('currentUser', JSON.stringify(sessionData));
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
+            }
+            logActivity('Login', `Local User logged in: ${sessionData.username}`);
         }
-
-        // Log the activity
-        logActivity('Login', `Local User logged in: ${sessionData.username}`);
 
         return { success: true, user: sessionData };
     }
@@ -2465,7 +2468,8 @@ async function getUserStats(userId) {
 
 // ─── Activity Log ────────────────────────────────────────────────────────────
 
-async function logActivity(action, details) {
+async function logActivity(action, details, severity = 'info') {
+    // ISO/IEC 27001 A.12 — Operations Security: enriched audit logging
     const user = getCurrentUser();
     const adminUsername = user ? (user.username || user.fullName || 'admin') : 'system';
     const timestamp = new Date().toISOString();
@@ -2477,25 +2481,25 @@ async function logActivity(action, details) {
                 user_id: user ? user.id : null,
                 action: action,
                 details: details,
+                severity: severity,
                 created_at: timestamp
             }]);
             
             if (error) {
                 console.warn('Supabase activity log error, falling back to local', error);
-                _saveActivityLocal(adminUsername, action, details, timestamp);
+                _saveActivityLocal(adminUsername, action, details, timestamp, severity);
             }
         } catch (e) {
-            // Fall back to local if API completely fails
-            _saveActivityLocal(adminUsername, action, details, timestamp);
+            _saveActivityLocal(adminUsername, action, details, timestamp, severity);
         }
     } else {
-        _saveActivityLocal(adminUsername, action, details, timestamp);
+        _saveActivityLocal(adminUsername, action, details, timestamp, severity);
     }
 }
 
-function _saveActivityLocal(adminUsername, action, details, timestamp) {
+function _saveActivityLocal(adminUsername, action, details, timestamp, severity = 'info') {
     const logs = JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
-    logs.unshift({ id: Date.now(), adminUsername, action, details, createdAt: timestamp });
+    logs.unshift({ id: Date.now(), adminUsername, action, details, severity, createdAt: timestamp });
     // Keep only last 500 entries
     if (logs.length > 500) logs.splice(500);
     localStorage.setItem(LOCAL_ACTIVITY_LOG_KEY, JSON.stringify(logs));
@@ -2529,6 +2533,79 @@ async function getActivityLog() {
     }
     // Fall back to localStorage
     return JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
+}
+
+// ── ISO/IEC 27001 A.12 — Database Backup Export (JSON/CSV) ──
+async function exportDataBackup(format = 'json') {
+    if (!isAdmin()) return { success: false, message: 'Admin access required' };
+
+    const supabaseAvailable = await isSupabaseAvailable();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const filename = `brgy-sta-lucia-backup-${timestamp}`;
+
+    let backupData = {};
+
+    if (supabaseAvailable) {
+        const [users, equipment, borrowings, concerns, events, court_bookings, activity_log] = await Promise.all([
+            supabase.from('users').select('id,username,full_name,email,role,created_at,offense_count').then(r => r.data || []),
+            supabase.from('equipment').select('*').then(r => r.data || []),
+            supabase.from('borrowings').select('*').then(r => r.data || []),
+            supabase.from('concerns').select('*').then(r => r.data || []),
+            supabase.from('events').select('*').then(r => r.data || []),
+            supabase.from('court_bookings').select('*').then(r => r.data || []),
+            supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(1000).then(r => r.data || [])
+        ]);
+        backupData = { users, equipment, borrowings, concerns, events, court_bookings, activity_log };
+    } else {
+        backupData = {
+            users: JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]'),
+            equipment: JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY) || '[]'),
+            borrowings: JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY) || '[]'),
+            concerns: JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY) || '[]'),
+            events: JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY) || '[]'),
+            court_bookings: JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY) || '[]'),
+            activity_log: JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY) || '[]')
+        };
+    }
+
+    backupData.metadata = {
+        exported_at: new Date().toISOString(),
+        exported_by: getCurrentUser()?.username || 'admin',
+        system: 'Barangay Sta. Lucia Management System',
+        iso_control: 'ISO/IEC 27001 A.12 — Operations Security'
+    };
+
+    let blob, ext;
+    if (format === 'csv') {
+        // Simple CSV: flatten users table as primary export
+        const rows = backupData.users;
+        if (!rows.length) return { success: false, message: 'No data to export' };
+        const headers = Object.keys(rows[0]).join(',');
+        const csvRows = rows.map(r => Object.values(r).map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+        const csvContent = [headers, ...csvRows].join('\n');
+        blob = new Blob([csvContent], { type: 'text/csv' });
+        ext = 'csv';
+    } else {
+        blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        ext = 'json';
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // Update last_backup_at in system_config
+    if (supabaseAvailable) {
+        await supabase.from('system_config').update({ value: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('key', 'last_backup_at').catch(() => {});
+    }
+
+    await logActivity('Data Backup Exported', `Admin exported full system backup as ${ext.toUpperCase()}`, 'info');
+    return { success: true, message: `Backup downloaded as ${filename}.${ext}` };
 }
 
 // ==========================================

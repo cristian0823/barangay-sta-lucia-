@@ -469,3 +469,60 @@ ALTER TABLE court_bookings
 DO $$ BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE user_notifications;
 EXCEPTION WHEN sqlstate '42710' THEN NULL; END $$;
+
+
+-- ============================================================
+-- ISO/IEC 27001 SECURITY ADDITIONS
+-- Run these in addition to the schema above.
+-- Safe to re-run (uses IF NOT EXISTS / ALTER ADD COLUMN IF NOT EXISTS)
+-- ============================================================
+
+-- ── A.16.1 Security Incidents Table ─────────────────────────
+CREATE TABLE IF NOT EXISTS security_incidents (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(100) NOT NULL,
+    severity VARCHAR(20) DEFAULT 'medium',
+    description TEXT,
+    status VARCHAR(50) DEFAULT 'open',
+    detected_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    resolved_at TIMESTAMP WITH TIME ZONE,
+    actions_taken TEXT,
+    notified_users BOOLEAN DEFAULT false
+);
+
+ALTER TABLE security_incidents ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all access for security_incidents" ON security_incidents;
+CREATE POLICY "Enable all access for security_incidents" ON security_incidents FOR ALL USING (true);
+
+-- ── A.12.1 System Configuration / Patch Tracking ────────────
+CREATE TABLE IF NOT EXISTS system_config (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(100) UNIQUE NOT NULL,
+    value TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE system_config ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all access for system_config" ON system_config;
+CREATE POLICY "Enable all access for system_config" ON system_config FOR ALL USING (true);
+
+-- Insert default system config values
+INSERT INTO system_config (key, value) VALUES
+    ('system_version', '2.5.0'),
+    ('last_backup_at', NULL),
+    ('patch_notes', 'ISO/IEC 27001 security controls integrated. SHA-256 password hashing, MFA for admins, incident management, and privacy policy added.'),
+    ('data_retention_days', '365'),
+    ('mfa_required_for_admin', 'true')
+ON CONFLICT (key) DO NOTHING;
+
+-- ── A.12.4 Enrich Activity Log ───────────────────────────────
+ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS severity VARCHAR(20) DEFAULT 'info';
+ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS ip_address VARCHAR(50);
+ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS resource_type VARCHAR(100);
+ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS resource_id INTEGER;
+
+-- ── A.9.4 Add session & MFA tracking to users ────────────────
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS mfa_enabled BOOLEAN DEFAULT false;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_mfa_count INTEGER DEFAULT 0;
+
