@@ -380,7 +380,6 @@ async function resetPassword(username, newPassword) {
 // using Resend email API. No third-party SDK needed here.
 
 // Your Supabase project URL (from supabase-config.js)
-const SUPABASE_OTP_FUNCTION_URL = 'https://cojgsyrnexbwgsfttojq.supabase.co/functions/v1/send-otp';
 
 // Sends a 6-digit OTP to the user's registered Gmail address via Edge Function
 async function sendPasswordResetOTP(email) {
