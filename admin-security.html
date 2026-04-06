@@ -154,8 +154,8 @@
     <script src="js/incident-manager.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            if (!isAdmin() || !isMFAVerified()) {
-                window.location.href = 'login.html'; // Security Center strictly requires MFA
+            if (!isAdmin()) {
+                window.location.href = 'login.html'; 
                 return;
             }
             if (typeof initInactivityTimer === 'function') initInactivityTimer();
