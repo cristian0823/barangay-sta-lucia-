@@ -772,6 +772,7 @@
             #requests-section .data-table thead, 
             #court-bookings-section .data-table thead, 
             #multipurpose-bookings-section .data-table thead, 
+            #equipment-section .data-table thead,
             #concerns-section .data-table thead {
                 display: none;
             }
@@ -779,6 +780,7 @@
             #requests-section .data-table tbody tr, 
             #court-bookings-section .data-table tbody tr, 
             #multipurpose-bookings-section .data-table tbody tr, 
+            #equipment-section .data-table tbody tr,
             #concerns-section .data-table tbody tr {
                 display: flex;
                 flex-direction: column;
@@ -793,6 +795,7 @@
             [data-theme="dark"] #requests-section .data-table tbody tr, 
             [data-theme="dark"] #court-bookings-section .data-table tbody tr, 
             [data-theme="dark"] #multipurpose-bookings-section .data-table tbody tr, 
+            [data-theme="dark"] #equipment-section .data-table tbody tr,
             [data-theme="dark"] #concerns-section .data-table tbody tr {
                 background: rgba(31, 41, 55, 0.6);
             }
@@ -800,6 +803,7 @@
             #requests-section .data-table tbody td, 
             #court-bookings-section .data-table tbody td, 
             #multipurpose-bookings-section .data-table tbody td, 
+            #equipment-section .data-table tbody td,
             #concerns-section .data-table tbody td {
                 display: flex;
                 justify-content: space-between;
@@ -815,6 +819,7 @@
             [data-theme="dark"] #requests-section .data-table tbody td, 
             [data-theme="dark"] #court-bookings-section .data-table tbody td, 
             [data-theme="dark"] #multipurpose-bookings-section .data-table tbody td, 
+            [data-theme="dark"] #equipment-section .data-table tbody td,
             [data-theme="dark"] #concerns-section .data-table tbody td {
                 border-bottom: 1px solid rgba(255,255,255,0.05);
             }
@@ -822,6 +827,7 @@
             #requests-section .data-table tbody td:last-child, 
             #court-bookings-section .data-table tbody td:last-child, 
             #multipurpose-bookings-section .data-table tbody td:last-child, 
+            #equipment-section .data-table tbody td:last-child,
             #concerns-section .data-table tbody td:last-child {
                 border-bottom: none;
                 padding-bottom: 0;
@@ -834,6 +840,7 @@
             #requests-section .data-table tbody td::before, 
             #court-bookings-section .data-table tbody td::before, 
             #multipurpose-bookings-section .data-table tbody td::before, 
+            #equipment-section .data-table tbody td::before,
             #concerns-section .data-table tbody td::before {
                 font-weight: 700;
                 font-size: 11px;
@@ -851,7 +858,14 @@
             #requestsTable td:nth-child(4)::before { content: "Dates"; }
             #requestsTable td:nth-child(5)::before { content: "Purpose"; }
             #requestsTable td:nth-child(6)::before { content: "Status"; }
-            #requestsTable td:nth-child(7)::before { content: "Actions"; margin-right: auto; }
+            #requestsTable td:nth-child(7)::before { content: "Actions"; margin-right: auto; flex-shrink: 0; }
+            
+            #equipmentTable td:nth-child(1)::before { content: "Equipment"; }
+            #equipmentTable td:nth-child(2)::before { content: "Total"; }
+            #equipmentTable td:nth-child(3)::before { content: "Available"; }
+            #equipmentTable td:nth-child(4)::before { content: "Under Repair"; }
+            #equipmentTable td:nth-child(5)::before { content: "Status"; }
+            #equipmentTable td:nth-child(6)::before { content: "Action"; margin-right: auto; flex-shrink: 0; }
             
             #courtBookingsTable td:nth-child(1)::before { content: "Resident"; }
             #courtBookingsTable td:nth-child(2)::before { content: "Venue"; }
@@ -4944,7 +4958,16 @@
                 closeMobileSidebar();
                 const btns = document.querySelectorAll('#mobileSidebarNav button');
                 btns.forEach(b => b.classList.remove('active'));
-                const sectionMap = { 'court-bookings': 0, 'requests': 1, 'concerns': 2, 'events': 3, 'equipment': 4, 'users': 5, 'reports': 6, 'activity-log': 7 };
+                const sectionMap = { 
+                    'court-bookings': 0, 
+                    'multipurpose-bookings': 1, 
+                    'requests': 2, 
+                    'concerns': 3, 
+                    'events': 4, 
+                    'equipment': 5, 
+                    'reports': 6, 
+                    'activity-log': 7 
+                };
                 if (sectionMap[section] !== undefined) btns[sectionMap[section]]?.classList.add('active');
                 switchSection(section, null);
             }
