@@ -435,13 +435,14 @@ async function sendPasswordResetOTP(email) {
     try {
         await emailjs.send('service_th96vue', 'template_l72erqi', {
             email: email,
-            otp_code: otp
+            passcode: otp
         });
 
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
         console.error('EmailJS error:', err);
-        return { success: false, message: 'Could not reach the email server. Check your connection.' };
+        const errMsg = err.text ? err.text : (err.message || JSON.stringify(err));
+        return { success: false, message: 'EmailJS Error: ' + errMsg };
     }
 }
 

@@ -84,7 +84,7 @@ async function sendAdminMFACode(email) {
     try {
         await emailjs.send('service_th96vue', 'template_l72erqi', {
             email: email,
-            otp_code: otp
+            passcode: otp
         });
         
         // Log MFA send as an activity (will be called from pages that have logActivity)
@@ -94,7 +94,8 @@ async function sendAdminMFACode(email) {
         return { success: true, message: `A 6-digit code was sent to ${email}` };
     } catch (err) {
         console.error('[ISO A.9 MFA] EmailJS error:', err);
-        return { success: false, message: 'Could not send the email. Check your connection or EmailJS limits.' };
+        const errMsg = err.text ? err.text : (err.message || JSON.stringify(err));
+        return { success: false, message: 'EmailJS Error: ' + errMsg };
     }
 }
 
