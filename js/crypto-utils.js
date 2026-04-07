@@ -85,12 +85,7 @@ async function sendAdminMFACode(email) {
         const res = await fetch(SUPABASE_OTP_FUNCTION_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                to_email: email,
-                otp_code: otp,
-                subject: '🔐 Barangay Admin Login Verification',
-                message: `Your admin login verification code is: <strong>${otp}</strong>. This code expires in ${MFA_EXPIRY_MINUTES} minutes. If you did not request this, please secure your account immediately.`
-            })
+            body: JSON.stringify({ to_email: email, otp_code: otp })
         });
         const result = await res.json();
         if (!res.ok || result.error) {
