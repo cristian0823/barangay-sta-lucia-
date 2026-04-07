@@ -82,24 +82,19 @@ async function sendAdminMFACode(email) {
     sessionStorage.setItem(MFA_OTP_KEY, JSON.stringify({ email, otp, expiry }));
 
     try {
-        const res = await fetch(SUPABASE_OTP_FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ to_email: email, otp_code: otp })
+        await emailjs.send('service_th96vue', 'template_l72erqi', {
+            email: email,
+            otp_code: otp
         });
-        const result = await res.json();
-        if (!res.ok || result.error) {
-            console.error('[ISO A.9 MFA] Email send failed:', result);
-            return { success: false, message: result.error || 'Failed to send verification code.' };
-        }
+        
         // Log MFA send as an activity (will be called from pages that have logActivity)
         if (typeof logActivity === 'function') {
             await logActivity('Admin MFA Sent', `MFA code sent to ${email}`, 'info');
         }
         return { success: true, message: `A 6-digit code was sent to ${email}` };
     } catch (err) {
-        console.error('[ISO A.9 MFA] Network error:', err);
-        return { success: false, message: 'Could not reach the email server. Check your connection.' };
+        console.error('[ISO A.9 MFA] EmailJS error:', err);
+        return { success: false, message: 'Could not send the email. Check your connection or EmailJS limits.' };
     }
 }
 

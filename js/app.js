@@ -431,25 +431,17 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_code',   otp);
     sessionStorage.setItem('otp_expiry', expiry.toString());
 
-    // Call the Supabase Edge Function to send the real email
+    // Call EmailJS to send the real email
     try {
-        const res = await fetch(SUPABASE_OTP_FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ to_email: email, otp_code: otp })
+        await emailjs.send('service_th96vue', 'template_l72erqi', {
+            email: email,
+            otp_code: otp
         });
-
-        const result = await res.json();
-
-        if (!res.ok || result.error) {
-            console.error('Edge function error:', result);
-            return { success: false, message: result.error || 'Failed to send email. Please try again.' };
-        }
 
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
-        console.error('Network error calling edge function:', err);
-        return { success: false, message: 'Could not reach the email server. Check your internet connection.' };
+        console.error('EmailJS error:', err);
+        return { success: false, message: 'Could not reach the email server. Check your connection.' };
     }
 }
 
