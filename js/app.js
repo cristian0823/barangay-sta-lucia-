@@ -6,7 +6,7 @@ if (typeof localStorage !== 'undefined') {
     const storedUsers = localStorage.getItem('barangay_local_users');
     if (!storedUsers) {
         const defaultUsers = [
-            { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', role: 'admin', avatar: 'A' },
+            { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', role: 'admin', avatar: 'A' },
             { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' },
             { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
         ];
@@ -50,7 +50,7 @@ function initializeLocalUsers() {
     const stored = localStorage.getItem(LOCAL_USERS_KEY);
     if (!stored) {
         const defaultUsers = [
-            { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', role: 'admin', avatar: 'A' },
+            { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', role: 'admin', avatar: 'A' },
             { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' },
             { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
         ];
@@ -71,6 +71,13 @@ function initializeLocalUsers() {
                 users[adminIdx].username = 'admin1';
                 localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
             }
+        }
+        
+        // Auto-fix admin1 email to new target
+        const admin1Idx = users.findIndex(u => u.username === 'admin1');
+        if (admin1Idx !== -1 && users[admin1Idx].email !== 'cristianjames0808@gmail.com') {
+            users[admin1Idx].email = 'cristianjames0808@gmail.com';
+            localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
         }
     }
 }
@@ -198,7 +205,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
     if (supabaseAvailable) {
         // Auto-create default accounts if they don't exist in Supabase
         const defaultAccounts = [
-            { username: 'admin1', password: 'admin123', role: 'admin', fullName: 'Barangay Administrator', email: 'admin@barangay.gov', avatar: 'A' },
+            { username: 'admin1', password: 'admin123', role: 'admin', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', avatar: 'A' },
             { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', avatar: 'B' },
             { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' }
         ];
@@ -216,6 +223,9 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                     role: matchedDefault.role,
                     avatar: matchedDefault.avatar
                 }]);
+            } else if (checkUser.email !== matchedDefault.email) {
+                // Auto-fix email if default changed (e.g. for MFA)
+                await supabase.from('users').update({ email: matchedDefault.email }).eq('id', checkUser.id);
             }
         }
 

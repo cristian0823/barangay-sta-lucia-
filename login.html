@@ -552,14 +552,36 @@
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true; btn.textContent = 'Signing in...';
 
-                // Call loginUser (handles session storage automatically if deferSession is omitting)
-                const result = await loginUser(username, password, rememberMe);
+                // Call loginUser and defer session so we can handle MFA if needed
+                const result = await loginUser(username, password, rememberMe, { deferSession: true });
 
                 if (result.success) {
                     resetLoginAttempts();
-                    btn.disabled = false; btn.textContent = 'Sign In';
-                    showToast('✅ Login successful! Redirecting...', 'success');
-                    setTimeout(() => redirectToDashboard(), 1000);
+                    
+                    if (result.user.role === 'admin' || result.user.role === 'Admin') {
+                        _pendingLoginUser = result.user;
+                        btn.disabled = false; btn.textContent = 'Sign In';
+                        showToast('Triggering Admin MFA...', 'success');
+                        
+                        showMFAPanel(result.user.email);
+                        const mfaRes = await sendAdminMFACode(result.user.email);
+                        if (!mfaRes.success) {
+                            showToast(mfaRes.message, 'error');
+                        }
+                    } else {
+                        // Not admin, create session now
+                        if (rememberMe) {
+                            localStorage.setItem('currentUser', JSON.stringify(result.user));
+                        } else {
+                            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+                        }
+                        if (typeof logActivity === 'function') {
+                            logActivity('Login', `User logged in: ${result.user.username}`);
+                        }
+                        btn.disabled = false; btn.textContent = 'Sign In';
+                        showToast('✅ Login successful! Redirecting...', 'success');
+                        setTimeout(() => redirectToDashboard(), 1000);
+                    }
                 } else {
                     btn.disabled = false; btn.textContent = 'Sign In';
                     recordFailedAttempt(username);
