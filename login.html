@@ -477,7 +477,7 @@
             const btn = document.getElementById('mfaVerifyBtn');
             btn.disabled = true; btn.textContent = 'Verifying...';
 
-            const result = verifyAdminMFACode(code);
+            const result = await verifyAdminMFACode(code);
             if (result.success) {
                 // Now finalize the login session that was pending
                 const rememberMe = document.getElementById('rememberMe').checked;

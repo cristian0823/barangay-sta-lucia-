@@ -69,53 +69,53 @@ async function decryptLocal(encrypted) {
     }
 }
 
-// ── A.9.4.2 Admin Email OTP (MFA via Supabase Edge Function) ──
-const SUPABASE_OTP_FUNCTION_URL = 'https://cojgsyrnexbwgsfttojq.supabase.co/functions/v1/send-otp';
-const MFA_OTP_KEY = 'admin_mfa_otp';
-const MFA_EXPIRY_MINUTES = 10;
+// ── A.9.4.2 Admin Email OTP (MFA via Supabase Auth) ─────────
+const MFA_EMAIL_KEY = 'admin_mfa_email';
 
 async function sendAdminMFACode(email) {
     email = email.trim().toLowerCase();
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = Date.now() + MFA_EXPIRY_MINUTES * 60 * 1000;
-    sessionStorage.setItem(MFA_OTP_KEY, JSON.stringify({ email, otp, expiry }));
-
+    sessionStorage.setItem(MFA_EMAIL_KEY, email);
     try {
-        const res = await fetch(SUPABASE_OTP_FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ to_email: email, otp_code: otp })
+        const { error } = await supabase.auth.signInWithOtp({
+            email: email,
+            options: { shouldCreateUser: false }
         });
-        const result = await res.json();
-        if (!res.ok || result.error) {
-            console.error('[MFA] Edge function error:', result);
-            return { success: false, message: result.error || 'Failed to send verification code.' };
+        if (error) {
+            console.error('[MFA] Supabase OTP error:', error);
+            return { success: false, message: error.message };
         }
         if (typeof logActivity === 'function') {
             await logActivity('Admin MFA Sent', `MFA code sent to ${email}`, 'info');
         }
         return { success: true, message: `A 6-digit code was sent to ${email}` };
     } catch (err) {
-        console.error('[MFA] Network error:', err);
-        return { success: false, message: 'Network error: ' + (err.message || err) };
+        console.error('[MFA] Error:', err);
+        return { success: false, message: 'Could not send OTP: ' + (err.message || err) };
     }
 }
 
-function verifyAdminMFACode(enteredCode) {
-    const stored = sessionStorage.getItem(MFA_OTP_KEY);
-    if (!stored) return { success: false, message: 'No active MFA session. Please log in again.' };
-    const { otp, expiry } = JSON.parse(stored);
-    if (Date.now() > expiry) {
-        sessionStorage.removeItem(MFA_OTP_KEY);
-        return { success: false, message: 'Code has expired. Please log in again to receive a new code.' };
+async function verifyAdminMFACode(enteredCode) {
+    const email = sessionStorage.getItem(MFA_EMAIL_KEY);
+    if (!email) return { success: false, message: 'No active MFA session. Please log in again.' };
+    try {
+        const { error } = await supabase.auth.verifyOtp({
+            email: email,
+            token: enteredCode.trim(),
+            type: 'email'
+        });
+        if (error) {
+            console.error('[MFA] Verify error:', error);
+            return { success: false, message: 'Incorrect or expired code. Please try again.' };
+        }
+        await supabase.auth.signOut();
+        sessionStorage.removeItem(MFA_EMAIL_KEY);
+        sessionStorage.setItem('mfa_verified', 'true');
+        sessionStorage.setItem('mfa_verified_at', Date.now().toString());
+        return { success: true };
+    } catch (err) {
+        console.error('[MFA] Error:', err);
+        return { success: false, message: 'Verification error: ' + (err.message || err) };
     }
-    if (enteredCode.trim() !== otp) {
-        return { success: false, message: 'Incorrect code. Please check your email and try again.' };
-    }
-    sessionStorage.removeItem(MFA_OTP_KEY);
-    sessionStorage.setItem('mfa_verified', 'true');
-    sessionStorage.setItem('mfa_verified_at', Date.now().toString());
-    return { success: true };
 }
 
 function isMFAVerified() {
@@ -133,7 +133,7 @@ function isMFAVerified() {
 function clearMFASession() {
     sessionStorage.removeItem('mfa_verified');
     sessionStorage.removeItem('mfa_verified_at');
-    sessionStorage.removeItem(MFA_OTP_KEY);
+    sessionStorage.removeItem(MFA_EMAIL_KEY);
 }
 
 // ── A.12.1 Inactivity Session Timeout ───────────────────────
