@@ -51,7 +51,7 @@ function initializeLocalUsers() {
     if (!stored) {
         const defaultUsers = [
             { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', role: 'admin', avatar: 'A' },
-            { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' },
+            { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', role: 'admin', avatar: 'B' },
             { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
         ];
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(defaultUsers));
@@ -60,7 +60,7 @@ function initializeLocalUsers() {
         const users = JSON.parse(stored);
         const hasAdmin2 = users.some(u => u.username === 'admin2');
         if (!hasAdmin2) {
-            users.push({ id: Date.now(), username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' });
+            users.push({ id: Date.now(), username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', role: 'admin', avatar: 'B' });
             localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
         }
         // Also rename 'admin' to 'admin1' if old default exists
@@ -77,6 +77,13 @@ function initializeLocalUsers() {
         const admin1Idx = users.findIndex(u => u.username === 'admin1');
         if (admin1Idx !== -1 && users[admin1Idx].email !== 'cristianjames0808@gmail.com') {
             users[admin1Idx].email = 'cristianjames0808@gmail.com';
+            localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+        }
+
+        // Auto-fix admin2 email to new target
+        const admin2Idx = users.findIndex(u => u.username === 'admin2');
+        if (admin2Idx !== -1 && users[admin2Idx].email !== 'cristianalfonso0823@gmail.com') {
+            users[admin2Idx].email = 'cristianalfonso0823@gmail.com';
             localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
         }
     }
@@ -206,7 +213,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         // Auto-create default accounts if they don't exist in Supabase
         const defaultAccounts = [
             { username: 'admin1', password: 'admin123', role: 'admin', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', avatar: 'A' },
-            { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', avatar: 'B' },
+            { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', avatar: 'B' },
             { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' }
         ];
         const hashedPassword = await hashPassword(password);
