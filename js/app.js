@@ -452,27 +452,30 @@ async function resetPasswordWithOTP(email, enteredCode, newPassword) {
     }
 
     // Verify the OTP with Supabase Auth
-    try {
-        const { error } = await supabase.auth.verifyOtp({
-            email: email,
-            token: enteredCode.trim(),
-            type: 'email'
-        });
-        if (error) {
-            // Try signup type (for first-time users who got the confirm email)
-            const { error: error2 } = await supabase.auth.verifyOtp({
+    // (Skip if already verified in the UI — e.g. forgot-password step 2)
+    if (enteredCode !== '__supabase_verified__') {
+        try {
+            const { error } = await supabase.auth.verifyOtp({
                 email: email,
                 token: enteredCode.trim(),
-                type: 'signup'
+                type: 'email'
             });
-            if (error2) {
-                return { success: false, message: 'Incorrect or expired code. Please try again.' };
+            if (error) {
+                // Try signup type (for first-time users who got the confirm email)
+                const { error: error2 } = await supabase.auth.verifyOtp({
+                    email: email,
+                    token: enteredCode.trim(),
+                    type: 'signup'
+                });
+                if (error2) {
+                    return { success: false, message: 'Incorrect or expired code. Please try again.' };
+                }
             }
+            // Sign out from Supabase Auth — we use our own session system
+            await supabase.auth.signOut();
+        } catch (err) {
+            return { success: false, message: 'Verification error: ' + (err.message || err) };
         }
-        // Sign out from Supabase Auth — we use our own session system
-        await supabase.auth.signOut();
-    } catch (err) {
-        return { success: false, message: 'Verification error: ' + (err.message || err) };
     }
 
     // OTP verified → reset the password in our custom users table
