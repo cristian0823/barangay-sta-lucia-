@@ -82,20 +82,31 @@ async function sendAdminMFACode(email) {
     sessionStorage.setItem(MFA_OTP_KEY, JSON.stringify({ email, otp, expiry }));
 
     try {
-        await emailjs.send('service_th96vue', 'template_l72erqi', {
-            email: email,
-            passcode: otp
+        const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id: 'service_th96vue',
+                template_id: 'template_l72erqi',
+                user_id: '0ASAHR2pXehhPYi62baDZ',
+                template_params: {
+                    email: email,
+                    passcode: otp
+                }
+            })
         });
-        
-        // Log MFA send as an activity (will be called from pages that have logActivity)
+        if (!res.ok) {
+            const errText = await res.text();
+            console.error('[ISO A.9 MFA] EmailJS REST error:', errText);
+            return { success: false, message: 'EmailJS Error: ' + errText };
+        }
         if (typeof logActivity === 'function') {
             await logActivity('Admin MFA Sent', `MFA code sent to ${email}`, 'info');
         }
         return { success: true, message: `A 6-digit code was sent to ${email}` };
     } catch (err) {
         console.error('[ISO A.9 MFA] EmailJS error:', err);
-        const errMsg = err.text ? err.text : (err.message || JSON.stringify(err));
-        return { success: false, message: 'EmailJS Error: ' + errMsg };
+        return { success: false, message: 'Network error: ' + (err.message || err) };
     }
 }
 
