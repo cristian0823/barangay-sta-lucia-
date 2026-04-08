@@ -6041,7 +6041,14 @@
                 const concern = _allAdminConcerns.find(c => c.id === id);
                 if (!concern) return;
 
-                if (!confirm("Are you sure you want to mark this concern as resolved?")) return;
+                const confirmed = await showConfirmModal(
+                    'Are you sure you want to mark this concern as resolved?',
+                    'Mark as Resolved',
+                    'Yes, Resolve',
+                    'Cancel',
+                    'warning'
+                );
+                if (!confirmed) return;
 
                 const ok = await updateConcernStatus(id, 'resolved', concern.response, concern.assignedTo);
                 if (ok) {

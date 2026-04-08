@@ -2907,42 +2907,53 @@ function getStatusBadge(status) {
 }
 
 function showAlert(message, type = 'success') {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type}`;
-    
-    // Add an icon based on type
-    const icon = type === 'success' ? '✅ ' : (type === 'error' ? '❌ ' : 'ℹ️ ');
-    alertDiv.innerHTML = `<span style="margin-right:8px">${icon}</span> <span style="font-weight:600">${message}</span>`;
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || document.body.getAttribute('data-theme') === 'dark';
 
-    // Modern styling for premium aesthetics
-    alertDiv.style.position = 'fixed';
-    alertDiv.style.top = '30px';
-    alertDiv.style.right = '30px';
-    alertDiv.style.padding = '16px 24px';
-    alertDiv.style.borderRadius = '12px';
-    alertDiv.style.color = '#fff';
-    alertDiv.style.zIndex = '10000';
-    alertDiv.style.display = 'flex';
-    alertDiv.style.alignItems = 'center';
-    alertDiv.style.fontFamily = 'inherit';
-    alertDiv.style.background = type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)';
-    alertDiv.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
-    alertDiv.style.transform = 'translateX(100%) opacity-0';
-    alertDiv.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    // Icons & colors per type
+    const config = {
+        success: { icon: '✅', accent: 'linear-gradient(90deg,#10b981,#34d399)', btnColor: '#10b981', shadow: 'rgba(16,185,129,0.3)' },
+        error:   { icon: '❌', accent: 'linear-gradient(90deg,#ef4444,#f87171)', btnColor: '#ef4444', shadow: 'rgba(239,68,68,0.3)' },
+        warning: { icon: '⚠️', accent: 'linear-gradient(90deg,#f59e0b,#fbbf24)', btnColor: '#f59e0b', shadow: 'rgba(245,158,11,0.3)' },
+        info:    { icon: 'ℹ️', accent: 'linear-gradient(90deg,#3b82f6,#60a5fa)', btnColor: '#3b82f6', shadow: 'rgba(59,130,246,0.3)' }
+    };
+    const c = config[type] || config.info;
 
-    document.body.appendChild(alertDiv);
+    // Backdrop
+    const backdrop = document.createElement('div');
+    backdrop.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);opacity:0;transition:opacity 0.3s ease;';
 
-    // Animate in
+    // Modal box
+    const modal = document.createElement('div');
+    modal.style.cssText = `background:${isDark ? '#1e293b' : '#fff'};border-radius:20px;padding:36px 32px 28px;width:90%;max-width:380px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);transform:scale(0.88) translateY(20px);transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);font-family:inherit;position:relative;overflow:hidden;text-align:center;`;
+
+    // Top accent bar
+    modal.innerHTML = `
+        <div style="position:absolute;top:0;left:0;right:0;height:5px;background:${c.accent};border-radius:20px 20px 0 0;"></div>
+        <div style="font-size:42px;margin-bottom:14px;line-height:1;">${c.icon}</div>
+        <p style="margin:0 0 24px;font-size:15px;font-weight:600;color:${isDark ? '#e2e8f0' : '#374151'};line-height:1.6;">${message}</p>
+        <button id="_alertOkBtn" style="padding:11px 36px;border-radius:12px;border:none;background:${c.btnColor};color:#fff;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px -4px ${c.shadow};transition:all 0.2s;font-family:inherit;">OK</button>
+    `;
+
+    backdrop.appendChild(modal);
+    document.body.appendChild(backdrop);
+
     requestAnimationFrame(() => {
-        alertDiv.style.transform = 'translateX(0)';
-        alertDiv.style.opacity = '1';
+        backdrop.style.opacity = '1';
+        modal.style.transform = 'scale(1) translateY(0)';
     });
 
-    setTimeout(() => {
-        alertDiv.style.transform = 'translateX(100%)';
-        alertDiv.style.opacity = '0';
-        setTimeout(() => alertDiv.remove(), 400);
-    }, 3500);
+    const closeAlert = () => {
+        backdrop.style.opacity = '0';
+        modal.style.transform = 'scale(0.88) translateY(20px)';
+        setTimeout(() => backdrop.remove(), 350);
+    };
+
+    modal.querySelector('#_alertOkBtn').onclick = closeAlert;
+    // Also auto-close after 4 seconds
+    const autoTimer = setTimeout(closeAlert, 4000);
+    modal.querySelector('#_alertOkBtn').addEventListener('click', () => clearTimeout(autoTimer));
+    // Click backdrop to close
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) { clearTimeout(autoTimer); closeAlert(); } });
 }
 
 function showConfirmModal(message, title = 'Confirmation', confirmText = 'OK', cancelText = 'Cancel', type = 'warning') {
