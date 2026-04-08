@@ -422,27 +422,64 @@ async function sendPasswordResetOTP(email) {
         return { success: false, message: 'No account found with that email address.' };
     }
 
-    // Store email for verification step
-    sessionStorage.setItem('otp_email', email);
+    // Generate a secure 6-digit OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedCode = await hashPassword(otpCode);
 
-    // Use Supabase Auth to send OTP (no Resend/EmailJS needed)
+    // Store email, hash, and timestamp for verification step
+    sessionStorage.setItem('otp_email', email);
+    sessionStorage.setItem('otp_hash', hashedCode);
+    sessionStorage.setItem('otp_timestamp', Date.now().toString());
+
+    // Send OTP using the Resend Edge Function
     try {
-        const { error } = await supabase.auth.signInWithOtp({
-            email: email,
-            options: { shouldCreateUser: true }
-        });
-        if (error) {
-            console.error('Supabase OTP error:', error);
-            return { success: false, message: error.message };
+        if (supabaseAvailable) {
+            const { data, error } = await supabase.functions.invoke('send-otp', {
+                body: { to_email: email, otp_code: otpCode }
+            });
+            if (error) {
+                console.error('Edge function OTP error:', error);
+                return { success: false, message: 'Failed to send OTP email.' };
+            }
+        } else {
+            console.log("Local mode - OTP Code:", otpCode);
         }
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
-        console.error('Supabase OTP error:', err);
+        console.error('Edge function OTP error:', err);
         return { success: false, message: 'Could not send code: ' + (err.message || err) };
     }
 }
 
-// Verifies Supabase OTP then resets the password
+// Verifies the custom OTP
+async function verifyPasswordResetOTP(email, enteredCode) {
+    email = email.trim().toLowerCase();
+    const storedEmail = (sessionStorage.getItem('otp_email') || '').toLowerCase();
+    const storedHash = sessionStorage.getItem('otp_hash');
+    const storedTime = parseInt(sessionStorage.getItem('otp_timestamp') || '0', 10);
+
+    if (storedEmail !== email) {
+        return { success: false, message: 'Email mismatch. Please restart the process.' };
+    }
+    if (!storedHash || !storedTime) {
+        return { success: false, message: 'No OTP session found. Please request a new code.' };
+    }
+
+    // Check expiration (10 minutes)
+    if (Date.now() - storedTime > 10 * 60 * 1000) {
+        return { success: false, message: 'Verification code has expired. Please request a new one.' };
+    }
+
+    // Verify hash
+    const enteredHash = await hashPassword(enteredCode.trim());
+    if (enteredHash !== storedHash) {
+        return { success: false, message: 'Incorrect code. Please try again.' };
+    }
+
+    return { success: true };
+}
+
+// Resets the password (OTP is usually verified in UI prior to this)
 async function resetPasswordWithOTP(email, enteredCode, newPassword) {
     email = email.trim().toLowerCase();
     const storedEmail = (sessionStorage.getItem('otp_email') || '').toLowerCase();
@@ -451,31 +488,9 @@ async function resetPasswordWithOTP(email, enteredCode, newPassword) {
         return { success: false, message: 'Email mismatch. Please restart the process.' };
     }
 
-    // Verify the OTP with Supabase Auth
-    // (Skip if already verified in the UI — e.g. forgot-password step 2)
     if (enteredCode !== '__supabase_verified__') {
-        try {
-            const { error } = await supabase.auth.verifyOtp({
-                email: email,
-                token: enteredCode.trim(),
-                type: 'email'
-            });
-            if (error) {
-                // Try signup type (for first-time users who got the confirm email)
-                const { error: error2 } = await supabase.auth.verifyOtp({
-                    email: email,
-                    token: enteredCode.trim(),
-                    type: 'signup'
-                });
-                if (error2) {
-                    return { success: false, message: 'Incorrect or expired code. Please try again.' };
-                }
-            }
-            // Sign out from Supabase Auth — we use our own session system
-            await supabase.auth.signOut();
-        } catch (err) {
-            return { success: false, message: 'Verification error: ' + (err.message || err) };
-        }
+        const verifyRes = await verifyPasswordResetOTP(email, enteredCode);
+        if (!verifyRes.success) return verifyRes;
     }
 
     // OTP verified → reset the password in our custom users table

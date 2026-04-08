@@ -151,34 +151,7 @@
         .terms-lnk { margin-top: 10px; }
         .terms-lnk a { font-size: 13px; color: #9ca3af; font-weight: 400; text-decoration: underline; }
 
-        /* MFA Step Panel */
-        .mfa-panel { display: none; }
-        .mfa-panel.active { display: block; }
-        .login-panel.hidden-step { display: none; }
 
-        .mfa-header { text-align: center; margin-bottom: 28px; }
-        .mfa-icon { font-size: 48px; margin-bottom: 12px; display: block; }
-        .mfa-title { font-size: 26px; font-weight: 800; color: #064e3b; margin-bottom: 6px; }
-        .mfa-sub { font-size: 14px; color: #6b7280; line-height: 1.6; }
-        .mfa-email-label { font-size: 13px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 8px 14px; border-radius: 8px; border: 1px solid #d1fae5; display: block; text-align: center; margin-bottom: 20px; word-break: break-all; }
-
-        .otp-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
-        .otp-digit {
-            width: 48px; height: 56px;
-            border: 2px solid #e5e7eb; border-radius: 12px;
-            font-size: 22px; font-weight: 800; text-align: center;
-            color: #064e3b; background: #fff; outline: none;
-            transition: all 0.2s; font-family: inherit;
-        }
-        .otp-digit:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.12); }
-
-        .mfa-resend { text-align: center; margin-top: 10px; }
-        .mfa-resend button { background: none; border: none; color: #059669; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline; font-family: inherit; }
-        .mfa-resend button:disabled { color: #9ca3af; text-decoration: none; cursor: not-allowed; }
-        .mfa-countdown { color: #9ca3af; font-size: 12px; }
-
-        .mfa-back { background: none; border: none; color: #6b7280; font-size: 13px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; padding: 0; margin-bottom: 20px; }
-        .mfa-back:hover { color: #374151; }
 
         /* Security badge on login */
         .security-badge {
@@ -309,37 +282,7 @@
                 </div>
             </div>
 
-            <!-- ── ADMIN MFA STEP ── -->
-            <div id="mfaPanel" class="mfa-panel">
-                <button class="mfa-back" onclick="cancelMFA()" id="mfaBackBtn">← Back to Login</button>
-                <div class="mfa-header">
-                    <span class="mfa-icon">🔐</span>
-                    <div class="mfa-title">Admin Verification</div>
-                    <p class="mfa-sub">A 6-digit code was sent to your registered email address. Enter it below to complete login.</p>
-                </div>
-                <span class="mfa-email-label" id="mfaEmailLabel">admin@barangay.gov</span>
 
-                <div class="otp-row">
-                    <input class="otp-digit" id="otp1" maxlength="1" inputmode="numeric" autocomplete="one-time-code">
-                    <input class="otp-digit" id="otp2" maxlength="1" inputmode="numeric">
-                    <input class="otp-digit" id="otp3" maxlength="1" inputmode="numeric">
-                    <input class="otp-digit" id="otp4" maxlength="1" inputmode="numeric">
-                    <input class="otp-digit" id="otp5" maxlength="1" inputmode="numeric">
-                    <input class="otp-digit" id="otp6" maxlength="1" inputmode="numeric">
-                </div>
-
-                <button type="button" id="mfaVerifyBtn" class="btn-main" onclick="verifyMFAAndLogin()">Verify &amp; Login</button>
-
-                <div class="mfa-resend">
-                    <button id="mfaResendBtn" onclick="resendMFACode()" disabled>Resend Code</button>
-                    <span id="mfaCountdown" class="mfa-countdown"></span>
-                </div>
-
-                <div class="security-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    ISO/IEC 27001 A.9 — Multi-Factor Authentication Active
-                </div>
-            </div>
         </div>
     </div>
 
@@ -352,8 +295,7 @@
     <script src="js/app.js"></script>
     <script>
         const SECURITY = { maxAttempts: 5, lockoutDuration: 15 * 60 * 1000 };
-        let _pendingLoginUser = null; // holds session data for admin pending MFA
-        let _resendCountdown = null;
+
 
         function generateCSRFToken() {
             const token = crypto.randomUUID();
@@ -411,92 +353,7 @@
             setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
         }
 
-        // ── MFA Step Functions ────────────────────────────────
-        function showMFAPanel(email) {
-            document.querySelector('.login-panel') && document.querySelector('.login-panel').classList.add('hidden-step');
-            document.getElementById('loginForm').style.display = 'none';
-            document.querySelector('.form-footer').style.display = 'none';
-            const mfaPanel = document.getElementById('mfaPanel');
-            mfaPanel.classList.add('active');
-            document.getElementById('mfaEmailLabel').textContent = email;
-            document.getElementById('otp1').focus();
-            startResendCountdown();
-        }
 
-        function cancelMFA() {
-            _pendingLoginUser = null;
-            clearMFASession();
-            document.getElementById('loginForm').style.display = '';
-            document.querySelector('.form-footer').style.display = '';
-            document.getElementById('mfaPanel').classList.remove('active');
-            clearInterval(_resendCountdown);
-        }
-
-        function startResendCountdown() {
-            let secs = 60;
-            const btn = document.getElementById('mfaResendBtn');
-            const countdown = document.getElementById('mfaCountdown');
-            btn.disabled = true;
-            clearInterval(_resendCountdown);
-            _resendCountdown = setInterval(() => {
-                secs--;
-                countdown.textContent = ` (${secs}s)`;
-                if (secs <= 0) {
-                    clearInterval(_resendCountdown);
-                    btn.disabled = false;
-                    countdown.textContent = '';
-                }
-            }, 1000);
-        }
-
-        async function resendMFACode() {
-            if (!_pendingLoginUser) return;
-            document.getElementById('mfaResendBtn').disabled = true;
-            showToast('Sending new code...', 'success');
-            const res = await sendAdminMFACode(_pendingLoginUser.email);
-            if (res.success) {
-                showToast('✅ New code sent! Check your email.', 'success');
-                startResendCountdown();
-                // Clear OTP inputs
-                ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
-                    document.getElementById(id).value = '';
-                });
-                document.getElementById('otp1').focus();
-            } else {
-                showToast(res.message, 'error');
-                document.getElementById('mfaResendBtn').disabled = false;
-            }
-        }
-
-        async function verifyMFAAndLogin() {
-            const code = ['otp1','otp2','otp3','otp4','otp5','otp6']
-                .map(id => document.getElementById(id).value.trim()).join('');
-
-            if (code.length < 6) { showToast('Please enter all 6 digits.', 'error'); return; }
-
-            const btn = document.getElementById('mfaVerifyBtn');
-            btn.disabled = true; btn.textContent = 'Verifying...';
-
-            const result = await verifyAdminMFACode(code);
-            if (result.success) {
-                // Now finalize the login session that was pending
-                const rememberMe = document.getElementById('rememberMe').checked;
-                if (rememberMe) {
-                    localStorage.setItem('currentUser', JSON.stringify(_pendingLoginUser));
-                } else {
-                    sessionStorage.setItem('currentUser', JSON.stringify(_pendingLoginUser));
-                }
-                if (typeof logActivity === 'function') {
-                    logActivity('Admin MFA Verified', `Admin login MFA verified for: ${_pendingLoginUser.username}`, 'info');
-                }
-                showToast('✅ Verification successful! Redirecting...', 'success');
-                clearInterval(_resendCountdown);
-                setTimeout(() => redirectToDashboard(), 1000);
-            } else {
-                btn.disabled = false; btn.textContent = 'Verify & Login';
-                showToast(result.message, 'error');
-            }
-        }
 
         // OTP digit auto-focus
         document.addEventListener('DOMContentLoaded', function () {
@@ -507,32 +364,7 @@
                 e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
             });
 
-            // OTP box keyboard navigation
-            ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach((id, idx, arr) => {
-                const el = document.getElementById(id);
-                el.addEventListener('input', function () {
-                    this.value = this.value.replace(/[^0-9]/g, '').slice(-1);
-                    if (this.value && idx < arr.length - 1) {
-                        document.getElementById(arr[idx + 1]).focus();
-                    }
-                    // Auto-submit when all filled
-                    if (['otp1','otp2','otp3','otp4','otp5','otp6']
-                        .every(i => document.getElementById(i).value)) {
-                        verifyMFAAndLogin();
-                    }
-                });
-                el.addEventListener('keydown', function (e) {
-                    if (e.key === 'Backspace' && !this.value && idx > 0) {
-                        document.getElementById(arr[idx - 1]).focus();
-                    }
-                });
-                el.addEventListener('paste', function (e) {
-                    e.preventDefault();
-                    const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
-                    arr.forEach((aid, i) => { if (pasted[i]) document.getElementById(aid).value = pasted[i]; });
-                    if (pasted.length === 6) verifyMFAAndLogin();
-                });
-            });
+
 
             // Check if already logged in
             const user = getCurrentUser();
@@ -552,36 +384,15 @@
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true; btn.textContent = 'Signing in...';
 
-                // Call loginUser and defer session so we can handle MFA if needed
-                const result = await loginUser(username, password, rememberMe, { deferSession: true });
+                // Call loginUser to authenticate
+                const result = await loginUser(username, password, rememberMe);
 
                 if (result.success) {
                     resetLoginAttempts();
                     
-                    if (result.user.role === 'admin' || result.user.role === 'Admin') {
-                        _pendingLoginUser = result.user;
-                        btn.disabled = false; btn.textContent = 'Sign In';
-                        showToast('Triggering Admin MFA...', 'success');
-                        
-                        showMFAPanel(result.user.email);
-                        const mfaRes = await sendAdminMFACode(result.user.email);
-                        if (!mfaRes.success) {
-                            showToast(mfaRes.message, 'error');
-                        }
-                    } else {
-                        // Not admin, create session now
-                        if (rememberMe) {
-                            localStorage.setItem('currentUser', JSON.stringify(result.user));
-                        } else {
-                            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
-                        }
-                        if (typeof logActivity === 'function') {
-                            logActivity('Login', `User logged in: ${result.user.username}`);
-                        }
-                        btn.disabled = false; btn.textContent = 'Sign In';
-                        showToast('✅ Login successful! Redirecting...', 'success');
-                        setTimeout(() => redirectToDashboard(), 1000);
-                    }
+                    btn.disabled = false; btn.textContent = 'Sign In';
+                    showToast('✅ Login successful! Redirecting...', 'success');
+                    setTimeout(() => redirectToDashboard(), 1000);
                 } else {
                     btn.disabled = false; btn.textContent = 'Sign In';
                     recordFailedAttempt(username);
