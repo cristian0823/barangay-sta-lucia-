@@ -2575,9 +2575,15 @@
             container.innerHTML = '<p class="text-gray-500 italic text-sm">Loading history...</p>';
             try {
                 const results = await Promise.allSettled([
-                    typeof getUserBorrowings === 'function' ? getUserBorrowings(user.id) : Promise.resolve([]),
-                    typeof getUserConcerns === 'function' ? getUserConcerns(user.id) : Promise.resolve([]),
-                    typeof getCourtBookings === 'function' ? getCourtBookings(user.id) : Promise.resolve([])
+                    typeof getMyBorrowings === 'function' ? getMyBorrowings() : Promise.resolve([]),
+                    typeof getMyConcerns === 'function' ? getMyConcerns() : Promise.resolve([]),
+                    (async () => {
+                        if (typeof getCourtBookings === 'function') {
+                            const bookings = await getCourtBookings();
+                            return bookings.filter(b => (b.userId || b.user_id) === user.id);
+                        }
+                        return [];
+                    })()
                 ]);
                 const bor = results[0].status === 'fulfilled' ? (results[0].value || []) : [];
                 const con = results[1].status === 'fulfilled' ? (results[1].value || []) : [];
