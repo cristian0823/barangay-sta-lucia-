@@ -962,14 +962,32 @@ async function approveEquipmentRequest(borrowingId) {
     if (!user) return { success: false, message: 'Not logged in' };
     
     const supabaseAvailable = await isSupabaseAvailable();
+    let targetUserId = null;
+    let equipmentName = null;
+
     if (supabaseAvailable) {
+        const { data: rec } = await supabase.from('equipment_borrowings').select('user_id, equipment').eq('id', borrowingId).maybeSingle();
+        targetUserId = rec?.user_id;
+        equipmentName = rec?.equipment;
+
         // Use RPC to ensure stock is deducted atomically
         const { data, error } = await supabase.rpc('approve_equipment_request', { borrowing_id: borrowingId, admin_user_id: user.id });
         if (error) return { success: false, message: error.message };
         if (data && !data.success) return data;
         
+        if (targetUserId) {
+            await supabase.from('user_notifications').insert([{
+                user_id: targetUserId,
+                type: 'equipment_approved',
+                message: `Your request for ${equipmentName} has been approved. Please wait for the admin to call.`,
+                meta: { borrowing_id: borrowingId, equipment: equipmentName },
+                is_read: false
+            }]);
+            broadcastSync();
+        }
+
         await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
-        return data || { success: true, message: 'Status updated to approved' }; 
+        return data || { success: true, message: 'Status updated to approved' };
     } else {
         // Local fallback
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
@@ -988,8 +1006,26 @@ async function approveEquipmentRequest(borrowingId) {
         }
 
         borrowings[index].status = 'approved';
+        targetUserId = borrowings[index].userId;
+        equipmentName = borrowings[index].equipment;
+
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
         
+        if (targetUserId) {
+            const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+            notifs.push({
+                id: Date.now(),
+                userId: targetUserId,
+                type: 'equipment_approved',
+                message: `Your request for ${equipmentName} has been approved. Please wait for the admin to call.`,
+                meta: { borrowing_id: borrowingId, equipment: equipmentName },
+                isRead: false,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+            broadcastSync();
+        }
+
         logActivity(`Borrow Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to approved` };
     }
@@ -1832,7 +1868,7 @@ async function getPendingCancellationNotifications(userId) {
             .from('user_notifications')
             .select('*')
             .eq('user_id', userId)
-            .eq('type', 'booking_cancelled')
+            .in('type', ['booking_cancelled', 'event_conflict', 'equipment_approved'])
             .eq('is_read', false)
             .order('created_at', { ascending: false });
         if (error) { console.warn('Notifications fetch error:', error); return []; }
@@ -1847,7 +1883,7 @@ async function getPendingCancellationNotifications(userId) {
         const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
         return notifs.filter(n =>
             String(n.userId) === String(userId) &&
-            n.type === 'booking_cancelled' &&
+            Object.values(['booking_cancelled', 'event_conflict', 'equipment_approved']).includes(n.type) &&
             !n.isRead
         ).map(n => ({
             id: n.id,

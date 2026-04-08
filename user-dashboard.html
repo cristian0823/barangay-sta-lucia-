@@ -1512,6 +1512,24 @@
             try {
                 if (typeof getPendingCancellationNotifications !== 'function') return;
                 const notifs = await getPendingCancellationNotifications(user.id);
+                
+                const eqNotifs = notifs.filter(n => n.type === 'equipment_approved');
+                if (eqNotifs.length > 0) {
+                    _activeConflictNotif = eqNotifs[0];
+                    const modal = document.getElementById('successModal');
+                    if (modal) {
+                         document.getElementById('successModalTitle').textContent = 'Request Approved!';
+                         document.getElementById('successModalMessage').textContent = _activeConflictNotif.message;
+                         
+                         const okBtn = modal.querySelector('button');
+                         if (okBtn) okBtn.setAttribute('onclick', 'dismissEquipmentNotification()');
+                         
+                         modal.classList.remove('hidden');
+                         modal.classList.add('flex');
+                    }
+                    return;
+                }
+
                 // Also check event_conflict for legacy, but primarily booking_cancelled
                 const conflicts = notifs.filter(n => n.type === 'booking_cancelled' || n.type === 'event_conflict');
                 if (conflicts.length === 0) return;
@@ -1545,6 +1563,23 @@
             // Navigate to booking panel
             showPanel('booking');
             showToast('Please pick a new date to reschedule your booking.', 'success');
+        }
+
+        async function dismissEquipmentNotification() {
+            const modal = document.getElementById('successModal');
+            if (modal) { 
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex'); 
+                const okBtn = modal.querySelector('button');
+                if (okBtn) okBtn.setAttribute('onclick', 'closeSuccessModal()');
+            }
+            
+            if (_activeConflictNotif && typeof markUserNotificationAsRead === 'function') {
+                await markUserNotificationAsRead(_activeConflictNotif.id);
+            }
+            
+            _activeConflictNotif = null;
+            checkConflictNotifications(); // check for more notifications
         }
 
         function handleConflictCancel() {
