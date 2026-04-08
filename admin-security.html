@@ -198,31 +198,34 @@
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">Loading...</td></tr>';
             
             try {
-                if (!supabase) throw new Error('Supabase not available');
-                const { data, error } = await supabase.from('security_incidents').select('*').order('created_at', { ascending: false }).limit(20);
+                const data = await getSecurityIncidents(20);
                 
-                if (error) throw error;
                 if (!data || data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 30px;">No critical security incidents recorded.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = data.map(inc => {
-                    const date = new Date(inc.created_at).toLocaleString();
+                    const dateValue = inc.detected_at || inc.created_at;
+                    const date = dateValue ? new Date(dateValue).toLocaleString() : 'Unknown Date';
+                    const incidentType = inc.type || inc.incident_type || 'Unknown Incident';
+                    const ipAddress = inc.ip_address || '127.0.0.1';
                     const badgeClass = inc.severity === 'high' || inc.severity === 'critical' ? 'severity-high' : 'severity-low';
+                    const severityLabel = inc.severity ? inc.severity.toUpperCase() : 'UNKNOWN';
+                    
                     return `
                         <tr>
                             <td style="white-space: nowrap;">${date}</td>
-                            <td style="font-weight: 600;">${inc.incident_type}</td>
-                            <td><span style="font-family: monospace; background: #0f172a; padding: 4px 8px; border-radius: 6px;">${inc.ip_address || '127.0.0.1'}</span></td>
-                            <td><span class="${badgeClass}">${inc.severity.toUpperCase()}</span></td>
-                            <td style="color: #64748b;">${inc.status}</td>
+                            <td style="font-weight: 600;">${incidentType}</td>
+                            <td><span style="font-family: monospace; background: #0f172a; padding: 4px 8px; border-radius: 6px;">${ipAddress}</span></td>
+                            <td><span class="${badgeClass}">${severityLabel}</span></td>
+                            <td style="color: #64748b; text-transform: capitalize;">${inc.status || 'open'}</td>
                         </tr>
                     `;
                 }).join('');
             } catch (e) {
                 console.error("Failed to load incident logs: ", e);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444; padding: 30px;">Failed to load incident log remote records.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444; padding: 30px;">Failed to load incident logs.</td></tr>';
             }
         }
     </script>
