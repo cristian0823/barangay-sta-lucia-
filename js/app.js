@@ -1698,7 +1698,7 @@ async function bookCourt(bookingData) {
                 time: combinedTime,
                 venue: venue,
                 purpose: bookingData.purpose || '',
-                status: 'pending'
+                status: bookingData.status || 'approved'
             }]);
 
             if (error) throw error;
@@ -1722,7 +1722,7 @@ async function bookCourt(bookingData) {
         time: combinedTime,
         venueName: venueLabel,
         purpose: bookingData.purpose || '',
-        status: 'pending'
+        status: bookingData.status || 'approved'
     };
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
