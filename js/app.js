@@ -815,6 +815,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         const { error } = await supabase.from('borrowings').insert([{
             user_id: user.id,
             equipment: item.name,
+            equipment_id: item.id,
             quantity: quantity,
             borrow_date: borrowDate,
             return_date: returnDate,
@@ -966,7 +967,7 @@ async function approveEquipmentRequest(borrowingId) {
     let equipmentName = null;
 
     if (supabaseAvailable) {
-        const { data: rec } = await supabase.from('equipment_borrowings').select('user_id, equipment').eq('id', borrowingId).maybeSingle();
+        const { data: rec } = await supabase.from('borrowings').select('user_id, equipment').eq('id', borrowingId).maybeSingle();
         targetUserId = rec?.user_id;
         equipmentName = rec?.equipment;
 
