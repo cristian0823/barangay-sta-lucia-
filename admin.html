@@ -4314,7 +4314,7 @@
                             </div>
                         ` : ''}
                         
-                        ${booking.status !== 'cancelled' ? `
+                        ${booking.status !== 'cancelled' && booking.status !== 'rejected' ? `
                             <div style="margin-bottom: 16px;">
                                 <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--gray); font-weight: 600;">💬 Send Reply / Explanation:</label>
                                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -4328,17 +4328,19 @@
                                 </div>
                             </div>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                                ${booking.status === 'pending' ? `
                                 <button onclick="handleApproveCourtBooking(${booking.id})" 
                                     class="btn btn-small" style="background: #10b981; border: none; color: white;">
                                     ✅ Approve
                                 </button>
+                                ` : ''}
                                 <button onclick="addAdminCommentToBooking(${booking.id})" 
                                     class="btn btn-small" style="background: #f59e0b; border: none; color: white;">
                                     💬 Reply
                                 </button>
-                                <button onclick="handleRejectCourtBooking(${booking.id})" 
-                                    class="btn btn-small btn-danger">
-                                    ❌ Reject
+                                <button onclick="cancelCourtBookingAdmin(${booking.id})" 
+                                    class="btn btn-small btn-danger" style="background: #ef4444; border-color: #ef4444; color: white;">
+                                    ❌ Cancel Booking
                                 </button>
                                 <button onclick="deleteCourtBooking(${booking.id})" 
                                     class="btn btn-small" style="background: #dc2626; border-color: #dc2626; color: white;">
