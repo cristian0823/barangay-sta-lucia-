@@ -1910,6 +1910,50 @@ async function markUserNotificationAsRead(notifId) {
     }
 }
 
+async function getUserNotifications(userId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { data, error } = await supabase
+            .from('user_notifications')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(50);
+        if (error) { console.warn('Notifications fetch error:', error); return []; }
+        return (data || []).map(n => ({
+            id: n.id,
+            type: n.type,
+            message: n.message,
+            meta: n.meta || {},
+            isRead: n.is_read,
+            createdAt: n.created_at
+        }));
+    } else {
+        const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+        return notifs.filter(n => String(n.userId) === String(userId)).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 50);
+    }
+}
+
+async function markAllUserNotificationsRead(userId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('user_id', userId).eq('is_read', false);
+        return !error;
+    } else {
+        let notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+        let updated = false;
+        notifs = notifs.map(n => {
+            if (String(n.userId) === String(userId) && !n.isRead) {
+                updated = true;
+                return { ...n, isRead: true };
+            }
+            return n;
+        });
+        if (updated) localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+        return true;
+    }
+}
+
 async function deleteCourtBooking(bookingId) {
     const user = getCurrentUser();
     if (!user) return { success: false, message: 'Please login first' };
@@ -2061,7 +2105,20 @@ async function approveCourtBooking(bookingId) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
+        const { data: booking } = await supabase.from('court_bookings').select('user_id, date, time').eq('id', bookingId).maybeSingle();
         const { error } = await supabase.from('court_bookings').update({ status: 'approved' }).eq('id', bookingId);
+        
+        if (!error && booking && booking.user_id) {
+            await supabase.from('user_notifications').insert([{
+                user_id: booking.user_id,
+                type: 'booking_approved',
+                message: `Your court booking on ${booking.date} at ${booking.time} has been approved.`,
+                meta: { booking_id: bookingId, date: booking.date },
+                is_read: false
+            }]);
+            broadcastSync();
+        }
+
         if (!error) await logActivity('Booking Approved', `Approved court booking ID: ${bookingId}`);
         return { success: !error, message: error ? error.message : 'Court booking approved' };
     } else {
@@ -2070,6 +2127,22 @@ async function approveCourtBooking(bookingId) {
         if (index === -1) return { success: false, message: 'Booking not found' };
         bookings[index].status = 'approved';
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+        
+        if (bookings[index].userId) {
+            const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+            notifs.push({
+                id: Date.now(),
+                userId: bookings[index].userId,
+                type: 'booking_approved',
+                message: `Your court booking on ${bookings[index].date} at ${bookings[index].time} has been approved.`,
+                meta: { booking_id: bookingId, date: bookings[index].date },
+                isRead: false,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+            broadcastSync();
+        }
+
         logActivity('Booking Approved', `Approved court booking ID: ${bookingId}`);
         return { success: true, message: 'Court booking approved' };
     }
@@ -2132,18 +2205,48 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
     if (supabaseAvailable) {
+        const { data: concern } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
+        
+        if (!error && concern && concern.user_id && status === 'resolved') {
+             await supabase.from('user_notifications').insert([{
+                user_id: concern.user_id,
+                type: 'concern_resolved',
+                message: `Your concern "${concern.title}" has been resolved.`,
+                meta: { concern_id: concernId, response },
+                is_read: false
+            }]);
+            broadcastSync();
+        }
+
         if (!error) await logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status}`);
         return !error;
     } else {
         const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
         const index = concerns.findIndex(c => c.id === concernId);
         if (index === -1) return false;
+        
         concerns[index].status = status;
         concerns[index].response = response;
         if (assignedTo !== undefined) concerns[index].assignedTo = assignedTo;
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
-        logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status}`);
+        
+        if (concerns[index].userId && status === 'resolved') {
+            const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+            notifs.push({
+                id: Date.now(),
+                userId: concerns[index].userId,
+                type: 'concern_resolved',
+                message: `Your concern "${concerns[index].title}" has been resolved.`,
+                meta: { concern_id: concernId, response },
+                isRead: false,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+            broadcastSync();
+        }
+
+        logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status} (Local)`);
         return true;
     }
 }
