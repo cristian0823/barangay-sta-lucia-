@@ -3070,22 +3070,59 @@ function showConfirmModal(message, title = 'Confirmation', confirmText = 'OK', c
     });
 }
 
+// ============================================================
+// ROLE-BASED ACCESS CONTROL (RBAC)
+// ============================================================
+
+/**
+ * requireAuth() — Must be logged in. Redirects to login.html if not.
+ * Use on ALL protected pages.
+ */
 function requireAuth() {
     const user = getCurrentUser();
     if (!user) {
-        window.location.href = 'login.html';
+        window.location.replace('login.html');
         return false;
     }
     return true;
 }
 
+/**
+ * requireAdmin() — Must be logged in AND have role === 'admin'.
+ * Redirects non-admins to user-dashboard.html. Redirects unauthenticated to login.html.
+ * Use on all ADMIN pages (admin.html, admin-settings.html, admin-security.html).
+ */
 function requireAdmin() {
-    if (!isAdmin()) {
-        window.location.href = 'home.html';
+    const user = getCurrentUser();
+    if (!user) {
+        window.location.replace('login.html');
+        return false;
+    }
+    if (user.role !== 'admin') {
+        window.location.replace('user-dashboard.html');
         return false;
     }
     return true;
 }
+
+/**
+ * requireUser() — Must be logged in AND have role === 'user'.
+ * Redirects admins to admin.html. Redirects unauthenticated to login.html.
+ * Use on all RESIDENT pages (user-dashboard.html, concerns.html, equipment.html, etc.).
+ */
+function requireUser() {
+    const user = getCurrentUser();
+    if (!user) {
+        window.location.replace('login.html');
+        return false;
+    }
+    if (user.role === 'admin') {
+        window.location.replace('admin.html');
+        return false;
+    }
+    return true;
+}
+
 
 // Helper function for calendar time slot logic
 function timeToMinutes(tStr) {

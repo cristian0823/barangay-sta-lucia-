@@ -364,11 +364,9 @@
             setTimeout(() => { toast.style.transform = 'translateY(5rem)'; }, 3000);
         }
 
-        // Auth check
+        // RBAC: Residents only - admins are redirected to admin.html
+        if (!requireUser()) { throw new Error('RBAC redirect'); }
         const user = getCurrentUser();
-        if (!user) {
-            window.location.href = 'login.html';
-        }
 
         // Load user data
         document.getElementById('fullName').value = user.full_name || user.fullName || '';

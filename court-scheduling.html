@@ -336,11 +336,9 @@
         let currentYear = new Date().getFullYear();
         let selectedDate = null;
 
-        // Check authentication
+        // RBAC: Residents only - admins are redirected to admin.html
+        if (!requireUser()) { throw new Error('RBAC redirect'); }
         const user = getCurrentUser();
-        if (!user) {
-            window.location.href = 'login.html';
-        }
 
         // Show admin link for admins
         if (user && user.role === 'admin') {

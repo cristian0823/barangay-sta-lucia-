@@ -1389,9 +1389,9 @@
     <script src="js/app.js"></script>
     <script src="js/darkmode.js"></script>
     <script>
-        // Auth check
+        // RBAC: Residents only - admins are redirected to admin.html
+        if (!requireUser()) { throw new Error('RBAC redirect'); }
         const user = getCurrentUser();
-        if (!user) { window.location.href = 'login.html'; }
         window.user = user; // expose globally so checkPendingNotifications can access window.user.id
 
         document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
