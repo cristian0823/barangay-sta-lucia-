@@ -4142,7 +4142,9 @@
                 const emptyState = document.getElementById('noUsers');
                 if (!tbody) return;
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
-                const users = await getAllUsers();
+                let users = await getAllUsers();
+                users = users.filter(u => u.role !== 'admin');
+
                 if (users.length === 0) {
                     tbody.innerHTML = '';
                     if (emptyState) emptyState.style.display = 'block';
