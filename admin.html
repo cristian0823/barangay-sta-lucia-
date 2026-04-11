@@ -2098,6 +2098,9 @@
                     <button class="sidebar-btn" onclick="switchSection('concerns', this)">
                         <span class="nav-icon-box">📋</span> Concerns
                     </button>
+                    <button class="sidebar-btn" onclick="switchSection('users', this)">
+                        <span class="nav-icon-box">👥</span> Manage Users
+                    </button>
                     <button class="sidebar-btn" onclick="switchSection('events', this)">
                         <span class="nav-icon-box">📅</span> Court Events
                     </button>
@@ -2174,7 +2177,7 @@
                                 </div>
                             </div>
                             <div class="stat-card"
-                                onclick="window.location.href='admin-settings.html'"
+                                onclick="switchSection('users')"
                                 style="cursor:pointer;border-left:4px solid #10b981;padding:22px;border-radius:14px;">
                                 <div class="stat-icon" style="background:#ecfdf5;border:1px solid #a7f3d0;">👥</div>
                                 <div class="stat-content">
@@ -2530,7 +2533,38 @@
                                 </table>
                             </div>
                         </div>
-                    </div> <!-- Reports Section -->
+                    </div> 
+
+                    <!-- USERS SECTION -->
+                    <div id="users-section" class="section-container" style="display: none;">
+                        <div class="section-header">
+                            <div>
+                                <h3>👥 Manage Users</h3>
+                                <p style="font-size: 13px; color: var(--muted); margin-top: 5px;">Manage registered residents and users in the system</p>
+                            </div>
+                        </div>
+                        <div class="section-content">
+                            <div class="admin-tables">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTable"></tbody>
+                                </table>
+                                <div id="noUsers" class="empty-state" style="display: none;">
+                                    <div class="empty-state-icon">👥</div>
+                                    <p>No registered users found</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Users Section -->
+
                     <div id="reports-section" class="section-container" style="display: none;">
                         <div class="section-header"
                             style="display: flex; justify-content: space-between; align-items: center;">
