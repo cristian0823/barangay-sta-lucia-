@@ -364,8 +364,8 @@
             setTimeout(() => { toast.style.transform = 'translateY(5rem)'; }, 3000);
         }
 
-        // Auth check
-        if (!requireAuth()) { throw new Error('Auth redirect'); }
+        // RBAC: Residents only — admins are redirected to admin.html
+        if (!requireUser()) { throw new Error('RBAC redirect'); }
         const user = getCurrentUser();
 
 
