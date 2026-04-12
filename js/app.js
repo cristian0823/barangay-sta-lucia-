@@ -436,7 +436,7 @@ async function sendPasswordResetOTP(email) {
         const payload = {
             service_id: "service_th96vue",
             template_id: "template_l72erqi",
-            user_id: "0ASAHR2pXehhPYi62baDZ",
+            user_id: "DPEG6BGMwO8ExGg_e",
             template_params: {
                 email: email,
                 otp_code: otpCode
