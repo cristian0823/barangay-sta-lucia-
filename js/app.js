@@ -431,35 +431,33 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_hash', hashedCode);
     sessionStorage.setItem('otp_timestamp', Date.now().toString());
 
-    // Send OTP using the Supabase Edge Function (configured for Resend API)
+    // Send OTP directly from frontend using Official EmailJS SDK (Bypasses Domain Restrictions)
     try {
-        if (supabaseAvailable) {
-            const { data, error } = await supabase.functions.invoke('send-otp', {
-                body: { to_email: email, otp_code: otpCode }
-            });
-            if (error) {
-                console.error('Edge function OTP raw error:', error);
-                
-                // Supabase wraps the response, try to get the actual text
-                let exactReason = error.message;
-                if (error.context && error.context.status !== 200) {
-                    try {
-                        const errObj = await error.context.json();
-                        if (errObj.error) exactReason = errObj.error;
-                    } catch (e) {}
-                }
-                
-                return { success: false, message: 'Server Refusal: ' + exactReason };
-            }
-        } else {
-            console.log("Local mode - OTP Code:", otpCode);
-        }
-        
-        return { success: true, message: '✅ A 6-digit code has been sent to your email.' };
+        await new Promise((resolve, reject) => {
+            if (window.emailjs) return resolve();
+            const script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+
+        // Initialize Native EmailJS SDK
+        emailjs.init({ publicKey: "DPEG6BGMwO8ExGg_e" });
+
+        // Send payload forcefully
+        await emailjs.send("service_th96vue", "template_l72erqi", {
+            email: email,
+            passcode: otpCode,
+            otp: otpCode,
+            message: otpCode,
+            Company_Name: "Barangay Sta. Lucia"
+        });
+
+        return { success: true, message: `✅ A 6-digit code has been sent to your email.` };
     } catch (err) {
-        console.error('Edge function OTP error:', err);
-        const errMsg = err?.message || err?.text || (typeof err === 'string' ? err : 'Unknown server error');
-        return { success: false, message: 'Server communication error: ' + errMsg };
+        console.error('EmailJS direct SDK error:', err);
+        return { success: false, message: 'Provider error. Please check EmailJS configuration.' };
     }
 }
 
