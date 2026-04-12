@@ -158,6 +158,15 @@ async function registerUser(userData) {
             return { success: false, message: 'Email already registered' };
         }
 
+        const { data: existingPhone } = await supabase
+            .from('users')
+            .select('*')
+            .eq('phone', userData.phone);
+
+        if (existingPhone && existingPhone.length > 0) {
+            return { success: false, message: 'Phone number already registered' };
+        }
+
         const { error } = await supabase
             .from('users')
             .insert([{
@@ -184,6 +193,9 @@ async function registerUser(userData) {
         }
         if (users.find(u => u.email === userData.email)) {
             return { success: false, message: 'Email already registered' };
+        }
+        if (users.find(u => u.phone === userData.phone)) {
+            return { success: false, message: 'Phone number already registered' };
         }
 
         const newUser = {
