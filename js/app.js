@@ -439,7 +439,11 @@ async function sendPasswordResetOTP(email) {
             user_id: "DPEG6BGMwO8ExGg_e",
             template_params: {
                 email: email,
-                otp_code: otpCode
+                otp_code: otpCode,
+                otp: otpCode,
+                code: otpCode,
+                message: otpCode,
+                Company_Name: "Barangay Sta. Lucia"
             }
         };
 
