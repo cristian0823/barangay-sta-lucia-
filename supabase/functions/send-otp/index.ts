@@ -33,8 +33,14 @@ serve(async (req) => {
       );
     }
 
-    // Hardcoded API key provided by user to simplify Capstone deployment
-    const RESEND_API_KEY = "re_AccCgML6_LSC99DYbhHyt3E1jifai2GQW";
+    // Fetch from Supabase Secrets to prevent GitHub secret scanner from instantly revoking the key
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (!RESEND_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Email service not configured. Set RESEND_API_KEY inside Supabase." }),
+        { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
 
     // Send email via Resend API
     const resendRes = await fetch("https://api.resend.com/emails", {
