@@ -438,8 +438,18 @@ async function sendPasswordResetOTP(email) {
                 body: { to_email: email, otp_code: otpCode }
             });
             if (error) {
-                console.error('Edge function OTP error:', error);
-                return { success: false, message: 'Failed to send OTP email via server.' };
+                console.error('Edge function OTP raw error:', error);
+                
+                // Supabase wraps the response, let's try to get the actual text
+                let exactReason = error.message;
+                if (error.context && error.context.status !== 200) {
+                    try {
+                        const errObj = await error.context.json();
+                        if (errObj.error) exactReason = errObj.error;
+                    } catch (e) {}
+                }
+                
+                return { success: false, message: 'Server Refusal: ' + exactReason };
             }
         } else {
             console.log("Local mode - OTP Code:", otpCode);
