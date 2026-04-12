@@ -33,57 +33,32 @@ serve(async (req) => {
       );
     }
 
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: "Email service not configured. Set RESEND_API_KEY." }),
-        { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Send email via Resend API
-    const resendRes = await fetch("https://api.resend.com/emails", {
+    // Use EmailJS REST API instead of Resend to bypass SMTP rate limitations
+    // Service: service_th96vue | Template: template_l72erqi | Public Key (user_id): 0ASAHR2pXehhPYi62baDZ
+    const emailJsRes = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
+        "Accept": "application/json"
       },
       body: JSON.stringify({
-        from: "Barangay Sta. Lucia <onboarding@resend.dev>",
-        to: [to_email],
-        subject: "Your Password Reset Code - Barangay Sta. Lucia",
-        html: `
-          <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
-            <div style="text-align: center; margin-bottom: 24px;">
-              <div style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; width: 64px; height: 64px; line-height: 64px; font-size: 28px;">🏛️</div>
-              <h1 style="color: #064e3b; font-size: 22px; margin: 12px 0 4px;">Barangay Sta. Lucia</h1>
-              <p style="color: #6b7280; font-size: 13px; margin: 0;">Community Services Portal</p>
-            </div>
-
-            <div style="background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb; text-align: center;">
-              <p style="color: #374151; font-size: 15px; margin-bottom: 8px;">Your password reset code is:</p>
-              <div style="background: #ecfdf5; border: 2px dashed #10b981; border-radius: 12px; padding: 20px; margin: 16px 0;">
-                <span style="font-size: 40px; font-weight: 900; letter-spacing: 10px; color: #064e3b; font-family: monospace;">${otp_code}</span>
-              </div>
-              <p style="color: #6b7280; font-size: 13px; margin: 0;">⏱️ This code expires in <strong>10 minutes</strong>.</p>
-              <p style="color: #6b7280; font-size: 12px; margin-top: 8px;">Do not share this code with anyone.</p>
-            </div>
-
-            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin-top: 20px;">
-              If you did not request this, please ignore this email.<br>
-              — Barangay Sta. Lucia IT Team
-            </p>
-          </div>
-        `,
+        service_id: "service_th96vue",
+        template_id: "template_l72erqi",
+        user_id: "0ASAHR2pXehhPYi62baDZ",
+        template_params: {
+          email: to_email,
+          otp_code: otp_code
+        }
       }),
     });
 
-    const result = await resendRes.json();
+    // EmailJS returns 'OK' text on success, not JSON
+    const resultText = await emailJsRes.text();
 
-    if (!resendRes.ok) {
-      console.error("Resend API error:", result);
+    if (!emailJsRes.ok) {
+      console.error("EmailJS API error side-effect:", resultText);
       return new Response(
-        JSON.stringify({ error: "Failed to send email. Please try again." }),
+        JSON.stringify({ error: "Failed to send email. Provider rejected the request." }),
         { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
