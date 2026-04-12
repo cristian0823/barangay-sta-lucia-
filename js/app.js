@@ -441,7 +441,8 @@ async function sendPasswordResetOTP(email) {
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
         console.error('EmailJS error:', err);
-        return { success: false, message: 'Could not reach the email server. Check your internet connection.' };
+        const errMsg = err?.text || err?.message || (typeof err === 'string' ? err : 'Check console for details');
+        return { success: false, message: 'Email Error: ' + errMsg };
     }
 }
 
