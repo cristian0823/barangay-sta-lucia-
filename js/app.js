@@ -458,10 +458,10 @@ async function sendPasswordResetOTP(email) {
         if (!res.ok) {
             const errText = await res.text();
             console.error('EmailJS direct fetch error:', errText);
-            return { success: false, message: 'Provider rejected request (quota exceeded or key revoked). Details in console.' };
+            return { success: false, message: 'Provider rejected request (quota exceeded or key revoked).' };
         }
 
-        return { success: true, message: '✅ A 6-digit code has been sent to your email.' };
+        return { success: true, message: `✅ Code sent! (Capstone Demo: Your OTP is ${otpCode})` };
     } catch (err) {
         console.error('EmailJS direct fetch error:', err);
         return { success: false, message: 'Network error. Please check your internet.' };
