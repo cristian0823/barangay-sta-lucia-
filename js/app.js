@@ -431,40 +431,35 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_hash', hashedCode);
     sessionStorage.setItem('otp_timestamp', Date.now().toString());
 
-    // Send OTP directly from frontend using Official EmailJS SDK to ensure variables strictly bind
+    // Send OTP using the Supabase Edge Function (configured for Resend API)
     try {
-        await new Promise((resolve, reject) => {
-            if (window.emailjs) return resolve();
-            const script = document.createElement('script');
-            script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-
-        // Initialize natively
-        emailjs.init({ publicKey: "DPEG6BGMwO8ExGg_e" });
-
-        // Send via official SDK which guarantees template_params format perfectly
-        await emailjs.send("service_th96vue", "template_l72erqi", {
-            email: email,
-            passcode: otpCode,
-            PASSCODE: otpCode,
-            Passcode: otpCode,
-            otp: otpCode,
-            OTP: otpCode,
-            code: otpCode,
-            CODE: otpCode,
-            message: otpCode,
-            MESSAGE: otpCode,
-            Message: otpCode,
-            time: new Date(Date.now() + 10 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-        });
-
-        return { success: true, message: `✅ Code sent! (Capstone Demo: Your OTP is ${otpCode})` };
+        if (supabaseAvailable) {
+            const { data, error } = await supabase.functions.invoke('send-otp', {
+                body: { to_email: email, otp_code: otpCode }
+            });
+            if (error) {
+                console.error('Edge function OTP raw error:', error);
+                
+                // Supabase wraps the response, try to get the actual text
+                let exactReason = error.message;
+                if (error.context && error.context.status !== 200) {
+                    try {
+                        const errObj = await error.context.json();
+                        if (errObj.error) exactReason = errObj.error;
+                    } catch (e) {}
+                }
+                
+                return { success: false, message: 'Server Refusal: ' + exactReason + ` (Demo Mode: Code is ${otpCode})` };
+            }
+        } else {
+            console.log("Local mode - OTP Code:", otpCode);
+        }
+        
+        return { success: true, message: `✅ Email sent via Resend! (Capstone Demo: Your OTP is ${otpCode})` };
     } catch (err) {
-        console.error('EmailJS direct fetch error:', err);
-        return { success: false, message: 'Network error. Please check your internet.' };
+        console.error('Edge function OTP error:', err);
+        const errMsg = err?.message || err?.text || (typeof err === 'string' ? err : 'Unknown server error');
+        return { success: false, message: 'Server communication error: ' + errMsg + ` (Demo Mode: Code is ${otpCode})` };
     }
 }
 
