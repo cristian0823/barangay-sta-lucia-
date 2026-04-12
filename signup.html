@@ -108,8 +108,10 @@
             background: #fff; outline: none; transition: all 0.2s;
         }
         .field input:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
+        .field input.input-error { border-color: #ef4444; box-shadow: 0 0 0 4px rgba(239,68,68,0.1); }
         .field input::placeholder { color: #9ca3af; }
-        .field-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+        .field-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; transition: color 0.2s; }
+        .field-hint.hint-error { color: #ef4444; font-weight: 600; }
 
         /* Eye toggle */
         .eye-toggle {
@@ -294,7 +296,7 @@
                             <div class="field-wrap">
                                 <input type="text" id="username" required placeholder="3–20 characters" minlength="3" maxlength="20">
                             </div>
-                            <p class="field-hint">Letters, numbers, underscores only</p>
+                            <p id="usernameHint" class="field-hint">Letters, numbers, underscores only</p>
                         </div>
                     </div>
 
@@ -305,6 +307,7 @@
                             <div class="field-wrap">
                                 <input type="tel" id="phone" required placeholder="09123456789" maxlength="15">
                             </div>
+                            <p id="phoneHint" class="field-hint"></p>
                         </div>
                         <div class="field">
                             <label>Address</label>
@@ -320,7 +323,7 @@
                         <div class="field-wrap">
                             <input type="email" id="signupEmail" required placeholder="e.g. juandelacruz@gmail.com" maxlength="255" autocomplete="email">
                         </div>
-                        <p class="field-hint">Used for password recovery — must be a real email you can access</p>
+                        <p id="emailHint" class="field-hint">Used for password recovery — must be a real email you can access</p>
                     </div>
 
                     <!-- Password -->
@@ -545,8 +548,119 @@
                 checkPasswordStrength(e.target.value);
             });
 
+            let usernameDebounceTimer;
             document.getElementById('username').addEventListener('input', function (e) {
-                e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                const inputEl = e.target;
+                inputEl.value = inputEl.value.replace(/[^a-zA-Z0-9_]/g, '');
+                const currentVal = inputEl.value.trim();
+                const hintEl = document.getElementById('usernameHint');
+                
+                clearTimeout(usernameDebounceTimer);
+                
+                if (currentVal.length < 3) {
+                    inputEl.classList.remove('input-error');
+                    hintEl.classList.remove('hint-error');
+                    hintEl.textContent = 'Letters, numbers, underscores only';
+                    return;
+                }
+
+                usernameDebounceTimer = setTimeout(async () => {
+                    const supabaseAvailable = await isSupabaseAvailable();
+                    if (!supabaseAvailable) return;
+
+                    const { data } = await supabase
+                        .from('users')
+                        .select('username')
+                        .eq('username', currentVal);
+
+                    if (data && data.length > 0) {
+                        inputEl.classList.add('input-error');
+                        hintEl.classList.add('hint-error');
+                        hintEl.textContent = 'Username already exists';
+                    } else {
+                        inputEl.classList.remove('input-error');
+                        hintEl.classList.remove('hint-error');
+                        hintEl.textContent = 'Username is available!';
+                        hintEl.style.color = '#10b981';
+                        setTimeout(() => { hintEl.style.color = ''; }, 2000);
+                    }
+                }, 400); // debounce API calls by 400ms
+            });
+
+            let emailDebounceTimer;
+            document.getElementById('signupEmail').addEventListener('input', function (e) {
+                const inputEl = e.target;
+                const currentVal = inputEl.value.trim();
+                const hintEl = document.getElementById('emailHint');
+                
+                clearTimeout(emailDebounceTimer);
+                
+                if (currentVal.length < 5 || !currentVal.includes('@')) {
+                    inputEl.classList.remove('input-error');
+                    hintEl.classList.remove('hint-error');
+                    hintEl.textContent = 'Used for password recovery — must be a real email you can access';
+                    return;
+                }
+
+                emailDebounceTimer = setTimeout(async () => {
+                    const supabaseAvailable = await isSupabaseAvailable();
+                    if (!supabaseAvailable) return;
+
+                    const { data } = await supabase
+                        .from('users')
+                        .select('email')
+                        .eq('email', currentVal);
+
+                    if (data && data.length > 0) {
+                        inputEl.classList.add('input-error');
+                        hintEl.classList.add('hint-error');
+                        hintEl.textContent = 'Email already registered';
+                    } else {
+                        inputEl.classList.remove('input-error');
+                        hintEl.classList.remove('hint-error');
+                        hintEl.textContent = 'Email is available!';
+                        hintEl.style.color = '#10b981';
+                        setTimeout(() => { hintEl.style.color = ''; hintEl.textContent = 'Used for password recovery...'; }, 2000);
+                    }
+                }, 400);
+            });
+
+            let phoneDebounceTimer;
+            document.getElementById('phone').addEventListener('input', function (e) {
+                const inputEl = e.target;
+                const currentVal = inputEl.value.trim();
+                const hintEl = document.getElementById('phoneHint');
+                
+                clearTimeout(phoneDebounceTimer);
+                
+                if (currentVal.length < 10) {
+                    inputEl.classList.remove('input-error');
+                    hintEl.classList.remove('hint-error');
+                    hintEl.textContent = '';
+                    return;
+                }
+
+                phoneDebounceTimer = setTimeout(async () => {
+                    const supabaseAvailable = await isSupabaseAvailable();
+                    if (!supabaseAvailable) return;
+
+                    const { data } = await supabase
+                        .from('users')
+                        .select('phone')
+                        .eq('phone', currentVal);
+
+                    if (data && data.length > 0) {
+                        inputEl.classList.add('input-error');
+                        hintEl.classList.add('hint-error');
+                        hintEl.textContent = 'Phone number already registered';
+                    } else {
+                        inputEl.classList.remove('input-error');
+                        hintEl.classList.remove('hint-error');
+                        hintEl.textContent = 'Phone is available!';
+                        hintEl.style.color = '#10b981';
+                        setTimeout(() => { hintEl.style.color = ''; hintEl.textContent = ''; }, 2000);
+                    }
+                }, 400);
             });
 
             document.getElementById('confirmPassword').addEventListener('input', function (e) {
