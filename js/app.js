@@ -449,17 +449,17 @@ async function sendPasswordResetOTP(email) {
                     } catch (e) {}
                 }
                 
-                return { success: false, message: 'Server Refusal: ' + exactReason + ` (Demo Mode: Code is ${otpCode})` };
+                return { success: false, message: 'Server Refusal: ' + exactReason };
             }
         } else {
             console.log("Local mode - OTP Code:", otpCode);
         }
         
-        return { success: true, message: `✅ Email sent via Resend! (Capstone Demo: Your OTP is ${otpCode})` };
+        return { success: true, message: '✅ A 6-digit code has been sent to your email.' };
     } catch (err) {
         console.error('Edge function OTP error:', err);
         const errMsg = err?.message || err?.text || (typeof err === 'string' ? err : 'Unknown server error');
-        return { success: false, message: 'Server communication error: ' + errMsg + ` (Demo Mode: Code is ${otpCode})` };
+        return { success: false, message: 'Server communication error: ' + errMsg };
     }
 }
 
