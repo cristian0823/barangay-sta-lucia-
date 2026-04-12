@@ -431,34 +431,36 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_hash', hashedCode);
     sessionStorage.setItem('otp_timestamp', Date.now().toString());
 
-    // Send OTP using the Supabase Edge Function
+    // Send OTP directly from frontend using EmailJS REST API
     try {
-        if (supabaseAvailable) {
-            const { data, error } = await supabase.functions.invoke('send-otp', {
-                body: { to_email: email, otp_code: otpCode }
-            });
-            if (error) {
-                console.error('Edge function OTP raw error:', error);
-                
-                // Supabase wraps the response, let's try to get the actual text
-                let exactReason = error.message;
-                if (error.context && error.context.status !== 200) {
-                    try {
-                        const errObj = await error.context.json();
-                        if (errObj.error) exactReason = errObj.error;
-                    } catch (e) {}
-                }
-                
-                return { success: false, message: 'Server Refusal: ' + exactReason };
+        const payload = {
+            service_id: "service_th96vue",
+            template_id: "template_l72erqi",
+            user_id: "0ASAHR2pXehhPYi62baDZ",
+            template_params: {
+                email: email,
+                otp_code: otpCode
             }
-        } else {
-            console.log("Local mode - OTP Code:", otpCode);
+        };
+
+        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            const errText = await res.text();
+            console.error('EmailJS direct fetch error:', errText);
+            return { success: false, message: 'Provider rejected request (quota exceeded or key revoked). Details in console.' };
         }
-        return { success: true, message: 'A 6-digit code has been sent to your email.' };
+
+        return { success: true, message: '✅ A 6-digit code has been sent to your email.' };
     } catch (err) {
-        console.error('Edge function OTP error:', err);
-        const errMsg = err?.message || err?.text || (typeof err === 'string' ? err : 'Unknown server error');
-        return { success: false, message: 'Server communication error: ' + errMsg };
+        console.error('EmailJS direct fetch error:', err);
+        return { success: false, message: 'Network error. Please check your internet.' };
     }
 }
 
