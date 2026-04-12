@@ -449,8 +449,16 @@ async function sendPasswordResetOTP(email) {
         await emailjs.send("service_th96vue", "template_l72erqi", {
             email: email,
             passcode: otpCode,
-            time: new Date(Date.now() + 10 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            Company_Name: "Barangay Sta. Lucia"
+            PASSCODE: otpCode,
+            Passcode: otpCode,
+            otp: otpCode,
+            OTP: otpCode,
+            code: otpCode,
+            CODE: otpCode,
+            message: otpCode,
+            MESSAGE: otpCode,
+            Message: otpCode,
+            time: new Date(Date.now() + 10 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         });
 
         return { success: true, message: `✅ Code sent! (Capstone Demo: Your OTP is ${otpCode})` };
