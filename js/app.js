@@ -2551,7 +2551,7 @@ async function updateUserProfile(updates) {
     const payload = {};
     if (updates.fullName) payload.full_name = updates.fullName;
     if (updates.email) payload.email = updates.email;
-    if (updates.phone) payload.contact_number = updates.phone;
+    if (updates.phone) payload.phone = updates.phone;
     if (updates.address) payload.address = updates.address;
 
     if (supabaseAvailable) {
