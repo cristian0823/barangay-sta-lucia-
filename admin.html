@@ -4171,6 +4171,47 @@
                 }).join('');
             }
 
+            let currentSuspendUserId = null;
+
+            function openSuspendModal(userId, username, offenseCount) {
+                currentSuspendUserId = userId;
+                document.getElementById('suspendModalUsername').textContent = username;
+                document.getElementById('suspendModalOffensesCount').textContent = offenseCount || 0;
+                
+                const selectElement = document.getElementById('suspendPenaltyTier');
+                let value = parseInt(offenseCount || 0) + 1;
+                if (value > 4) value = 4;
+                selectElement.value = value;
+                
+                document.getElementById('adminSuspendUserModal').style.display = 'flex';
+            }
+
+            function closeSuspendModal() {
+                currentSuspendUserId = null;
+                document.getElementById('adminSuspendUserModal').style.display = 'none';
+            }
+
+            async function confirmSuspendUser() {
+                if (!currentSuspendUserId) return;
+                const tier = document.getElementById('suspendPenaltyTier').value;
+                let days = 0;
+                if (tier == "1") days = 7;
+                else if (tier == "2") days = 14;
+                else if (tier == "3") days = 30;
+                else if (tier == "4") {
+                    closeSuspendModal();
+                    await adminDeleteUserConfirm(currentSuspendUserId, document.getElementById('suspendModalUsername').textContent);
+                    return;
+                }
+                
+                document.getElementById('adminSuspendUserModal').style.display = 'none';
+                const result = await suspendUser(currentSuspendUserId, days);
+                showAlert(result.message, result.success ? 'success' : 'error');
+                if (result.success) {
+                    loadUsers(); 
+                }
+            }
+
             async function adminDeleteUserConfirm(userId, username) {
                 if (!await showConfirmModal(`Delete user "${username}"? This cannot be undone.`, "Delete User", "Yes, Delete", "Cancel", "danger")) return;
                 const result = await deleteUser(userId);

@@ -270,6 +270,10 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             if (data.lockout_until && new Date(data.lockout_until) > new Date()) {
                 return { success: false, message: 'Account temporarily locked. Try again later.' };
             }
+            if (data.suspended_until && new Date(data.suspended_until) > new Date()) {
+                const retryDate = new Date(data.suspended_until).toLocaleDateString();
+                return { success: false, message: `Account suspended until ${retryDate}` };
+            }
             // Reset fail count on successful login
             await supabase.from('users').update({ login_fail_count: 0, lockout_until: null, last_login_at: new Date().toISOString() }).eq('id', data.id);
             const sessionData = {
@@ -2468,6 +2472,34 @@ async function updateEventStatus(eventId, status) {
         events[index].status = status;
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
         return true;
+    }
+}
+
+async function suspendUser(userId, days) {
+    if (!await isSupabaseAvailable()) {
+        return { success: false, message: 'Supabase required for user suspension' };
+    }
+    try {
+        const suspendUntil = new Date();
+        suspendUntil.setDate(suspendUntil.getDate() + days);
+        
+        const { data: user } = await supabase.from('users').select('offense_count, username').eq('id', userId).single();
+        const currentOffenses = (user && user.offense_count) ? user.offense_count : 0;
+        
+        const { error } = await supabase
+            .from('users')
+            .update({ 
+                suspended_until: suspendUntil.toISOString(),
+                offense_count: currentOffenses + 1
+            })
+            .eq('id', userId);
+            
+        if (error) return { success: false, message: error.message };
+        
+        await logActivity('Resident Suspended', `Admin suspended user ${user?.username || userId} for ${days} days`);
+        return { success: true, message: `User suspended for ${days} days` };
+    } catch (err) {
+        return { success: false, message: err.message };
     }
 }
 
