@@ -439,10 +439,8 @@ async function sendPasswordResetOTP(email) {
             user_id: "DPEG6BGMwO8ExGg_e",
             template_params: {
                 email: email,
-                otp_code: otpCode,
-                otp: otpCode,
-                code: otpCode,
-                message: otpCode,
+                passcode: otpCode,
+                time: new Date(Date.now() + 10 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 Company_Name: "Barangay Sta. Lucia"
             }
         };
