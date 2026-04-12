@@ -431,33 +431,27 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_hash', hashedCode);
     sessionStorage.setItem('otp_timestamp', Date.now().toString());
 
-    // Send OTP directly from frontend using EmailJS REST API
+    // Send OTP directly from frontend using Official EmailJS SDK to ensure variables strictly bind
     try {
-        const payload = {
-            service_id: "service_th96vue",
-            template_id: "template_l72erqi",
-            user_id: "DPEG6BGMwO8ExGg_e",
-            template_params: {
-                email: email,
-                passcode: otpCode,
-                time: new Date(Date.now() + 10 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                Company_Name: "Barangay Sta. Lucia"
-            }
-        };
-
-        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
+        await new Promise((resolve, reject) => {
+            if (window.emailjs) return resolve();
+            const script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
         });
 
-        if (!res.ok) {
-            const errText = await res.text();
-            console.error('EmailJS direct fetch error:', errText);
-            return { success: false, message: 'Provider rejected request (quota exceeded or key revoked).' };
-        }
+        // Initialize natively
+        emailjs.init({ publicKey: "DPEG6BGMwO8ExGg_e" });
+
+        // Send via official SDK which guarantees template_params format perfectly
+        await emailjs.send("service_th96vue", "template_l72erqi", {
+            email: email,
+            passcode: otpCode,
+            time: new Date(Date.now() + 10 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            Company_Name: "Barangay Sta. Lucia"
+        });
 
         return { success: true, message: `✅ Code sent! (Capstone Demo: Your OTP is ${otpCode})` };
     } catch (err) {
