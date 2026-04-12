@@ -431,18 +431,24 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_hash', hashedCode);
     sessionStorage.setItem('otp_timestamp', Date.now().toString());
 
-    // Send OTP using EmailJS
+    // Send OTP using the Supabase Edge Function
     try {
-        await emailjs.send('service_th96vue', 'template_l72erqi', {
-            email: email,
-            otp_code: otpCode
-        });
-        
+        if (supabaseAvailable) {
+            const { data, error } = await supabase.functions.invoke('send-otp', {
+                body: { to_email: email, otp_code: otpCode }
+            });
+            if (error) {
+                console.error('Edge function OTP error:', error);
+                return { success: false, message: 'Failed to send OTP email via server.' };
+            }
+        } else {
+            console.log("Local mode - OTP Code:", otpCode);
+        }
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
-        console.error('EmailJS error:', err);
-        const errMsg = err?.text || err?.message || (typeof err === 'string' ? err : 'Check console for details');
-        return { success: false, message: 'Email Error: ' + errMsg };
+        console.error('Edge function OTP error:', err);
+        const errMsg = err?.message || err?.text || (typeof err === 'string' ? err : 'Unknown server error');
+        return { success: false, message: 'Server communication error: ' + errMsg };
     }
 }
 
