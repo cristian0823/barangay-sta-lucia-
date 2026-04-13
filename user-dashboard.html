@@ -1551,7 +1551,16 @@
                 if (conEl) conEl.textContent = pendingConcerns;
 
                 const bookingsRaw = await getCourtBookings();
-                const myBookings = bookingsRaw ? bookingsRaw.filter(b => b.userId === user.id && (b.status === 'pending' || b.status === 'approved' || b.status === 'booked')) : [];
+                // Resolve real Supabase ID to prevent type mismatch (string vs integer)
+                let resolvedStatUid = String(user.id);
+                try {
+                    const { data: uRowStat } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                    if (uRowStat) resolvedStatUid = String(uRowStat.id);
+                } catch(_) {}
+                const myBookings = bookingsRaw ? bookingsRaw.filter(b =>
+                    (String(b.user_id) === resolvedStatUid || String(b.userId) === resolvedStatUid) &&
+                    (b.status === 'pending' || b.status === 'approved' || b.status === 'booked')
+                ) : [];
                 const today = new Date(); today.setHours(0, 0, 0, 0);
                 const upcomingCount = myBookings.filter(b => new Date(b.date) >= today).length;
                 document.getElementById('stat-bookings').textContent = upcomingCount;
