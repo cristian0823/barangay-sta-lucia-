@@ -173,7 +173,7 @@
             </div>
 
             <div class="qr-wrap">
-                <img id="qrImage" width="200" height="200" style="display:none; border-radius:10px; margin-bottom:10px;" alt="QR Code" />
+                <canvas id="qrCanvas"></canvas>
                 <div class="qr-loading" id="qrLoading">Generating QR Code...</div>
             </div>
 
@@ -236,6 +236,7 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
     <script src="js/totp-handler.js"></script>
+    <script src="js/auth-visuals.js"></script>
     <script>
         let currentSecret = '';
         let pendingUser   = null;
@@ -272,19 +273,20 @@
 
             const otpUri = buildOTPAuthURI(pendingUser.username, currentSecret);
 
-            const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(otpUri);
-            const img = document.getElementById('qrImage');
-            
-            img.onload = () => {
+            try {
+                const qr = new QRious({
+                    element: document.getElementById('qrCanvas'),
+                    value: otpUri,
+                    size: 200,
+                    level: 'M',
+                    foreground: '#064e3b'
+                });
                 document.getElementById('qrLoading').style.display = 'none';
-                img.style.display = 'block';
-            };
-            img.onerror = () => {
-                document.getElementById('qrLoading').textContent = "Failed to load QR code. Please use the manual entry key below.";
+            } catch (err) {
+                console.error("QR Auth visuals error:", err);
+                document.getElementById('qrLoading').textContent = "Failed to load visual QR frame. Please use the manual entry key below.";
                 document.getElementById('qrLoading').style.color = "#991b1b";
-            };
-            
-            img.src = qrUrl;
+            }
         }
 
         function formatSecret(s) {
