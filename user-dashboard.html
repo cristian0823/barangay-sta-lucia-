@@ -2735,7 +2735,15 @@
                     (async () => {
                         if (typeof getCourtBookings === 'function') {
                             const bookings = await getCourtBookings();
-                            return bookings.filter(b => (b.userId || b.user_id) === user.id);
+                            // Resolve real Supabase ID and use string comparison to handle type mismatches
+                            let resolvedUid = String(user.id);
+                            try {
+                                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                                if (uRow) resolvedUid = String(uRow.id);
+                            } catch(_) {}
+                            return bookings.filter(b =>
+                                String(b.user_id) === resolvedUid || String(b.userId) === resolvedUid
+                            );
                         }
                         return [];
                     })()
