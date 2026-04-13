@@ -2332,9 +2332,16 @@
             }
             const myContainer = document.getElementById('myReservationsList');
             
+            // Resolve real Supabase ID to handle type mismatches (string vs integer)
+            let resolvedBookingUid = String(user.id);
+            try {
+                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                if (uRow) resolvedBookingUid = String(uRow.id);
+            } catch(_) {}
+
             // Match both Supabase (user_id) and localStorage (userId) formats
             const myBookings = bookings.filter(b =>
-                String(b.user_id) === String(user.id) || String(b.userId) === String(user.id)
+                String(b.user_id) === resolvedBookingUid || String(b.userId) === resolvedBookingUid
             );
             const activeBookings = myBookings.filter(b => b.status === 'pending' || b.status === 'approved');
 
