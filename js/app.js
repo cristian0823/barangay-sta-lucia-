@@ -1922,7 +1922,7 @@ async function getPendingCancellationNotifications(userId) {
         const { data, error } = await supabase
             .from('user_notifications')
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', String(userId))
             .in('type', ['booking_cancelled', 'event_conflict', 'equipment_approved'])
             .eq('is_read', false)
             .order('created_at', { ascending: false });
@@ -1967,10 +1967,12 @@ async function markUserNotificationAsRead(notifId) {
 async function getUserNotifications(userId) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
+        // user_notifications.user_id is TEXT in the live DB (see schema Step 8)
+        // Cast to String to match both integer and text stored values
         const { data, error } = await supabase
             .from('user_notifications')
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', String(userId))
             .order('created_at', { ascending: false })
             .limit(50);
         if (error) { console.warn('Notifications fetch error:', error); return []; }
@@ -1991,7 +1993,7 @@ async function getUserNotifications(userId) {
 async function markAllUserNotificationsRead(userId) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('user_id', userId).eq('is_read', false);
+        const { error } = await supabase.from('user_notifications').update({ is_read: true }).eq('user_id', String(userId)).eq('is_read', false);
         return !error;
     } else {
         let notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];

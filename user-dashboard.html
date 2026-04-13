@@ -1580,7 +1580,13 @@
         async function pollBellNotifications() {
             if (!user || typeof getUserNotifications !== 'function') return;
             try {
-                const notifs = await getUserNotifications(user.id);
+                // Resolve real Supabase integer ID, then cast to String to match TEXT column in user_notifications
+                let resolvedNotifId = String(user.id);
+                try {
+                    const { data: uRowN } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                    if (uRowN) resolvedNotifId = String(uRowN.id);
+                } catch(_) {}
+                const notifs = await getUserNotifications(resolvedNotifId);
                 renderBellNotifications(notifs);
             } catch (e) { console.error('Error polling bell notifications:', e); }
         }
