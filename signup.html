@@ -283,24 +283,38 @@
                 <input type="hidden" id="csrfToken" name="csrfToken">
 
                 <div class="fields-wrap">
-                    <!-- Row 1: Full Name + Username -->
-                    <div class="field-grid">
+                    <!-- Row 1: First Name + Middle Initial + Last Name -->
+                    <div class="field-grid" style="grid-template-columns: 1fr 0.45fr 1fr;">
                         <div class="field">
-                            <label>Full Name</label>
+                            <label>First Name <span style="color:#ef4444;">*</span></label>
                             <div class="field-wrap">
-                                <input type="text" id="fullName" required placeholder="Your full name" maxlength="100">
+                                <input type="text" id="firstName" required placeholder="e.g. Juan" maxlength="50">
                             </div>
                         </div>
                         <div class="field">
-                            <label>Username</label>
+                            <label>M.I. <span style="color:#9ca3af;font-weight:400;font-size:11px;">(optional)</span></label>
                             <div class="field-wrap">
-                                <input type="text" id="username" required placeholder="3–20 characters" minlength="3" maxlength="20">
+                                <input type="text" id="middleInitial" placeholder="e.g. D" maxlength="3" style="text-transform:uppercase;">
                             </div>
-                            <p id="usernameHint" class="field-hint">Letters, numbers, underscores only</p>
+                        </div>
+                        <div class="field">
+                            <label>Last Name <span style="color:#ef4444;">*</span></label>
+                            <div class="field-wrap">
+                                <input type="text" id="lastName" required placeholder="e.g. Dela Cruz" maxlength="50">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Row 2: Phone + Address -->
+                    <!-- Row 2: Username (full width on its own row) -->
+                    <div class="field">
+                        <label>Username</label>
+                        <div class="field-wrap">
+                            <input type="text" id="username" required placeholder="3–20 characters" minlength="3" maxlength="20">
+                        </div>
+                        <p id="usernameHint" class="field-hint">Letters, numbers, underscores only</p>
+                    </div>
+
+                    <!-- Row 3: Phone + Address -->
                     <div class="field-grid">
                         <div class="field">
                             <label>Phone Number</label>
@@ -317,7 +331,7 @@
                         </div>
                     </div>
 
-                    <!-- Row 3: Email (full width) -->
+                    <!-- Row 4: Email (full width) -->
                     <div class="field field-full">
                         <label>Email Address <span style="color:#ef4444;">*</span></label>
                         <div class="field-wrap">
@@ -669,7 +683,9 @@
         document.getElementById('signupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const fullName        = sanitizeInput(document.getElementById('fullName').value.trim());
+            const firstName       = sanitizeInput(document.getElementById('firstName').value.trim());
+            const middleInitial   = sanitizeInput(document.getElementById('middleInitial').value.trim().toUpperCase());
+            const lastName        = sanitizeInput(document.getElementById('lastName').value.trim());
             const username        = sanitizeInput(document.getElementById('username').value.trim());
             const phone           = sanitizeInput(document.getElementById('phone').value.trim());
             const address         = sanitizeInput(document.getElementById('address').value.trim());
@@ -679,7 +695,14 @@
 
             const email           = sanitizeInput(document.getElementById('signupEmail').value.trim());
 
-            if (!fullName || fullName.length < 2) { showToast('Please enter a valid full name', 'error'); return; }
+            // Assemble full name: "Juan D. Dela Cruz" or "Juan Dela Cruz"
+            const fullName = middleInitial
+                ? `${firstName} ${middleInitial}. ${lastName}`
+                : `${firstName} ${lastName}`;
+
+            if (!firstName || firstName.length < 2) { showToast('Please enter a valid first name', 'error'); return; }
+            if (!lastName  || lastName.length  < 2) { showToast('Please enter a valid last name', 'error'); return; }
+            if (middleInitial && !/^[A-Z]{1,2}$/.test(middleInitial)) { showToast('Middle initial must be 1–2 letters', 'error'); return; }
             if (!validateUsername(username))        { showToast('Invalid username format', 'error'); return; }
             if (!email || !email.includes('@'))     { showToast('Please enter a valid email address', 'error'); return; }
             if (!phone || phone.length < 10)        { showToast('Please enter a valid phone number', 'error'); return; }
@@ -691,7 +714,7 @@
             if (!agreeTerms)               { showToast('Please agree to the Terms', 'error'); return; }
 
             const userData = {
-                fullName, username, email, phone, address,
+                fullName, firstName, middleInitial, lastName, username, email, phone, address,
                 password: password,
                 createdAt: new Date().toISOString()
             };

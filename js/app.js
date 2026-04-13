@@ -173,11 +173,14 @@ async function registerUser(userData) {
                 username: userData.username,
                 password: hashedPassword,
                 full_name: userData.fullName,
+                first_name: userData.firstName || null,
+                last_name: userData.lastName || null,
+                middle_initial: userData.middleInitial || null,
                 email: userData.email,
                 phone: userData.phone || null,
                 address: userData.address || null,
                 role: 'user',
-                avatar: userData.fullName.charAt(0).toUpperCase()
+                avatar: (userData.firstName || userData.fullName).charAt(0).toUpperCase()
             }]);
 
         if (error) return { success: false, message: error.message };
@@ -203,11 +206,14 @@ async function registerUser(userData) {
             username: userData.username,
             password: hashedPassword,
             fullName: userData.fullName,
+            firstName: userData.firstName || null,
+            lastName: userData.lastName || null,
+            middleInitial: userData.middleInitial || null,
             email: userData.email,
             phone: userData.phone || null,
             address: userData.address || null,
             role: 'user',
-            avatar: userData.fullName.charAt(0).toUpperCase()
+            avatar: (userData.firstName || userData.fullName).charAt(0).toUpperCase()
         };
         users.push(newUser);
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
