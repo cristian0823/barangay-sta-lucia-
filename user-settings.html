@@ -177,6 +177,9 @@
                 <button onclick="showSection('password')" id="passwordBtn" class="sidebar-btn">
                     <i class="bi bi-key-fill"></i> Password
                 </button>
+                <button onclick="showSection('security')" id="securityBtn" class="sidebar-btn">
+                    <i class="bi bi-shield-lock-fill"></i> Security / 2FA
+                </button>
                 <button onclick="showSection('account')" id="accountBtn" class="sidebar-btn">
                     <i class="bi bi-shield-fill"></i> Account
                 </button>
@@ -348,12 +351,57 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Security / 2FA Section -->
+            <div id="security-section" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Security / Two-Factor Authentication</h1>
+                        <p class="text-gray-500">Add extra protection to your account with Google Authenticator</p>
+                    </div>
+                </div>
+
+                <div class="settings-card mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="bi bi-shield-lock text-emerald-600"></i> Google Authenticator (TOTP)
+                    </h3>
+
+                    <!-- Status row -->
+                    <div class="info-row" id="totpStatusRow">
+                        <div>
+                            <div class="info-label">Status</div>
+                            <div class="info-value" id="totpStatusText">Checking...</div>
+                        </div>
+                        <span id="totpStatusBadge" class="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600">—</span>
+                    </div>
+
+                    <p class="text-gray-600 text-sm mb-5 mt-3 leading-relaxed">
+                        When enabled, you'll need to enter a 6-digit code from the <strong>Google Authenticator</strong> app every time you log in.
+                        This protects your account even if your password is stolen.
+                    </p>
+
+                    <div id="totpActions">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="settings-card" style="border: 1px solid #dbeafe; background:#eff6ff;">
+                    <h3 class="font-semibold mb-3 flex items-center gap-2" style="color:#1e40af;"><i class="bi bi-info-circle"></i> How it works</h3>
+                    <ol class="text-sm text-gray-600 space-y-1 list-decimal ml-4 leading-relaxed">
+                        <li>Download the free <strong>Google Authenticator</strong> app on your phone</li>
+                        <li>Click <strong>"Enable 2FA"</strong> below and scan the QR code</li>
+                        <li>Every login will require a 6-digit code from the app</li>
+                        <li>The code refreshes every 30 seconds for maximum security</li>
+                    </ol>
+                </div>
+            </div>
         </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/totp-handler.js"></script>
     <script>
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
@@ -399,8 +447,11 @@
             // Show/hide sections
             document.getElementById('profile-section').classList.add('hidden');
             document.getElementById('password-section').classList.add('hidden');
+            document.getElementById('security-section').classList.add('hidden');
             document.getElementById('account-section').classList.add('hidden');
             document.getElementById(section + '-section').classList.remove('hidden');
+
+            if (section === 'security') loadTOTPStatus();
         }
 
         // Profile form submission
@@ -473,6 +524,47 @@
                     }
                     logoutUser();
                 }
+            }
+        }
+
+        // ── TOTP / 2FA section ────────────────────────────────────
+        async function loadTOTPStatus() {
+            const actionsEl = document.getElementById('totpActions');
+            const statusText = document.getElementById('totpStatusText');
+            const statusBadge = document.getElementById('totpStatusBadge');
+            actionsEl.innerHTML = '<p class="text-gray-400 text-sm">Loading...</p>';
+
+            const info = await fetchUserTOTPInfo(user.id);
+
+            if (info.totp_enabled) {
+                statusText.textContent  = 'Enabled';
+                statusBadge.className   = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700';
+                statusBadge.textContent = '✅ Active';
+                actionsEl.innerHTML = `
+                    <button onclick="disableTOTP()" class="btn-danger">
+                        <i class="bi bi-shield-x"></i> Disable Google Authenticator
+                    </button>
+                `;
+            } else {
+                statusText.textContent  = 'Not Enabled';
+                statusBadge.className   = 'px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600';
+                statusBadge.textContent = '— Not Set Up';
+                actionsEl.innerHTML = `
+                    <a href="setup-totp.html" class="btn-primary inline-flex items-center gap-2" style="text-decoration:none;">
+                        <i class="bi bi-qr-code"></i> Enable Google Authenticator
+                    </a>
+                `;
+            }
+        }
+
+        async function disableTOTP() {
+            if (!confirm('Are you sure you want to disable Google Authenticator? Your account will be less secure.')) return;
+            const result = await disableTOTPInDB(user.id);
+            if (result.success) {
+                showToast('Google Authenticator disabled', 'success');
+                await loadTOTPStatus();
+            } else {
+                showToast('Failed to disable 2FA: ' + result.message, 'error');
             }
         }
     </script>
