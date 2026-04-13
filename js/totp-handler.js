@@ -15,10 +15,11 @@ async function loadOTPAuthLib() {
     });
 }
 
-// Generate a cryptographically secure random Base32 secret
+// Generate a cryptographically secure random Base32 secret (160-bit / 32 chars)
 function generateTOTPSecret() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    const randomBytes = crypto.getRandomValues(new Uint8Array(20));
+    // Generate 32 characters (160 bits of entropy) perfectly aligning to 20 Bytes.
+    const randomBytes = crypto.getRandomValues(new Uint8Array(32));
     return Array.from(randomBytes)
         .map(b => chars[b % 32])
         .join('');
@@ -26,7 +27,9 @@ function generateTOTPSecret() {
 
 // Build the otpauth:// URI for QR code scanning
 function buildOTPAuthURI(username, secret, issuer = 'Barangay Sta. Lucia') {
-    return `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(username)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
+    // We remove any colons in the issuer to prevent parsing bugs in Authenticator
+    const safeIssuer = issuer.replace(/:/g, '');
+    return `otpauth://totp/${encodeURIComponent(safeIssuer)}:${encodeURIComponent(username)}?secret=${secret}&issuer=${encodeURIComponent(safeIssuer)}&algorithm=SHA1&digits=6&period=30`;
 }
 
 // Verify a 6-digit TOTP code against a secret
