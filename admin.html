@@ -2544,8 +2544,9 @@
                                 <table class="data-table">
                                     <thead>
                                         <tr>
-                                            <th>User</th>
+                                            <th>Full Name</th>
                                             <th>Username</th>
+                                            <th>Phone</th>
                                             <th>Email</th>
                                             <th>Role</th>
                                             <th>Actions</th>
@@ -4164,9 +4165,17 @@
                     const isSuspended = u.suspended_until && new Date(u.suspended_until) > new Date();
                     const suspensionBadge = isSuspended ? `<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;margin-left:5px;">Suspended 🔒</span>` : '';
                     
+                    const displayName = u.fullName || u.full_name || u.username;
+                    const phone = u.phone || u.contact_number || u.contactNumber || '—';
+
                     return `<tr style="cursor:pointer;" onclick="openUserProfileModal(${u.id})" class="hover-row">
-                    <td><strong>${u.fullName || u.username}</strong>${isMe ? ' <span style="font-size:11px;color:#10b981;">(You)</span>' : ''}${suspensionBadge}</td>
-                    <td>${u.username}</td>
+                    <td>
+                        <strong>${displayName}</strong>
+                        ${isMe ? ' <span style="font-size:11px;color:#10b981;">(You)</span>' : ''}
+                        ${suspensionBadge}
+                    </td>
+                    <td style="font-size:13px;color:#6b7280;">${u.username}</td>
+                    <td style="font-size:13px;">${phone}</td>
                     <td style="font-size:13px;color:#6b7280;">${u.email || '—'}</td>
                     <td>${roleBadge}</td>
                     <td onclick="event.stopPropagation()">
