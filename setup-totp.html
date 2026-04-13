@@ -173,7 +173,7 @@
             </div>
 
             <div class="qr-wrap">
-                <canvas id="qrCanvas"></canvas>
+                <img id="qrImage" width="200" height="200" style="display:none; border-radius:10px; margin-bottom:10px;" alt="QR Code" />
                 <div class="qr-loading" id="qrLoading">Generating QR Code...</div>
             </div>
 
@@ -236,7 +236,6 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
     <script src="js/totp-handler.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
         let currentSecret = '';
         let pendingUser   = null;
@@ -273,14 +272,19 @@
 
             const otpUri = buildOTPAuthURI(pendingUser.username, currentSecret);
 
-            const canvas = document.getElementById('qrCanvas');
-            QRCode.toCanvas(canvas, otpUri, {
-                width: 200, margin: 1,
-                color: { dark: '#064e3b', light: '#ffffff' }
-            }, function (error) {
-                if (error) console.error("QR Code Error:", error);
+            const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(otpUri);
+            const img = document.getElementById('qrImage');
+            
+            img.onload = () => {
                 document.getElementById('qrLoading').style.display = 'none';
-            });
+                img.style.display = 'block';
+            };
+            img.onerror = () => {
+                document.getElementById('qrLoading').textContent = "Failed to load QR code. Please use the manual entry key below.";
+                document.getElementById('qrLoading').style.color = "#991b1b";
+            };
+            
+            img.src = qrUrl;
         }
 
         function formatSecret(s) {
