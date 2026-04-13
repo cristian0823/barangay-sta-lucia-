@@ -843,9 +843,13 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         // DO NOT deduct available count immediately upon request. Handled during approval RPC.
 
 
+        // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
+        const { data: userRowB } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+        const resolvedUserIdB = userRowB ? userRowB.id : user.id;
+
         // Insert borrowing
         const { error } = await supabase.from('borrowings').insert([{
-            user_id: user.id,
+            user_id: resolvedUserIdB,
             equipment: item.name,
             equipment_id: item.id,
             quantity: quantity,
@@ -1300,8 +1304,12 @@ async function submitConcern(category, title, description, address, imageFile = 
             finalDescription += "\n[ATTACHED_IMAGE_DATA]\n" + imageUrl;
         }
 
+        // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
+        const { data: userRowC } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+        const resolvedUserIdC = userRowC ? userRowC.id : user.id;
+
         const payload = {
-            user_id: user.id,
+            user_id: resolvedUserIdC,
             category: category,
             title: title,
             description: finalDescription,
@@ -1761,8 +1769,16 @@ async function bookCourt(bookingData) {
 
     if (supabaseAvailable) {
         try {
+            // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
+            const { data: userRow } = await supabase
+                .from('users')
+                .select('id')
+                .eq('username', user.username)
+                .maybeSingle();
+            const resolvedUserId = userRow ? userRow.id : user.id;
+
             const { error } = await supabase.from('court_bookings').insert([{
-                user_id: user.id,
+                user_id: resolvedUserId,
                 date: bookingData.date,
                 time: combinedTime,
                 venue: venue,
