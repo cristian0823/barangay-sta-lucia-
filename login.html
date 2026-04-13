@@ -564,7 +564,12 @@
                         return;
                     }
 
-                    // No TOTP needed → normal login
+                    // No TOTP needed → commit deferred session now, then redirect
+                    if (rememberMe) {
+                        localStorage.setItem('currentUser', JSON.stringify(result.user));
+                    } else {
+                        sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+                    }
                     showToast('✅ Login successful! Redirecting...', 'success');
                     setTimeout(() => redirectToDashboard(), 1000);
                 } else {
