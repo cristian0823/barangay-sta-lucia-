@@ -3,33 +3,27 @@
 // Uses the otpauth CDN library (RFC 6238 compliant)
 // ============================================================
 
-// Dynamically load the otpauth library
+// Use locally hosted OTPAuth library to prevent ad-blockers from silently blocking CDN scripts
 async function loadOTPAuthLib() {
-    if (window.OTPAuth) return window.OTPAuth;
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/otpauth@9/dist/otpauth.umd.min.js';
-        script.onload = () => resolve(window.OTPAuth);
-        script.onerror = () => reject(new Error('Failed to load otpauth library'));
-        document.head.appendChild(script);
-    });
+    if (!window.OTPAuth) {
+        throw new Error('OTPAuth library must be loaded synchronously via script tag before calling TOTP methods.');
+    }
+    return window.OTPAuth;
 }
 
-// Generate a cryptographically secure random Base32 secret (160-bit / 32 chars)
-function generateTOTPSecret() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    // Generate 32 characters (160 bits of entropy) perfectly aligning to 20 Bytes.
-    const randomBytes = crypto.getRandomValues(new Uint8Array(32));
-    return Array.from(randomBytes)
-        .map(b => chars[b % 32])
-        .join('');
+// Generate a cryptographically secure random Base32 secret using OTPAuth library
+async function generateTOTPSecretAsync() {
+    const OTPAuth = await loadOTPAuthLib();
+    // Generate a 20-byte random secret
+    const secret = new OTPAuth.Secret({ size: 20 });
+    return secret.base32;
 }
 
 // Build the otpauth:// URI for QR code scanning
 function buildOTPAuthURI(username, secret, issuer = 'Barangay Sta. Lucia') {
-    // We remove any colons in the issuer to prevent parsing bugs in Authenticator
-    const safeIssuer = issuer.replace(/:/g, '');
-    return `otpauth://totp/${encodeURIComponent(safeIssuer)}:${encodeURIComponent(username)}?secret=${secret}&issuer=${encodeURIComponent(safeIssuer)}&algorithm=SHA1&digits=6&period=30`;
+    // We remove any non-alphanumeric chars in the issuer to completely bypass parsing bugs in strict Authenticator apps
+    const safeIssuer = 'BarangayStaLucia';
+    return `otpauth://totp/${safeIssuer}:${encodeURIComponent(username)}?secret=${secret}&issuer=${safeIssuer}&algorithm=SHA1&digits=6&period=30`;
 }
 
 // Verify a 6-digit TOTP code against a secret

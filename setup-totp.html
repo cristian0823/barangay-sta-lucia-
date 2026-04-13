@@ -235,6 +235,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/otpauth.js"></script>
     <script src="js/totp-handler.js"></script>
     <script src="js/auth-visuals.js"></script>
     <script>
@@ -268,7 +269,7 @@
 
         // ── Generate Secret & QR Code ────────────────────────────
         async function initSetup() {
-            currentSecret = generateTOTPSecret();
+            currentSecret = await generateTOTPSecretAsync();
             document.getElementById('secretDisplay').textContent = formatSecret(currentSecret);
 
             const otpUri = buildOTPAuthURI(pendingUser.username, currentSecret);
@@ -290,7 +291,9 @@
         }
 
         function formatSecret(s) {
-            return s.match(/.{1,4}/g).join(' ');
+            // Remove any potential padding for visual cleanliness
+            const clean = s.replace(/=/g, '');
+            return clean.match(/.{1,4}/g).join(' ');
         }
 
         function copySecret() {
