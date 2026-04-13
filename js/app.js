@@ -2730,8 +2730,15 @@ async function logActivity(action, details, severity = 'info') {
     const supabaseAvailable = await isSupabaseAvailable().catch(() => false);
     if (supabaseAvailable) {
         try {
+            // Resolve real Supabase integer ID
+            let realUserId = null;
+            if (user) {
+                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                if (uRow && uRow.id) realUserId = uRow.id;
+            }
+
             const { error } = await supabase.from('activity_log').insert([{
-                user_id: user ? user.id : null,
+                user_id: realUserId,
                 action: action,
                 details: details,
                 severity: severity,
@@ -2760,7 +2767,10 @@ function _saveActivityLocal(adminUsername, action, details, timestamp, severity 
 
 async function getActivityLog() {
     if (!isAdmin()) return [];
-    const supabaseAvailable = await isSupabaseAvailable();
+    
+    let remoteLogs = [];
+    const supabaseAvailable = await isSupabaseAvailable().catch(() => false);
+    
     if (supabaseAvailable) {
         try {
             const { data, error } = await supabase
@@ -2769,10 +2779,10 @@ async function getActivityLog() {
                 .order('created_at', { ascending: false })
                 .limit(200);
             
-            if (error) throw error; // Trigger fallback
-            
-            if (data && data.length > 0) {
-                return data.map(r => ({
+            if (error) {
+                console.warn('Activity Log: Error querying remote table', error.message);
+            } else if (data && data.length > 0) {
+                remoteLogs = data.map(r => ({
                     id: r.id,
                     adminUsername: r.users ? (r.users.full_name || r.users.username) : 'System',
                     action: r.action,
@@ -2781,11 +2791,27 @@ async function getActivityLog() {
                 }));
             }
         } catch (e) { 
-            console.warn('Activity Log: Table not found or error, using local fallback.', e.message);
+            console.warn('Activity Log: Exception querying table.', e.message);
         }
     }
-    // Fall back to localStorage
-    return JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
+    
+    // Always fetch local logs as a fallback and to catch offline/failed inserts
+    const localLogs = JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
+    
+    // Merge remote and local logs, removing duplicates (by matching timestamp + action)
+    const combined = [...remoteLogs];
+    for (const local of localLogs) {
+        // Exclude if already exists remotely (same action and very close timestamp within 1 second)
+        const exists = combined.some(r => r.action === local.action && Math.abs(new Date(r.createdAt) - new Date(local.createdAt)) < 2000);
+        if (!exists) {
+            combined.push(local);
+        }
+    }
+    
+    // Sort all combined logs newest first
+    combined.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    return combined.slice(0, 500); // Limit total combined array
 }
 
 // ── ISO/IEC 27001 A.12 — Database Backup Export (JSON/CSV) ──
