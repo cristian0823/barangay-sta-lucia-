@@ -2614,14 +2614,34 @@
                                 background: #0f172a !important;
                                 border-color: #334155 !important;
                             }
-                            /* Inactive filter buttons */
-                            [data-theme="dark"] #logFilter-inventory,
-                            [data-theme="dark"] #logFilter-requests,
-                            [data-theme="dark"] #logFilter-bookings,
-                            [data-theme="dark"] #logFilter-concerns {
+                            /* Filter buttons (Light Mode) */
+                            .log-filter-btn {
+                                padding: 5px 13px;
+                                border-radius: 20px;
+                                font-size: 12px;
+                                font-weight: 700;
+                                border: 2px solid #d1fae5;
+                                background: #fff;
+                                color: #065f46;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                            }
+                            .log-filter-btn.active {
+                                border: 2px solid #065f46;
+                                background: #065f46;
+                                color: #fff;
+                            }
+                            
+                            /* Filter buttons (Dark Mode) */
+                            [data-theme="dark"] .log-filter-btn {
                                 background: #1e293b !important;
                                 border-color: #334155 !important;
                                 color: #94a3b8 !important;
+                            }
+                            [data-theme="dark"] .log-filter-btn.active {
+                                background: #065f46 !important;
+                                border-color: #059669 !important;
+                                color: #f1f5f9 !important;
                             }
                             /* Search input */
                             [data-theme="dark"] #logSearchInput {
@@ -2669,19 +2689,19 @@
                                 style="display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 24px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; align-items: center;">
                                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                     <button id="logFilter-all" onclick="setLogFilter('all')"
-                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #065f46; background:#065f46; color:#fff; cursor:pointer;">📋
+                                        class="log-filter-btn active">📋
                                         All</button>
                                     <button id="logFilter-inventory" onclick="setLogFilter('inventory')"
-                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📦
+                                        class="log-filter-btn">📦
                                         Inventory</button>
                                     <button id="logFilter-requests" onclick="setLogFilter('requests')"
-                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">🙋
+                                        class="log-filter-btn">🙋
                                         User Requests</button>
                                     <button id="logFilter-bookings" onclick="setLogFilter('bookings')"
-                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📅
+                                        class="log-filter-btn">📅
                                         Court Bookings</button>
                                     <button id="logFilter-concerns" onclick="setLogFilter('concerns')"
-                                        style="padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; border:2px solid #d1fae5; background:#fff; color:#065f46; cursor:pointer;">📣
+                                        class="log-filter-btn">📣
                                         Concerns</button>
                                 </div>
                                 <input id="logSearchInput" type="text" placeholder="🔍 Search logs..."
@@ -4044,10 +4064,11 @@
                 ['all', 'inventory', 'requests', 'bookings', 'concerns'].forEach(f => {
                     const btn = document.getElementById('logFilter-' + f);
                     if (!btn) return;
-                    const active = f === filter;
-                    btn.style.background = active ? '#065f46' : '#fff';
-                    btn.style.color = active ? '#fff' : '#065f46';
-                    btn.style.borderColor = active ? '#065f46' : '#d1fae5';
+                    if (f === filter) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
                 });
                 renderActivityTable();
             }
