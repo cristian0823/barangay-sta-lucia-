@@ -2284,7 +2284,6 @@
                                             <th>Dates</th>
                                             <th>Purpose</th>
                                             <th>Status</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="requestsTable"></tbody>
@@ -2331,7 +2330,6 @@
                                             <th>Time</th>
                                             <th>Purpose</th>
                                             <th>Status</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="courtBookingsTable"></tbody>
@@ -2376,7 +2374,6 @@
                                             <th>Time</th>
                                             <th>Purpose</th>
                                             <th>Status</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="multipurposeBookingsTable"></tbody>
@@ -4312,24 +4309,18 @@
                     return new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0);
                 });
 
+                _allAdminRequestsList = borrowings;
                 container.innerHTML = borrowings.map(b => {
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
                     const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
                     return `
-                <tr data-req-id="${b.id}">
+                <tr data-req-id="${b.id}" onclick="openRequestRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
                     <td>${residentDisplay}</td>
-                    <td>${b.equipment}</td>
-                    <td>${b.quantity}</td>
-                    <td style="white-space: nowrap;">${b.borrowDate}<br>to ${b.returnDate}</td>
-                    <td>${b.purpose}</td>
+                    <td><strong style="color:var(--text);">${b.equipment}</strong></td>
+                    <td style="font-weight:bold;color:var(--text);">${b.quantity}</td>
+                    <td style="white-space: nowrap;color:var(--muted);">${b.borrowDate}<br>to ${b.returnDate}</td>
+                    <td style="color:var(--text);">${b.purpose}</td>
                     <td>${getStatusBadge(b.status)}</td>
-                    <td class="admin-actions" style="display:flex;gap:6px;flex-wrap:wrap;border:none;">
-                        ${b.status === 'pending' ? `
-                            <button onclick="approveRequest(${b.id})" style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">✅ Approve</button>
-                            <button onclick="rejectRequest(${b.id})" style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">❌ Reject</button>
-                        ` : b.status === 'approved' ? `
-                            <button onclick="returnRequest(${b.id})" style="padding:6px 12px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">🔙 Returned</button>
-                        ` : '<span style="font-size:12px;color:#9ca3af;padding:6px 0;">—</span>'}
                 </tr>
             `}).join('');
             }
@@ -5240,6 +5231,7 @@
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
                 let allBookings = await getCourtBookings();
+                _allAdminBookingsList = allBookings;
 
                 // Auto-remove past bookings from display
                 const now = new Date();
@@ -5306,11 +5298,13 @@
                     const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
                     const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
 
-                    const isPending = b.status === 'pending' || b.status === 'booked';
-                    const actions = isPending
-                        ? `<div style="display:flex;gap:6px;flex-wrap:wrap;"><button onclick="approveAdminBooking(${b.id})" style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✅ Approve</button><button onclick="openRejectModal(${b.id})" style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">❌ Reject</button></div>`
-                        : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
-                    return `<tr><td>${residentDisplay}</td><td>${b.date}</td><td>${timeStr}</td><td>${b.purpose || '—'}</td><td>${statusBadge}</td><td>${actions}</td></tr>`;
+                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
+                        <td>${residentDisplay}</td>
+                        <td style="color:var(--text);">${b.date}</td>
+                        <td style="color:var(--text);">${timeStr}</td>
+                        <td style="color:var(--text);">${b.purpose || '—'}</td>
+                        <td>${statusBadge}</td>
+                    </tr>`;
                 }).join('');
             }
 
@@ -5320,6 +5314,7 @@
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
                 let allBookings = await getCourtBookings();
+                _allAdminBookingsList = allBookings;
 
                 // Auto-remove past bookings from display
                 const now = new Date();
@@ -5413,23 +5408,13 @@
 
                     const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
 
-                    const isPending = b.status === 'pending' || b.status === 'booked';
-                    const actions = isPending ? `
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                        <button onclick="approveAdminBooking(${b.id})"
-                            style="padding:6px 12px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✅ Approve</button>
-                        <button onclick="openRejectModal(${b.id})"
-                            style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">❌ Reject</button>
-                    </div>` : `<span style="font-size:12px;color:#9ca3af;">—</span>`;
-
-                    return `<tr data-bid="${b.id}">
+                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
                     <td>${residentDisplay}</td>
-                    <td>${venue}</td>
-                    <td>${b.date}</td>
-                    <td>${timeStr}</td>
-                    <td>${b.purpose || '—'}${adminComment}</td>
+                    <td style="color:var(--text);">${venue}</td>
+                    <td style="color:var(--text);">${b.date}</td>
+                    <td style="color:var(--text);">${timeStr}</td>
+                    <td style="color:var(--text);">${b.purpose || '—'}${adminComment}</td>
                     <td>${statusBadge}</td>
-                    <td>${actions}</td>
                 </tr>`;
                 }).join('');
             }
@@ -5609,7 +5594,8 @@
                             type: '📦 Equipment Borrowing',
                             user: b.userName || b.user_name || 'Resident',
                             details: `Requested ${b.quantity}x ${b.equipment} for ${b.purpose || 'general use'}.`,
-                            status: b.status
+                            status: b.status,
+                            actionClick: `openRequestRespond(${b.id})`
                         });
                     });
 
@@ -5620,7 +5606,8 @@
                             type: '📋 Citizen Concern',
                             user: c.userName || 'Resident',
                             details: `Reported [${c.category}] - ${c.title}.`,
-                            status: c.status
+                            status: c.status,
+                            actionClick: `openConcernRespond(${c.id})`
                         });
                     });
 
@@ -5631,7 +5618,8 @@
                             type: '🏀 Court Booking',
                             user: b.userName || b.user_name || 'Resident',
                             details: `Booked ${b.venueName || 'Court'} on ${b.date} at ${b.time} for ${b.purpose}.`,
-                            status: b.status
+                            status: b.status,
+                            actionClick: `openBookingRespond(${b.id})`
                         });
                     });
 
@@ -5645,11 +5633,11 @@
                     }
 
                     tbody.innerHTML = transactions.map(t => {
-                        return `<tr>
-                            <td width="15%" style="color:#6b7280; font-size:13px;">${t.date.toLocaleDateString()} <br> <span style="font-size:11px;">${t.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></td>
-                            <td width="20%"><strong>${t.type}</strong></td>
-                            <td width="20%">${t.user}</td>
-                            <td width="30%" style="font-size:13px;">${t.details}</td>
+                        return `<tr onclick="${t.actionClick}" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
+                            <td width="15%" style="color:var(--muted,#6b7280); font-size:13px;">${t.date.toLocaleDateString()} <br> <span style="font-size:11px;">${t.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></td>
+                            <td width="20%"><strong><span style="color:var(--text);">${t.type}</span></strong></td>
+                            <td width="20%"><span style="color:var(--text);">${t.user}</span></td>
+                            <td width="30%" style="font-size:13px;color:var(--text);">${t.details}</td>
                             <td width="15%">${getStatusBadge(t.status)}</td>
                         </tr>`;
                     }).join('');
@@ -6082,6 +6070,8 @@
 
             var _currentConcernId = null;
             var _allAdminConcerns = [];
+            var _allAdminBookingsList = [];
+            var _allAdminRequestsList = [];
 
             async function loadConcerns() {
                 const tbody = document.getElementById('concernsTable');
@@ -6206,6 +6196,141 @@
                 _currentConcernId = null;
             }
 
+            function openBookingRespond(bookingId) {
+                const booking = _allAdminBookingsList.find(b => b.id === bookingId);
+                if (!booking) return;
+
+                const headerSub = document.getElementById('adminBookingHeaderSub');
+                if (headerSub) {
+                    headerSub.textContent = `${booking.userName || 'Resident'} • ${booking.venueName || booking.venue || 'Facility'} • ${booking.status}`;
+                }
+
+                const detailsDiv = document.getElementById('adminBookingDetailsDiv');
+                if (detailsDiv) {
+                    const submittedAt = booking.created_at || booking.createdAt 
+                        ? new Date(booking.created_at || booking.createdAt).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'})
+                        : '-';
+                    const timeStr = booking.timeRange || booking.time || '-';
+                    const adminCommentHtml = booking.admin_comment 
+                        ? `<div style="margin-top:16px;background:#fffbeb;border-radius:10px;padding:14px;border:1px solid #fde68a;">
+                               <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;">Admin Reply</p>
+                               <p style="margin:0;font-size:14px;color:#92400e;line-height:1.6;">${booking.admin_comment}</p>
+                           </div>` : '';
+
+                    detailsDiv.innerHTML = `
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Citizen</p>
+                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text,#111);">${booking.userName || '-'}</p>
+                            </div>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Facility</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${booking.venueName || booking.venue || '-'}</p>
+                            </div>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Date & Time</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${booking.date} <br> ${timeStr}</p>
+                            </div>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Processed</p>
+                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">${submittedAt}</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:16px;background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border,#e5e7eb);">
+                            <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Purpose</p>
+                            <p style="margin:0;font-size:14px;color:var(--text);line-height:1.6;">${booking.purpose || 'No description provided.'}</p>
+                        </div>
+                        ${adminCommentHtml}
+                    `;
+                }
+
+                const actionsDiv = document.getElementById('adminBookingActionsDiv');
+                if (actionsDiv) {
+                    const isPending = booking.status === 'pending' || booking.status === 'booked';
+                    if (isPending) {
+                        actionsDiv.innerHTML = `
+                            <button onclick="approveAdminBooking(${booking.id}); closeAdminBookingModal();" style="flex:1;padding:12px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">✅ Approve Booking</button>
+                            <button onclick="openRejectModal(${booking.id}); closeAdminBookingModal();" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">❌ Reject Booking</button>
+                        `;
+                    } else {
+                        actionsDiv.innerHTML = `
+                            <p style="width:100%;font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center;">This booking has already been completely processed.</p>
+                            <button type="button" onclick="closeAdminBookingModal()" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text);font-family:inherit;font-size:14px;">Close</button>
+                        `;
+                    }
+                }
+                document.getElementById('adminBookingModal').style.display = 'flex';
+            }
+
+            function closeAdminBookingModal() {
+                document.getElementById('adminBookingModal').style.display = 'none';
+            }
+
+            function openRequestRespond(reqId) {
+                const req = _allAdminRequestsList.find(r => r.id === reqId);
+                if (!req) return;
+
+                const headerSub = document.getElementById('adminRequestHeaderSub');
+                if (headerSub) {
+                    headerSub.textContent = `${req.userName || 'Resident'} • ${req.equipment || 'Item'} • ${req.status}`;
+                }
+
+                const detailsDiv = document.getElementById('adminRequestDetailsDiv');
+                if (detailsDiv) {
+                    const submittedAt = req.created_at || req.createdAt 
+                        ? new Date(req.created_at || req.createdAt).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'})
+                        : '-';
+                    detailsDiv.innerHTML = `
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Resident</p>
+                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text,#111);">${req.userName || '-'}</p>
+                            </div>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Item & Quantity</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${req.equipment} (x${req.quantity})</p>
+                            </div>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Duration</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${req.borrowDate} <br>to ${req.returnDate}</p>
+                            </div>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Requested</p>
+                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">${submittedAt}</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:16px;background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border,#e5e7eb);">
+                            <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Purpose</p>
+                            <p style="margin:0;font-size:14px;color:var(--text);line-height:1.6;">${req.purpose || 'No purpose provided.'}</p>
+                        </div>
+                    `;
+                }
+
+                const actionsDiv = document.getElementById('adminRequestActionsDiv');
+                if (actionsDiv) {
+                    if (req.status === 'pending') {
+                        actionsDiv.innerHTML = `
+                            <button onclick="approveRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">✅ Approve Details</button>
+                            <button onclick="rejectRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">❌ Reject</button>
+                        `;
+                    } else if (req.status === 'approved') {
+                        actionsDiv.innerHTML = `
+                            <button onclick="returnRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">🔙 Mark as Returned</button>
+                        `;
+                    } else {
+                        actionsDiv.innerHTML = `
+                            <p style="width:100%;font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center;">This request has already been ${req.status}.</p>
+                            <button type="button" onclick="closeAdminRequestModal()" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text);font-family:inherit;font-size:14px;">Close</button>
+                        `;
+                    }
+                }
+                document.getElementById('adminRequestModal').style.display = 'flex';
+            }
+
+            function closeAdminRequestModal() {
+                document.getElementById('adminRequestModal').style.display = 'none';
+            }
+
             async function markConcernResolved(id) {
                 const concern = _allAdminConcerns.find(c => c.id === id);
                 if (!concern) return;
@@ -6301,6 +6426,56 @@
                     <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">This is a read-only submission. No response is required.</p>
                     <button type="button" onclick="closeAdminConcernModal()"
                         style="width:100%;padding:12px;border:1.5px solid #d1d5db;border-radius:12px;font-weight:600;cursor:pointer;background:#f3f4f6;color:#374151;font-family:inherit;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ADMIN BOOKING MODAL (CENTERED)             -->
+        <!-- ========================================== -->
+        <div id="adminBookingModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
+            <div style="background:var(--bg,#fff); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:92vh; overflow-y:auto; display:flex; flex-direction:column; position:relative;">
+                
+                <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:24px 28px; position:relative; flex-shrink:0;">
+                    <button onclick="closeAdminBookingModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                    <div style="font-size:30px;margin-bottom:8px;">📅</div>
+                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Court Booking</h3>
+                    <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminBookingHeaderSub"></p>
+                </div>
+
+                <div style="padding:24px 28px 0;">
+                    <div id="adminBookingDetailsDiv"></div>
+                </div>
+
+                <div style="margin:8px 28px 0; border-top:2px dashed var(--border,#e5e7eb);"></div>
+
+                <div id="adminBookingActionsDiv" style="padding:20px 28px 28px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ADMIN EQUIPMENT REQUEST MODAL (CENTERED)   -->
+        <!-- ========================================== -->
+        <div id="adminRequestModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
+            <div style="background:var(--bg,#fff); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:92vh; overflow-y:auto; display:flex; flex-direction:column; position:relative;">
+                
+                <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:24px 28px; position:relative; flex-shrink:0;">
+                    <button onclick="closeAdminRequestModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                    <div style="font-size:30px;margin-bottom:8px;">📦</div>
+                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Equipment Request</h3>
+                    <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminRequestHeaderSub"></p>
+                </div>
+
+                <div style="padding:24px 28px 0;">
+                    <div id="adminRequestDetailsDiv"></div>
+                </div>
+
+                <div style="margin:8px 28px 0; border-top:2px dashed var(--border,#e5e7eb);"></div>
+
+                <div id="adminRequestActionsDiv" style="padding:20px 28px 28px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
                 </div>
             </div>
         </div>
