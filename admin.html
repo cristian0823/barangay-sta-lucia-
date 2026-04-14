@@ -1988,14 +1988,14 @@
         }
 
         /* Text in inline styles */
-        [data-theme="dark"] [style*="color:#6b7280"],
-        [data-theme="dark"] [style*="color: #6b7280"],
-        [data-theme="dark"] [style*="color:#1e293b"],
-        [data-theme="dark"] [style*="color: #1e293b"],
-        [data-theme="dark"] [style*="color:#0f172a"],
-        [data-theme="dark"] [style*="color: #0f172a"],
-        [data-theme="dark"] [style*="color:#334155"],
-        [data-theme="dark"] [style*="color:#374151"] {
+        [data-theme="dark"] [style*="color:#6b7280"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color: #6b7280"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color:#1e293b"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color: #1e293b"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color:#0f172a"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color: #0f172a"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color:#334155"]:not([style*="background"]),
+        [data-theme="dark"] [style*="color:#374151"]:not([style*="background"]) {
             color: #e2e8f0 !important;
         }
 
@@ -4320,7 +4320,7 @@
                     <td>${residentDisplay}</td>
                     <td>${b.equipment}</td>
                     <td>${b.quantity}</td>
-                    <td>${b.borrowDate} to ${b.returnDate}</td>
+                    <td style="white-space: nowrap;">${b.borrowDate}<br>to ${b.returnDate}</td>
                     <td>${b.purpose}</td>
                     <td>${getStatusBadge(b.status)}</td>
                     <td class="admin-actions" style="display:flex;gap:6px;flex-wrap:wrap;border:none;">
@@ -5239,7 +5239,31 @@
                 if (!tbody) return;
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
-                const allBookings = await getCourtBookings();
+                let allBookings = await getCourtBookings();
+
+                // Auto-remove past bookings from display
+                const now = new Date();
+                const currentIsoDate = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+                const currentMins = now.getHours() * 60 + now.getMinutes();
+                allBookings = allBookings.filter(b => {
+                    if (!b.date) return true;
+                    if (b.date < currentIsoDate) return false;
+                    if (b.date === currentIsoDate) {
+                        try {
+                            const timeStr = b.timeRange || b.time || '';
+                            let parts = timeStr.split(' to ');
+                            if(parts.length === 1) parts = timeStr.split('–');
+                            if(parts.length === 1) parts = timeStr.split('-');
+                            let endStr = parts[parts.length - 1].trim();
+                            if(typeof timeToMinutes === 'function' && endStr) {
+                                let endMins = timeToMinutes(endStr);
+                                if(endMins && endMins < currentMins) return false;
+                            }
+                        } catch(e) {}
+                    }
+                    return true;
+                });
+
                 let mpBookings = allBookings.filter(b =>
                     b.venue === 'multipurpose' ||
                     (b.venueName && b.venueName.toLowerCase().includes('multi'))
@@ -5296,6 +5320,29 @@
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
 
                 let allBookings = await getCourtBookings();
+
+                // Auto-remove past bookings from display
+                const now = new Date();
+                const currentIsoDate = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+                const currentMins = now.getHours() * 60 + now.getMinutes();
+                allBookings = allBookings.filter(b => {
+                    if (!b.date) return true;
+                    if (b.date < currentIsoDate) return false;
+                    if (b.date === currentIsoDate) {
+                        try {
+                            const timeStr = b.timeRange || b.time || '';
+                            let parts = timeStr.split(' to ');
+                            if(parts.length === 1) parts = timeStr.split('–');
+                            if(parts.length === 1) parts = timeStr.split('-');
+                            let endStr = parts[parts.length - 1].trim();
+                            if(typeof timeToMinutes === 'function' && endStr) {
+                                let endMins = timeToMinutes(endStr);
+                                if(endMins && endMins < currentMins) return false;
+                            }
+                        } catch(e) {}
+                    }
+                    return true;
+                });
 
                 // Filter to COURT / BASKETBALL only
                 allBookings = allBookings.filter(b =>
