@@ -2461,15 +2461,16 @@ async function createEvent(eventData, massCancel = false) {
                     const { data: allUsers } = await supabase.from('users').select('id').eq('role', 'user');
                     if (allUsers && allUsers.length > 0) {
                         const notifPayloads = allUsers.map(u => ({
-                            user_id: u.id,
+                            user_id: String(u.id),
                             type: 'event_added',
                             message: `📢 New Barangay Event: "${eventData.title}" on ${new Date(eventData.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${eventData.time}${eventData.location ? ' @ ' + eventData.location : ''}.`,
                             meta: { event_title: eventData.title, date: eventData.date, time: eventData.time, location: eventData.location },
                             is_read: false
                         }));
-                        await supabase.from('user_notifications').insert(notifPayloads);
+                        const { error: notifErr } = await supabase.from('user_notifications').insert(notifPayloads);
+                        if (notifErr) console.warn('Supabase insert notif error:', notifErr);
                     }
-                } catch(notifErr) { console.warn('Event notification broadcast error:', notifErr); }
+                } catch(notifErr) { console.warn('Event notification broadcast exception:', notifErr); }
                 success = true;
             } else {
                 console.error('Supabase events insert error:', error);
@@ -2620,15 +2621,16 @@ async function deleteEvent(eventId) {
                     const { data: allUsers } = await supabase.from('users').select('id').eq('role', 'user');
                     if (allUsers && allUsers.length > 0) {
                         const notifPayloads = allUsers.map(u => ({
-                            user_id: u.id,
+                            user_id: String(u.id),
                             type: 'event_cancelled',
                             message: `❌ Barangay Event Cancelled: "${eventRecord.title}" scheduled on ${new Date(eventRecord.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} has been cancelled.`,
                             meta: { event_title: eventRecord.title, date: eventRecord.date },
                             is_read: false
                         }));
-                        await supabase.from('user_notifications').insert(notifPayloads);
+                        const { error: notifErr } = await supabase.from('user_notifications').insert(notifPayloads);
+                        if (notifErr) console.warn('Supabase insert notif error:', notifErr);
                     }
-                } catch(notifErr) { console.warn('Event cancellation notification error:', notifErr); }
+                } catch(notifErr) { console.warn('Event cancellation notification exception:', notifErr); }
             }
         }
         return { success: !error, message: error ? error.message : 'Event deleted successfully' };
