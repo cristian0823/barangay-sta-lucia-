@@ -6086,7 +6086,10 @@
                     }
                     for (const e of allEvents) {
                         if (e.date === dateStr && e.status === 'approved') {
-                            if (sMin < timeToMinutes(e.end_time || e.time) && eMin > timeToMinutes(e.time)) taken = true;
+                            const es = timeToMinutes(e.time);
+                            let ee = timeToMinutes(e.end_time || e.time);
+                            if (e.title && e.title.toLowerCase().includes('cleanup')) ee += 30;
+                            if (sMin < ee && eMin > es) taken = true;
                         }
                     }
 

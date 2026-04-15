@@ -2655,7 +2655,8 @@
                 for (const e of allEvents) {
                     if (e.date === dateStr && e.status === 'approved') {
                         const es = timeToMinutes(e.time);
-                        const ee = timeToMinutes(e.end_time || e.time);
+                        let ee = timeToMinutes(e.end_time || e.time);
+                        if (e.title && e.title.toLowerCase().includes('cleanup')) ee += 30;
                         if (sMin < ee && eMin > es) taken = true;
                     }
                 }
@@ -2975,7 +2976,7 @@
                 } else {
                     statusText.textContent = 'Not Enabled';
                     statusBadge.style.cssText = 'padding:4px 12px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:12px;font-weight:700;';
-                    statusBadge.textContent = '— Not Set Up';
+                    statusBadge.textContent = 'Not Set Up';
                     actionsEl.innerHTML = `<a href="setup-totp.html" style="display:inline-block;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;text-decoration:none;box-shadow:0 4px 12px rgba(99,102,241,0.3);transition:all 0.2s;">🔐 Enable Google Authenticator</a>`;
                 }
             } catch(e) {
