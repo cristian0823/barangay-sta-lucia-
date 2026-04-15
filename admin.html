@@ -6659,7 +6659,7 @@
         <!-- ========================================== -->
         <div id="adsEventModal"
             style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10500;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:#fff;border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;max-height:90vh;animation:modalIn 0.3s ease;">
+            <div style="background:var(--surface, #fff);border:1px solid var(--border, #fff);border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;max-height:90vh;animation:modalIn 0.3s ease;">
                 <!-- Header -->
                 <div style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);padding:24px;position:relative;flex-shrink:0;">
                     <button onclick="closeAdsEventModal()" type="button"
@@ -6677,43 +6677,43 @@
                         <input type="hidden" id="adsVenue">
 
                         <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Event Title</label>
+                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Event Title</label>
                             <input type="text" id="adsEventTitle" required
-                                style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
+                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
                         </div>
 
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                             <div>
-                                <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Start Time</label>
+                                <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Start Time</label>
                                 <select id="adsStartTime" required
-                                    style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;"></select>
+                                    style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:all 0.2s;"></select>
                             </div>
                             <div>
-                                <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">End Time</label>
+                                <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">End Time</label>
                                 <select id="adsEndTime" required
-                                    style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;"></select>
+                                    style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:all 0.2s;"></select>
                             </div>
                         </div>
 
                         <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Post-Event Cleanup Extension</label>
+                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Post-Event Cleanup Extension</label>
                             <select id="adsCleanupTime"
-                                style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:border-color 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
-                                <option value="0">None</option>
-                                <option value="30">30 Minutes</option>
-                                <option value="60">1 Hour</option>
-                                <option value="90">1.5 Hours</option>
-                                <option value="120">2 Hours</option>
+                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
+                                <option value="0" style="color:var(--text, #000); background:var(--bg, #fff);">None</option>
+                                <option value="30" style="color:var(--text, #000); background:var(--bg, #fff);">30 Minutes</option>
+                                <option value="60" style="color:var(--text, #000); background:var(--bg, #fff);">1 Hour</option>
+                                <option value="90" style="color:var(--text, #000); background:var(--bg, #fff);">1.5 Hours</option>
+                                <option value="120" style="color:var(--text, #000); background:var(--bg, #fff);">2 Hours</option>
                             </select>
                         </div>
 
                         <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Organizer</label>
+                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Organizer</label>
                             <input type="text" id="adsOrganizer" required value="Barangay Council"
-                                style="width:100%;padding:10px 14px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e5e7eb'">
+                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
                         </div>
 
                         <button type="submit"
