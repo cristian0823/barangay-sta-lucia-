@@ -3734,6 +3734,20 @@
                     
                     if (available) {
                         await supabase.from('events').insert([newEvent]);
+                        // Broadcast event notification to ALL registered residents
+                        try {
+                            const { data: allUsers } = await supabase.from('users').select('id').eq('role', 'user');
+                            if (allUsers && allUsers.length > 0) {
+                                const notifPayloads = allUsers.map(u => ({
+                                    user_id: u.id,
+                                    type: 'event_added',
+                                    message: `📢 New Barangay Event: "${eventName}" on ${new Date(adminSelectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. Court bookings on this day have been cancelled.`,
+                                    meta: { event_title: eventName, date: adminSelectedDate },
+                                    is_read: false
+                                }));
+                                await supabase.from('user_notifications').insert(notifPayloads);
+                            }
+                        } catch(notifErr) { console.warn('Sudden event notification error:', notifErr); }
                     } else {
                         const evtList = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
                         newEvent.id = Date.now();
