@@ -2813,7 +2813,21 @@
                 boo.forEach(b => all.push({ type: 'Court Booking', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', color: 'emerald' }));
                 all.sort((a,b) => b.date - a.date);
                 if (all.length === 0) { container.innerHTML = '<p class="text-gray-500 italic text-sm">No activity history found yet.</p>'; return; }
-                container.innerHTML = all.map(a => `<div class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:shadow-md transition bg-gray-50/50 dark:bg-slate-800/50 dark:border-slate-700"><div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-${a.color}-100 text-${a.color}-600 shrink-0">${a.icon}</div><div class="flex-1"><div class="flex justify-between items-start flex-wrap gap-2"><h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${a.title}</h4><span class="text-xs font-bold px-2 py-1 rounded-md capitalize ${a.status==='approved'||a.status==='resolved'||a.status==='completed'?'text-green-600 bg-green-50':a.status==='rejected'?'text-red-600 bg-red-50':'text-orange-600 bg-orange-50'}">${a.status||'pending'}</span></div><div class="flex items-center gap-3 mt-2 text-xs text-gray-500 font-medium"><span class="bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">${a.type}</span><span>${isNaN(a.date.getTime())?'Unknown Date':a.date.toLocaleDateString()+' '+a.date.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div></div></div>`).join('');
+                container.innerHTML = all.map(a => {
+                    const displayStatus = a.status === 'completed' ? 'Completed'
+                        : a.status === 'cancelled_by_admin' ? 'Cancelled by Admin'
+                        : a.status === 'cancelled' ? 'Cancelled'
+                        : a.status === 'approved' ? 'Approved'
+                        : a.status === 'resolved' ? 'Resolved'
+                        : a.status === 'rejected' ? 'Rejected'
+                        : a.status || 'Pending';
+                    const statusColor = (a.status === 'approved' || a.status === 'resolved' || a.status === 'completed')
+                        ? 'text-green-600 bg-green-50'
+                        : (a.status === 'rejected' || a.status === 'cancelled' || a.status === 'cancelled_by_admin')
+                        ? 'text-red-600 bg-red-50'
+                        : 'text-orange-600 bg-orange-50';
+                    return `<div class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:shadow-md transition bg-gray-50/50 dark:bg-slate-800/50 dark:border-slate-700"><div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-${a.color}-100 text-${a.color}-600 shrink-0">${a.icon}</div><div class="flex-1"><div class="flex justify-between items-start flex-wrap gap-2"><h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${a.title}</h4><span class="text-xs font-bold px-2 py-1 rounded-md ${statusColor}">${displayStatus}</span></div><div class="flex items-center gap-3 mt-2 text-xs text-gray-500 font-medium"><span class="bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">${a.type}</span><span>${isNaN(a.date.getTime())?'Unknown Date':a.date.toLocaleDateString()+' '+a.date.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div></div></div>`;
+                }).join('');
             } catch(e) { console.error(e); container.innerHTML = '<p class="text-red-500 text-sm">Error loading history.</p>'; }
         }
 
@@ -2928,7 +2942,10 @@
             if (result.success) await loadDashboardTOTPStatus();
         }
 
-        // Initialize
+        // Initialize — auto-complete expired bookings first so UI is clean
+        if (typeof autoCompleteExpiredBookings === 'function') {
+            autoCompleteExpiredBookings(); // fire-and-forget, don't block UI
+        }
 
         showPanel('dashboard');
         loadHistoryView();

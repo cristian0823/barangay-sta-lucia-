@@ -2076,6 +2076,39 @@ async function deleteBooking(bookingId) {
     return { success: !error, message: error ? error.message : 'Booking deleted' };
 }
 
+// ─────────────────────────────────────────────────────────────
+// Auto-complete expired court bookings
+// Marks 'approved' or 'pending' bookings whose date < today as 'completed'
+// so they disappear from the active calendar and show as Completed in history.
+// ─────────────────────────────────────────────────────────────
+async function autoCompleteExpiredBookings() {
+    const supabaseAvailable = await isSupabaseAvailable();
+    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+
+    if (supabaseAvailable) {
+        try {
+            const { error } = await supabase
+                .from('court_bookings')
+                .update({ status: 'completed' })
+                .in('status', ['approved', 'pending'])
+                .lt('date', todayStr);
+            if (error) console.warn('autoCompleteExpiredBookings error:', error.message);
+            else broadcastSync();
+        } catch(e) { console.warn('autoCompleteExpiredBookings exception:', e); }
+    } else {
+        // LocalStorage fallback
+        const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
+        let changed = false;
+        bookings.forEach(b => {
+            if ((b.status === 'approved' || b.status === 'pending') && b.date < todayStr) {
+                b.status = 'completed';
+                changed = true;
+            }
+        });
+        if (changed) localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
+    }
+}
+
 async function adminCancelBookingsForDay(date, venue, reason) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
 

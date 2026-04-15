@@ -3236,6 +3236,9 @@
                 // Run clock immediately — before any awaits
                 initWelcomeClock();
                 
+                // Auto-complete any expired bookings before rendering
+                if (typeof autoCompleteExpiredBookings === 'function') await autoCompleteExpiredBookings();
+
                 await loadOverview();
                 await loadCourtBookings();
                 await loadRequests();
@@ -4358,12 +4361,20 @@
                 bookings.sort((a, b) => new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0));
 
                 container.innerHTML = bookings.map(booking => {
-                    const statusClass = booking.status === 'cancelled'
+                    const statusClass = booking.status === 'cancelled' || booking.status === 'cancelled_by_admin'
                         ? 'status-rejected'
                         : booking.status === 'approved'
                             ? 'status-approved'
-                            : 'status-pending';
-                    const statusText = booking.status === 'cancelled' ? 'Cancelled' : booking.status === 'approved' ? 'Approved' : 'Pending';
+                            : booking.status === 'completed'
+                                ? 'status-resolved'
+                                : 'status-pending';
+                    const statusText = booking.status === 'cancelled' || booking.status === 'cancelled_by_admin'
+                        ? 'Cancelled'
+                        : booking.status === 'approved'
+                            ? 'Approved'
+                            : booking.status === 'completed'
+                                ? '✓ Completed'
+                                : 'Pending';
 
                     return `
                     <div class="court-booking-card">
