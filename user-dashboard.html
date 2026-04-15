@@ -2474,8 +2474,10 @@
 
         function fmt12(slot) {
             // Convert "HH:MM" 24h string to "H:MM AM/PM"
+            if (!slot) return '';
+            if (slot.toUpperCase().includes('M')) return slot;
             let h = parseInt(slot.split(':')[0]);
-            let m = slot.split(':')[1];
+            let m = slot.split(':')[1] || '00';
             let ampm = h >= 12 ? 'PM' : 'AM';
             let h12 = h % 12; if (h12 === 0) h12 = 12;
             return `${h12}:${m} ${ampm}`;
@@ -2539,7 +2541,7 @@
             }
             if (evForDay.length > 0) {
                 const evNames = evForDay.map(ev => {
-                    const timeRange = ev.end_time ? `${ev.time} – ${ev.end_time}` : ev.time;
+                    const timeRange = ev.end_time ? `${fmt12(ev.time)} – ${fmt12(ev.end_time)}` : fmt12(ev.time);
                     return `<strong>${ev.title}</strong> <span style="opacity:0.85;">(${timeRange})</span>`;
                 }).join('<br>');
                 eventNoticeBanner.innerHTML = `<div style="background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;">
@@ -2579,7 +2581,7 @@
                 entries.push({ type: 'booking', timeStr, label: b.userName || b.username || 'Resident', purpose: b.purpose || '' });
             });
             dayEvents.forEach(e => {
-                const timeStr = e.time + (e.end_time ? ' – ' + e.end_time : '');
+                const timeStr = fmt12(e.time) + (e.end_time ? ' – ' + fmt12(e.end_time) : '');
                 const venueEvLabel = (e.venue === 'multipurpose' || (e.location && e.location.includes('Multi-Purpose'))) ? '🏢 Multi-Purpose Hall' : '🏀 Basketball Court';
                 entries.push({ type: 'event', timeStr, label: e.title, purpose: (e.organizer ? 'By ' + e.organizer + ' · ' : '') + venueEvLabel });
             });
@@ -2809,7 +2811,7 @@
             if (upcoming.length === 0) { container.innerHTML = '<div class="col-span-full py-10 text-center"><p class="text-gray-500">No upcoming events.</p></div>'; return; }
             upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
             container.innerHTML = upcoming.map(e => {
-                const timeStr = e.end_time ? e.time + ' - ' + e.end_time : e.time;
+                const timeStr = e.end_time ? fmt12(e.time) + ' - ' + fmt12(e.end_time) : fmt12(e.time);
                 return '<div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">' +
                     '<div class="flex justify-between items-start mb-4"><span class="bg-white text-purple-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span></div>' +
                     '<h3 class="text-2xl font-black mb-1 line-clamp-2">' + e.title + '</h3>' +

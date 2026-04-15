@@ -3742,7 +3742,7 @@
 
                     if (hasEvents && !isPast) {
                         dayEl.title = eventDates[dateStr].map(e => {
-                            const time = e.end_time ? `${e.time} - ${e.end_time}` : (e.endTime ? `${e.time} - ${e.endTime}` : e.time);
+                            const time = e.end_time ? `${adminFmt12(e.time)} - ${adminFmt12(e.end_time)}` : (e.endTime ? `${adminFmt12(e.time)} - ${adminFmt12(e.endTime)}` : adminFmt12(e.time));
                             return `[${time}] ${e.title}`;
                         }).join('\n');
                         dayEl.onclick = () => adminSelectDate(dateStr);
@@ -4811,6 +4811,15 @@
                 }
             });
 
+            function adminFmt12(timeStr) {
+                if (!timeStr || timeStr.includes('M')) return timeStr;
+                const [h, m] = timeStr.split(':');
+                const hour = parseInt(h);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const h12 = hour % 12 || 12;
+                return `${h12}:${m} ${ampm}`;
+            }
+
             async function loadEvents() {
                 const events = await getEvents();
                 const container = document.getElementById('eventsList');
@@ -4827,7 +4836,7 @@
                         <p>${e.location}</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="event-time">${e.date} - ${e.time}${e.end_time ? ' to ' + e.end_time : ''}</div>
+                        <div class="event-time">${e.date} - ${adminFmt12(e.time)}${e.end_time ? ' to ' + adminFmt12(e.end_time) : ''}</div>
                         ${e.status === 'pending' ? `
                             <button class="btn btn-smaller btn-primary" onclick="approveEvent(${e.id})">Approve</button>
                             <button class="btn btn-smaller btn-danger" onclick="handleDeleteEvent(${e.id})">Delete</button>
@@ -5297,7 +5306,7 @@
 
             async function printBookingsReport() {
                 const data = await getCourtBookings();
-                const rows = data.map(b => `<tr><td>${b.userName}</td><td>${b.venueName || b.venue || 'N/A'}</td><td>${b.date}</td><td>${b.time}${b.end_time ? ' – ' + b.end_time : ''}</td><td>${b.purpose}</td><td><strong>${b.status}</strong></td></tr>`).join('');
+                const rows = data.map(b => `<tr><td>${b.userName}</td><td>${b.venueName || b.venue || 'N/A'}</td><td>${b.date}</td><td>${adminFmt12(b.time)}${b.end_time ? ' – ' + adminFmt12(b.end_time) : ''}</td><td>${b.purpose}</td><td><strong>${b.status}</strong></td></tr>`).join('');
                 openPrintWindow('Barangay Sta. Lucia — Facility Reservations Report',
                     `<table><thead><tr><th>Resident</th><th>Venue</th><th>Date</th><th>Time</th><th>Purpose</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`);
             }
@@ -5954,8 +5963,10 @@
             // =====================================================
 
             function adminFmt12(slot) {
+                if (!slot) return '';
+                if (slot.toUpperCase().includes('M')) return slot;
                 let h = parseInt(slot.split(':')[0]);
-                let m = slot.split(':')[1];
+                let m = slot.split(':')[1] || '00';
                 let ampm = h >= 12 ? 'PM' : 'AM';
                 let h12 = h % 12; if (h12 === 0) h12 = 12;
                 return `${h12}:${m} ${ampm}`;
@@ -6003,11 +6014,11 @@
 
                 const entries = [];
                 dayBookings.forEach(b => {
-                    const timeStr = b.time + (b.end_time ? ' – ' + b.end_time : '');
+                    const timeStr = adminFmt12(b.time) + (b.end_time ? ' – ' + adminFmt12(b.end_time) : '');
                     entries.push({ type: 'booking', id: b.id, timeStr, label: b.userName || b.username || 'Resident', sub: b.purpose || '' });
                 });
                 dayEvents.forEach(e => {
-                    const timeStr = e.time + (e.end_time ? ' – ' + e.end_time : '');
+                    const timeStr = adminFmt12(e.time) + (e.end_time ? ' – ' + adminFmt12(e.end_time) : '');
                     entries.push({ type: 'event', id: e.id, timeStr, label: e.title, sub: e.organizer ? 'By ' + e.organizer : '' });
                 });
 
