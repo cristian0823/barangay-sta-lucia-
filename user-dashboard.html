@@ -3074,13 +3074,91 @@
                     .channel('live-notifications')
                     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_notifications' }, payload => {
                         const newR = payload.new;
-                        if (window.user && newR && String(newR.user_id) === String(window.user.id)) {
+                        if (!window.user || !newR) return;
+                        // Match by user_id (handle int vs string)
+                        if (String(newR.user_id) !== String(window.user.id)) return;
+
+                        // Route by type
+                        const type = newR.type || '';
+                        const msg  = newR.message || '';
+
+                        if (type === 'booking_cancelled') {
                             checkPendingNotifications();
+                        } else if (type === 'booking_approved') {
+                            showNotifToast('✅ Booking Approved', msg, 'success');
+                            loadBookingView && loadBookingView();
+                            loadDashboardStats && loadDashboardStats();
+                        } else if (type === 'booking_rejected') {
+                            showNotifToast('❌ Booking Rejected', msg, 'error');
+                            loadBookingView && loadBookingView();
+                            loadDashboardStats && loadDashboardStats();
+                        } else if (type === 'equipment_approved') {
+                            showNotifToast('✅ Equipment Request Approved', msg, 'success');
+                            loadDashboardStats && loadDashboardStats();
+                        } else if (type === 'equipment_rejected') {
+                            showNotifToast('❌ Equipment Request Rejected', msg, 'error');
+                            loadDashboardStats && loadDashboardStats();
+                        } else if (type === 'event_added') {
+                            showNotifToast('📢 New Barangay Event', msg, 'info');
+                            loadEventsView && loadEventsView();
+                            loadBookingView && loadBookingView();
+                            loadDashboardStats && loadDashboardStats();
+                        } else if (type === 'event_cancelled') {
+                            showNotifToast('🚫 Event Cancelled', msg, 'warning');
+                            loadEventsView && loadEventsView();
+                            loadBookingView && loadBookingView();
+                            loadDashboardStats && loadDashboardStats();
                         }
                     })
                     .subscribe();
             }
         });
+
+        // Premium notification toast for real-time alerts
+        function showNotifToast(title, message, kind = 'info') {
+            // Remove any existing notif toast first
+            const existing = document.getElementById('notifToastPopup');
+            if (existing) existing.remove();
+
+            const colors = {
+                success: { bg: '#d1fae5', border: '#10b981', icon: '✅', text: '#065f46', progress: '#10b981' },
+                error:   { bg: '#fee2e2', border: '#ef4444', icon: '❌', text: '#991b1b', progress: '#ef4444' },
+                info:    { bg: '#dbeafe', border: '#3b82f6', icon: '📢', text: '#1e40af', progress: '#3b82f6' },
+                warning: { bg: '#fef3c7', border: '#f59e0b', icon: '⚠️', text: '#92400e', progress: '#f59e0b' }
+            };
+            const c = colors[kind] || colors.info;
+
+            const toast = document.createElement('div');
+            toast.id = 'notifToastPopup';
+            toast.style.cssText = `
+                position:fixed; top:20px; right:20px; z-index:99999;
+                max-width:360px; width:calc(100vw - 40px);
+                background:${c.bg}; border:1.5px solid ${c.border};
+                border-radius:16px; padding:16px 20px; box-shadow:0 8px 32px rgba(0,0,0,0.15);
+                display:flex; flex-direction:column; gap:8px;
+                animation: slideInRight 0.35s cubic-bezier(.22,1,.36,1);
+            `;
+            toast.innerHTML = `
+                <style>
+                @keyframes slideInRight { from { transform:translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+                @keyframes shrinkWidth   { from { width:100%; } to { width:0%; } }
+                </style>
+                <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <span style="font-size:22px;line-height:1;flex-shrink:0;">${c.icon}</span>
+                    <div style="flex:1;min-width:0;">
+                        <p style="margin:0 0 4px;font-size:13px;font-weight:800;color:${c.text};">${title}</p>
+                        <p style="margin:0;font-size:12px;color:${c.text};opacity:0.85;line-height:1.4;">${message}</p>
+                    </div>
+                    <button onclick="document.getElementById('notifToastPopup').remove()"
+                        style="background:none;border:none;cursor:pointer;font-size:16px;color:${c.text};opacity:0.6;line-height:1;flex-shrink:0;">✕</button>
+                </div>
+                <div style="background:rgba(0,0,0,0.1);border-radius:4px;overflow:hidden;height:3px;">
+                    <div style="height:100%;background:${c.progress};animation:shrinkWidth 5s linear forwards;"></div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { if (toast.isConnected) toast.remove(); }, 5200);
+        }
 
     </script>
     

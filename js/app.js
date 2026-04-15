@@ -1152,10 +1152,21 @@ async function rejectEquipmentRequest(borrowingId, reason) {
         const { data: borrowing } = await supabase.from('borrowings').select('*').eq('id', borrowingId).single();
         if (!borrowing) return { success: false, message: 'Borrowing record not found' };
 
-        // No need to restore stock since request was pending and never deducted
         const { error } = await supabase.from('borrowings').update({ status: 'rejected', rejection_reason: reason }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
         
+        // Notify the user about rejection
+        if (borrowing && borrowing.user_id) {
+            await supabase.from('user_notifications').insert([{
+                user_id: borrowing.user_id,
+                type: 'equipment_rejected',
+                message: `Your request for ${borrowing.quantity}x ${borrowing.equipment} has been rejected. Reason: ${reason}`,
+                meta: { borrowing_id: borrowingId, equipment: borrowing.equipment, reason: reason },
+                is_read: false
+            }]);
+            broadcastSync();
+        }
+
         await logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowing.quantity}x ${borrowing.equipment}. Reason: ${reason}`);
         return { success: true, message: `Status updated to rejected` };
     } else {
@@ -2209,7 +2220,20 @@ async function rejectCourtBooking(bookingId) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
+        const { data: booking } = await supabase.from('court_bookings').select('user_id, date, time').eq('id', bookingId).maybeSingle();
         const { error } = await supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+        
+        if (!error && booking && booking.user_id) {
+            await supabase.from('user_notifications').insert([{
+                user_id: booking.user_id,
+                type: 'booking_rejected',
+                message: `Your court booking on ${booking.date} at ${booking.time} has been rejected.`,
+                meta: { booking_id: bookingId, date: booking.date },
+                is_read: false
+            }]);
+            broadcastSync();
+        }
+
         if (!error) await logActivity('Booking Rejected', `Rejected court booking ID: ${bookingId}`);
         return { success: !error, message: error ? error.message : 'Court booking rejected and cancelled' };
     } else {
@@ -2399,6 +2423,20 @@ async function createEvent(eventData, massCancel = false) {
             const { error } = await supabase.from('events').insert([eventWithStatus]);
             if (!error) {
                 await logActivity('Event Created', `Created event: ${eventData.title} on ${eventData.date}`);
+                // Broadcast notification to ALL registered users
+                try {
+                    const { data: allUsers } = await supabase.from('users').select('id').eq('role', 'user');
+                    if (allUsers && allUsers.length > 0) {
+                        const notifPayloads = allUsers.map(u => ({
+                            user_id: u.id,
+                            type: 'event_added',
+                            message: `📢 New Barangay Event: "${eventData.title}" on ${new Date(eventData.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${eventData.time}${eventData.location ? ' @ ' + eventData.location : ''}.`,
+                            meta: { event_title: eventData.title, date: eventData.date, time: eventData.time, location: eventData.location },
+                            is_read: false
+                        }));
+                        await supabase.from('user_notifications').insert(notifPayloads);
+                    }
+                } catch(notifErr) { console.warn('Event notification broadcast error:', notifErr); }
                 success = true;
             } else {
                 console.error('Supabase events insert error:', error);
@@ -2538,8 +2576,28 @@ async function deleteEvent(eventId) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
+        // Fetch event details before deleting so we can notify users
+        const { data: eventRecord } = await supabase.from('events').select('title, date, time').eq('id', eventId).maybeSingle();
         const { error } = await supabase.from('events').delete().eq('id', eventId);
-        if (!error) await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
+        if (!error) {
+            await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
+            // Broadcast cancellation notification to ALL registered users
+            if (eventRecord) {
+                try {
+                    const { data: allUsers } = await supabase.from('users').select('id').eq('role', 'user');
+                    if (allUsers && allUsers.length > 0) {
+                        const notifPayloads = allUsers.map(u => ({
+                            user_id: u.id,
+                            type: 'event_cancelled',
+                            message: `❌ Barangay Event Cancelled: "${eventRecord.title}" scheduled on ${new Date(eventRecord.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} has been cancelled.`,
+                            meta: { event_title: eventRecord.title, date: eventRecord.date },
+                            is_read: false
+                        }));
+                        await supabase.from('user_notifications').insert(notifPayloads);
+                    }
+                } catch(notifErr) { console.warn('Event cancellation notification error:', notifErr); }
+            }
+        }
         return { success: !error, message: error ? error.message : 'Event deleted successfully' };
     } else {
         let events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
