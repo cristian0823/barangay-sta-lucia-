@@ -938,9 +938,9 @@
             </div>
             <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto">
                 <!-- Left Column: Calendar -->
-                <div class="w-full lg:w-1/2 p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30">
+                <div class="w-full lg:w-1/2 p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30" style="background: var(--dm-cal-bg, inherit);">
                     <div class="flex justify-between items-center mb-4">
-                        <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800">Month Year</h4>
+                        <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
                         <div class="flex space-x-2">
                             <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&larr;</button>
                             <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&rarr;</button>
@@ -2148,23 +2148,25 @@
                 const dateObj = new Date(currentYear, currentMonth, day);
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm transition transform hover:scale-105 ';
-                const isDark = document.documentElement.classList.contains('dark');
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
                 if (dateObj < today) {
-                    dayDiv.className += isDark
-                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed';
+                    dayDiv.style.cssText = isDark
+                        ? 'background:#374151;color:#6b7280;cursor:not-allowed;'
+                        : 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;';
                 } else {
-                    dayDiv.className += isDark
-                        ? 'bg-gray-700 text-emerald-400 hover:bg-gray-600 border border-gray-600'
-                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200';
+                    dayDiv.style.cssText = isDark
+                        ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
+                        : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
+                    dayDiv.onmouseenter = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
+                    dayDiv.onmouseleave = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
                     dayDiv.onclick = () => selectBorrowDate(dateStr);
                 }
-                if (dateObj.getTime() === today.getTime()) { dayDiv.className += ' ring-2 ring-emerald-500 ring-offset-2'; }
-                if (borrowStartDate === dateStr) { dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm bg-emerald-500 text-white shadow-md ring-2 ring-emerald-300'; }
-                if (borrowReturnDate === dateStr) { dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm bg-teal-500 text-white shadow-md ring-2 ring-teal-300'; }
+                if (dateObj.getTime() === today.getTime()) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
+                if (borrowStartDate === dateStr) { dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;'; }
+                if (borrowReturnDate === dateStr) { dayDiv.style.cssText = 'background:#0d9488;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;'; }
                 if (borrowStartDate && borrowReturnDate) {
                     const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
-                    if (dateObj > start && dateObj < end) { dayDiv.className += isDark ? ' bg-emerald-800 text-emerald-200' : ' bg-emerald-100'; }
+                    if (dateObj > start && dateObj < end) { dayDiv.style.background = isDark ? '#064e3b' : '#d1fae5'; dayDiv.style.color = isDark ? '#6ee7b7' : '#065f46'; }
                 }
                 dayDiv.textContent = day;
                 grid.appendChild(dayDiv);
