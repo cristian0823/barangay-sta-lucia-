@@ -414,7 +414,12 @@
                 e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
             });
 
-
+            // Check if redirected due to suspension
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('suspended') === '1') {
+                const until = params.get('until') || 'a future date';
+                showToast(`🔒 Your account is suspended until ${until}.`, 'error');
+            }
 
             // Check if already logged in
             const user = getCurrentUser();

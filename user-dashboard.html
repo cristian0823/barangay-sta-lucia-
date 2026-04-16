@@ -1480,6 +1480,28 @@
         const user = getCurrentUser();
         window.user = user; // expose globally so checkPendingNotifications can access window.user.id
 
+        // ── Suspension Guard: check live DB on every dashboard load ──────────
+        (async () => {
+            try {
+                if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
+                    const { data: liveUser } = await supabase
+                        .from('users')
+                        .select('suspended_until')
+                        .eq('id', user.id)
+                        .maybeSingle();
+
+                    if (liveUser && liveUser.suspended_until && new Date(liveUser.suspended_until) > new Date()) {
+                        const retryDate = new Date(liveUser.suspended_until).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                        localStorage.removeItem('currentUser');
+                        sessionStorage.removeItem('currentUser');
+                        window.location.href = `login.html?suspended=1&until=${encodeURIComponent(retryDate)}`;
+                    }
+                }
+            } catch(e) { console.warn('Suspension check failed:', e); }
+        })();
+        // ─────────────────────────────────────────────────────────────────────
+
+
         document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('welcomeName').textContent = user.name || user.email.split('@')[0];
         document.getElementById('userInitial').textContent = (user.name || user.email)[0].toUpperCase();
