@@ -4995,8 +4995,9 @@
                 const equipment = await getEquipment();
                 const container = document.getElementById('equipmentTable');
                 container.innerHTML = equipment.map(e => {
+                    e.available = Math.min(e.available || 0, e.quantity || 1);
                     const broken = e.broken || 0;
-                    const inUse = e.quantity - e.available - broken;
+                    const inUse = Math.max(0, e.quantity - e.available - broken);
                     let statusBadge;
                     if (e.isArchived) {
                         statusBadge = '<span class="status-badge" style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;">📦 Archived</span>';
