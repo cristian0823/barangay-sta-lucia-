@@ -2179,6 +2179,13 @@
                 showToast('Now select the return date', 'success');
             } else {
                 if (new Date(dateStr) < new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
+                
+                const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays > 7) {
+                    return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
+                }
+                
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
@@ -2210,6 +2217,12 @@
             if (!equipId) return showToast('Please select an equipment item', 'error');
             if (!borrowDate || !returnDate) return showToast('Please select both dates', 'error');
             if (!borrowTime || !returnTime) return showToast('Please select the pickup and return times', 'error');
+
+            const diffTime = Math.abs(new Date(returnDate) - new Date(borrowDate));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays > 7) {
+                return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
+            }
             
             const btn = this.querySelector('button[type="submit"]');
             btn.disabled = true; btn.innerHTML = 'Submitting...';
