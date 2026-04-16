@@ -2148,17 +2148,27 @@
                 const dateObj = new Date(currentYear, currentMonth, day);
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm transition transform hover:scale-105 ';
-                if (dateObj < today) { dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed'; }
-                else { dayDiv.className += 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200'; dayDiv.onclick = () => selectBorrowDate(dateStr); }
+                const isDark = document.documentElement.classList.contains('dark');
+                if (dateObj < today) {
+                    dayDiv.className += isDark
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed';
+                } else {
+                    dayDiv.className += isDark
+                        ? 'bg-gray-700 text-emerald-400 hover:bg-gray-600 border border-gray-600'
+                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200';
+                    dayDiv.onclick = () => selectBorrowDate(dateStr);
+                }
                 if (dateObj.getTime() === today.getTime()) { dayDiv.className += ' ring-2 ring-emerald-500 ring-offset-2'; }
                 if (borrowStartDate === dateStr) { dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm bg-emerald-500 text-white shadow-md ring-2 ring-emerald-300'; }
                 if (borrowReturnDate === dateStr) { dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm bg-teal-500 text-white shadow-md ring-2 ring-teal-300'; }
                 if (borrowStartDate && borrowReturnDate) {
                     const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
-                    if (dateObj > start && dateObj < end) { dayDiv.className += ' bg-emerald-100'; }
+                    if (dateObj > start && dateObj < end) { dayDiv.className += isDark ? ' bg-emerald-800 text-emerald-200' : ' bg-emerald-100'; }
                 }
                 dayDiv.textContent = day;
                 grid.appendChild(dayDiv);
+
             }
         }
 
