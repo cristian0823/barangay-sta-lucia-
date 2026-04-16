@@ -553,6 +553,13 @@
 
             document.getElementById('password').addEventListener('input', function (e) {
                 checkPasswordStrength(e.target.value);
+                const confirmVal = document.getElementById('confirmPassword').value;
+                const err = document.getElementById('confirmError');
+                if (confirmVal && e.target.value !== confirmVal) {
+                    err.classList.remove('hidden');
+                } else {
+                    err.classList.add('hidden');
+                }
             });
 
             let usernameDebounceTimer;
