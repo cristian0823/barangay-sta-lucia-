@@ -953,7 +953,7 @@
                         <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
                     </div>
                     <div id="borrowCalendarGrid" class="grid grid-cols-7 gap-1.5"></div>
-                    <div class="flex flex-wrap justify-between items-center mt-6 p-3 bg-white rounded-xl border border-gray-100 shadow-sm text-xs font-medium text-gray-600">
+                    <div class="flex flex-wrap justify-between items-center mt-6 p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 shadow-sm text-xs font-medium text-gray-600 dark:text-gray-300">
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></div> Available</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-100 border border-red-300"></div> Unavailable</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-indigo-500 border border-indigo-600"></div> Selected</div>
@@ -962,33 +962,33 @@
                 <!-- Right Column: Professional Form -->
                 <div class="w-full lg:w-1/2 p-6 flex flex-col">
                     <!-- Date Display -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-5 mb-6 relative overflow-visible">
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
-                        <h5 class="text-xs sm:text-sm font-bold text-emerald-800 mb-6 flex items-center gap-2 relative z-10 w-full break-words">
+                        <h5 class="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-6 flex items-center gap-2 relative z-10 w-full break-words">
                             <span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">📅</span> Selected Borrowing Period
                         </h5>
                         <div class="flex items-center justify-between gap-4 relative z-10 mt-2">
                             <div class="flex-1 text-center">
-                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 font-bold mb-1">Borrow Date</div>
-                                <div class="bg-white rounded-xl py-3 px-2 shadow-sm border border-emerald-100">
-                                    <div class="text-2xl font-extrabold text-emerald-600" id="dispStartDateDay">--</div>
-                                    <div class="text-xs text-gray-500" id="dispStartDateMonth">Select date</div>
+                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Borrow Date</div>
+                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-emerald-100 dark:border-gray-600">
+                                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="dispStartDateDay">--</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400" id="dispStartDateMonth">Select date</div>
                                 </div>
                             </div>
                             <div class="flex flex-col items-center">
-                                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center"><span class="text-emerald-600 text-xl">→</span></div>
-                                <div class="text-xs font-bold text-emerald-600 mt-1" id="borrowDuration">0 days</div>
+                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center"><span class="text-emerald-600 dark:text-emerald-300 text-xl">→</span></div>
+                                <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="borrowDuration">0 days</div>
                             </div>
                             <div class="flex-1 text-center">
-                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 font-bold mb-1">Return Date</div>
-                                <div class="bg-white rounded-xl py-3 px-2 shadow-sm border border-emerald-100">
-                                    <div class="text-2xl font-extrabold text-emerald-600" id="dispReturnDateDay">--</div>
-                                    <div class="text-xs text-gray-500" id="dispReturnDateMonth">Select date</div>
+                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Return Date</div>
+                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-emerald-100 dark:border-gray-600">
+                                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="dispReturnDateDay">--</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400" id="dispReturnDateMonth">Select date</div>
                                 </div>
                             </div>
                         </div>
-                        <div id="dateRangeDisplay" class="mt-4 text-center text-sm font-medium text-emerald-700 bg-white/60 py-2 rounded-lg">Please select your borrowing dates from the calendar</div>
-                        <div class="mt-3 text-[11px] leading-relaxed text-emerald-700 bg-emerald-100/50 p-2.5 rounded-lg border border-emerald-200/50">
+                        <div id="dateRangeDisplay" class="mt-4 text-center text-sm font-medium text-emerald-700 dark:text-emerald-300 bg-white/60 dark:bg-gray-900/40 py-2 rounded-lg">Please select your borrowing dates from the calendar</div>
+                        <div class="mt-3 text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-300 bg-emerald-100/50 dark:bg-emerald-900/30 p-2.5 rounded-lg border border-emerald-200/50 dark:border-emerald-700">
                             <strong>Important:</strong> You must return the item exactly at the time you specified in the form. You have a <strong>+1 day extension</strong> to bring the item back.
                         </div>
                     </div>
@@ -1029,7 +1029,7 @@
                             <label class="form-label">Purpose</label>
                             <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..."></textarea>
                         </div>
-                        <div class="mt-2 text-[11px] leading-relaxed text-red-700 bg-red-50 p-2.5 rounded-lg border border-red-200 shadow-sm flex items-start gap-2">
+                        <div class="mt-2 text-[11px] leading-relaxed text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2.5 rounded-lg border border-red-200 dark:border-red-700 shadow-sm flex items-start gap-2">
                             <span class="text-base leading-none">⚠️</span>
                             <div>
                                 <strong>Reminder:</strong> If you break the item or equipment, you will pay or replace it.
