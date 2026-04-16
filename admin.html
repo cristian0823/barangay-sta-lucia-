@@ -4342,7 +4342,10 @@
                     <td>${roleBadge}</td>
                     <td onclick="event.stopPropagation()">
                         ${!isMe && u.role !== 'admin' ? `
-                            <button class="btn btn-smaller" style="background-color:#fbbf24; color:white; padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; margin-right:5px; border:none; cursor:pointer;" onclick="openSuspendModal(${u.id}, '${u.username}', ${u.offense_count || 0})">Suspend</button>
+                            ${isSuspended
+                                ? `<button class="btn btn-smaller" style="background-color:#10b981; color:white; padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; margin-right:5px; border:none; cursor:pointer;" onclick="liftSuspension(${u.id}, '${u.username}')">✅ Lift Suspension</button>`
+                                : `<button class="btn btn-smaller" style="background-color:#fbbf24; color:white; padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; margin-right:5px; border:none; cursor:pointer;" onclick="openSuspendModal(${u.id}, '${u.username}', ${u.offense_count || 0})">🔒 Suspend</button>`
+                            }
                             <button class="btn btn-smaller btn-danger" style="padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; border:none; cursor:pointer;" onclick="adminDeleteUserConfirm(${u.id}, '${u.username}')">Delete</button>
                         ` : ''}
                     </td>
@@ -4388,6 +4391,22 @@
                 showAlert(result.message, result.success ? 'success' : 'error');
                 if (result.success) {
                     loadUsers(); 
+                }
+            }
+
+            async function liftSuspension(userId, username) {
+                if (!await showConfirmModal(`Remove the suspension for "${username}"? They will be able to log in immediately.`, 'Lift Suspension', 'Yes, Lift Ban', 'Cancel', 'info')) return;
+                try {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({ suspended_until: null })
+                        .eq('id', userId);
+                    if (error) throw error;
+                    await logActivity('Suspension Lifted', `Admin lifted suspension for user: ${username}`);
+                    showAlert(`Suspension for "${username}" has been removed.`, 'success');
+                    loadUsers();
+                } catch (err) {
+                    showAlert('Failed to lift suspension: ' + err.message, 'error');
                 }
             }
 
