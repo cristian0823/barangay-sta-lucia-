@@ -977,8 +977,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label>🏠 Address / Purok</label>
+                            <label>Address / Purok</label>
                             <input type="text" id="borrowerAddress" placeholder="e.g. Purok 3, Brgy. Sta. Lucia" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" id="borrowerPhone" placeholder="e.g. 09XX-XXX-XXXX" required>
                         </div>
 
                         <!-- Purpose -->
@@ -1096,6 +1101,13 @@
                     showToast('Return date must be after borrow date', 'error');
                     return;
                 }
+                // Enforce 14-day max borrowing period
+                const maxReturn = new Date(borrowStartDate);
+                maxReturn.setDate(maxReturn.getDate() + 14);
+                if (new Date(dateStr) > maxReturn) {
+                    showToast('Maximum borrowing period is 14 days', 'error');
+                    return;
+                }
                 borrowEndDate  = dateStr;
                 selectingStart = true;
                 updateDRSummary();
@@ -1150,14 +1162,14 @@
                     <div class="equip-card ${ok ? 'available' : 'unavailable'}">
                         <div class="equip-card-header">
                             <span class="equip-icon">${item.icon}</span>
-                            <span class="equip-avail">${item.available}<small>/${item.quantity}</small></span>
+                            <span class="equip-avail">${item.available}<small style="font-size:11px;color:var(--muted);"> avail</small></span>
                         </div>
                         <div class="equip-name">${item.name}</div>
                         <div class="equip-desc">${item.description || ''}</div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width:${pct}%;background:${color};"></div>
                         </div>
-                        <div class="equip-avail-text">${item.available} available</div>
+                        <div class="equip-avail-text">Available: ${item.available}</div>
                         <button class="btn-request ${ok ? 'active' : 'disabled'}"
                             ${!ok ? 'disabled' : `onclick="openModal(${item.id})"`}>
                             ${ok ? '📝 Request Equipment' : '❌ Not Available'}
@@ -1187,10 +1199,11 @@
             document.getElementById('borrowQty').max = item.available;
             document.getElementById('borrowQty').value = 1;
 
-            // Reset form fields
+            // Reset form fields — auto-fill from logged-in user
             document.getElementById('borrowPurpose').value = '';
-            document.getElementById('borrowerName').value = '';
-            document.getElementById('borrowerAddress').value = '';
+            document.getElementById('borrowerName').value    = currentUser.fullName || currentUser.full_name || '';
+            document.getElementById('borrowerAddress').value = currentUser.address || '';
+            document.getElementById('borrowerPhone').value   = currentUser.phone || currentUser.contactNumber || currentUser.contact_number || '';
 
             // Reset calendar
             borrowStartDate = null;
@@ -1253,7 +1266,7 @@
             btn.disabled = true;
             btn.textContent = 'Submitting...';
 
-            const purposeFull = `${purpose} | Borrower: ${fullName} | Address: ${address}`;
+            const purposeFull = `${purpose} | Borrower: ${fullName} | Address: ${address} | Contact: ${document.getElementById('borrowerPhone').value.trim()}`;
             const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, purposeFull);
             if (result.success) {
                 showToast(result.message, 'success');

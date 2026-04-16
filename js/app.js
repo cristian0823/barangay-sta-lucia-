@@ -837,9 +837,6 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available right now` };
 
-        // DO NOT deduct available count immediately upon request. Handled during approval RPC.
-
-
         // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
         const { data: userRowB } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
         const resolvedUserIdB = userRowB ? userRowB.id : user.id;
@@ -857,7 +854,10 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         }]);
 
         if (error) return { success: false, message: error.message };
-        
+
+        // Immediately deduct available stock — first-come, first-served reservation
+        await supabase.from('equipment').update({ available: item.available - quantity }).eq('id', equipmentId);
+
         await logActivity('Borrow Request', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
         await addNotification('admin', 'borrow', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
@@ -895,10 +895,11 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         if (item.available < quantity) return { success: false, message: `Only ${item.available} ${item.name} available right now` };
 
-        // Update available count strictly upon approval, not now.
+        // Immediately deduct available stock — first-come, first-served reservation
+        item.available -= quantity;
+        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
 
         // Add borrowing record
-        // borrowings array already fetched above
         const newBorrowing = {
             id: Date.now(),
             userId: user.id,
@@ -1007,11 +1008,10 @@ async function approveEquipmentRequest(borrowingId) {
         targetUserId = rec?.user_id;
         equipmentName = rec?.equipment;
 
-        // Use RPC to ensure stock is deducted atomically
-        const { data, error } = await supabase.rpc('approve_equipment_request', { borrowing_id: borrowingId, admin_user_id: user.id });
+        // Stock already deducted on request submit — just update status
+        const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
-        if (data && !data.success) return data;
-        
+
         if (targetUserId) {
             await supabase.from('user_notifications').insert([{
                 user_id: targetUserId,
@@ -1024,7 +1024,7 @@ async function approveEquipmentRequest(borrowingId) {
         }
 
         await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
-        return data || { success: true, message: 'Status updated to approved' };
+        return { success: true, message: 'Status updated to approved' };
     } else {
         // Local fallback
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
@@ -1033,15 +1033,7 @@ async function approveEquipmentRequest(borrowingId) {
 
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Request is not pending.' };
 
-        // Deduct stock strictly on approval
-        const equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
-        const itemIndex = equipment.findIndex(e => e.name === borrowings[index].equipment);
-        if (itemIndex !== -1) {
-            if (equipment[itemIndex].available < borrowings[index].quantity) return { success: false, message: 'Not enough equipment available to approve this.' };
-            equipment[itemIndex].available -= borrowings[index].quantity;
-            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-        }
-
+        // Stock already deducted on request submit — just update status
         borrowings[index].status = 'approved';
         targetUserId = borrowings[index].userId;
         equipmentName = borrowings[index].equipment;
@@ -1151,7 +1143,13 @@ async function rejectEquipmentRequest(borrowingId, reason) {
 
         const { error } = await supabase.from('borrowings').update({ status: 'rejected', rejection_reason: reason }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
-        
+
+        // Restore reserved stock
+        if (borrowing.equipment_id) {
+            const { data: eq } = await supabase.from('equipment').select('available').eq('id', borrowing.equipment_id).single();
+            if (eq) await supabase.from('equipment').update({ available: eq.available + borrowing.quantity }).eq('id', borrowing.equipment_id);
+        }
+
         // Notify the user about rejection
         if (borrowing && borrowing.user_id) {
             await supabase.from('user_notifications').insert([{
@@ -1176,6 +1174,14 @@ async function rejectEquipmentRequest(borrowingId, reason) {
         borrowings[index].rejection_reason = reason;
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
+        // Restore reserved stock
+        const localEquip = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        const eqIdx = localEquip.findIndex(e => e.name === borrowings[index].equipment);
+        if (eqIdx !== -1) {
+            localEquip[eqIdx].available += borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(localEquip));
+        }
+
         logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to rejected` };
     }
@@ -1192,7 +1198,11 @@ async function cancelBorrowingRequest(borrowingId) {
         if (!borrowing) return { success: false, message: 'Request not found' };
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // No need to restore stock since it was never deducted
+        // Restore reserved stock
+        if (borrowing.equipment_id) {
+            const { data: eq } = await supabase.from('equipment').select('available').eq('id', borrowing.equipment_id).single();
+            if (eq) await supabase.from('equipment').update({ available: eq.available + borrowing.quantity }).eq('id', borrowing.equipment_id);
+        }
         await supabase.from('borrowings').delete().eq('id', borrowingId);
         await logActivity('Borrow Cancelled', `User ${user.fullName || user.username} cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
@@ -1203,7 +1213,15 @@ async function cancelBorrowingRequest(borrowingId) {
         if (index === -1) return { success: false, message: 'Request not found' };
         if (borrowings[index].status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
-        // No need to restore local stock since it was never deducted
+        // Restore reserved stock
+        const localEquip2 = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
+        const eqIdx2 = localEquip2.findIndex(e => e.name === borrowings[index].equipment);
+        if (eqIdx2 !== -1) {
+            localEquip2[eqIdx2].available += borrowings[index].quantity;
+            localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(localEquip2));
+        }
+        borrowings.splice(index, 1);
+        localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
         return { success: true, message: 'Request cancelled successfully' };
     }
 }
@@ -1728,7 +1746,8 @@ async function checkTimeOverlap(date, venue, startTime, endTime, ignoreBookings 
                 if (venue === 'all' || b.venue === venue || b.venueName === venueLabelCheck) {
                     let tRange = b.timeRange || b.time; 
                     if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-                    let [sTime, eTime] = tRange.split(' – ').map(s => s.trim());
+                    const separator = tRange.includes(' – ') ? ' – ' : ' - ';
+                    let [sTime, eTime] = tRange.split(separator).map(s => s.trim());
                     if (!eTime) eTime = sTime; 
                     const eStart = timeToMinutes(sTime);
                     const eEnd = timeToMinutes(eTime);
@@ -1888,12 +1907,17 @@ async function updateCourtBooking(bookingId, updates) {
     if (!startTime) {
          let tRange = booking.timeRange || booking.time; 
          if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-         const parts = tRange.split(' – ').map(s => s.trim());
+         // Fallback to normal hyphen if en-dash isn't found
+         const separator = tRange.includes(' – ') ? ' – ' : ' - ';
+         const parts = tRange.split(separator).map(s => s.trim());
          startTime = parts[0];
          endTime = parts[1] || '';
     }
     
-    const overlapCheck = await checkTimeOverlap(booking.date, currentVenue, startTime, endTime, false, bookingId);
+    // Use the updated date, or fallback to existing date
+    const checkDate = updates.date || booking.date;
+
+    const overlapCheck = await checkTimeOverlap(checkDate, currentVenue, startTime, endTime, false, bookingId);
     if (!overlapCheck.success) return overlapCheck;
 
     const combinedTime = endTime ? `${venueLabel} | ${startTime} – ${endTime}` : `${venueLabel} | ${startTime}`;
@@ -1901,6 +1925,7 @@ async function updateCourtBooking(bookingId, updates) {
     if (supabaseAvailable) {
         const payload = { time: combinedTime, venue: currentVenue };
         if (updates.purpose !== undefined) payload.purpose = updates.purpose;
+        if (updates.date !== undefined) payload.date = updates.date;
 
         const { error } = await supabase.from('court_bookings').update(payload).eq('id', bookingId);
         if (error) return { success: false, message: error.message };
@@ -1916,6 +1941,7 @@ async function updateCourtBooking(bookingId, updates) {
         bookings[index].venueName = venueLabel;
         if (updates.purpose !== undefined) bookings[index].purpose = updates.purpose;
         if (updates.venue !== undefined) bookings[index].venue = updates.venue;
+        if (updates.date !== undefined) bookings[index].date = updates.date;
 
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
         logActivity('Court Booking Updated', `Local User ${user.fullName || user.username} updated their booking for ${combinedTime}`);
@@ -2730,11 +2756,20 @@ async function updateUserProfile(updates) {
     }
 
     // Update current session locally
-    const updatedUser = { ...user, ...updates };
+    const updatedUser = { ...user };
+    if (updates.fullName) updatedUser.full_name = updates.fullName;
+    if (updates.email) updatedUser.email = updates.email;
+    if (updates.phone) updatedUser.phone = updates.phone;
+    if (updates.address) updatedUser.address = updates.address;
+
     if (localStorage.getItem('currentUser')) {
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     } else {
         sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    }
+    // Also update window.user which is often used in the UI
+    if (window.user) {
+        window.user = updatedUser;
     }
 
     return { success: true, message: 'Profile updated successfully' };

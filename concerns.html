@@ -506,30 +506,10 @@
     </nav>
 
     <div class="main">
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card yellow">
-                <div class="num" id="pendingCount">0</div>
-                <div class="label">⏳ Pending</div>
-            </div>
-            <div class="stat-card blue">
-                <div class="num" id="progressCount">0</div>
-                <div class="label">🔄 In Progress</div>
-            </div>
-            <div class="stat-card green">
-                <div class="num" id="resolvedCount">0</div>
-                <div class="label">✅ Resolved</div>
-            </div>
-            <div class="stat-card red">
-                <div class="num" id="rejectedCount">0</div>
-                <div class="label">❌ Rejected</div>
-            </div>
-        </div>
-
         <!-- Submit Concern Form -->
         <div class="card">
             <div class="card-header">
-                <h2>📋 Submit a Concern</h2>
+                <h2>Submit a Concern</h2>
             </div>
             <div class="card-body">
                 <form id="concernForm">
@@ -561,30 +541,6 @@
                                 required></textarea>
                         </div>
                     </div>
-                    <div style="margin-top: 20px;">
-                        <button type="submit" class="btn-submit">📤 Submit Concern</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- My Concerns List -->
-        <div class="card">
-            <div class="card-header">
-                <h2>📁 My Submitted Concerns</h2>
-                <button onclick="loadMyConcerns()"
-                    style="background:none;border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🔄
-                    Refresh</button>
-            </div>
-            <div class="card-body" style="padding: 16px;">
-                <div id="concernsList">
-                    <div class="empty-state">
-                        <div class="icon">📋</div>
-                        <p>Loading your concerns...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="toast"></div>
@@ -611,7 +567,7 @@
 
         // Load data on page load
         (async function init() {
-            await loadMyConcerns();
+            // Setup complete
         })();
 
         // Submit concern form
@@ -619,7 +575,7 @@
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.textContent = '⏳ Submitting...';
+            btn.textContent = 'Submitting...';
 
             const result = await submitConcern(
                 document.getElementById('concernCategory').value,
@@ -629,92 +585,12 @@
             );
 
             btn.disabled = false;
-            btn.textContent = '📤 Submit Concern';
+            btn.textContent = 'Submit Concern';
 
             if (result.success) {
                 showToast('Concern submitted successfully!', 'success');
                 this.reset();
-                await loadMyConcerns();
-            } else {
-                showToast(result.message, 'error');
-            }
         });
-
-        // Get status badge HTML
-        function getStatusBadgeHtml(status) {
-            const map = {
-                'pending': ['badge-pending', '⏳ Pending'],
-                'in-progress': ['badge-progress', '🔄 In Progress'],
-                'resolved': ['badge-resolved', '✅ Resolved'],
-                'rejected': ['badge-rejected', '❌ Rejected'],
-            };
-            const [cls, label] = map[status] || ['badge-pending', status];
-            return `<span class="badge ${cls}">${label}</span>`;
-        }
-
-        // Load and render my concerns
-        async function loadMyConcerns() {
-            const concerns = await getMyConcerns();
-            const container = document.getElementById('concernsList');
-            updateStats(concerns);
-
-            if (!concerns || concerns.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="icon">📋</div><p>You haven't submitted any concerns yet.</p></div>`;
-                return;
-            }
-
-            const sorted = [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            container.innerHTML = sorted.map(c => `
-                <div class="concern-item">
-                    <div class="concern-item-header">
-                        <div>
-                            <div class="concern-title">${c.title}</div>
-                            <div class="concern-meta">
-                                <span class="concern-category">${c.category}</span>
-                                <span>📍 ${c.address || 'N/A'}</span>
-                                <span>📅 ${formatDate(c.createdAt)}</span>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:flex-start;gap:8px;flex-shrink:0;">
-                            ${getStatusBadgeHtml(c.status)}
-                            ${c.status === 'pending' ? `<button class="btn-delete" onclick="handleDelete(${c.id})">🗑 Delete</button>` : ''}
-                        </div>
-                    </div>
-                    <div class="concern-desc">${c.description}</div>
-                    ${c.assignedTo ? `<div class="concern-assigned">👤 Assigned to: <strong>${c.assignedTo}</strong></div>` : ''}
-                    ${c.response ? `
-                        <div class="concern-reply" style="margin-top:12px;">
-                            <p><strong>🏛️ Barangay Response:</strong></p>
-                            <p style="margin-top:6px;">${c.response}</p>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        // Update stats
-        function updateStats(concerns) {
-            const pending = concerns.filter(c => c.status === 'pending').length;
-            const progress = concerns.filter(c => c.status === 'in-progress').length;
-            const resolved = concerns.filter(c => c.status === 'resolved').length;
-            const rejected = concerns.filter(c => c.status === 'rejected').length;
-            document.getElementById('pendingCount').textContent = pending;
-            document.getElementById('progressCount').textContent = progress;
-            document.getElementById('resolvedCount').textContent = resolved;
-            document.getElementById('rejectedCount').textContent = rejected;
-        }
-
-        // Delete concern
-        async function handleDelete(concernId) {
-            if (!await showConfirmModal('Delete this concern? This cannot be undone.', 'Delete Concern', 'Yes, Delete', 'Cancel', 'danger')) return;
-            const result = await deleteConcern(concernId);
-            if (result.success) {
-                showToast('Concern deleted', 'success');
-                await loadMyConcerns();
-            } else {
-                showToast(result.message, 'error');
-            }
-        }
     </script>
 </body>
 

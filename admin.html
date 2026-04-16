@@ -2073,8 +2073,12 @@
         [data-theme="dark"] .mobile-sidebar-nav button { color: #94a3b8; border-bottom-color: #2d3148; }
         [data-theme="dark"] .mobile-sidebar-nav button:hover { background: #232736; color: #e2e8f0; }
 
-        /* Calendar */
-        [data-theme="dark"] #adminCalendarGrid > div { filter: brightness(0.85); }
+        /* Calendar — do NOT use filter:brightness (kills text legibility); use explicit class overrides instead */
+        [data-theme="dark"] #adminCalendarGrid > div { filter: none; }
+        [data-theme="dark"] #adminCalendarGrid .cal-box-available { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+        [data-theme="dark"] #adminCalendarGrid .cal-box-booked    { background: #3b0f0f !important; border-color: #7f1d1d !important; color: #fca5a5 !important; }
+        [data-theme="dark"] #adminCalendarGrid .cal-box-event     { background: #6d28d9 !important; border-color: #5b21b6 !important; color: #ffffff   !important; }
+        [data-theme="dark"] #adminCalendarGrid .cal-box-past      { background: #111827 !important; border-color: #1f2937 !important; color: #4b5563   !important; cursor: not-allowed; }
 
         /* ── DARK MODE — Extra overrides for inline-style white elements ── */
 

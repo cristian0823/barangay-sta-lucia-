@@ -401,9 +401,10 @@
                 <p>Already have an account? <a href="login.html">Sign in</a></p>
             </div>
         </div>
+        
     </div>
 
-    <!-- Toast -->
+    <!-- Toast Notification -->
     <div id="toast"></div>
 
     <!-- Terms Modal -->
@@ -718,7 +719,13 @@
             const strength = checkPasswordStrength(password);
             if (strength < 4)              { showToast('Password does not meet requirements', 'error'); return; }
             if (password !== confirmPassword) { showToast('Passwords do not match', 'error'); return; }
-            if (!agreeTerms)               { showToast('Please agree to the Terms', 'error'); return; }
+            if (!agreeTerms) { showToast('Please agree to the Terms', 'error'); return; }
+
+            const submitBtn = document.querySelector('.btn-submit') || this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = 'Registering...';
+                submitBtn.disabled = true;
+            }
 
             const userData = {
                 fullName, firstName, middleInitial, lastName, username, email, phone, address,
@@ -733,6 +740,10 @@
                 setTimeout(() => { window.location.href = 'login.html'; }, 1500);
             } else {
                 showToast(result.message, 'error');
+                if (submitBtn) {
+                    submitBtn.innerHTML = 'Create Account';
+                    submitBtn.disabled = false;
+                }
             }
         });
     </script>

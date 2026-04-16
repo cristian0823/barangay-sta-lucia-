@@ -539,38 +539,31 @@
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true; btn.textContent = 'Signing in...';
 
-                // Call loginUser to authenticate but defer placing session in storage
+                // Call loginUser to authenticate
                 const result = await loginUser(username, password, rememberMe, { deferSession: true });
 
                 if (result.success) {
                     resetLoginAttempts();
                     btn.disabled = false; btn.textContent = 'Sign In';
 
-                    // ── TOTP check ──────────────────────────────────────
-                    const info = await fetchUserTOTPInfo(result.user.id);
                     const isAdmin = result.user.role === 'admin';
 
-                    if (isAdmin && !info.totp_enabled) {
-                        // Admin hasn't set up TOTP yet → force setup
-                        sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
-                        sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
-                        window.location.href = 'setup-totp.html';
-                        return;
+                    // TOTP check — only for non-admin users who voluntarily enabled it
+                    if (!isAdmin) {
+                        const info = await fetchUserTOTPInfo(result.user.id);
+                        if (info.totp_enabled) {
+                            showTOTPPanel(result.user, rememberMe);
+                            return;
+                        }
                     }
 
-                    if (info.totp_enabled) {
-                        // Has 2FA enabled → show step 2
-                        showTOTPPanel(result.user, rememberMe);
-                        return;
-                    }
-
-                    // No TOTP needed → commit deferred session now, then redirect
+                    // Commit session and redirect
                     if (rememberMe) {
                         localStorage.setItem('currentUser', JSON.stringify(result.user));
                     } else {
                         sessionStorage.setItem('currentUser', JSON.stringify(result.user));
                     }
-                    showToast('✅ Login successful! Redirecting...', 'success');
+                    showToast('Login successful! Redirecting...', 'success');
                     setTimeout(() => redirectToDashboard(), 1000);
                 } else {
                     btn.disabled = false; btn.textContent = 'Sign In';

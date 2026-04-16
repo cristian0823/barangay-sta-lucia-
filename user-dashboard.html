@@ -1260,15 +1260,17 @@
             </div>
             <form id="editCourtBookingForm" class="space-y-4">
                 <input type="hidden" id="editCourtBookingId">
-                <div class="bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-200 text-sm">
-                    <strong>Date:</strong> <span id="editCourtDateDisplay"></span><br>
-                    <span class="text-xs opacity-80">(Cancel and rebook to change dates)</span>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Venue</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Date</label>
+                        <input type="date" id="editCourtDate" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Venue</label>
                     <select id="editCourtVenue" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
                         <option value="basketball">🏀 Basketball Court</option>
                         <option value="multipurpose">🏢 Multi-Purpose Hall</option>
+                    </select>
                     </select>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -1404,10 +1406,13 @@
             document.getElementById('editCourtBookingId').value = record.id;
             
             const d = new Date(record.date);
-            document.getElementById('editCourtDateDisplay').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-            
+            const dateInput = document.getElementById('editCourtDate');
+            dateInput.value = record.date; // set YYYY-MM-DD
+            dateInput.min = new Date().toLocaleDateString('en-CA'); // enforce future date
+
             const venue = record.venue || (record.venueName && record.venueName.includes('Multi-Purpose') ? 'multipurpose' : 'basketball');
-            document.getElementById('editCourtVenue').value = venue;
+            // Remove emojis internally just in case UI had them previously
+            document.getElementById('editCourtVenue').value = venue.replace(/[\u2600-\u27BF\uD83C-\uDBFF\uDC00-\uDFFF\u200D]+/g, '').trim();
 
             const stSelect = document.getElementById('editCourtStartTime');
             const etSelect = document.getElementById('editCourtEndTime');
@@ -1443,6 +1448,7 @@
             e.preventDefault();
             const id = parseInt(document.getElementById('editCourtBookingId').value);
             const updates = {
+                date: document.getElementById('editCourtDate').value,
                 venue: document.getElementById('editCourtVenue').value,
                 time: document.getElementById('editCourtStartTime').value,
                 end_time: document.getElementById('editCourtEndTime').value,
@@ -2807,8 +2813,26 @@
             const container = document.getElementById('upcomingEventsContainer');
             const eventsRaw = await getEvents();
             const events = eventsRaw.filter(e => e.status === 'approved');
-            const today = new Date(); today.setHours(0,0,0,0);
-            const upcoming = events.filter(e => new Date(e.date + 'T00:00:00') >= today);
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('en-CA');
+            const nowMins = now.getHours() * 60 + now.getMinutes();
+            function _parseTimeMins(t) {
+                if (!t) return null;
+                const m24 = t.match(/^(\d{1,2}):(\d{2})$/);
+                const m12 = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+                if (m24) return parseInt(m24[1]) * 60 + parseInt(m24[2]);
+                if (m12) { let h = parseInt(m12[1]); const m = parseInt(m12[2]); if (m12[3].toUpperCase()==='PM'&&h<12) h+=12; if (m12[3].toUpperCase()==='AM'&&h===12) h=0; return h*60+m; }
+                return null;
+            }
+            const upcoming = events.filter(e => {
+                if (!e.date) return false;
+                if (e.date > todayStr) return true;
+                if (e.date < todayStr) return false;
+                // Today — only show if end_time hasn't passed
+                const endMins = _parseTimeMins(e.end_time || e.endTime);
+                if (endMins === null) return true;
+                return nowMins < endMins;
+            });
             if (upcoming.length === 0) { container.innerHTML = '<div class="col-span-full py-10 text-center"><p class="text-gray-500">No upcoming events.</p></div>'; return; }
             upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
             container.innerHTML = upcoming.map(e => {
@@ -2818,12 +2842,15 @@
                     '<h3 class="text-2xl font-black mb-1 line-clamp-2">' + e.title + '</h3>' +
                     '<p class="text-indigo-100 font-medium mb-4 text-sm flex items-center gap-1">📍 ' + e.location + '</p>' +
                     '<div class="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">' +
-                    '<div class="flex items-center gap-2 mb-2"><span class="text-xl">📅</span><span class="font-bold">' + formatDate(e.date) + '</span></div>' +
-                    '<div class="flex items-center gap-2 mb-2"><span class="text-xl">⏰</span><span class="font-bold">' + timeStr + '</span></div>' +
-                    '<div class="flex items-center gap-2"><span class="text-xl">👤</span><span class="text-sm">By ' + e.organizer + '</span></div>' +
+                    '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + formatDate(e.date) + '</span></div>' +
+                    '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + timeStr + '</span></div>' +
+                    '<div class="flex items-center gap-2"><span class="text-sm">By ' + e.organizer + '</span></div>' +
                     '</div></div>';
             }).join('');
         }
+
+        // Auto-remove expired events every 60 seconds
+        setInterval(loadEventsView, 60000);
 
 
         // ==========================================
