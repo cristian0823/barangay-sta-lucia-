@@ -629,6 +629,7 @@
     <!-- MOBILE SECTION TABS -->
     <div class="mobile-section-tabs" style="display:none; padding: 10px 14px 0;">
         <button class="mobile-section-tab active" onclick="showSection('profile'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👤 Profile</button>
+        <button class="mobile-section-tab" onclick="showSection('security'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">🔒 2FA</button>
         <button class="mobile-section-tab" onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">📊 System</button>
     </div>
 
@@ -641,6 +642,9 @@
             <nav class="sidebar-nav">
                 <button class="nav-item active" onclick="showSection('profile')" id="profileBtn">
                     <i class="bi bi-person-fill"></i> My Profile
+                </button>
+                <button class="nav-item" onclick="showSection('security')" id="securityBtn">
+                    <i class="bi bi-shield-lock-fill"></i> Security / 2FA
                 </button>
                 <button class="nav-item" onclick="showSection('system')" id="systemBtn">
                     <i class="bi bi-bar-chart-fill"></i> System Info
@@ -718,6 +722,40 @@
                                     <i class="bi bi-shield-lock"></i> Change Password
                                 </button>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECURITY / 2FA ── -->
+            <div id="security-section" class="hidden">
+                <div class="section-hero" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #059669 100%);">
+                    <div class="section-hero-content">
+                        <div class="section-hero-icon">🔒</div>
+                        <div>
+                            <div class="section-hero-title">Security & Two-Factor Authentication</div>
+                            <div class="section-hero-sub">Add extra protection to your admin account</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="max-width: 600px;">
+                    <div class="card-head">
+                        <div class="card-head-title"><i class="bi bi-shield-check"></i> Google Authenticator (TOTP)</div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#f9fafb; padding:16px; border-radius:10px; margin-bottom:20px; border:1px solid #e2e8f0;" class="sys-detail-item">
+                            <div>
+                                <div style="font-size:13px; color:var(--muted); margin-bottom:4px;">Status</div>
+                                <div id="totpStatusText" style="font-size:16px; font-weight:700;">Checking...</div>
+                            </div>
+                            <span id="totpStatusBadge" style="padding:6px 12px; border-radius:30px; font-size:12px; font-weight:700; background:#e2e8f0; color:#475569;">—</span>
+                        </div>
+                        <p style="color:var(--muted); font-size:14px; margin-bottom:24px; line-height:1.6;">
+                            When enabled, you'll need to enter a 6-digit code from the <strong>Google Authenticator</strong> app every time you log in.
+                        </p>
+                        <div id="totpActions">
+                            <!-- JS fills -->
                         </div>
                     </div>
                 </div>
@@ -819,6 +857,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/darkmode.js"></script>
+    <script src="js/otpauth.js"></script>
+    <script src="js/totp-handler.js"></script>
     <script src="js/app.js"></script>
     <script>
         function showToast(message, type = 'success') {
@@ -843,10 +883,13 @@
         }
 
         function showSection(section) {
-            ['profile', 'system'].forEach(s => {
-                document.getElementById(s + '-section').classList.toggle('hidden', s !== section);
-                document.getElementById(s + 'Btn').classList.toggle('active', s === section);
+            ['profile', 'security', 'system'].forEach(s => {
+                const sect = document.getElementById(s + '-section');
+                if(sect) sect.classList.toggle('hidden', s !== section);
+                const btn = document.getElementById(s + 'Btn');
+                if(btn) btn.classList.toggle('active', s === section);
             });
+            if (section === 'security') loadTOTPStatus();
         }
 
         async function loadUsers() {
@@ -951,6 +994,45 @@
             await loadSystemStats();
         }
         init();
+
+        // ── TOTP / 2FA logic ──
+        async function loadTOTPStatus() {
+            const actionsEl = document.getElementById('totpActions');
+            const statusText = document.getElementById('totpStatusText');
+            const statusBadge = document.getElementById('totpStatusBadge');
+            
+            const user = getCurrentUser();
+            if (!user) return;
+            const info = await fetchUserTOTPInfo(user.id);
+
+            if (info.totp_enabled) {
+                statusText.textContent  = 'Enabled';
+                statusBadge.style.background = '#d1fae5'; statusBadge.style.color = '#059669';
+                statusBadge.textContent = '✅ Active';
+                actionsEl.innerHTML = `
+                    <button onclick="disableTOTP()" class="btn-del" style="padding:10px 20px; font-weight:700;"><i class="bi bi-shield-x"></i> Disable Google Authenticator</button>
+                `;
+            } else {
+                statusText.textContent  = 'Not Enabled';
+                statusBadge.style.background = '#e2e8f0'; statusBadge.style.color = '#475569';
+                statusBadge.textContent = 'Not Set Up';
+                actionsEl.innerHTML = `
+                    <a href="setup-totp.html" class="btn-submit blue" style="text-decoration:none; display:inline-block; padding:10px 20px;"><i class="bi bi-qr-code"></i> Enable Google Authenticator</a>
+                `;
+            }
+        }
+
+        async function disableTOTP() {
+            if (!confirm('Are you sure you want to disable Google Authenticator? Your account will be less secure.')) return;
+            const user = getCurrentUser();
+            const result = await disableTOTPInDB(user.id);
+            if (result.success) {
+                showToast('Google Authenticator disabled', 'success');
+                await loadTOTPStatus();
+            } else {
+                showToast('Failed to disable 2FA: ' + result.message, 'error');
+            }
+        }
     </script>
 </body>
 </html>
