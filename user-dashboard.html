@@ -2417,8 +2417,22 @@
             const approvedEvents = events.filter(e => e.status === 'approved');
             const todayDateStr = new Date().toLocaleDateString('en-CA');
             const eventDates = {}; 
-            // Only filter by DATE (>= today), not by time — so today's events always show as violet
-            approvedEvents.filter(e => e.date >= todayDateStr).forEach(e => { eventDates[e.date] = e; });
+            // Filter events: skip past dates. For today, also skip events whose end time has already passed.
+            const nowForCalendar = new Date();
+            approvedEvents.filter(e => {
+                if (e.date < todayDateStr) return false;
+                if (e.date === todayDateStr) {
+                    const endTimeStr = e.end_time || e.time;
+                    if (endTimeStr) {
+                        const [h, m] = endTimeStr.split(':').map(Number);
+                        const eventEnd = new Date();
+                        eventEnd.setHours(h, m, 0, 0);
+                        if (eventEnd < nowForCalendar) return false; // already over
+                    }
+                }
+                return true;
+            }).forEach(e => { eventDates[e.date] = e; });
+
             const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' && b.status !== 'completed' && b.venue === selectedVenue);
             const bookedDates = venueBookings.map(b => b.date);
             grid.innerHTML = '';
@@ -2570,8 +2584,23 @@
 
             await refreshDsSchedule(dateStr, selectedVenue);
 
-            // Show event notice banner if there's an official event on this day
-            const evForDay = (await getEvents()).filter(ev => ev.date === dateStr && ev.status === 'approved');
+            // Show event notice banner if there's an official event on this day (and it hasn't ended yet)
+            const nowMs = Date.now();
+            const isToday = dateStr === new Date().toISOString().slice(0, 10);
+            const evForDay = (await getEvents()).filter(ev => {
+                if (ev.date !== dateStr || ev.status !== 'approved') return false;
+                // If selected date is today, hide events whose end time has already passed
+                if (isToday) {
+                    const endTimeStr = ev.end_time || ev.time;
+                    if (endTimeStr) {
+                        const [h, m] = endTimeStr.split(':').map(Number);
+                        const eventEnd = new Date();
+                        eventEnd.setHours(h, m, 0, 0);
+                        if (eventEnd < new Date()) return false; // event already over
+                    }
+                }
+                return true;
+            });
             let eventNoticeBanner = document.getElementById('dsEventNoticeBanner');
             if (!eventNoticeBanner) {
                 eventNoticeBanner = document.createElement('div');
@@ -2610,7 +2639,21 @@
                 b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' &&
                 (b.venue === venue || b.venueName === venueLabel)
             );
-            const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
+            const isToday2 = dateStr === new Date().toISOString().slice(0, 10);
+            const dayEvents = allEvents.filter(e => {
+                if (e.date !== dateStr || e.status !== 'approved') return false;
+                // If selected date is today, hide events whose end time has already passed
+                if (isToday2) {
+                    const endTimeStr = e.end_time || e.time;
+                    if (endTimeStr) {
+                        const [h, m] = endTimeStr.split(':').map(Number);
+                        const eventEnd = new Date();
+                        eventEnd.setHours(h, m, 0, 0);
+                        if (eventEnd < new Date()) return false;
+                    }
+                }
+                return true;
+            });
 
             const list = document.getElementById('dsScheduleList');
             const empty = document.getElementById('dsEmptyState');
