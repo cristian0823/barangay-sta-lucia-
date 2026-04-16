@@ -628,8 +628,7 @@
 
     <!-- MOBILE SECTION TABS -->
     <div class="mobile-section-tabs" style="display:none; padding: 10px 14px 0;">
-        <button class="mobile-section-tab active" onclick="showSection('users'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👥 Users</button>
-        <button class="mobile-section-tab" onclick="showSection('profile'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👤 Profile</button>
+        <button class="mobile-section-tab active" onclick="showSection('profile'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👤 Profile</button>
         <button class="mobile-section-tab" onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">📊 System</button>
     </div>
 
@@ -640,10 +639,7 @@
                 <span class="sidebar-label">Settings Menu</span>
             </div>
             <nav class="sidebar-nav">
-                <button class="nav-item active" onclick="showSection('users')" id="usersBtn">
-                    <i class="bi bi-people-fill"></i> User Management
-                </button>
-                <button class="nav-item" onclick="showSection('profile')" id="profileBtn">
+                <button class="nav-item active" onclick="showSection('profile')" id="profileBtn">
                     <i class="bi bi-person-fill"></i> My Profile
                 </button>
                 <button class="nav-item" onclick="showSection('system')" id="systemBtn">
@@ -656,50 +652,10 @@
         <main class="main">
             <div id="toast"></div>
 
-            <!-- ── USER MANAGEMENT ── -->
-            <div id="users-section">
-                <div class="section-hero">
-                    <div class="section-hero-content">
-                        <div class="section-hero-icon">👥</div>
-                        <div>
-                            <div class="section-hero-title">User Management</div>
-                            <div class="section-hero-sub">Manage registered residents in the system</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-head">
-                        <div class="card-head-title">
-                            <i class="bi bi-people"></i> Registered Users
-                        </div>
-                        <span class="users-count">
-                            <i class="bi bi-person"></i> <span id="totalUsers">0</span> Users
-                        </span>
-                    </div>
-                    <div style="overflow-x:auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Joined</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usersTable"></tbody>
-                        </table>
-                        <div id="noUsers" class="empty hidden">
-                            <i class="bi bi-people"></i>
-                            <p>No users found</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- ── MY PROFILE ── -->
-            <div id="profile-section" class="hidden">
+            <div id="profile-section">
                 <div class="section-hero">
                     <div class="section-hero-content">
                         <div class="section-hero-icon">👤</div>
@@ -887,7 +843,7 @@
         }
 
         function showSection(section) {
-            ['users', 'profile', 'system'].forEach(s => {
+            ['profile', 'system'].forEach(s => {
                 document.getElementById(s + '-section').classList.toggle('hidden', s !== section);
                 document.getElementById(s + 'Btn').classList.toggle('active', s === section);
             });
@@ -992,7 +948,6 @@
         }
 
         async function init() {
-            await loadUsers();
             await loadSystemStats();
         }
         init();
