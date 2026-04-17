@@ -112,6 +112,26 @@
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
         }
 
+        .btn-nav-admin {
+            padding: 9px 24px;
+            border-radius: 10px;
+            background: #064e3b;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav-admin:hover {
+            background: #065f46;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(6,78,59,0.35);
+        }
+
         /* HERO */
         .hero {
             background-image: linear-gradient(135deg, rgba(236,253,245,0.85) 0%, rgba(209,250,229,0.85) 40%, rgba(167,243,208,0.85) 100%), url('brgy.png');
@@ -794,8 +814,8 @@
                 </div>
             </a>
             <div class="nav-links">
-                <a href="login.html" class="btn-nav-outline">Login</a>
-                <a href="signup.html" class="btn-nav-fill">Register</a>
+                <a href="login.html?role=resident" class="btn-nav-outline">🪪 Resident Login</a>
+                <a href="login.html?role=admin" class="btn-nav-admin">🔐 Admin Login</a>
             </div>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
         </div>
@@ -814,8 +834,8 @@
                     the court, submit concerns, and stay
                     updated with community events.</p>
                 <div class="hero-cta">
-                    <a href="signup.html" class="btn-hero-primary">Access Services</a>
-                    <a href="login.html" class="btn-hero-secondary">Already have an account?</a>
+                    <a href="login.html?role=resident" class="btn-hero-primary">🪪 Resident Login</a>
+                    <a href="login.html?role=admin" class="btn-hero-secondary">🔐 Admin Login</a>
                 </div>
             </div>
             <div class="hero-cards">
@@ -882,19 +902,18 @@
             <div class="steps-grid">
                 <div class="step-card">
                     <div class="step-num">1</div>
-                    <h3>Create Your Account</h3>
-                    <p>Sign up with your name and basic information to get a free barangay resident account.</p>
+                    <h3>Get Your Barangay ID</h3>
+                    <p>Your Barangay ID Number is assigned by the admin. No registration needed — your account is created for you.</p>
                 </div>
                 <div class="step-card">
                     <div class="step-num">2</div>
-                    <h3>Login Securely</h3>
-                    <p>Log in and access your personalized dashboard where all your requests and services are managed.
-                    </p>
+                    <h3>Login with Your ID</h3>
+                    <p>Simply enter your Barangay ID Number on the Resident Login page to instantly access your personal dashboard.</p>
                 </div>
                 <div class="step-card">
                     <div class="step-num">3</div>
                     <h3>Use Barangay Services</h3>
-                    <p>Book equipment, submit concerns, schedule the court, and track everything in real-time.</p>
+                    <p>Borrow equipment, submit concerns, reserve the court, and stay updated with community events in real-time.</p>
                 </div>
             </div>
         </div>

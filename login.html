@@ -260,8 +260,8 @@
     <!-- Right Panel -->
     <div class="panel-right">
         <div class="form-box">
-            <h2 class="form-title">Welcome Back!</h2>
-            <p class="form-subtitle">Sign in to access barangay services</p>
+            <h2 class="form-title" id="loginFormTitle">Welcome Back!</h2>
+            <p class="form-subtitle" id="loginFormSubtitle">Sign in to access barangay services</p>
 
             <form id="loginForm">
                 <input type="hidden" id="csrfToken" name="csrfToken">
@@ -433,6 +433,33 @@
             if (params.get('suspended') === '1') {
                 const until = params.get('until') || 'a future date';
                 showToast(`🔒 Your account is suspended until ${until}.`, 'error');
+            }
+
+            // ── ROLE PRE-CONFIGURATION from ?role= param ──
+            const roleParam = params.get('role');
+            const titleEl = document.getElementById('loginFormTitle');
+            const subtitleEl = document.getElementById('loginFormSubtitle');
+            const usernameInput = document.getElementById('username');
+            const pwdField = document.getElementById('passwordField');
+            const pwdInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (roleParam === 'admin') {
+                // Admin mode: show password immediately, update labels
+                if (titleEl) titleEl.innerHTML = '🔐 Admin Login';
+                if (subtitleEl) subtitleEl.textContent = 'Sign in with your admin credentials';
+                if (usernameInput) {
+                    usernameInput.placeholder = 'Enter admin username (e.g. admin1)';
+                    usernameInput.value = 'admin';
+                }
+                if (pwdField) pwdField.classList.remove('hidden');
+                if (pwdInput) pwdInput.required = true;
+                if (loginBtn) loginBtn.style.background = '#064e3b';
+            } else if (roleParam === 'resident') {
+                // Resident mode: emphasize ID-only login
+                if (titleEl) titleEl.innerHTML = '🪪 Resident Login';
+                if (subtitleEl) subtitleEl.textContent = 'Enter your Barangay ID Number to continue';
+                if (usernameInput) usernameInput.placeholder = 'Enter your Barangay ID Number';
             }
 
             // Check if already logged in
