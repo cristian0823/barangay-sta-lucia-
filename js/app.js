@@ -254,17 +254,23 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         const { data: usersData, error } = await supabase
             .from('users')
             .select('*')
-            .eq('username', username);
+            .or(`barangay_id.eq.${username},username.eq.${username}`);
 
         let data = null;
         if (usersData && usersData.length > 0) {
-            const userMatch = usersData.find(u => u.password === password || u.password === hashedPassword);
-            if (userMatch) {
-                data = userMatch;
-                // Migrate plain text password to hash silently
-                if (userMatch.password === password && password !== hashedPassword) {
-                    await supabase.from('users').update({ password: hashedPassword }).eq('id', userMatch.id);
+            const userMatch = usersData[0];
+            const isAdmin = userMatch.role === 'admin' || userMatch.username.toLowerCase().startsWith('admin');
+            
+            if (isAdmin) {
+                if (userMatch.password === password || userMatch.password === hashedPassword) {
+                    data = userMatch;
+                    if (userMatch.password === password && password !== hashedPassword) {
+                        await supabase.from('users').update({ password: hashedPassword }).eq('id', userMatch.id);
+                    }
                 }
+            } else {
+                // Passwordless for residents
+                data = userMatch;
             }
         }
 
@@ -325,12 +331,19 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
 
     // Map legacy 'admin' handle to 'admin1' to prevent lockout
     const searchUsername = username === 'admin' ? 'admin1' : username;
-    const localHashedPassword = await hashPassword(password);
-    const user = users.find(u => u.username === searchUsername && (u.password === password || u.password === localHashedPassword));
-
-    if (user && user.password === password && password !== localHashedPassword) {
-        user.password = localHashedPassword;
-        localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+    const localHashedPassword = password ? await hashPassword(password) : null;
+    
+    let user = users.find(u => u.username === searchUsername || u.barangay_id === searchUsername);
+    if (user) {
+        const isAdmin = user.role === 'admin' || user.username.toLowerCase().startsWith('admin');
+        if (isAdmin) {
+            if (user.password !== password && user.password !== localHashedPassword) {
+                user = null;
+            } else if (user.password === password && password !== localHashedPassword) {
+                user.password = localHashedPassword;
+                localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+            }
+        }
     }
 
     if (user) {
@@ -477,6 +490,52 @@ async function sendPasswordResetOTP(email) {
     } catch (err) {
         console.error('EmailJS direct SDK error:', err);
         return { success: false, message: 'Provider error. Please check EmailJS configuration.' };
+    }
+}
+
+// ── EMAIL NOTIFICATION HELPER ──
+// Sends a targeted email to a specific resident using the existing EmailJS template.
+// templateParams: { to_email, name, title, message, details }
+async function sendEmailNotification(templateParams) {
+    try {
+        await new Promise((resolve, reject) => {
+            if (window.emailjs) return resolve();
+            const script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+        emailjs.init({ publicKey: "DPEG6BGMwO8ExGg_e" });
+        await emailjs.send("service_th96vue", "template_l72erqi", {
+            email: templateParams.to_email,
+            name: templateParams.name || 'Resident',
+            title: templateParams.title || 'Barangay Notification',
+            message: templateParams.message || '',
+            details: templateParams.details || '',
+            Company_Name: "Barangay Sta. Lucia"
+        });
+        return { success: true };
+    } catch (err) {
+        console.warn('sendEmailNotification failed:', err);
+        return { success: false };
+    }
+}
+
+// Broadcast an email to ALL residents — used for new event announcements
+async function broadcastEmailToAllResidents(title, message, details) {
+    try {
+        const supabaseAvail = await isSupabaseAvailable();
+        if (!supabaseAvail) return;
+        const { data: users } = await supabase.from('users').select('email, full_name').eq('role', 'user').not('email', 'is', null);
+        if (!users) return;
+        for (const u of users) {
+            if (u.email) {
+                await sendEmailNotification({ to_email: u.email, name: u.full_name || 'Resident', title, message, details });
+            }
+        }
+    } catch(e) {
+        console.warn('broadcastEmailToAllResidents error:', e);
     }
 }
 

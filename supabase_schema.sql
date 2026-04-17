@@ -1,5 +1,7 @@
 -- ============================================================
 -- Barangay Sta. Lucia — Supabase Complete Setup + Fix
+-- Updated: Architecture Overhaul (Reservations, Batch Upload,
+--          Concern Tracking, Event Capacity)
 -- 
 -- HOW TO RUN:
 --   1. Go to your Supabase project dashboard
@@ -20,11 +22,14 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE,
     role VARCHAR(50) DEFAULT 'user',
     avatar VARCHAR(10),
     offense_count INTEGER DEFAULT 0,
     suspension_end TIMESTAMP WITH TIME ZONE,
+    barangay_id VARCHAR(50) UNIQUE,
+    phone VARCHAR(50),
+    address TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
@@ -67,6 +72,7 @@ CREATE TABLE IF NOT EXISTS concerns (
     date DATE NOT NULL,
     reply TEXT,
     image_url TEXT,
+    is_read BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
@@ -78,10 +84,13 @@ CREATE TABLE IF NOT EXISTS events (
     end_time VARCHAR(100),
     location VARCHAR(255),
     organizer VARCHAR(255),
+    description TEXT,
+    capacity INTEGER DEFAULT 0,
     status VARCHAR(50) DEFAULT 'pending'
 );
 
-CREATE TABLE IF NOT EXISTS court_bookings (
+-- facility_reservations (formerly court_bookings)
+CREATE TABLE IF NOT EXISTS facility_reservations (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     date DATE NOT NULL,
@@ -89,6 +98,7 @@ CREATE TABLE IF NOT EXISTS court_bookings (
     purpose TEXT,
     status VARCHAR(50) DEFAULT 'pending',
     admin_comment TEXT,
+    cancellation_reason TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
@@ -110,6 +120,16 @@ CREATE TABLE IF NOT EXISTS user_notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+-- Event participants (for capacity tracking)
+CREATE TABLE IF NOT EXISTS event_participants (
+    id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    status VARCHAR(50) DEFAULT 'registered',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    UNIQUE(event_id, user_id)
+);
+
 -- ============================================================
 -- STEP 2: PATCH MISSING COLUMNS & CLEANUP (safe to re-run)
 -- ============================================================
@@ -118,8 +138,10 @@ ALTER TABLE equipment ADD COLUMN IF NOT EXISTS broken INTEGER DEFAULT 0;
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT false;
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
+ALTER TABLE concerns ADD COLUMN IF NOT EXISTS is_read BOOLEAN DEFAULT false;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS barangay_id VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS login_fail_count INTEGER DEFAULT 0;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMPTZ DEFAULT NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS offense_count INTEGER DEFAULT 0;
@@ -129,12 +151,22 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN DEFAULT false;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
 ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
-ALTER TABLE court_bookings ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS description TEXT;
+-- Add unique constraint on barangay_id if not already present
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'users_barangay_id_key'
+    ) THEN
+        ALTER TABLE users ADD CONSTRAINT users_barangay_id_key UNIQUE (barangay_id);
+    END IF;
+END $$;
 
 -- Remove redundant username columns, keeping relations only
 ALTER TABLE borrowings DROP COLUMN IF EXISTS user_name;
 ALTER TABLE concerns DROP COLUMN IF EXISTS user_name;
-ALTER TABLE court_bookings DROP COLUMN IF EXISTS user_name;
+ALTER TABLE facility_reservations DROP COLUMN IF EXISTS user_name;
 ALTER TABLE activity_log DROP COLUMN IF EXISTS admin_username;
 
 
@@ -151,9 +183,10 @@ ALTER TABLE equipment ENABLE ROW LEVEL SECURITY;
 ALTER TABLE borrowings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE concerns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE court_bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE facility_reservations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE event_participants ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if any to prevent errors
 -- Users
@@ -195,7 +228,12 @@ DROP POLICY IF EXISTS "Enable read access for users own concerns" ON concerns;
 DROP POLICY IF EXISTS "Enable insert for authenticated users" ON concerns;
 DROP POLICY IF EXISTS "Enable full access for admins" ON concerns;
 
--- Court Bookings
+-- Facility Reservations (formerly Court Bookings)
+DROP POLICY IF EXISTS "Enable read access for all users" ON facility_reservations;
+DROP POLICY IF EXISTS "Enable insert for all users" ON facility_reservations;
+DROP POLICY IF EXISTS "Enable update for all users" ON facility_reservations;
+DROP POLICY IF EXISTS "Enable delete for all users" ON facility_reservations;
+-- Also drop old court_bookings policies if table was just renamed
 DROP POLICY IF EXISTS "Enable read access for all users" ON court_bookings;
 DROP POLICY IF EXISTS "Enable insert for all users" ON court_bookings;
 DROP POLICY IF EXISTS "Enable update for all users" ON court_bookings;
@@ -203,6 +241,12 @@ DROP POLICY IF EXISTS "Enable delete for all users" ON court_bookings;
 DROP POLICY IF EXISTS "Enable read access for users own bookings" ON court_bookings;
 DROP POLICY IF EXISTS "Enable insert for authenticated users" ON court_bookings;
 DROP POLICY IF EXISTS "Enable full access for admins" ON court_bookings;
+
+-- Event Participants
+DROP POLICY IF EXISTS "Enable read access for all users" ON event_participants;
+DROP POLICY IF EXISTS "Enable insert for all users" ON event_participants;
+DROP POLICY IF EXISTS "Enable update for all users" ON event_participants;
+DROP POLICY IF EXISTS "Enable delete for all users" ON event_participants;
 
 -- Activity Log
 DROP POLICY IF EXISTS "Enable read access for all users" ON activity_log;
@@ -245,11 +289,17 @@ CREATE POLICY "Enable insert for all users" ON concerns FOR INSERT WITH CHECK (t
 CREATE POLICY "Enable update for all users" ON concerns FOR UPDATE USING (true);
 CREATE POLICY "Enable delete for all users" ON concerns FOR DELETE USING (true);
 
--- Court Bookings Policies
-CREATE POLICY "Enable read access for all users" ON court_bookings FOR SELECT USING (true);
-CREATE POLICY "Enable insert for all users" ON court_bookings FOR INSERT WITH CHECK (true);
-CREATE POLICY "Enable update for all users" ON court_bookings FOR UPDATE USING (true);
-CREATE POLICY "Enable delete for all users" ON court_bookings FOR DELETE USING (true);
+-- Facility Reservations Policies
+CREATE POLICY "Enable read access for all users" ON facility_reservations FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users" ON facility_reservations FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON facility_reservations FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON facility_reservations FOR DELETE USING (true);
+
+-- Event Participants Policies
+CREATE POLICY "Enable read access for all users" ON event_participants FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users" ON event_participants FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON event_participants FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users" ON event_participants FOR DELETE USING (true);
 
 -- Activity Log Policies
 CREATE POLICY "Enable read access for all users" ON activity_log FOR SELECT USING (true);
@@ -464,8 +514,8 @@ CREATE INDEX IF NOT EXISTS idx_user_notifications_user_unread
     ON user_notifications(user_id, is_read)
     WHERE is_read = false;
 
--- Add admin_comment column to court_bookings (used when admin cancels a booking)
-ALTER TABLE court_bookings
+-- Add admin_comment column to facility_reservations
+ALTER TABLE facility_reservations
     ADD COLUMN IF NOT EXISTS admin_comment text;
 
 -- Enable realtime sync for notifications
