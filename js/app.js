@@ -624,7 +624,7 @@ async function logoutUser() {
     }
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }
 
 function redirectToDashboard() {
