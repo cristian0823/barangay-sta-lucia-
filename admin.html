@@ -2185,16 +2185,16 @@
     <div class="mobile-sidebar" id="mobileSidebar">
         <div class="mobile-sidebar-header">
             <span>Ã¢Å¡â„¢Ã¯Â¸Â Admin Menu</span>
-            <button class="mobile-sidebar-close" onclick="closeMobileSidebar()">Ã¢Å“â€¢</button>
+            <button class="mobile-sidebar-close" onclick="closeMobileSidebar()"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="mobile-sidebar-nav" id="mobileSidebarNav">
             <button onclick="mobileSwitchSection('court-bookings')">Ã°Å¸Ââ‚¬ Court Reservations</button>
      <button onclick="mobileSwitchSection('multipurpose-bookings')">Ã°Å¸ÂÂ¢ Multi-Purpose Hall</button>
-            <button onclick="mobileSwitchSection('requests')">Ã°Å¸â€œÂ¦ Equipment Requests</button>
-            <button onclick="mobileSwitchSection('concerns')">Ã°Å¸â€œâ€¹ Concerns</button>
-            <button onclick="mobileSwitchSection('events')">Ã°Å¸â€œâ€¦ Court Events</button>
-            <button onclick="mobileSwitchSection('equipment')">Ã°Å¸Âªâ€˜ Equipment</button>
-            <button onclick="mobileSwitchSection('reports')">Ã°Å¸â€œÅ  Reports</button>
+            <button onclick="mobileSwitchSection('requests')"><i class="bi bi-box-fill"></i> Equipment Requests</button>
+            <button onclick="mobileSwitchSection('concerns')"><i class="bi bi-megaphone-fill"></i> Concerns</button>
+            <button onclick="mobileSwitchSection('events')"><i class="bi bi-calendar-event-fill"></i> Court Events</button>
+            <button onclick="mobileSwitchSection('equipment')"><i class="bi bi-tools"></i> Equipment</button>
+            <button onclick="mobileSwitchSection('reports')"><i class="bi bi-file-earmark-bar-graph-fill"></i> Reports</button>
             <button onclick="mobileSwitchSection('activity-log')">Ã°Å¸â€œÂ Activity Log</button>
         </div>
     </div>
@@ -2386,11 +2386,11 @@
                                 </div>
                                 <div style="display:flex;flex-direction:column;gap:10px;">
                                     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a;">
-                                        <span style="font-size:13px;font-weight:600;color:#92400e;">Ã°Å¸â€œÂ¦ Equipment Requests</span>
+                                        <span style="font-size:13px;font-weight:600;color:#92400e;"><i class="bi bi-box-fill"></i> Equipment Requests</span>
                                         <span id="glancePendingReqs" style="font-weight:800;font-size:15px;color:#d97706;">Ã¢â‚¬â€</span>
                                     </div>
                                     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;">
-                                        <span style="font-size:13px;font-weight:600;color:#991b1b;">Ã°Å¸â€œâ€¹ Open Concerns</span>
+                                        <span style="font-size:13px;font-weight:600;color:#991b1b;"><i class="bi bi-megaphone-fill"></i> Open Concerns</span>
                                         <span id="glancePendingCons" style="font-weight:800;font-size:15px;color:#dc2626;">Ã¢â‚¬â€</span>
                                     </div>
                                     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;">
@@ -2640,7 +2640,7 @@
                                     <div style="padding:20px 24px 24px 24px; flex-grow:1; display:flex; flex-direction:column;">
 
                                         <!-- All Bookings List -->
-                                        <h3 style="font-size:14px;font-weight:700;color:var(--text, #1e293b);margin:0 0 10px;">Ã°Å¸â€œâ€¹ All Active Bookings & Events</h3>
+                                        <h3 style="font-size:14px;font-weight:700;color:var(--text, #1e293b);margin:0 0 10px;"><i class="bi bi-megaphone-fill"></i> All Active Bookings & Events</h3>
                                         <div id="adminAllBookingsList" style="display:flex;flex-direction:column;gap:8px;"></div>
                                     </div>
                                 </div>
@@ -2718,7 +2718,7 @@
                         <div class="modal-content" style="max-width:560px;">
                             <div class="modal-header">
                                 <h3>Ã°Å¸â€œÂ¤ Batch Upload Residents</h3>
-                                <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')">Ã¢Å“â€¢</button>
+                                <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')"><i class="bi bi-x-lg"></i></button>
                             </div>
                             <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Upload a CSV file with columns: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">barangay_id, full_name, email, phone, address</code></p>
                             
@@ -2939,7 +2939,7 @@
 
                                 <button onclick="clearLogFilters()" title="Clear all filters"
                                     style="padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">
-                                    Ã¢Å“â€¢ Clear
+                                    <i class="bi bi-x-lg"></i> Clear
                                 </button>
                             </div>
                             <div class="admin-tables" style="overflow-x: auto; padding: 0 24px 24px;">
@@ -3748,7 +3748,7 @@
                     
                     // Helper to check if time has passed
                     function isBookingTimePassed(dateStr, timeStr) {
-                        const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
+                        const todayStr = new Date().toLocaleDateString('en-CYYYY-MM-DD local
                         if (dateStr < todayStr) return true;
                         if (dateStr > todayStr) return false;
                         if (!timeStr) return false;
@@ -3770,8 +3770,7 @@
 
                     // For EVENTS: only hide if the date is strictly BEFORE today (not time-based)
                     // This ensures today's events always show as violet on the calendar
-                    const todayStr = new Date().toLocaleDateString('en-CA');
-                    _e.filter(e => e.status === 'approved' && e.date >= todayStr).forEach(e => {
+                    const todayStr = new Date().toLocaleDateString('en-C                _e.filter(e => e.status === 'approved' && e.date >= todayStr).forEach(e => {
                         eventDates[e.date] = eventDates[e.date] || [];
                         eventDates[e.date].push(e);
                     });
@@ -4740,7 +4739,7 @@
                     <div class="court-booking-card">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
                             <div>
-                                <h4 style="margin: 0; color: var(--dark); font-size: 16px; font-weight: 700;">Ã°Å¸â€œâ€¦ ${formatDate(booking.date)}</h4>
+                                <h4 style="margin: 0; color: var(--dark); font-size: 16px; font-weight: 700;"><i class="bi bi-calendar-event-fill"></i> ${formatDate(booking.date)}</h4>
                                 <p style="margin: 6px 0 0; color: var(--gray); font-size: 14px;">Ã¢ÂÂ° ${booking.time}</p>
                                 <p style="margin: 6px 0 0; color: var(--primary); font-size: 14px; font-weight: 600;">${booking.venueName || 'Basketball Court'}</p>
                             </div>
@@ -5222,7 +5221,7 @@
                     const inUse = Math.max(0, e.quantity - e.available - broken);
                     let statusBadge;
                     if (e.isArchived) {
-                        statusBadge = '<span class="status-badge" style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;">Ã°Å¸â€œÂ¦ Archived</span>';
+                        statusBadge = '<span class="status-badge" style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;"><i class="bi bi-box-fill"></i> Archived</span>';
                     } else if (broken > 0 && e.available === 0) {
                         statusBadge = '<span class="status-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Ã°Å¸â€Â§ Under Repair</span>';
                     } else if (broken > 0) {
@@ -5955,7 +5954,24 @@
                             feed.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No activity yet.</div>';
                         } else {
                             feed.innerHTML = recent.map(log => {
-                                const ico            let _allReportTransactions = [];
+                                const icon = actionIcons[log.action] || '📝';
+                                return `<div class="feed-item" style="padding:10px 0;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:12px;">
+                                    <div style="font-size:18px;">${icon}</div>
+                                    <div>
+                                        <div style="font-size:13px;font-weight:600;color:#1a2e1f;">${log.action}</div>
+                                        <div style="font-size:12px;color:#6b7280;margin-top:2px;">${log.details}</div>
+                                        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">${new Date(log.created_at).toLocaleDateString()} ${new Date(log.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+                                    </div>
+                                </div>`;
+                            }).join('');
+                        }
+                    } catch (e) {
+                        feed.innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444;font-size:13px;">Error loading feed</div>';
+                    }
+                }
+            }
+
+            let _allReportTransactions = [];
             let _reportPage = 1;
             const REPORT_PAGE_SIZE = 15;
 
@@ -6298,7 +6314,7 @@
                                 <p style="margin:0;font-size:12px;font-weight:600;color:#374151;">${en.label}</p>
                                 ${en.sub ? `<p style="margin:0;font-size:11px;color:#9ca3af;font-style:italic;">${en.sub}</p>` : ''}
                             </div>
-                            <button onclick="${removeFn}" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #e5e7eb;background:#fff;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">Ã¢Å“â€¢ Remove</button>
+                            <button onclick="${removeFn}" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #e5e7eb;background:#fff;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;"><i class="bi bi-x-lg"></i> Remove</button>
                         </div>`;
                     }).join('');
                 }
@@ -6555,7 +6571,7 @@
                         const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || 'Ã¢â‚¬â€'}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
                         const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Ã¢â‚¬â€';
                         const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;">Ã¢Å“â€¦ Replied</div>` : '';
-                        const hasImage = c.description && c.description.includes('[ATTACHED_IMAGE_DATA]') || c.imageUrl;
+                        const hasImage = c.description && c.description.includes('[ATTACHED_IMAGE_DATc.imageUrl;
                         const imgBadge = hasImage ? `<span style="margin-left:6px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:20px;font-weight:700;">Ã°Å¸â€œÂ· Photo</span>` : '';
                         return `<tr data-cid="${c.id}" onclick="openConcernRespond(${c.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
                         <td>${residentDisplay}</td>
@@ -6591,9 +6607,7 @@
                     let actualDesc = concern.description || 'No description provided.';
                     let imageUrl = concern.imageUrl || null;
                     
-                    if (actualDesc.includes('[ATTACHED_IMAGE_DATA]')) {
-                        const parts = actualDesc.split('[ATTACHED_IMAGE_DATA]');
-                        actualDesc = parts[0].trim();
+                    if (actualDesc.includes('[ATTACHED_IMAGE_DAT                       const parts = actualDesc.split('[ATTACHED_IMAGE_DAT                     actualDesc = parts[0].trim();
                         imageUrl = parts[1].trim();
                     }
 
@@ -6821,7 +6835,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h3 style="font-size:18px; font-weight:800; color:#111;">Reject Request</h3>
                     <button onclick="closeRejectEqModal()"
-                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">Ã¢Å“â€¢</button>
+                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;"><i class="bi bi-x-lg"></i></button>
                 </div>
                 <div style="margin-bottom:20px;">
                     <label
@@ -6843,7 +6857,7 @@
         <!-- Global Image Lightbox Modal -->
         <div id="adminImageLightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); z-index:10000; align-items:center; justify-content:center; padding:20px; cursor:zoom-out;" onclick="this.style.display='none'">
             <img id="adminImageLightboxImg" src="" style="max-width:100%; max-height:100vh; object-fit:contain; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.5);" />
-            <div style="position:absolute; top:20px; right:20px; color:#fff; background:rgba(255,255,255,0.2); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;">Ã¢Å“â€¢</div>
+            <div style="position:absolute; top:20px; right:20px; color:#fff; background:rgba(255,255,255,0.2); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;"><i class="bi bi-x-lg"></i></div>
         </div>
 
         <script>
@@ -6863,7 +6877,7 @@
 
                 <!-- Modal Header -->
                 <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:24px 28px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="font-size:30px;margin-bottom:8px;">Ã°Å¸â€œâ€¹</div>
                     <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Citizen Concern</h3>
                     <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminConcernHeaderSub">Submitted concern details</p>
@@ -6894,7 +6908,7 @@
             <div style="background:var(--bg,#fff); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:92vh; overflow-y:auto; display:flex; flex-direction:column; position:relative;">
                 
                 <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:24px 28px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminBookingModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                    <button onclick="closeAdminBookingModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="font-size:30px;margin-bottom:8px;">Ã°Å¸â€œâ€¦</div>
                     <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Court Reservation</h3>
                     <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminBookingHeaderSub"></p>
@@ -6919,7 +6933,7 @@
             <div style="background:var(--bg,#fff); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:92vh; overflow-y:auto; display:flex; flex-direction:column; position:relative;">
                 
                 <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:24px 28px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminRequestModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                    <button onclick="closeAdminRequestModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="font-size:30px;margin-bottom:8px;">Ã°Å¸â€œÂ¦</div>
                     <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Equipment Request</h3>
                     <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminRequestHeaderSub"></p>
@@ -6947,7 +6961,7 @@
                     <button onclick="closeAdsEventModal()" type="button"
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="font-size:32px;margin-bottom:8px;">Ã°Å¸â€œÂ</div>
                     <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px 0;">Add Court Event</h3>
                     <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;">Schedule a barangay activity</p>
@@ -7019,7 +7033,7 @@
                     <button onclick="closeAdminDayPopup()"
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="font-size:32px;margin-bottom:8px;">Ã°Å¸â€œâ€¦</div>
                     <h3 id="adsDayTitle" style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px 0;"></h3>
                     <p id="adsDayVenue" style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;"></p>
@@ -7078,7 +7092,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <h3 style="font-size:18px; font-weight:800; color:#111;">Ã°Å¸Å¡Â« Cancel All Bookings</h3>
                     <button onclick="document.getElementById('adminMassCancelModal').style.display='none'"
-                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">Ã¢Å“â€¢</button>
+                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;"><i class="bi bi-x-lg"></i></button>
                 </div>
                 <p style="font-size:13px; color:#4b5563; margin-bottom:18px;">You are about to cancel all user Court Reservations for <strong id="amcDateText"></strong>. All affected users will be notified.</p>
 
@@ -7114,7 +7128,7 @@
                     <button onclick="closeSuspendModal()"
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="width:64px;height:64px;border-radius:50%;background:#fff;color:#d97706;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">Ã¢Å¡Â </div>
                     <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0;">Suspend Resident</h3>
                     <p style="color:rgba(255,255,255,0.9);font-size:13px;margin:4px 0 0;" id="suspendModalUsername"></p>
@@ -7166,7 +7180,7 @@
                     <button onclick="document.getElementById('adminUserProfileModal').style.display='none'"
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">Ã¢Å“â€¢</button>
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"><i class="bi bi-x-lg"></i></button>
                     <div style="display:flex;align-items:center;gap:16px;">
                         <div style="width:64px;height:64px;border-radius:50%;background:var(--surface);color:#059669;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.1);">Ã°Å¸â€˜Â¤</div>
                         <div>
@@ -7226,7 +7240,7 @@
         <div id="adminEventActionModal"
             style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
             <div style="background:#fff;border-radius:24px;width:100%;max-width:480px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);padding:32px;">
-                <h3 style="font-size:22px;font-weight:800;color:#111;margin-bottom:12px;text-align:center;">Ã°Å¸â€œâ€¦ Date Selected</h3>
+                <h3 style="font-size:22px;font-weight:800;color:#111;margin-bottom:12px;text-align:center;"><i class="bi bi-calendar-event-fill"></i> Date Selected</h3>
                 <p style="font-size:15px;color:#4b5563;margin-bottom:28px;text-align:center;">What would you like to do on <strong id="actionModalDateText"></strong>?</p>
                 <div style="display:flex;flex-direction:column;gap:14px;">
                     <button onclick="openAdminCancelBookingsEventFlow()"
