@@ -415,6 +415,9 @@
             });
 
             window.checkAdminField = function() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('role') === 'admin') return; // Do not auto-toggle if explicitly in admin mode
+
                 const val = document.getElementById('username').value.toLowerCase();
                 const pwdField = document.getElementById('passwordField');
                 const userLabel = document.getElementById('usernameLabel');
@@ -450,12 +453,17 @@
             const loginBtn = document.getElementById('loginBtn');
 
             if (roleParam === 'admin') {
-                // Admin mode: show password immediately, update labels
+                // Admin mode: show password immediately, update labels, NO pre-filling 'admin'
                 if (titleEl) titleEl.innerHTML = '🔐 Admin Login';
                 if (subtitleEl) subtitleEl.textContent = 'Sign in with your admin credentials';
+                const userLabel = document.getElementById('usernameLabel');
+                const pwdLabel = document.getElementById('passwordLabel');
+                if (userLabel) userLabel.textContent = 'Username';
+                if (pwdLabel) pwdLabel.textContent = 'Password';
                 if (usernameInput) {
                     usernameInput.placeholder = 'Enter admin username (e.g. admin1)';
-                    usernameInput.value = 'admin';
+                    // Ensure it is blank as requested
+                    usernameInput.value = '';
                 }
                 if (pwdField) pwdField.classList.remove('hidden');
                 if (pwdInput) pwdInput.required = true;
