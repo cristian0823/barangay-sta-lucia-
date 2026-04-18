@@ -4471,58 +4471,61 @@
 
             function previewBatchFile(file) {
                 if (!file) return;
-                const ext = file.name.split('.').pop().toLowerCase();
-                if (ext === 'xlsx' || ext === 'xls') {
-                    // Parse Excel with SheetJS
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        try {
-                            const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-                            const ws = wb.Sheets[wb.SheetNames[0]];
-                            const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-                            if (raw.length < 2) { showAlert('Excel file is empty or has no data rows.', 'error'); return; }
-                            const headers = raw[0].map(h => String(h));
-                            const colMap = normalizeHeaders(headers);
-                            const rows = [];
-                            for (let i = 1; i < raw.length; i++) {
-                                const cells = raw[i];
-                                if (!cells || cells.every(c => c === '')) continue;
-                                rows.push({
-                                    barangay_id: String(cells[colMap.barangay_id] ?? '').trim(),
-                                    full_name:   String(cells[colMap.full_name]   ?? '').trim(),
-                                    email:       String(cells[colMap.email]       ?? '').trim(),
-                                    phone:       String(cells[colMap.phone]       ?? '').trim(),
-                                    address:     String(cells[colMap.address]     ?? '').trim()
-                                });
-                            }
-                            renderBatchPreview(rows);
-                        } catch(err) { showAlert('Failed to read Excel file: ' + err.message, 'error'); }
-                    };
-                    reader.readAsArrayBuffer(file);
-                } else {
-                    // Parse CSV
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const text = e.target.result;
-                        const lines = text.trim().split(/\r?\n/);
-                        const headers = lines[0].split(',').map(h => h.trim());
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+                        
+                        if (raw.length < 2) { 
+                            showAlert('File is empty or has no data rows beneath the headers.', 'error'); 
+                            return; 
+                        }
+                        
+                        const headers = raw[0].map(h => String(h));
                         const colMap = normalizeHeaders(headers);
+                        
+                        if (colMap.barangay_id === undefined) {
+                            showAlert('Error: Missing required column "barangay_id" or "Barangay ID".', 'error');
+                            return;
+                        }
+                        if (colMap.full_name === undefined) {
+                            showAlert('Error: Missing required column "full_name" or "Full Name".', 'error');
+                            return;
+                        }
+
                         const rows = [];
-                        for (let i = 1; i < lines.length; i++) {
-                            const cols = lines[i].split(',').map(c => c.trim());
-                            if (cols.length < 2) continue;
+                        for (let i = 1; i < raw.length; i++) {
+                            const cells = raw[i];
+                            if (!cells || cells.length === 0 || cells.every(c => c === '')) continue;
+                            
+                            const bId = String(cells[colMap.barangay_id] ?? '').trim();
+                            const fname = String(cells[colMap.full_name] ?? '').trim();
+                            
+                            if (!bId && !fname) continue;
+
                             rows.push({
-                                barangay_id: cols[colMap.barangay_id] || '',
-                                full_name:   cols[colMap.full_name]   || '',
-                                email:       cols[colMap.email]       || '',
-                                phone:       cols[colMap.phone]       || '',
-                                address:     cols[colMap.address]     || ''
+                                barangay_id: bId,
+                                full_name:   fname,
+                                email:       colMap.email !== undefined ? String(cells[colMap.email] ?? '').trim() : '',
+                                phone:       colMap.phone !== undefined ? String(cells[colMap.phone] ?? '').trim() : '',
+                                address:     colMap.address !== undefined ? String(cells[colMap.address] ?? '').trim() : ''
                             });
                         }
+                        
+                        if (rows.length === 0) {
+                            showAlert('No valid data rows found. Check your file format.', 'warning');
+                            return;
+                        }
+                        
                         renderBatchPreview(rows);
-                    };
-                    reader.readAsText(file);
-                }
+                    } catch(err) { 
+                        showAlert('Failed to read file: ' + err.message, 'error'); 
+                    }
+                };
+                reader.readAsArrayBuffer(file);
             }
 
             // Keep legacy name working (used by ondrop)
