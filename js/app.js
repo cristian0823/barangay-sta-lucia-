@@ -366,7 +366,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         return { success: true, user: sessionData };
     }
 
-    return { success: false, message: 'Invalid username or password' };
+    return { success: false, message: 'Barangay ID not found. Please contact the Barangay Office.' };
 }
 
 async function resetPassword(username, newPassword) {

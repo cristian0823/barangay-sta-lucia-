@@ -2682,24 +2682,23 @@
                         <div class="section-header">
                             <div>
                                 <h3> Manage Users</h3>
-                                <p style="font-size: 13px; color: var(--muted); margin-top: 5px;">Manage registered residents and users in the system</p>
+                                <p style="font-size: 13px; color: var(--muted); margin-top: 5px;">Registered residents uploaded from Excel or CSV</p>
                             </div>
                             <div style="display:flex;gap:8px;">
-                                <a href="data:text/csv;charset=utf-8,barangay_id%2Cfull_name%2Cemail%2Cphone%2Caddress%0ABGY-001%2CJuan%20dela%20Cruz%2Cjuan%40email.com%2C09171234567%2C123%20Rizal%20St." download="sample_residents.csv" class="btn btn-small btn-light" style="text-decoration:none;"> Sample CSV</a>
-                                <button class="btn btn-small btn-primary" onclick="document.getElementById('batchUploadModal').classList.add('active')"> Batch Upload</button>
+                                <a href="data:text/csv;charset=utf-8,barangay_id%2Cfull_name%2Cemail%2Cphone%2Caddress%0ABGY-001%2CJuan%20dela%20Cruz%2Cjuan%40email.com%2C09171234567%2C123%20Rizal%20St." download="resident_template.csv" class="btn btn-small btn-light" style="text-decoration:none;"> Download Template</a>
+                                <button class="btn btn-small btn-primary" onclick="document.getElementById('batchUploadModal').classList.add('active')"> Upload Excel / CSV</button>
                             </div>
                         </div>
                         <div class="section-content">
                             <div class="admin-tables">
                                 <table class="data-table">
-                                    <thead>
+                                <thead>
                                         <tr>
                                             <th>Barangay ID</th>
                                             <th>Full Name</th>
                                             <th>Phone</th>
                                             <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Actions</th>
+                                            <th>Address</th>
                                         </tr>
                                     </thead>
                                     <tbody id="usersTable"></tbody>
@@ -2719,13 +2718,13 @@
                                 <h3> Batch Upload Residents</h3>
                                 <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')"></button>
                             </div>
-                            <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Upload a CSV file with columns: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">barangay_id, full_name, email, phone, address</code></p>
+                            <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Upload an <strong>Excel (.xlsx)</strong> or <strong>CSV</strong> file. Required columns: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">barangay_id, full_name</code>. Optional: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">email, phone, address</code></p>
                             
                             <div id="batchDropZone" style="border:2px dashed var(--border);border-radius:14px;padding:36px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--panel-bg);" onclick="document.getElementById('batchFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#10b981';this.style.background='var(--green-50)';" ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';" ondrop="event.preventDefault();this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';handleBatchFileDrop(event)">
                                 <div style="font-size:36px;margin-bottom:8px;"></div>
-                                <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Drop CSV file here</p>
-                                <p style="font-size:12px;color:var(--muted);">or click to browse</p>
-                                <input type="file" id="batchFileInput" accept=".csv" style="display:none" onchange="previewBatchCSV(this.files[0])">
+                                <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Drop Excel or CSV file here</p>
+                                <p style="font-size:12px;color:var(--muted);">or click to browse &mdash; supports .xlsx, .xls, .csv</p>
+                                <input type="file" id="batchFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="previewBatchFile(this.files[0])">
                             </div>
 
                             <div id="batchPreview" style="display:none;margin-top:16px;">
@@ -3453,6 +3452,7 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
         <script src="js/supabase-config.js"></script>
         <script src="js/app.js"></script>
         <script src="js/darkmode.js"></script>
@@ -4403,7 +4403,7 @@
                 const tbody = document.getElementById('usersTable');
                 const emptyState = document.getElementById('noUsers');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
                 let users = await getAllUsers();
                 users = users.filter(u => u.role !== 'admin');
 
@@ -4413,38 +4413,21 @@
                     return;
                 }
                 if (emptyState) emptyState.style.display = 'none';
-                const currentUser = getCurrentUser();
                 tbody.innerHTML = users.map(u => {
-                    const isMe = u.id === currentUser?.id;
-                    const roleColor = u.role === 'admin' ? '#059669' : '#6b7280';
-                    const roleBadge = `<span style="background:${u.role === 'admin' ? '#d1fae5' : '#f3f4f6'};color:${roleColor};padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;">${u.role}</span>`;
-                    
                     const isSuspended = u.suspended_until && new Date(u.suspended_until) > new Date();
-                    const suspensionBadge = isSuspended ? `<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;margin-left:5px;">Suspended </span>` : '';
-                    
+                    const statusBadge = isSuspended
+                        ? '<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
+                        : '<span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Active</span>';
                     const displayName = u.fullName || u.full_name || u.username;
                     const phone = u.phone || u.contact_number || u.contactNumber || '';
-
-                    return `<tr style="cursor:pointer;" onclick="openUserProfileModal(${u.id})" class="hover-row">
-                    <td style="font-size:12px;font-weight:700;color:var(--green-xl);">${u.barangay_id || ''}</td>
-                    <td>
-                        <strong>${displayName}</strong>
-                        ${isMe ? ' <span style="font-size:11px;color:#10b981;">(You)</span>' : ''}
-                        ${suspensionBadge}
-                    </td>
-                    <td style="font-size:13px;">${phone}</td>
-                    <td style="font-size:13px;color:#6b7280;">${u.email || ''}</td>
-                    <td>${roleBadge}</td>
-                    <td onclick="event.stopPropagation()">
-                        ${!isMe && u.role !== 'admin' ? `
-                            ${isSuspended
-                                ? `<button class="btn btn-smaller" style="background-color:#10b981; color:white; padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; margin-right:5px; border:none; cursor:pointer;" onclick="liftSuspension(${u.id}, '${u.username}')"> Lift Suspension</button>`
-                                : `<button class="btn btn-smaller" style="background-color:#fbbf24; color:white; padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; margin-right:5px; border:none; cursor:pointer;" onclick="openSuspendModal(${u.id}, '${u.username}', ${u.offense_count || 0})"> Suspend</button>`
-                            }
-                            <button class="btn btn-smaller btn-danger" style="padding:4px 10px; border-radius:6px; font-weight:600; font-size:12px; border:none; cursor:pointer;" onclick="adminDeleteUserConfirm(${u.id}, '${u.username}')">Delete</button>
-                        ` : ''}
-                    </td>
-                </tr>`;
+                    const address = u.address || '';
+                    return `<tr>
+                        <td style="font-size:12px;font-weight:700;color:var(--green-xl);">${u.barangay_id || ''}</td>
+                        <td><strong>${displayName}</strong></td>
+                        <td style="font-size:13px;">${phone}</td>
+                        <td style="font-size:13px;color:#6b7280;">${u.email || ''}</td>
+                        <td style="font-size:12px;">${address}</td>
+                    </tr>`;
                 }).join('');
             }
 
@@ -4453,40 +4436,97 @@
 
             function handleBatchFileDrop(e) {
                 const file = e.dataTransfer.files[0];
-                if (file) previewBatchCSV(file);
+                if (file) previewBatchFile(file);
             }
 
-            function previewBatchCSV(file) {
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const text = e.target.result;
-                    const lines = text.trim().split(/\r?\n/);
-                    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-                    _batchRows = [];
-                    const previewBody = document.getElementById('batchPreviewRows');
-                    previewBody.innerHTML = '';
-                    for (let i = 1; i < lines.length; i++) {
-                        const cols = lines[i].split(',').map(c => c.trim());
-                        if (cols.length < 2) continue;
-                        const row = {};
-                        headers.forEach((h, idx) => row[h] = cols[idx] || '');
-                        _batchRows.push(row);
-                        previewBody.innerHTML += `<tr>
-                            <td style="font-size:12px;">${row.barangay_id||''}</td>
-                            <td style="font-size:12px;">${row.full_name||''}</td>
-                            <td style="font-size:12px;">${row.email||''}</td>
-                            <td style="font-size:12px;">${row.phone||''}</td>
-                            <td style="font-size:12px;">${row.address||''}</td>
-                        </tr>`;
-                    }
-                    document.getElementById('batchPreview').style.display = _batchRows.length > 0 ? 'block' : 'none';
-                    document.getElementById('batchRowCount').textContent = `(${_batchRows.length} residents)`;
-                    document.getElementById('batchUploadBtn').disabled = _batchRows.length === 0;
-                    document.getElementById('batchUploadResult').style.display = 'none';
-                };
-                reader.readAsText(file);
+            function normalizeHeaders(headers) {
+                const map = {};
+                headers.forEach((h, i) => {
+                    const key = h.trim().toLowerCase().replace(/\s+/g, '_');
+                    // Accept common variations
+                    if (key === 'barangay_id' || key === 'brgy_id' || key === 'id') map.barangay_id = i;
+                    else if (key === 'full_name' || key === 'fullname' || key === 'name') map.full_name = i;
+                    else if (key === 'email' || key === 'email_address') map.email = i;
+                    else if (key === 'phone' || key === 'contact' || key === 'mobile' || key === 'phone_number') map.phone = i;
+                    else if (key === 'address' || key === 'home_address') map.address = i;
+                });
+                return map;
             }
+
+            function renderBatchPreview(rows) {
+                _batchRows = rows;
+                const previewBody = document.getElementById('batchPreviewRows');
+                previewBody.innerHTML = rows.map(r => `<tr>
+                    <td style="font-size:12px;">${r.barangay_id || ''}</td>
+                    <td style="font-size:12px;">${r.full_name || ''}</td>
+                    <td style="font-size:12px;">${r.email || ''}</td>
+                    <td style="font-size:12px;">${r.phone || ''}</td>
+                    <td style="font-size:12px;">${r.address || ''}</td>
+                </tr>`).join('');
+                document.getElementById('batchPreview').style.display = rows.length > 0 ? 'block' : 'none';
+                document.getElementById('batchRowCount').textContent = `(${rows.length} residents)`;
+                document.getElementById('batchUploadBtn').disabled = rows.length === 0;
+                document.getElementById('batchUploadResult').style.display = 'none';
+            }
+
+            function previewBatchFile(file) {
+                if (!file) return;
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (ext === 'xlsx' || ext === 'xls') {
+                    // Parse Excel with SheetJS
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                            const ws = wb.Sheets[wb.SheetNames[0]];
+                            const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+                            if (raw.length < 2) { showAlert('Excel file is empty or has no data rows.', 'error'); return; }
+                            const headers = raw[0].map(h => String(h));
+                            const colMap = normalizeHeaders(headers);
+                            const rows = [];
+                            for (let i = 1; i < raw.length; i++) {
+                                const cells = raw[i];
+                                if (!cells || cells.every(c => c === '')) continue;
+                                rows.push({
+                                    barangay_id: String(cells[colMap.barangay_id] ?? '').trim(),
+                                    full_name:   String(cells[colMap.full_name]   ?? '').trim(),
+                                    email:       String(cells[colMap.email]       ?? '').trim(),
+                                    phone:       String(cells[colMap.phone]       ?? '').trim(),
+                                    address:     String(cells[colMap.address]     ?? '').trim()
+                                });
+                            }
+                            renderBatchPreview(rows);
+                        } catch(err) { showAlert('Failed to read Excel file: ' + err.message, 'error'); }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    // Parse CSV
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const text = e.target.result;
+                        const lines = text.trim().split(/\r?\n/);
+                        const headers = lines[0].split(',').map(h => h.trim());
+                        const colMap = normalizeHeaders(headers);
+                        const rows = [];
+                        for (let i = 1; i < lines.length; i++) {
+                            const cols = lines[i].split(',').map(c => c.trim());
+                            if (cols.length < 2) continue;
+                            rows.push({
+                                barangay_id: cols[colMap.barangay_id] || '',
+                                full_name:   cols[colMap.full_name]   || '',
+                                email:       cols[colMap.email]       || '',
+                                phone:       cols[colMap.phone]       || '',
+                                address:     cols[colMap.address]     || ''
+                            });
+                        }
+                        renderBatchPreview(rows);
+                    };
+                    reader.readAsText(file);
+                }
+            }
+
+            // Keep legacy name working (used by ondrop)
+            function previewBatchCSV(file) { previewBatchFile(file); }
 
             async function submitBatchUpload() {
                 if (_batchRows.length === 0) return;

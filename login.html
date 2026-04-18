@@ -293,14 +293,15 @@
                         <input type="checkbox" id="rememberMe">
                         <label for="rememberMe">Remember me</label>
                     </div>
-                    <a href="forgot-password.html" class="forgot-link" style="font-size: 13px; color: #10b981; font-weight: 600; text-decoration: none; transition: color 0.2s;">Forgot Password?</a>
+                    <!-- Forgot Password only visible to admins (shown via JS when password field appears) -->
+                    <a href="forgot-password.html" id="forgotPasswordLink" class="forgot-link" style="font-size: 13px; color: #10b981; font-weight: 600; text-decoration: none; transition: color 0.2s; display:none;">Forgot Password?</a>
                 </div>
 
                 <button type="submit" id="loginBtn" class="btn-main">Sign In</button>
             </form>
 
             <div class="form-footer">
-                <p>Welcome to the Resident Services Portal.</p>
+                <p style="color:#6b7280;font-size:13px;">Enter your <strong>Barangay ID</strong> to access resident services.<br>Your ID is provided by the Barangay Office.</p>
                 <div class="terms-lnk">
                     <a href="terms.html" target="_blank">Terms &amp; Conditions</a>
                 </div>
@@ -418,13 +419,16 @@
             window.checkAdminField = function() {
                 const val = document.getElementById('username').value.toLowerCase();
                 const pwdField = document.getElementById('passwordField');
+                const forgotLink = document.getElementById('forgotPasswordLink');
                 if (val.startsWith('admin')) {
                     pwdField.classList.remove('hidden');
                     document.getElementById('password').required = true;
+                    if (forgotLink) forgotLink.style.display = 'inline';
                 } else {
                     pwdField.classList.add('hidden');
                     document.getElementById('password').required = false;
                     document.getElementById('password').value = '';
+                    if (forgotLink) forgotLink.style.display = 'none';
                 }
             };
 
