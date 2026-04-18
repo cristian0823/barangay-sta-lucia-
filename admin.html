@@ -2193,7 +2193,7 @@
             <button onclick="mobileSwitchSection('requests')"> Equipment Requests</button>
             <button onclick="mobileSwitchSection('concerns')"> Concerns</button>
             <button onclick="mobileSwitchSection('events')"> Court Events</button>
-            <button onclick="mobileSwitchSection('equipment')"> Equipment</button>
+            <button onclick="mobileSwitchSection('equipment')"> Inventory</button>
             <button onclick="mobileSwitchSection('reports')">  Reports</button>
             <button onclick="mobileSwitchSection('activity-log')"> Activity Log</button>
         </div>
@@ -2257,7 +2257,7 @@
                         <span class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></span> Court Events
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('equipment', this)">
-                        <span class="nav-icon-box"><i class="bi bi-tools"></i></span> Equipment
+                        <span class="nav-icon-box"><i class="bi bi-box-seam-fill"></i></span> Inventory
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('reports', this)">
                         <span class="nav-icon-box"><i class="bi bi-file-earmark-bar-graph-fill"></i></span> Reports
@@ -2650,13 +2650,12 @@
                     </div>
                     <div id="equipment-section" class="section-container" style="display: none;">
                         <div class="section-header">
-                            <h3>Equipment Inventory</h3>
+                            <h3>Inventory</h3>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-small btn-light"
-                                    onclick="printReport('Equipment Inventory Report', getEquipment(), ['id', 'name', 'quantity', 'available', 'broken', 'isArchived'])">
+                                    onclick="printEquipmentReport()">
                                     Print</button>
-                                <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add
-                                    Equipment</button>
+                                <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add Item</button>
                             </div>
                         </div>
                         <div class="section-content" style="padding: 16px 26px 26px;">
@@ -4161,6 +4160,9 @@
                 if (section === 'activity-log') loadActivityLog();
                 if (section === 'reports') loadSimpleReport();
                 if (section === 'users') loadUsers();
+                if (section === 'equipment') loadEquipment();
+                if (section === 'requests') loadRequests();
+                if (section === 'concerns') loadConcerns();
                 if (section === 'court-bookings') {
                     loadAdminBookings();
                     startBookingPolling();
