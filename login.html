@@ -271,14 +271,14 @@
                 </div>
 
                 <div class="field">
-                    <label for="username">Barangay ID Number</label>
+                    <label for="username" id="usernameLabel">Barangay ID Number</label>
                     <div class="field-wrap">
                         <input type="text" id="username" required placeholder="Enter your Barangay ID" autocomplete="username" maxlength="50" oninput="checkAdminField()">
                     </div>
                 </div>
 
                 <div class="field hidden" id="passwordField">
-                    <label for="password">Password (Admin)</label>
+                    <label for="password" id="passwordLabel">Password (Admin)</label>
                     <div class="field-wrap">
                         <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" maxlength="128">
                         <button type="button" class="eye-toggle" onclick="togglePassword('password', this)" aria-label="Toggle password visibility">
@@ -293,8 +293,6 @@
                         <input type="checkbox" id="rememberMe">
                         <label for="rememberMe">Remember me</label>
                     </div>
-                    <!-- Forgot Password only visible to admins (shown via JS when password field appears) -->
-                    <a href="forgot-password.html" id="forgotPasswordLink" class="forgot-link" style="font-size: 13px; color: #10b981; font-weight: 600; text-decoration: none; transition: color 0.2s; display:none;">Forgot Password?</a>
                 </div>
 
                 <button type="submit" id="loginBtn" class="btn-main">Sign In</button>
@@ -419,16 +417,19 @@
             window.checkAdminField = function() {
                 const val = document.getElementById('username').value.toLowerCase();
                 const pwdField = document.getElementById('passwordField');
-                const forgotLink = document.getElementById('forgotPasswordLink');
+                const userLabel = document.getElementById('usernameLabel');
+                const pwdLabel = document.getElementById('passwordLabel');
                 if (val.startsWith('admin')) {
                     pwdField.classList.remove('hidden');
                     document.getElementById('password').required = true;
-                    if (forgotLink) forgotLink.style.display = 'inline';
+                    if (userLabel) userLabel.textContent = 'Username';
+                    if (pwdLabel) pwdLabel.textContent = 'Password';
                 } else {
                     pwdField.classList.add('hidden');
                     document.getElementById('password').required = false;
                     document.getElementById('password').value = '';
-                    if (forgotLink) forgotLink.style.display = 'none';
+                    if (userLabel) userLabel.textContent = 'Barangay ID Number';
+                    if (pwdLabel) pwdLabel.textContent = 'Password (Admin)';
                 }
             };
 
