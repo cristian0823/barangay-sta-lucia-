@@ -2582,11 +2582,6 @@
                     <div id="concerns-section" class="section-container" style="display: none;">
                         <div class="section-header">
                             <h3>Citizen Concerns</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-small btn-light"
-                                    onclick="printReport('Citizen Concerns Report', getAllConcerns(), ['id', 'userName', 'assignedTo', 'category', 'title', 'createdAt', 'status'])">
-                                    Print</button>
-                            </div>
                         </div>
                         <div class="section-content" style="padding: 0;">
                             <div class="filter-bar"><span class="filter-label">Filter:</span><select id="concernStatusFilter" onchange="applyConcernFilter()"><option value="all">All Status</option><option value="open">Open</option><option value="in-progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div>
@@ -6582,8 +6577,8 @@
                 const startSel = document.getElementById('adsStartTime');
                 const endSel = document.getElementById('adsEndTime');
                 if (!startSel || !endSel) return;
-                startSel.innerHTML = '<option value="">-- Start Time --</option>';
-                endSel.innerHTML = '<option value="">-- End Time --</option>';
+                startSel.innerHTML = '<option value=""></option>';
+                endSel.innerHTML = '<option value=""></option>';
 
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
                 const slots = [];

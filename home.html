@@ -1212,7 +1212,7 @@
 
             <button class="nav-item" data-panel="court-bookings-panel">
                 <div class="nav-icon">🏀</div>
-                <span>Court Bookings</span>
+                <span>Court Reservations</span>
             </button>
 
             <button class="nav-item" data-panel="my-borrowings-panel">
@@ -1302,7 +1302,7 @@
             <div id="court-bookings-panel" class="content-panel">
                 <div class="panel-header"
                     style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
-                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">🏀 Court Bookings</h3>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">🏀 Court Reservations</h3>
                 </div>
 
                 <div class="venue-toggle">
@@ -1349,7 +1349,7 @@
                     </div>
                 </div>
 
-                <!-- NEW: My Court Bookings section added here -->
+                <!-- NEW: My Court Reservations section added here -->
                 <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
                     <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">My Court
                         Bookings</h4>
@@ -1490,7 +1490,7 @@
         </div>
     </div>
 
-    <!-- Premium Court Booking Modal -->
+    <!-- Premium Court Reservation Modal -->
     <div class="modal-overlay" id="bookingModal">
         <div class="modal-content" style="padding: 0; border-radius: 20px; overflow: hidden;">
 
@@ -1545,7 +1545,7 @@
                                 Time</label>
                             <select id="cbStartTime" required
                                 style="display: block; width: 100%; padding: 11px 14px; border: 1.5px solid #d1fae5; border-radius: 10px; font-size: 14px; font-family: 'Inter', sans-serif; color: #111; background: #f0fdf4; box-sizing: border-box; outline: none; cursor: pointer;">
-                                <option value="">-- Choose --</option>
+                                <option value=""></option>
                                 <option value="6:00 AM">6:00 AM</option>
                                 <option value="8:00 AM">8:00 AM</option>
                                 <option value="10:00 AM">10:00 AM</option>
@@ -1562,7 +1562,7 @@
                                 Time</label>
                             <select id="cbEndTime" required
                                 style="display: block; width: 100%; padding: 11px 14px; border: 1.5px solid #d1fae5; border-radius: 10px; font-size: 14px; font-family: 'Inter', sans-serif; color: #111; background: #f0fdf4; box-sizing: border-box; outline: none; cursor: pointer;">
-                                <option value="">-- Choose --</option>
+                                <option value=""></option>
                                 <option value="8:00 AM">8:00 AM</option>
                                 <option value="10:00 AM">10:00 AM</option>
                                 <option value="12:00 PM">12:00 PM</option>
@@ -1589,7 +1589,7 @@
                     <button type="submit" id="cbSubmitBtn"
                         style="width: 100%; padding: 14px; background: linear-gradient(135deg, #059669, #065f46); color: white; font-weight: 700; font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif; border: none; border-radius: 12px; cursor: pointer; letter-spacing: 0.02em; transition: opacity 0.2s; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);"
                         onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                        Confirm Booking
+                        Confirm Reservation
                     </button>
                 </form>
             </div>
@@ -2036,7 +2036,7 @@
             const c = document.getElementById('myCourtBookingsList');
 
             if (userBookings.length === 0) {
-                c.innerHTML = '<div class="empty-state"><span>🏟️</span><p>No court bookings yet.</p></div>';
+                c.innerHTML = '<div class="empty-state"><span>🏟️</span><p>No court reservations yet.</p></div>';
                 return;
             }
 
@@ -2074,7 +2074,7 @@
                         ${adminNote}
                         ${b.status !== 'cancelled' && b.status !== 'rejected' ? `
                         <div style="margin-top: 10px;">
-                            <button class="btn" onclick="cancelCb(${b.id})" style="color: var(--danger); border-color: var(--danger-bg); background: var(--danger-bg); padding: 4px 10px; font-size: 11px;">Cancel Booking</button>
+                            <button class="btn" onclick="cancelCb(${b.id})" style="color: var(--danger); border-color: var(--danger-bg); background: var(--danger-bg); padding: 4px 10px; font-size: 11px;">Cancel Reservation</button>
                         </div>
                         ` : ''}
                     </div>
@@ -2083,7 +2083,7 @@
         }
 
         window.cancelCb = async function (id) {
-            if (!await showConfirmModal('Are you sure you want to cancel this booking?', 'Cancel Booking', 'Yes, Cancel', 'No', 'danger')) return;
+            if (!await showConfirmModal('Are you sure you want to cancel this booking?', 'Cancel Reservation', 'Yes, Cancel', 'No', 'danger')) return;
             const res = await cancelCourtBooking(id);
             if (res.success) {
                 showToast('✅ ' + res.message, 'success');

@@ -388,7 +388,7 @@
                     <div class="nav-icon-box"><i class="bi bi-megaphone-fill"></i></div> Concerns
                 </button>
                 <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Court Booking
+                    <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Court Reservation
                 </button>
                 <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></div> Events
@@ -433,7 +433,7 @@
                     <div class="user-stat-card" onclick="showPanel('booking')" style="border-left:4px solid #8b5cf6;">
                         <div class="user-stat-icon" style="background:#f5f3ff;border:1px solid #ddd6fe; color:#8b5cf6; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-event-fill"></i></div>
                         <div>
-                            <div class="user-stat-label">Upcoming Bookings</div>
+                            <div class="user-stat-label">Upcoming Reservations</div>
                             <div class="user-stat-value" id="stat-bookings" style="color:#7c3aed;">0</div>
                         </div>
                     </div>
@@ -455,7 +455,7 @@
                     </button>
                     <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:#8b5cf6;">
                         <span class="uqa-icon">📅</span>
-                        <div class="uqa-label">Book the Court</div>
+                        <div class="uqa-label">Reserve the Court</div>
                         <div class="uqa-sub">Reserve a time slot</div>
                         <span class="uqa-arrow">→</span>
                     </button>
@@ -492,7 +492,7 @@
                             </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('booking')">
                                 <div class="px-4 py-3 flex justify-between items-center bg-purple-50/50 dark:bg-purple-900/10 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">📅</span>Upcoming Bookings</span>
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">📅</span>Upcoming Reservations</span>
                                     <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#8b5cf6;">—</span>
                                 </div>
                             </div>
@@ -665,7 +665,7 @@
             <div id="panel-booking" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Booking</h2>
+                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Reservation</h2>
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
@@ -701,7 +701,7 @@
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
                         <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Active Reservations</h3>
-                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming court bookings.</p>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming court reservations.</p>
                     </div>
                     <div class="p-6">
                         <div id="myReservationsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"><p style="color: var(--text-muted);" class="italic text-sm">Loading reservations...</p></div>
@@ -854,7 +854,7 @@
             <div id="panel-history" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
                     <h2 class="text-3xl font-extrabold text-emerald-600 mb-2">📜 My Activity</h2>
-                    <p style="color: var(--text-muted);">View all your borrowings, concerns, and court bookings.</p>
+                    <p style="color: var(--text-muted);">View all your borrowings, concerns, and court reservations.</p>
                 </div>
                 
                 <div class="glass-card p-6 min-h-[500px]">
@@ -1023,7 +1023,7 @@
                 <div class="border-t border-gray-100 dark:border-gray-700 mt-4 pt-4">
                     <!-- Toggle Button -->
                     <button id="dsToggleFormBtn" onclick="openDsBookingModal()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
-                        <span>＋ Add Court Booking</span>
+                        <span>＋ Add Court Reservation</span>
                     </button>
                 </div>
             </div>
@@ -1036,7 +1036,7 @@
             <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
                 <button onclick="closeDsBookingModal()" type="button" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
                 <div class="text-3xl mb-2">📝</div>
-                <h3 class="text-xl font-extrabold text-white mb-0.5">Add Court Booking</h3>
+                <h3 class="text-xl font-extrabold text-white mb-0.5">Add Court Reservation</h3>
                 <p class="text-sm text-white/80 m-0">Fill out details to reserve a slot</p>
             </div>
             <div class="overflow-y-auto px-6 py-5">
@@ -1073,7 +1073,7 @@
                     </div>
 
                     <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
-                        ✅ Confirm Booking
+                        ✅ Confirm Reservation
                     </button>
                 </form>
             </div>
@@ -1092,13 +1092,13 @@
             <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
                 <button id="conflictRescheduleBtn" onclick="handleConflictReschedule()"
                     style="width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-weight:700;font-size:14px;border-radius:14px;border:none;cursor:pointer;transition:all 0.2s;">
-                    📅 Reschedule My Booking
+                    📅 Reschedule My Reservation
                 </button>
                 <button id="conflictCancelBtn" onclick="handleConflictCancel()"
                     style="width:100%;padding:14px;background:#fef2f2;color:#dc2626;font-weight:700;font-size:14px;border-radius:14px;border:1.5px solid #fecaca;cursor:pointer;transition:all 0.2s;">
-                    ❌ Cancel Booking Completely
+                    ❌ Cancel Reservation Completely
                 </button>
-                <p style="font-size:11px;color:#9ca3af;text-align:center;margin:0;">You can reschedule your booking using the Court Booking panel.</p>
+                <p style="font-size:11px;color:#9ca3af;text-align:center;margin:0;">You can reschedule your booking using the Court Reservation panel.</p>
             </div>
         </div>
     </div>
@@ -1205,7 +1205,7 @@
         <div style="background:var(--panel-bg,#fff);border-radius:20px;width:100%;max-width:430px;box-shadow:0 24px 60px rgba(0,0,0,0.2);padding:0;overflow:hidden;border:1.5px solid var(--border-color,#e5e7eb);">
             <div style="background:linear-gradient(135deg,#2563eb,#3b82f6);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
                 <div>
-                    <h3 style="color:#fff;font-size:18px;font-weight:800;margin:0;">Edit Court Booking</h3>
+                    <h3 style="color:#fff;font-size:18px;font-weight:800;margin:0;">Edit Court Reservation</h3>
                     <p style="color:rgba(255,255,255,0.75);font-size:12px;margin:4px 0 0;">Update your reservation details</p>
                 </div>
                 <button onclick="closeEditCourtBookingModal()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>
@@ -2435,10 +2435,10 @@
             const titleEl = document.getElementById('bookingPanelTitle');
             const subtitleEl = document.getElementById('bookingPanelSubtitle');
             if (venue === 'basketball') {
-                if (titleEl) titleEl.innerHTML = '📅 Court Booking';
+                if (titleEl) titleEl.innerHTML = '📅 Court Reservation';
                 if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay basketball court.';
             } else {
-                if (titleEl) titleEl.innerHTML = '🏢 Hall Booking';
+                if (titleEl) titleEl.innerHTML = '🏢 Hall Reservation';
                 if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay multi-purpose hall.';
             }
             if (document.getElementById('bookingVenueInput')) document.getElementById('bookingVenueInput').value = venue;
@@ -2611,7 +2611,7 @@
                 banner.innerHTML = `🔄 Rescheduling Mode Active:<br><span class="text-xs font-normal text-blue-700">Original Time: ${m.original_time}. Review time and confirm.</span>`;
                 banner.classList.remove('hidden');
             } else {
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Reservation</span>';
                 let banner = document.getElementById('dsRescheduleBanner');
                 if(banner) banner.classList.add('hidden');
             }
@@ -2737,8 +2737,8 @@
         async function fillDsTimeSelects(dateStr, venue, allBookings, allEvents) {
             const startSel = document.getElementById('dsStartTime');
             const endSel = document.getElementById('dsEndTime');
-            startSel.innerHTML = '<option value="">-- Start Time --</option>';
-            endSel.innerHTML = '<option value="">-- End Time --</option>';
+            startSel.innerHTML = '<option value=""></option>';
+            endSel.innerHTML = '<option value=""></option>';
 
             const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
 
@@ -2803,7 +2803,7 @@
             if (window.pendingRescheduleData) {
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Confirm Reschedule</span>';
             } else {
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Reservation</span>';
             }
         }
 
@@ -2867,14 +2867,14 @@
                 if (result.success) openSuccessModal('Success!', 'Your court booking has been successfully submitted.');
             }
 
-            btn.disabled = false; btn.innerHTML = '✅ Confirm Booking';
+            btn.disabled = false; btn.innerHTML = '✅ Confirm Reservation';
 
             if (result.success) {
                 document.getElementById('dsPurpose').value = '';
                 document.getElementById('dsStartTime').value = '';
                 document.getElementById('dsEndTime').value = '';
                 closeDsBookingModal();
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Booking</span>';
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Reservation</span>';
                 await refreshDsSchedule(date, venue);
                 await loadBookingView();
                 await loadDashboardStats();
@@ -3003,7 +3003,7 @@
                 let all = [];
                 bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '📦', color: 'blue' }));
                 con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', color: 'amber' }));
-                boo.forEach(b => all.push({ type: 'Court Booking', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', color: 'emerald' }));
+                boo.forEach(b => all.push({ type: 'Court Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', color: 'emerald' }));
                 all.sort((a,b) => b.date - a.date);
                 if (all.length === 0) { container.innerHTML = '<p class="text-gray-500 italic text-[15px] font-bold mt-4">No activity history found yet. If you believe this is an error, please try logging out and in again.</p>'; return; }
                 container.innerHTML = all.map(a => {
