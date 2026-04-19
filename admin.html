@@ -6601,8 +6601,9 @@
                             (b.venue === venue || b.venueName === venueLabel)) {
                             let tRange = b.timeRange || b.time;
                             if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-                            let [st, et] = tRange.split('').map(s => s.trim());
-                            if (!et) et = st;
+                            // Split on ' - ' separator (e.g. "10:00 AM - 12:00 PM")
+                            const rangeParts = tRange.split(' - ').map(s => s.trim());
+                            const st = rangeParts[0], et = rangeParts[1] || rangeParts[0];
                             if (sMin < timeToMinutes(et) && eMin > timeToMinutes(st)) taken = true;
                         }
                     }
@@ -7318,7 +7319,7 @@
                     <button onclick="closeAdminDayPopup()"
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"></button>
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
                     <div style="font-size:32px;margin-bottom:8px;"></div>
                     <h3 id="adsDayTitle" style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px 0;"></h3>
                     <p id="adsDayVenue" style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;"></p>
@@ -7377,7 +7378,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <h3 style="font-size:18px; font-weight:800; color:#111;"> Cancel All Bookings</h3>
                     <button onclick="document.getElementById('adminMassCancelModal').style.display='none'"
-                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;"></button>
+                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">&times;</button>
                 </div>
                 <p style="font-size:13px; color:#4b5563; margin-bottom:18px;">You are about to cancel all user Court Reservations for <strong id="amcDateText"></strong>. All affected users will be notified.</p>
 
