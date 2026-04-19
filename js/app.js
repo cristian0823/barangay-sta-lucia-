@@ -480,6 +480,12 @@ async function logoutUser() {
     } catch(err) {
         console.error('Supabase signout error:', err);
     }
+    try {
+        const _curr = getCurrentUser();
+        if (_curr && (_curr.role === 'admin' || _curr.role === 'superadmin')) {
+            await logActivity('Admin Logout', `${_curr.username || _curr.fullName || 'System'} logged out`, 'info');
+        }
+    } catch(e) {}
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
     window.location.href = 'index.html';
@@ -1247,7 +1253,7 @@ async function submitConcern(category, title, description, address, imageFile = 
 
         let finalDescription = description;
         if (imageUrl) {
-            finalDescription += "\n[ATTACHED_IMAGE_DATA]\n" + imageUrl;
+            finalDescription += "Usern[ATTACHED_IMAGE_DATA]Usern" + imageUrl;
         }
 
         // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
@@ -1453,7 +1459,7 @@ async function updateConcernRequest(concernId, updates) {
              let finalDescription = updates.description;
              if (concern.description && concern.description.includes('[ATTACHED_IMAGE_DATA]')) {
                  const imgData = concern.description.split('[ATTACHED_IMAGE_DATA]')[1];
-                 finalDescription += "\n[ATTACHED_IMAGE_DATA]" + imgData;
+                 finalDescription += "Usern[ATTACHED_IMAGE_DATA]" + imgData;
              }
              payload.description = finalDescription;
         }
@@ -1476,7 +1482,7 @@ async function updateConcernRequest(concernId, updates) {
              let finalDescription = updates.description;
              if (concerns[index].description && concerns[index].description.includes('[ATTACHED_IMAGE_DATA]')) {
                  const imgData = concerns[index].description.split('[ATTACHED_IMAGE_DATA]')[1];
-                 finalDescription += "\n[ATTACHED_IMAGE_DATA]" + imgData;
+                 finalDescription += "Usern[ATTACHED_IMAGE_DATA]" + imgData;
              }
              concerns[index].description = finalDescription;
         }
@@ -1635,7 +1641,7 @@ async function getCourtBookings() {
 // Time Slot Validation Helper
 function timeToMinutes(t) {
     if (!t) return 0;
-    const match = t.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    const match = t.match(/(Userd+):(Userd+)Users*(AM|PM)?/i);
     if (!match) return 0;
     let [ , h, m, ampm ] = match;
     h = parseInt(h);
@@ -2826,7 +2832,7 @@ async function getActivityLog() {
             } else if (data && data.length > 0) {
                 remoteLogs = data.map(r => ({
                     id: r.id,
-                    adminUsername: r.users ? (r.users.full_name || r.users.username) : 'System',
+                    adminUsername: r.users ? (r.users.full_name || r.users.username || 'System') : ((r.action && r.action.toLowerCase().includes('login')) ? 'System' : 'System'),
                     action: r.action,
                     details: r.details,
                     createdAt: r.created_at
@@ -2903,7 +2909,7 @@ async function exportDataBackup(format = 'json') {
         if (!rows.length) return { success: false, message: 'No data to export' };
         const headers = Object.keys(rows[0]).join(',');
         const csvRows = rows.map(r => Object.values(r).map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
-        const csvContent = [headers, ...csvRows].join('\n');
+        const csvContent = [headers, ...csvRows].join('Usern');
         blob = new Blob([csvContent], { type: 'text/csv' });
         ext = 'csv';
     } else {

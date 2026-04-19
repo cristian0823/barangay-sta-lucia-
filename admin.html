@@ -2599,6 +2599,8 @@
                                             <th>Category</th>
                                             <th>Title</th>
                                             <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="concernsTable"></tbody>
@@ -2779,7 +2781,7 @@
                             <button class="btn btn-small btn-primary" onclick="window.print()"> Print Report</button>
                         </div>
                         <!-- Filters -->
-                        <div style="padding:14px 26px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+                        <div style="padding:18px 22px;background:var(--panel-bg,#f9fafb);border-radius:14px;border:1.5px solid var(--border,#e5e7eb);display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:20px 26px 0;">
                             <div>
                                 <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;">Date From</label>
                                 <input type="date" id="reportDateFrom" onchange="applyReportFilters()" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text);">
@@ -3855,20 +3857,20 @@
                     dayEl.className = baseClass;
                     dayEl.textContent = day;
 
-                    if (hasEvents && !isPast) {
+                    if (hasEvents) {
                         dayEl.title = eventDates[dateStr].map(e => {
                             const time = e.end_time ? `${adminFmt12(e.time)} - ${adminFmt12(e.end_time)}` : (e.endTime ? `${adminFmt12(e.time)} - ${adminFmt12(e.endTime)}` : adminFmt12(e.time));
                             return `[${time}] ${e.title}`;
                         }).join('\n');
                         dayEl.onclick = () => adminSelectDate(dateStr);
-                    } else if (hasBookings && !isPast) {
+                    } else if (hasBookings) {
                         dayEl.title = bookingDates[dateStr].map(b => {
                             const time = b.time;
                             const purp = b.purpose || b.venueName || b.venue;
                             return `[${time}] ${purp}`;
                         }).join('\n');
                         dayEl.onclick = () => adminSelectDate(dateStr);
-                    } else if (!isPast) {
+                    } else {
                         dayEl.onclick = () => adminSelectDate(dateStr);
                         dayEl.onmouseover = () => { dayEl.style.opacity = '0.8'; };
                         dayEl.onmouseout = () => { dayEl.style.opacity = '1'; };
@@ -4403,7 +4405,6 @@
                         +'<td>'+(c.title||'')+resp+img+'</td>'
                         +'<td style="font-size:12px;">'+date+'</td>'
                         +'<td>'+badge+'</td>'
-                        +'<td></td>'
                         +'<td><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openConcernRespond('+c.id+')">Respond</button></td>'
                         +'</tr>';
                 }).join('');
@@ -4564,7 +4565,7 @@
 
                     return `<tr>
                         <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
-                        <td data-label="User / Admin" style="text-align: center;"><div class="admin-cell"><span class="admin-icon"></span> <strong>${log.adminUsername || 'System'}</strong></div></td>
+                        <td data-label="User / Admin" style="text-align:center;"><div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${(log.adminUsername||'S').charAt(0).toUpperCase()}</div><strong style="font-size:13px;">${log.adminUsername || 'System'}</strong></div></td>
                         <td data-label="Action" style="text-align: center;"><span class="status-badge ${badgeClass}">${log.action}</span></td>
                         <td data-label="Details" st
                 renderPg('activityLogPg', (_pgActivityTotal||0), PG_SIZE, _pgActivityPage, 'gotoActivityPage');
@@ -6911,13 +6912,38 @@ yle="text-align: right; max-width:320px;font-size:12px;color:#6b7280;">${log.det
                     detailsDiv.innerHTML = html;
                 }
 
-                // No response form to populate; readonly mode.
+                // Pre-populate response textarea with existing response
+                const _rt = document.getElementById('adminConcernResponseText');
+                if (_rt) _rt.value = (concern && concern.response) ? concern.response : '';
                 document.getElementById('adminConcernModal').style.display = 'flex';
             }
 
             function closeAdminConcernModal() {
                 document.getElementById('adminConcernModal').style.display = 'none';
                 _currentConcernId = null;
+            }
+
+            async function submitAdminConcernResponse(newStatus) {
+                const concernId = _currentConcernId;
+                const responseText = (document.getElementById('adminConcernResponseText') || {}).value || '';
+                if (!concernId) return;
+                try {
+                    const updateData = { status: newStatus };
+                    if (responseText.trim()) updateData.response = responseText.trim();
+                    const supabaseAvail = await isSupabaseAvailable();
+                    if (supabaseAvail) {
+                        await supabase.from('concerns').update(updateData).eq('id', concernId);
+                    }
+                    const c = _allAdminConcerns.find(function(x){ return x.id === concernId; });
+                    if (c) { c.status = newStatus; if (responseText.trim()) c.response = responseText.trim(); }
+                    await logActivity('Concern Responded', 'Admin responded to concern #' + concernId + ' (Status: ' + newStatus + ')');
+                    showAlert('Concern marked as ' + newStatus + '.', 'success');
+                    closeAdminConcernModal();
+                    loadConcerns();
+                } catch(err) {
+                    console.error('Concern respond error:', err);
+                    showAlert('Failed to submit response. Please try again.', 'error');
+                }
             }
 
             function openBookingRespond(bookingId) {
@@ -7145,11 +7171,17 @@ yle="text-align: right; max-width:320px;font-size:12px;color:#6b7280;">${log.det
                 <!-- Divider -->
                 <div style="margin:8px 28px 0; border-top:2px dashed var(--border);"></div>
 
-                <!-- Read-only footer -->
-                <div style="padding:20px 28px 28px; text-align:center;">
-                    <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">This is a read-only submission. No response is required.</p>
-                    <button type="button" onclick="closeAdminConcernModal()"
-                        style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--text);font-family:inherit;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background='var(--panel-bg)'" onmouseout="this.style.background='var(--surface)'">Close</button>
+                <!-- Respond Form -->
+                <div style="padding:16px 28px 28px;">
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block;font-size:11px;font-weight:700;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Admin Response</label>
+                        <textarea id="adminConcernResponseText" rows="3" placeholder="Type your response to this concern..." style="width:100%;padding:12px;border:1.5px solid var(--border,#e5e7eb);border-radius:12px;font-size:14px;color:var(--text,#111);background:var(--panel-bg,#f9fafb);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor=''"></textarea>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button onclick="submitAdminConcernResponse('in-progress')" style="flex:1;min-width:120px;padding:11px 8px;background:#3b82f6;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">Mark In Progress</button>
+                        <button onclick="submitAdminConcernResponse('resolved')" style="flex:1;min-width:120px;padding:11px 8px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">Mark Resolved</button>
+                        <button onclick="closeAdminConcernModal()" style="flex:1;min-width:100px;padding:11px 8px;border:1.5px solid var(--border,#e5e7eb);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--text,#374151);transition:background 0.2s;" onmouseover="this.style.background='var(--panel-bg)'" onmouseout="this.style.background='transparent'">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

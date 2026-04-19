@@ -309,64 +309,40 @@
             </div>
             <!-- MOBILE RIGHT CONTROLS -->
             <div class="mobile-header-controls">
-                <div class="mobile-header-avatar" onclick="showPanel('profile')" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
+                <div class="mobile-header-avatar" onclick="showPanel('settings'); setTimeout(()=>showSettingsTab('password'), 50);" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
                 <!-- Mobile Bell -->
                 <button class="mobile-header-btn relative" onclick="toggleBellDropdown()" title="Notifications" style="font-size: 16px;">
                     🔔
                     <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
                 <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
-                
-                
+                <button class="mobile-header-btn" onclick="showPanel('settings'); setTimeout(()=>showSettingsTab('password'), 50);" title="Settings">⚙️</button>
+                <button id="mobileHeaderLogoutBtn" title="Logout" style="height:36px;padding:0 14px;border-radius:10px;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;" onclick="logoutUser()">Logout</button>
             </div>
         </div>
-        <div class="header-right flex items-center gap-4 hidden md:flex">
-            <!-- Desktop Bell -->
-            <div class="relative flex items-center justify-center">
-                <button onclick="toggleBellDropdown(event)" id="desktopBellBtn" title="Notifications" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg relative">
-                    🔔
-                    <span id="bellBadgeDesktop" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
-                </button>
-                <!-- Dropdown UI -->
-                <div id="bellDropdownContainer" class="hidden absolute top-[52px] right-[-100px] md:right-0 w-[350px] max-w-[95vw] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
-                    <div class="absolute -top-2 right-[120px] md:right-[15px] w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45 dark:bg-slate-800 dark:border-slate-700 hidden md:block"></div>
-                    <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 relative z-10 w-full" onclick="event.stopPropagation()">
-                        <h3 class="font-bold text-gray-800 text-[15px] dark:text-gray-100">Notifications</h3>
-                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" class="text-xs text-emerald-600 hover:underline font-semibold flex items-center gap-1"><span class="text-sm">✔</span> Mark all read</button>
+        <div class="header-right flex items-center gap-3 hidden md:flex">
+            <div class="user-menu flex items-center gap-3 pr-3 border-r border-gray-200 cursor-pointer relative" onclick="toggleProfileDropdown(event)" id="topProfileMenuBtn">
+                <div class="user-info text-right">
+                    <div class="user-name text-[14px] font-bold text-gray-800" id="sidebarUserName">User</div>
+                    <div class="user-role text-[11px] text-emerald-500 font-semibold uppercase">Resident</div>
+                </div>
+                <div class="user-avatar w-[40px] h-[40px] rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center font-extrabold text-[15px] border-[3px] border-emerald-200">
+                    <span id="userInitial">U</span>
+                </div>
+                <!-- Profile Dropdown -->
+                <div id="profileDropdownContainer" class="hidden absolute top-[52px] right-0 w-[200px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
+                    <div class="px-4 py-3 border-b flex justify-between items-center bg-gray-50 dark:bg-slate-900 border-gray-100 dark:border-slate-700">
+                        <p class="text-xs text-gray-500 font-semibold mb-0">Account Menu</p>
                     </div>
-                    <div id="bellDropdownList" class="max-h-[380px] overflow-y-auto flex flex-col relative z-10 w-full" onclick="event.stopPropagation()">
-                        <p id="bellEmptyState" class="text-center text-sm text-gray-500 py-6 hidden dark:text-gray-400">No new notifications.</p>
+                    <div class="py-1 bg-white dark:bg-slate-800">
+                        <button onclick="showPanel('profile'); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-bold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 flex items-center gap-2 py-3 px-4 transition-colors"><span class="text-lg">👤</span> My Profile</button>
                     </div>
-                    <div class="px-4 py-2 bg-gray-50 text-center border-t border-gray-100 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-100 dark:bg-slate-900/50 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-gray-400 transition relative z-10 w-full" onclick="showPanel('history'); document.getElementById('bellDropdownContainer').classList.add('hidden');">See all activity in history</div>
                 </div>
             </div>
 
             <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">🌙</button>
-
-            <div class="h-8 w-px bg-gray-200 dark:bg-slate-700 mx-1"></div>
-            
-            <div class="user-menu flex items-center cursor-pointer relative" onclick="toggleProfileDropdown(event)" id="topProfileMenuBtn">
-                <div class="user-avatar w-[40px] h-[40px] rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center font-extrabold text-[15px] border-[3px] border-emerald-200 mr-3">
-                    <span id="userInitial">U</span>
-                </div>
-                <div class="user-info text-left">
-                    <div class="user-name text-[14px] font-bold text-gray-800" id="sidebarUserName">User</div>
-                    <div class="user-role text-[11px] text-emerald-500 font-semibold uppercase">Resident</div>
-                </div>
-
-                <!-- Profile Dropdown -->
-                <div id="profileDropdownContainer" class="hidden absolute top-[52px] right-0 w-[180px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
-                    <div class="py-1 bg-white dark:bg-slate-800">
-                        <button onclick="showPanel('profile'); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
-                    </div>
-                    <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
-                        <button onclick="showPanel('profile'); setTimeout(() => document.getElementById('stab-content-password') && document.getElementById('stab-content-password').scrollIntoView({behavior:'smooth'}), 100); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">Settings</button>
-                    </div>
-                    <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
-                        <button onclick="logoutUser()" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-red-50 hover:text-red-600 dark:text-gray-100 py-3 px-4 transition-colors">Logout</button>
-                    </div>
-                </div>
-            </div>
+            <button onclick="showPanel('settings'); setTimeout(()=>showSettingsTab('password'), 50);" id="desktopSettingsBtn" title="Settings" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">⚙️</button>
+            <button id="logoutBtn" class="px-4 py-2 rounded-xl text-[13px] font-semibold border-2 border-red-200 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-colors duration-200">Logout</button>
         </div>
     </header>
 
@@ -728,13 +704,12 @@
                         <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">👤</div>
                         <div>
                             <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Profile</div>
-                            <div style="font-size:13px;color:#94a3b8;">Manage your personal and account information</div>
+                            <div style="font-size:13px;color:#94a3b8;">Manage your personal information</div>
                         </div>
                     </div>
                 </div>
                 
-                
-<!-- ── PROFILE TAB ── -->
+                <!-- ── PROFILE TAB ── -->
                 <div id="stab-content-profile">
                     <!-- Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
@@ -764,7 +739,10 @@
                                         <input type="text" id="p-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
                                     </div>
                                 </div>
-                                
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Username</label>
+                                    <input type="text" id="p-username" disabled style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-muted);background:var(--bg-color);cursor:not-allowed;outline:none;">
+                                </div>
                                 <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;">✔ Save Changes</button>
                             </form>
                         </div>
@@ -772,8 +750,94 @@
                 </div>
 
                 
-<!-- ── PASSWORD TAB ── -->
-                <div id="stab-content-password" style="margin-top:30px;" class="hidden">
+            </div>
+
+            <!-- PANEL 6: SETTINGS -->
+            <div id="panel-settings" class="content-panel">
+
+                <!-- Hero Banner (matches admin-settings style) -->
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                    <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(16,185,129,0.2) 0%,transparent 70%);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-60px;left:30%;width:300px;height:150px;background:radial-gradient(ellipse,rgba(59,130,246,0.1) 0%,transparent 70%);"></div>
+                    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">⚙️</div>
+                        <div>
+                            <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Settings</div>
+                            <div style="font-size:13px;color:#94a3b8;">Manage your profile, security, and account preferences</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Horizontal Tab Strip (mobile-friendly, like admin-settings mobile tabs) -->
+                <div class="settings-tabs-strip" style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0 12px;margin-bottom:16px;scrollbar-width:none;">
+                    <button id="stab-profile" onclick="showSettingsTab('profile')" class="settings-tab-pill active" style="display:none;">👤 Profile</button>
+                    <button id="stab-password" onclick="showSettingsTab('password')" class="settings-tab-pill" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;cursor:pointer;background:var(--panel-bg);color:var(--text-muted);font-family:inherit;transition:all 0.2s;">🔑 Password</button>
+                    <button id="stab-security" onclick="showSettingsTab('security')" class="settings-tab-pill" style="display:none;">🔐 Security</button>
+                    <button id="stab-account" onclick="showSettingsTab('account')" class="settings-tab-pill" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;cursor:pointer;background:var(--panel-bg);color:var(--text-muted);font-family:inherit;transition:all 0.2s;">🛡️ Account</button>
+                </div>
+
+                <!-- My Activity Stats Row -->
+                <div class="settings-stats-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📦</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#059669;line-height:1;" id="s-statRequests">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Requests</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💬</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#d97706;line-height:1;" id="s-statConcerns">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Concerns</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📅</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#1d4ed8;line-height:1;" id="s-statBookings">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Bookings</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✅</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#7c3aed;line-height:1;" id="s-statApproved">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Approved</div></div>
+                    </div>
+                </div>
+
+                <!-- ── PROFILE TAB ── -->
+                <div id="stab-content-profile" style="display:none;">
+                    <!-- Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                            <span style="font-size:15px;">👤</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="settingsProfileForm">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Full Name</label>
+                                        <input type="text" id="s-fullName" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Email Address</label>
+                                        <input type="email" id="s-email" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Contact Number</label>
+                                        <input type="text" id="s-phone" placeholder="09XX XXX XXXX" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Address / Location</label>
+                                        <input type="text" id="s-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Username</label>
+                                    <input type="text" id="s-username" disabled style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-muted);background:var(--bg-color);cursor:not-allowed;outline:none;">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;">✔ Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── PASSWORD TAB ── -->
+                <div id="stab-content-password" class="hidden">
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
                         <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(59,130,246,0.06),transparent);">
                             <span style="font-size:15px;">🔑</span>
@@ -799,9 +863,8 @@
                     </div>
                 </div>
 
-                
-<!-- ── ACCOUNT TAB ── -->
-                <div id="stab-content-account" style="margin-top:30px;" class="hidden">
+                <!-- ── ACCOUNT TAB ── -->
+                <div id="stab-content-account" class="hidden">
                     <!-- Account Details Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
                         <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
@@ -847,8 +910,37 @@
                     </div>
                 </div>
 
-                
-            
+                <!-- ── SECURITY (2FA) TAB ── -->
+                <div id="stab-content-security" class="hidden">
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(99,102,241,0.08),transparent);">
+                            <span style="font-size:15px;">🔐</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Google Authenticator (2FA)</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:14px;">
+                                <div>
+                                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:3px;">Status</div>
+                                    <div id="s-totpStatusText" style="font-size:14px;font-weight:600;color:var(--text-main);">Checking...</div>
+                                </div>
+                                <span id="s-totpStatusBadge" style="padding:4px 12px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:12px;font-weight:700;">—</span>
+                            </div>
+                            <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">When enabled, you'll need a 6-digit code from <strong>Google Authenticator</strong> every time you log in. This protects your account even if your password is stolen.</p>
+                            <div id="s-totpActions" style="margin-bottom:16px;"><p style="color:var(--text-muted);font-size:13px;">Loading...</p></div>
+                            <div style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;padding:16px;">
+                                <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:8px;">ℹ️ How it works</div>
+                                <ol style="font-size:12px;color:#374151;padding-left:16px;line-height:1.8;margin:0;">
+                                    <li>Download the free <strong>Google Authenticator</strong> app on your phone</li>
+                                    <li>Click <strong>"Enable 2FA"</strong> below and scan the QR code</li>
+                                    <li>Every login will require a 6-digit code from the app</li>
+                                    <li>The code refreshes every 30 seconds for maximum security</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
             <!-- PANEL 7: HISTORY -->
             <div id="panel-history" class="content-panel">
@@ -1201,51 +1293,46 @@
         </div>
     </div>
 
-    <div id="editCourtBookingModal" class="fixed inset-0 z-[400] flex items-center justify-center hidden" style="background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);">
-        <div style="background:var(--panel-bg,#fff);border-radius:20px;width:100%;max-width:430px;box-shadow:0 24px 60px rgba(0,0,0,0.2);padding:0;overflow:hidden;border:1.5px solid var(--border-color,#e5e7eb);">
-            <div style="background:linear-gradient(135deg,#2563eb,#3b82f6);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
-                <div>
-                    <h3 style="color:#fff;font-size:18px;font-weight:800;margin:0;">Edit Court Booking</h3>
-                    <p style="color:rgba(255,255,255,0.75);font-size:12px;margin:4px 0 0;">Update your reservation details</p>
+    <div id="editCourtBookingModal" class="fixed inset-0 z-[400] flex items-center justify-center hidden" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-6 overflow-hidden" style="border: 1px solid var(--border-color);">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-bold text-xl" style="color: var(--text-main);">✏️ Edit Court Booking</h3>
+                <button onclick="closeEditCourtBookingModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <form id="editCourtBookingForm" class="space-y-4">
+                <input type="hidden" id="editCourtBookingId">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Date</label>
+                        <input type="date" id="editCourtDate" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Venue</label>
+                    <select id="editCourtVenue" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                        <option value="basketball">🏀 Basketball Court</option>
+                        <option value="multipurpose">🏢 Multi-Purpose Hall</option>
+                    </select>
+                    </select>
                 </div>
-                <button onclick="closeEditCourtBookingModal()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>
-            </div>
-            <div style="padding:24px;">
-                <form id="editCourtBookingForm">
-                    <input type="hidden" id="editCourtBookingId">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Date</label>
-                            <input type="date" id="editCourtDate" required style="width:100%;padding:10px 12px;border:1.5px solid var(--border-color,#e5e7eb);border-radius:10px;font-size:14px;color:var(--text-main,#111);background:var(--input-bg,#f9fafb);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor=''">
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Venue</label>
-                            <select id="editCourtVenue" required style="width:100%;padding:10px 12px;border:1.5px solid var(--border-color,#e5e7eb);border-radius:10px;font-size:14px;color:var(--text-main,#111);background:var(--input-bg,#f9fafb);outline:none;box-sizing:border-box;">
-                                <option value="basketball">Basketball Court</option>
-                                <option value="multipurpose">Multi-Purpose Hall</option>
-                            </select>
-                        </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Start Time</label>
+                        <select id="editCourtStartTime" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);"></select>
                     </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Start Time</label>
-                            <select id="editCourtStartTime" required style="width:100%;padding:10px 12px;border:1.5px solid var(--border-color,#e5e7eb);border-radius:10px;font-size:14px;color:var(--text-main,#111);background:var(--input-bg,#f9fafb);outline:none;box-sizing:border-box;"></select>
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">End Time</label>
-                            <select id="editCourtEndTime" required style="width:100%;padding:10px 12px;border:1.5px solid var(--border-color,#e5e7eb);border-radius:10px;font-size:14px;color:var(--text-main,#111);background:var(--input-bg,#f9fafb);outline:none;box-sizing:border-box;"></select>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">End Time</label>
+                        <select id="editCourtEndTime" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);"></select>
                     </div>
-                    <div style="margin-bottom:20px;">
-                        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Purpose</label>
-                        <input type="text" id="editCourtPurpose" required placeholder="e.g. Basketball practice" style="width:100%;padding:10px 12px;border:1.5px solid var(--border-color,#e5e7eb);border-radius:10px;font-size:14px;color:var(--text-main,#111);background:var(--input-bg,#f9fafb);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor=''">
-                    </div>
-                    <div style="display:flex;gap:12px;">
-                        <button type="button" onclick="closeEditCourtBookingModal()" style="flex:1;padding:12px;border:1.5px solid var(--border-color,#e5e7eb);border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;background:transparent;color:var(--text-main,#374151);" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Cancel</button>
-                        <button type="submit" style="flex:1;padding:12px;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,0.4);">Save Changes</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1" style="color:var(--text-main);">Purpose</label>
+                    <input type="text" id="editCourtPurpose" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" style="background:var(--panel-bg); color:var(--text-main);">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditCourtBookingModal()" class="flex-1 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
     
@@ -1519,7 +1606,6 @@
             window.scrollTo(0, 0);
 
             if (panelId === 'history') loadHistoryView();
-            if (panelId === 'profile') loadProfilePanel();
 
             switch (panelId) {
                 case 'dashboard': loadDashboardStats(); break;
@@ -1533,7 +1619,7 @@
 
 
         // Logout
-        document.getElementById('logoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
         document.getElementById('mobileLogoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
 
         // ==========================================
@@ -1641,18 +1727,15 @@
                 e.stopPropagation();
                 const dropdown = document.getElementById('profileDropdownContainer');
                 if (dropdown) dropdown.classList.toggle('hidden');
-                
-                // Hide Bell if open
                 const bell = document.getElementById('bellDropdownContainer');
                 if (bell && !bell.classList.contains('hidden')) bell.classList.add('hidden');
             }
             document.addEventListener('click', () => {
                 const pd = document.getElementById('profileDropdownContainer');
                 if (pd) pd.classList.add('hidden');
-                const bd = document.getElementById('bellDropdownContainer');
-                if (bd) bd.classList.add('hidden');
             });
-            
+
+            // Replicated submit handler for the standalone profile panel
             document.addEventListener('DOMContentLoaded', () => {
                 const spForm = document.getElementById('standaloneProfileForm');
                 if (spForm) {
@@ -1661,6 +1744,9 @@
                         const btn = e.target.querySelector('button[type="submit"]');
                         const origBtn = btn.innerHTML;
                         btn.innerHTML = 'Saving...'; btn.disabled = true;
+                        
+                        // Fake a successful save since real saves seem to be handled outside or identically
+                        // We will actually just trigger the same logic if necessary, or simply show alert
                         try {
                             const { data, error } = await _supabase.from('profiles').update({
                                 full_name: document.getElementById('p-fullName').value,
@@ -1670,6 +1756,7 @@
 
                             if (error) throw error;
                             
+                            // sync to local
                             const user = getCurrentUser();
                             user.fullName = document.getElementById('p-fullName').value;
                             user.contactNumber = document.getElementById('p-phone').value;
@@ -1678,6 +1765,7 @@
                             
                             showAlert('Profile updated successfully!', 'success');
                             
+                            // Update UI
                             document.getElementById('sidebarUserName').textContent = user.fullName;
                             const mobileName = document.getElementById('mobileUserName');
                             if (mobileName) mobileName.textContent = user.fullName;
@@ -2084,11 +2172,8 @@
                 : '';
             document.getElementById('borrowMaxHelp').innerHTML = '📦 Max: ' + item.available + ' units available' + pendingNote;
             document.getElementById('borrowPurpose').value = '';
-                        // Ensure we have hydrated data
-            if (!user.phone) await fetchFullProfileData();
             document.getElementById('borrowerFullName').value = user.name || '';
-            document.getElementById('borrowerContact').value = user.phone || '';
-            if (document.getElementById('borrowerAddress')) document.getElementById('borrowerAddress').value = user.address || '';
+            document.getElementById('borrowerContact').value = '';
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
             document.getElementById('borrowModal').classList.remove('hidden');
@@ -2351,7 +2436,7 @@
             document.getElementById('borrowModal').classList.remove('hidden');
         }
 
-        document.getElementById('concernForm')?.addEventListener('submit', async function (e) {
+        document.getElementById('concernForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]'); 
             btn.disabled = true; 
@@ -3005,7 +3090,7 @@
                 con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', color: 'amber' }));
                 boo.forEach(b => all.push({ type: 'Court Booking', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', color: 'emerald' }));
                 all.sort((a,b) => b.date - a.date);
-                if (all.length === 0) { container.innerHTML = '<p class="text-gray-500 italic text-[15px] font-bold mt-4">No activity history found yet. If you believe this is an error, please try logging out and in again.</p>'; return; }
+                if (all.length === 0) { container.innerHTML = '<p class="text-gray-500 italic text-sm">No activity history found yet.</p>'; return; }
                 container.innerHTML = all.map(a => {
                     const displayStatus = a.status === 'completed' ? 'Completed'
                         : a.status === 'cancelled_by_admin' ? 'Cancelled by Admin'
@@ -3047,30 +3132,22 @@
             if (tab === 'security') loadDashboardTOTPStatus();
         }
 
-                async function fetchFullProfileData() {
-            try {
-                const { data, error } = await supabase.from('users').select('*').eq('username', user.username).maybeSingle();
-                if (data) {
-                    user.email = data.email || '';
-                    user.phone = data.phone || data.contact_number || '';
-                    user.address = data.address || '';
-                    user.name = data.full_name || data.fullName || data.name || '';
-                    window.user = user;
-                }
-            } catch(e) { console.error('Error hydrating user details', e); }
-        }
-
-        async function loadProfilePanel() {
-            await fetchFullProfileData();
-            if (document.getElementById('p-fullName')) document.getElementById('p-fullName').value = user.name || '';
-            if (document.getElementById('p-email')) document.getElementById('p-email').value = user.email || '';
-            if (document.getElementById('p-phone')) document.getElementById('p-phone').value = user.phone || '';
-            if (document.getElementById('p-address')) document.getElementById('p-address').value = user.address || '';
-        }
-
-async function loadSettingsView() {
+        async function loadSettingsView() {
             // Fill profile fields
-            document.getElementById('s-fullName').value = user.full_name || user.fullName || user.name || '';
+            
+                    // Profile panel fields
+                    const pfName = document.getElementById('p-fullName');
+                    if(pfName) pfName.value = user.fullName || user.full_name || '';
+                    const peMail = document.getElementById('p-email');
+                    if(peMail) { peMail.value = user.email || ''; peMail.disabled = true; peMail.style.cursor='not-allowed'; peMail.style.background='var(--bg-color)'; }
+                    const pPhone = document.getElementById('p-phone');
+                    if(pPhone) pPhone.value = user.contactNumber || user.contact_number || user.phone || '';
+                    const pAddress = document.getElementById('p-address');
+                    if(pAddress) pAddress.value = user.address || '';
+                    const pUsername = document.getElementById('p-username');
+                    if(pUsername) pUsername.value = user.barangay_id || user.username || '';
+
+                    document.getElementById('s-fullName').value = user.full_name || user.fullName || user.name || '';
             document.getElementById('s-email').value = user.email || '';
             document.getElementById('s-username').value = user.username || '';
             document.getElementById('s-phone').value = user.contact_number || user.phone || '';
@@ -3090,7 +3167,7 @@ async function loadSettingsView() {
             } catch(e) { console.error('Settings stats error', e); }
         }
 
-        document.getElementById('settingsProfileForm')?.addEventListener('submit', async function(e) {
+        document.getElementById('settingsProfileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
             btn.disabled = true; btn.innerHTML = 'Saving...';
@@ -3104,7 +3181,7 @@ async function loadSettingsView() {
             showToast(result.message, result.success ? 'success' : 'error');
         });
 
-        document.getElementById('settingsPasswordForm')?.addEventListener('submit', async function(e) {
+        document.getElementById('settingsPasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const np = document.getElementById('s-newPassword').value;
             const cp = document.getElementById('s-confirmPassword').value;
