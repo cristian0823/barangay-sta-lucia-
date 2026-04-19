@@ -2716,7 +2716,7 @@
                         <div class="modal-content" style="max-width:560px;">
                             <div class="modal-header">
                                 <h3> Batch Upload Residents</h3>
-                                <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')"></button>
+                                <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')">&times;</button>
                             </div>
                             <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Upload an <strong>Excel (.xlsx)</strong> or <strong>CSV</strong> file. Required columns: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">barangay_id, full_name</code>. Optional: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">email, phone, address</code></p>
                             
@@ -4569,7 +4569,11 @@
                     resultBox.textContent = ` Done! ${inserted} resident(s) uploaded. ${skipped > 0 ? skipped + ' skipped (duplicate or missing data).' : ''}`;
                     btn.textContent = 'Upload Residents';
                     logActivity('Batch Upload', `Admin uploaded ${inserted} residents via CSV.`);
-                    setTimeout(() => { loadUsers(); }, 1000);
+                    setTimeout(() => { 
+                        loadUsers(); 
+                        document.getElementById('batchUploadModal').classList.remove('active');
+                        resetBatchUpload();
+                    }, 2000);
                 } catch(err) {
                     resultBox.style.display = 'block';
                     resultBox.style.background = '#fef2f2';
