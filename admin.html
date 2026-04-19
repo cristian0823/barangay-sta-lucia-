@@ -2616,32 +2616,6 @@
                             <input type="hidden" id="adminSelectedVenue" value="basketball">
 
                             <!-- Top/Bottom Layout -->
-                                <div class="admin-tables">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Citizen</th>
-                                            <th>Address</th>
-                                            <th>Category</th>
-                                            <th>Title</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="concernsTable"></tbody>
-                                </table>
-                                <div id="concernsPg" class="pg-controls" style="display:none;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="events-section" class="section-container" style="display: none;">
-                        <div class="section-content" style="padding: 24px;">
-
-                            <input type="hidden" id="adminSelectedVenue" value="basketball">
-
-                            <!-- Top/Bottom Layout -->
                             <div class="admin-cal-grid" style="display:flex; flex-direction:column; gap:32px; align-items:stretch;">
 
                                 <!-- Calendar Card (Left Side) -->
@@ -4597,8 +4571,6 @@
                     </tr>`;
                 }).join('');
                 renderPg('activityLogPg', (_pgActivityTotal||0), PG_SIZE, _pgActivityPage, 'gotoActivityPage');
-                    </tr>`;
-                }).join('');
             }
 
             async function loadActivityLog() {
