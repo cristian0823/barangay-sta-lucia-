@@ -309,15 +309,15 @@
             </div>
             <!-- MOBILE RIGHT CONTROLS -->
             <div class="mobile-header-controls">
-                <div class="mobile-header-avatar" onclick="showPanel('settings'); setTimeout(()=>showSettingsTab('password'), 50);" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
+                <div class="mobile-header-avatar" onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
                 <!-- Mobile Bell -->
                 <button class="mobile-header-btn relative" onclick="toggleBellDropdown()" title="Notifications" style="font-size: 16px;">
                     🔔
                     <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
                 <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
-                <button class="mobile-header-btn" onclick="showPanel('settings'); setTimeout(()=>showSettingsTab('password'), 50);" title="Settings">⚙️</button>
-                <button id="mobileHeaderLogoutBtn" title="Logout" style="height:36px;padding:0 14px;border-radius:10px;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;" onclick="logoutUser()">Logout</button>
+                <button class="mobile-header-btn" onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" title="Settings">⚙️</button>
+                
             </div>
         </div>
         <div class="header-right flex items-center gap-3 hidden md:flex">
@@ -337,12 +337,801 @@
                     <div class="py-1 bg-white dark:bg-slate-800">
                         <button onclick="showPanel('profile'); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-bold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 flex items-center gap-2 py-3 px-4 transition-colors"><span class="text-lg">👤</span> My Profile</button>
                     </div>
+                    <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
+                        <button onclick="logoutUser()" class="w-full text-left font-bold text-red-600 text-[14px] hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 py-3 px-4 transition-colors"><span class="text-lg">🚪</span> Logout</button>
+                    </div>
                 </div>
             </div>
 
             <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">🌙</button>
-            <button onclick="showPanel('settings'); setTimeout(()=>showSettingsTab('password'), 50);" id="desktopSettingsBtn" title="Settings" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">⚙️</button>
-            <button id="logoutBtn" class="px-4 py-2 rounded-xl text-[13px] font-semibold border-2 border-red-200 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-colors duration-200">Logout</button>
+            <button onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" id="desktopSettingsBtn" title="Settings" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">⚙️</button>
+            
+        </div>
+    </header>
+
+    <!-- DASHBOARD CONTAINER -->
+    <div class="dashboard-container flex flex-1 overflow-hidden">
+        <!-- SIDEBAR -->
+        <aside class="sidebar w-[240px] border-r flex flex-col gap-1 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background: var(--sidebar-bg); border-color: var(--border-color);">
+            <div style="padding: 18px 14px 8px;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:0 8px;display:block;">Navigation</span>
+            </div>
+            <nav style="padding: 4px 10px; display:flex; flex-direction:column; gap:4px; flex:1;">
+                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left active" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box"><i class="bi bi-grid-1x2-fill"></i></div> Dashboard
+                </button>
+                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box"><i class="bi bi-tools"></i></div> Equipment
+                </button>
+                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box"><i class="bi bi-megaphone-fill"></i></div> Concerns
+                </button>
+                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Court Booking
+                </button>
+                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></div> Events
+                </button>
+                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box"><i class="bi bi-clock-history"></i></div> My Activity
+                </button>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content flex-1 p-8 overflow-y-auto bg-green-50/30" style="background-color: var(--bg-color);">
+
+            <!-- PANEL 1: DASHBOARD -->
+            <div id="panel-dashboard" class="content-panel active">
+
+                <!-- Welcome Banner -->
+                <div style="background-image:linear-gradient(135deg, rgba(5,150,105,0.85), rgba(4,120,87,0.85)), url('brgy.png');background-size:cover;background-position:center;border-radius:20px;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;box-shadow:0 6px 24px rgba(5,150,105,0.22);position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:rgba(16,185,129,0.15);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-40px;left:40%;width:220px;height:110px;background:radial-gradient(ellipse,rgba(20,184,166,0.15) 0%,transparent 70%);"></div>
+                    <div style="position:relative;z-index:1;">
+                        <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0;">Welcome back, <span id="welcomeName">Resident</span>! 👋</h2>
+                    </div>
+                </div>
+
+                <!-- Stats Grid (admin-style colored border cards) -->
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;" class="user-stats-grid">
+                    <div class="user-stat-card" onclick="showPanel('equipment')" style="border-left:4px solid #3b82f6;">
+                        <div class="user-stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe; color:#3b82f6; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-check-fill"></i></div>
+                        <div>
+                            <div class="user-stat-label">Active Borrowings</div>
+                            <div class="user-stat-value" id="stat-equipment" style="color:#2563eb;">0</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card" onclick="showPanel('concerns')" style="border-left:4px solid #f59e0b;">
+                        <div class="user-stat-icon" style="background:#fffbeb;border:1px solid #fde68a; color:#f59e0b; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-box-fill"></i></div>
+                        <div>
+                            <div class="user-stat-label">Pending Concerns</div>
+                            <div class="user-stat-value" id="stat-concerns" style="color:#d97706;">0</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card" onclick="showPanel('booking')" style="border-left:4px solid #8b5cf6;">
+                        <div class="user-stat-icon" style="background:#f5f3ff;border:1px solid #ddd6fe; color:#8b5cf6; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-event-fill"></i></div>
+                        <div>
+                            <div class="user-stat-label">Upcoming Bookings</div>
+                            <div class="user-stat-value" id="stat-bookings" style="color:#7c3aed;">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;">
+                    <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:#3b82f6;">
+                        <span class="uqa-icon">📦</span>
+                        <div class="uqa-label">Borrow Equipment</div>
+                        <div class="uqa-sub">Request barangay items</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                    <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:#f59e0b;">
+                        <span class="uqa-icon">💬</span>
+                        <div class="uqa-label">Report a Concern</div>
+                        <div class="uqa-sub">Submit issues or feedback</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                    <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:#8b5cf6;">
+                        <span class="uqa-icon">📅</span>
+                        <div class="uqa-label">Book the Court</div>
+                        <div class="uqa-sub">Reserve a time slot</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                    <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:#10b981;">
+                        <span class="uqa-icon">🎉</span>
+                        <div class="uqa-label">Upcoming Events</div>
+                        <div class="uqa-sub">Barangay activities</div>
+                        <span class="uqa-arrow">→</span>
+                    </button>
+                </div>
+
+                <!-- Status Summary Row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <!-- My Status Card -->
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                            <div style="width:36px;height:36px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📊</div>
+                            <div>
+                                <div style="font-size:14px;font-weight:700;color:var(--text-main);">My Overview</div>
+                                <div style="font-size:11px;color:var(--text-muted);">Your service activity</div>
+                            </div>
+                        </div>
+                            <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('equipment')">
+                                <div class="px-4 py-3 flex justify-between items-center bg-blue-50/50 dark:bg-blue-900/10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">📦</span>Active Borrowings</span>
+                                    <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:#3b82f6;">—</span>
+                                </div>
+                            </div>
+                            <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('concerns')">
+                                <div class="px-4 py-3 flex justify-between items-center bg-amber-50/50 dark:bg-amber-900/10 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">💬</span>Open Concerns</span>
+                                    <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:#f59e0b;">—</span>
+                                </div>
+                            </div>
+                            <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('booking')">
+                                <div class="px-4 py-3 flex justify-between items-center bg-purple-50/50 dark:bg-purple-900/10 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">📅</span>Upcoming Bookings</span>
+                                    <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#8b5cf6;">—</span>
+                                </div>
+                            </div>
+                    </div>
+                    <!-- Quick Info Card -->
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏘️</div>
+                                <div>
+                                    <div style="font-size:14px;font-weight:700;color:var(--text-main);">Barangay Services</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Available to residents</div>
+                                </div>
+                            </div>
+                            <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;">ACTIVE</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:16px;">📦</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Equipment Lending</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Chairs, tables & more</div>
+                                </div>
+                                <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:16px;">🏀</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Court Reservations</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Basketball & Multi-purpose</div>
+                                </div>
+                                <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:16px;">💬</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Citizen Concerns</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">Report issues 24/7</div>
+                                </div>
+                                <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: EQUIPMENT -->
+            <div id="panel-equipment" class="content-panel">
+                <div class="mb-8 border-b pb-6 flex justify-between items-end flex-wrap gap-4" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-emerald-600 mb-2">📦 Equipment Borrowing</h2>
+                        <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <div style="position:relative;">
+                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;">🔍</span>
+                        <input
+                            id="equipmentSearchInput"
+                            type="text"
+                            placeholder="Search equipment by name or category..."
+                            oninput="filterEquipmentGrid()"
+                            style="width:100%;padding:12px 16px 12px 44px;border:2px solid #d1fae5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(16,185,129,0.07);transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='#059669'"
+                            onblur="this.style.borderColor='#d1fae5'"
+                        >
+                    </div>
+                    <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
+                </div>
+                <div class="mb-8"><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;" id="equipmentGrid"></div></div>
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-4" style="gap:12px;flex-wrap:wrap;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-xl">📋</div>
+                            <div><h3 class="text-xl font-bold text-gray-800 dark:text-white">My Borrowing History</h3><p class="text-xs text-gray-500">Track all your equipment requests</p></div>
+                        </div>
+                        <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
+                            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
+                            <input
+                                id="borrowingSearchInput"
+                                type="text"
+                                placeholder="Search borrowings..."
+                                oninput="filterBorrowingsList()"
+                                style="width:100%;padding:9px 12px 9px 36px;border:2px solid #d1fae5;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#111;box-sizing:border-box;transition:border-color 0.2s;"
+                                onfocus="this.style.borderColor='#059669'"
+                                onblur="this.style.borderColor='#d1fae5'"
+                            >
+                        </div>
+                    </div>
+                    <p id="borrowingSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No borrowing records match your search.</p>
+                    <div id="myBorrowingsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"><p class="text-gray-500 italic col-span-full">No borrowing history yet.</p></div>
+                </div>
+            </div>
+
+            <!-- PANEL 3: CONCERNS -->
+            <div id="panel-concerns" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="panel-header text-amber-500">💬 Submit a Concern</h2>
+                    <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
+                </div>
+                
+                <div class="flex flex-col gap-8 items-stretch">
+                    
+                    <!-- Form Secton -->
+                    <div class="w-full glass-card overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-5 border-b" style="border-color: var(--border-color);">
+                            <h3 class="text-base font-extrabold text-white">📝 New Report</h3>
+                            <p class="text-xs text-amber-100 mt-0.5">Please provide details about your concern.</p>
+                        </div>
+                        <div class="p-5">
+                            <form id="concernForm" class="space-y-4">
+                                <div class="space-y-1.5">
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Title <span class="text-red-500">*</span></label>
+                                    <input type="text" id="concernTitle" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none" placeholder="e.g. Broken street light">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Category <span class="text-red-500">*</span></label>
+                                    <select id="concernCategory" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 transition-all outline-none">
+                                        <option value="" disabled selected>Select a category...</option>
+                                        <option value="Road Issue">🚧 Road Issue / Pothole</option>
+                                        <option value="Electric">⚡ Electric / Power Outage</option>
+                                        <option value="Fire">🔥 Fire Hazard / Emergency</option>
+                                        <option value="Water Leak">💧 Water Leak / Broken Pipe</option>
+                                        <option value="Waste & Cleanliness">🗑️ Waste & Cleanliness</option>
+                                        <option value="Safety & Security">🛡️ Safety & Security</option>
+                                        <option value="Noise Complaint">🔊 Noise Complaint</option>
+                                        <option value="Other">📝 Other</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Specific Location <span class="text-red-500">*</span></label>
+                                    <input type="text" id="concernLocation" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Detailed Description <span class="text-red-500">*</span></label>
+                                    <textarea id="concernDescription" required rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
+                                </div>
+                                <div class="space-y-1.5 p-4 bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                                    <label class="block text-sm font-bold mb-1">📷 Attach Photo <span class="text-red-500">*</span></label>
+                                    <p class="text-[11px] opacity-80 mb-3 leading-relaxed">Adding an image helps the admin understand and address your concern faster.</p>
+                                    <div id="imagePreviewContainer" class="hidden mb-3 relative inline-block">
+                                        <img id="concernImagePreview" src="" alt="Preview" class="max-w-full h-32 rounded-lg border-2 border-amber-300 dark:border-amber-600 shadow-sm object-cover">
+                                        <button type="button" onclick="clearImagePreview()" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">✕</button>
+                                    </div>
+                                    <input type="file" id="concernImage" accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white dark:file:bg-gray-800 file:text-amber-600 dark:file:text-amber-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
+                                </div>
+                                
+                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl text-white bg-amber-500 hover:bg-amber-600 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none">
+                                    Submit Report →
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="w-full glass-card overflow-hidden">
+                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);">
+                            <h3 class="text-base font-bold" style="color: var(--text-main);">📋 Report History</h3>
+                            <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
+                        </div>
+                        <div class="p-6">
+                            <div id="myConcernsList" class="grid grid-cols-1 md:grid-cols-2 gap-6"><p style="color: var(--text-muted);" class="italic text-sm">Loading concerns...</p></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PANEL 4: COURT BOOKING -->
+            <div id="panel-booking" class="content-panel">
+                <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Booking</h2>
+                        <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
+                    </div>
+                    <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95">🏀 Basketball Court</button>
+                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);">🏢 Multi-Purpose Hall</button>
+                    </div>
+                </div>
+                <div class="glass-card p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
+                        <div class="flex gap-2">
+                            <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">←</button>
+                            <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">→</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 mb-3">
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
+                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
+                    </div>
+                    <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
+                    <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>Available</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-purple-100 border border-purple-300 rounded"></div>Brgy Event</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>Booked</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
+                    </div>
+                </div>
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Active Reservations</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming court bookings.</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="myReservationsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"><p style="color: var(--text-muted);" class="italic text-sm">Loading reservations...</p></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PANEL 5: EVENTS -->
+            <div id="panel-events" class="content-panel">
+                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
+                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2">🎉 Upcoming Court Events</h2>
+                    <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
+                </div>
+                <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"><p class="text-gray-500 italic col-span-full">Loading events...</p></div>
+            </div>
+
+            
+            <!-- PANEL: PROFILE -->
+            <div id="panel-profile" class="content-panel container mt-6 max-w-5xl mx-auto px-4 lg:px-8">
+                <!-- Hero Banner -->
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">👤</div>
+                        <div>
+                            <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Profile</div>
+                            <div style="font-size:13px;color:#94a3b8;">Manage your personal information</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ── PROFILE TAB ── -->
+                <div id="stab-content-profile">
+                    <!-- Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                            <span style="font-size:15px;">👤</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="standaloneProfileForm">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Full Name</label>
+                                        <input type="text" id="p-fullName" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Email Address</label>
+                                        <input type="email" id="p-email" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Contact Number</label>
+                                        <input type="text" id="p-phone" placeholder="09XX XXX XXXX" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Address / Location</label>
+                                        <input type="text" id="p-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Username</label>
+                                    <input type="text" id="p-username" disabled style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-muted);background:var(--bg-color);cursor:not-allowed;outline:none;">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;">✔ Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+            
+
+<!-- ── PASSWORD TAB ── -->
+                <div id="stab-content-password" style="margin-top:24px;" class="hidden">
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(59,130,246,0.06),transparent);">
+                            <span style="font-size:15px;">🔑</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Change Password</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="settingsPasswordForm" style="max-width:420px;">
+                                <div style="margin-bottom:16px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Current Password</label>
+                                    <input type="password" id="s-currentPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <div style="margin-bottom:16px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">New Password</label>
+                                    <input type="password" id="s-newPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Confirm New Password</label>
+                                    <input type="password" id="s-confirmPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3);transition:all 0.2s;">🔑 Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Dashboard - Barangay Sta. Lucia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
+    <script src="https://cdn.tailwindcss.com"></script><script>tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }</script>
+    <style>
+        :root {
+            --bg-color: #f0fdf4; --sidebar-bg: #ffffff; --text-main: #1f2937;
+            --text-muted: #6b7280; --panel-bg: #ffffff; --border-color: #e5e7eb;
+            --primary: #10b981; --primary-hover: #059669; --nav-hover-bg: #ecfdf5;
+            --nav-active-bg: linear-gradient(135deg, #10b981, #059669); --nav-active-text: #ffffff;
+            --input-bg: #f9fafb; --input-border: #d1fae5; --input-focus: #059669;
+        }
+        [data-theme="dark"] {
+            --bg-color: #0f172a; --sidebar-bg: #1e293b; --text-main: #f1f5f9;
+            --text-muted: #94a3b8; --panel-bg: #1e293b; --border-color: #334155;
+            --primary: #10b981; --nav-hover-bg: #334155;
+            --nav-active-bg: linear-gradient(135deg, #059669, #047857); --nav-active-text: #ffffff;
+            --input-bg: #0f172a; --input-border: #334155; --input-focus: #10b981;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
+        [data-theme="dark"] .dashboard-header { background-color: #1e293b; border-color: #334155; box-shadow: none; }
+        [data-theme="dark"] .sidebar { background-color: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .nav-item { color: #cbd5e1; }
+        [data-theme="dark"] .nav-item:hover { background-color: #334155; color: #e2e8f0; }
+        [data-theme="dark"] .nav-item .nav-icon { background-color: #0f172a; color: #10b981; }
+        [data-theme="dark"] .nav-item:hover .nav-icon { background-color: #1e3a5f; }
+        .nav-item.active { background: var(--nav-active-bg) !important; color: var(--nav-active-text) !important; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .nav-item.active .nav-icon { background: rgba(255,255,255,0.2) !important; color: white !important; }
+        .content-panel { display: none !important; animation: fadeIn 0.3s ease; }
+        .content-panel.active { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card { 
+            background-color: var(--panel-bg); 
+            border: 1px solid rgba(0, 0, 0, 0.06); 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05); 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease; 
+        }
+        [data-theme="dark"] .glass-card {
+            background-color: rgba(31, 41, 55, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08);
+        }
+        [data-theme="dark"] .glass-card:hover {
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ── USER STAT CARDS ── */
+        .user-stat-card {
+            background: var(--panel-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            cursor: pointer;
+        }
+        .user-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .user-stat-icon {
+            width: 50px; height: 50px;
+            border-radius: 13px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; flex-shrink: 0;
+        }
+        .user-stat-value {
+            font-size: 30px; font-weight: 800; line-height: 1;
+        }
+        .user-stat-label {
+            font-size: 11px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            font-weight: 700; margin-top: 4px;
+        }
+
+        /* ── QUICK ACTION CARDS ── */
+        .user-quick-card {
+            background: var(--panel-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            width: 100%;
+        }
+        .user-quick-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--uqa-color, #10b981);
+        }
+        .user-quick-card:hover {
+            border-color: var(--uqa-color, #10b981);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .uqa-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+        .uqa-label { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+        .uqa-sub { font-size: 12px; color: var(--text-muted); }
+        .uqa-arrow {
+            font-size: 20px; color: var(--uqa-color, #10b981);
+            position: absolute; bottom: 12px; right: 12px;
+            transition: transform 0.2s; display: block;
+        }
+        .user-quick-card:hover .uqa-arrow { transform: translateX(3px); }
+
+        /* ── SIDEBAR NAV ICON BOX (admin style) ── */
+        .nav-item .nav-icon-box {
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            background: #f0fdf4;
+            border: 1.5px solid #bbf7d0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        [data-theme="dark"] .nav-item .nav-icon-box {
+            background: #1e293b; border-color: #334155;
+        }
+        .nav-item:hover .nav-icon-box { background: #dcfce7; border-color: #86efac; }
+        [data-theme="dark"] .nav-item:hover .nav-icon-box { background: #334155; border-color: #475569; }
+        .nav-item.active .nav-icon-box { background: rgba(255,255,255,0.25) !important; border-color: rgba(255,255,255,0.3) !important; }
+        /* Professional field styling */
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .form-input { width: 100%; padding: 11px 14px; background: var(--input-bg); border: 1.5px solid var(--input-border); border-radius: 12px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text-main); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+        .form-textarea { resize: none; min-height: 100px; }
+        /* Section headers */
+        .panel-header { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+        .panel-subheader { font-size: 14px; color: var(--text-muted); }
+        [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        [data-theme="dark"] .bg-white { background-color: #1e293b !important; }
+        [data-theme="dark"] .text-gray-800 { color: #f1f5f9 !important; }
+        [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
+        [data-theme="dark"] .bg-gray-50 { background-color: #0f172a !important; }
+
+        /* ── EXTRA DARK MODE FIXES (hardcoded inline style overrides) ── */
+        /* Dashboard header */
+        [data-theme="dark"] .dashboard-header { background-color: #1e293b !important; border-color: #334155 !important; }
+        /* User stat cards */
+        [data-theme="dark"] .user-stat-card { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+        [data-theme="dark"] .user-stat-label { color: #94a3b8 !important; }
+        /* Quick action cards */
+        [data-theme="dark"] .user-quick-card { background: #1e293b !important; border-color: #334155 !important; }
+        [data-theme="dark"] .uqa-label { color: #e2e8f0 !important; }
+        [data-theme="dark"] .uqa-sub { color: #94a3b8 !important; }
+        /* Glass cards */
+        [data-theme="dark"] .glass-card { border-color: #334155 !important; }
+        /* Text on glass cards */
+        [data-theme="dark"] .glass-card h3,
+        [data-theme="dark"] .glass-card .text-gray-800 { color: #f1f5f9 !important; }
+        [data-theme="dark"] .glass-card .text-gray-500,
+        [data-theme="dark"] .glass-card p { color: #94a3b8 !important; }
+        /* Bottom tab nav */
+        [data-theme="dark"] .bottom-tab-nav { background: #1e293b !important; border-top-color: #334155 !important; }
+        /* Tailwind text color overrides */
+        [data-theme="dark"] .text-gray-900 { color: #f1f5f9 !important; }
+        [data-theme="dark"] .text-gray-700 { color: #cbd5e1 !important; }
+        [data-theme="dark"] .text-gray-500 { color: #94a3b8 !important; }
+        [data-theme="dark"] .text-gray-400 { color: #64748b !important; }
+        [data-theme="dark"] .bg-gray-100 { background-color: #1e293b !important; }
+        [data-theme="dark"] .border-gray-200 { border-color: #334155 !important; }
+        [data-theme="dark"] .border-gray-300 { border-color: #475569 !important; }
+        [data-theme="dark"] .divide-gray-100 > * + * { border-color: #334155 !important; }
+        /* Modal in dark mode */
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] [class*="modal"] { background: #1e293b !important; border-color: #334155 !important; }
+        /* Notification bell dropdown */
+        [data-theme="dark"] #bellDropdownContainer { background: #1e293b !important; border-color: #334155 !important; }
+        [data-theme="dark"] #bellDropdownContainer h3 { color: #f1f5f9 !important; }
+        /* Override inline white button backgrounds in modals */
+        [data-theme="dark"] button[style*="background:#ffffff"],
+        [data-theme="dark"] button[style*="background: #ffffff"] {
+            background: #334155 !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+        /* Status badges */
+        [data-theme="dark"] .text-emerald-800 { color: #34d399 !important; }
+        [data-theme="dark"] .bg-emerald-50 { background-color: rgba(16,185,129,0.08) !important; }
+        [data-theme="dark"] .border-emerald-200 { border-color: rgba(16,185,129,0.25) !important; }
+
+        /* ── MOBILE HEADER CONTROLS ── */
+        .mobile-header-controls {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+        .mobile-header-btn {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .mobile-header-btn:hover, .mobile-header-btn.active-btn {
+            background: var(--nav-hover-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .mobile-header-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 14px;
+            border: 2px solid var(--input-border);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ── RESPONSIVE MOBILE ── */
+        @media (max-width: 768px) {
+            .dashboard-header .header-brand, .dashboard-header .header-right { display: none !important; }
+            .dashboard-header { height: 60px; padding: 0 16px; }
+            .dashboard-header .header-left { gap: 12px; width: 100%; }
+            .mobile-header-controls { display: flex !important; }
+            .sidebar { display: none !important; }
+            .main-content { padding: 16px 16px calc(120px + env(safe-area-inset-bottom)) !important; -webkit-overflow-scrolling: touch; } /* Space for bottom nav */
+            .glass-card { border-radius: 16px; padding: 16px !important; }
+            .panel-header { font-size: 22px; }
+
+            /* Grid to feed */
+            .grid:not(.grid-cols-7):not(.grid-cols-2) { grid-template-columns: 1fr !important; }
+            .user-stats-grid { grid-template-columns: 1fr !important; }
+
+            /* Status summary row */
+            #panel-dashboard > div:last-child { grid-template-columns: 1fr !important; }
+
+            /* Quick action grid */
+            #panel-dashboard > div:nth-child(3) { grid-template-columns: repeat(2, 1fr) !important; }
+
+            /* Bottom Tab Nav */
+            .bottom-tab-nav {
+                position: fixed;
+                bottom: 0; left: 0; width: 100%;
+                background: var(--sidebar-bg);
+                border-top: 1px solid var(--border-color);
+                display: flex; justify-content: space-around; align-items: center;
+                padding: 0;
+                height: calc(65px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                z-index: 150;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            }
+            .tab-btn {
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                flex: 1; background: transparent; border: none; color: var(--text-muted);
+                cursor: pointer; transition: color 0.2s ease; gap: 4px;
+            }
+            .tab-btn .tab-icon { font-size: 20px; line-height: 1; display:flex; align-items:center; justify-content:center; }
+            .tab-btn span.tab-label { font-size: 10px; font-weight: 600; font-family: inherit; }
+            .tab-btn.active { color: var(--primary); }
+
+            /* ── SETTINGS PANEL MOBILE ── */
+            .settings-hero { padding: 20px 18px !important; border-radius: 16px !important; }
+            .settings-hero-title { font-size: 18px !important; }
+            .settings-tabs-strip { padding: 12px 0 4px !important; }
+            .settings-card-head { padding: 13px 16px !important; }
+            .settings-card-body { padding: 16px !important; }
+            .settings-stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+        }
+    </style>
+    <link rel="icon" type="image/jpeg" href="barangay.jpg">
+</head>
+<body class="flex flex-col h-screen w-full">
+
+    <!-- HEADER -->
+    <header class="dashboard-header bg-white border-b border-emerald-200 px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100] shadow-sm">
+        <div class="header-left flex items-center gap-4">
+            <img src="barangay.jpg" alt="Logo" class="w-[46px] h-[46px] rounded-xl border-2 border-emerald-200 object-cover">
+            <!-- Mobile name shown next to logo -->
+            <div class="flex flex-col md:hidden">
+                <span class="text-[13px] font-extrabold text-emerald-800 leading-tight" id="mobileUserName">Resident</span>
+                <span class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Resident Portal</span>
+            </div>
+            <div class="header-brand flex flex-col hidden md:flex">
+                <span class="brand text-[18px] font-extrabold text-emerald-800">Barangay Sta. Lucia</span>
+                <span class="subtitle text-[11px] text-gray-500 uppercase tracking-widest font-semibold">Resident Portal</span>
+            </div>
+            <!-- MOBILE RIGHT CONTROLS -->
+            <div class="mobile-header-controls">
+                <div class="mobile-header-avatar" onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
+                <!-- Mobile Bell -->
+                <button class="mobile-header-btn relative" onclick="toggleBellDropdown()" title="Notifications" style="font-size: 16px;">
+                    🔔
+                    <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
+                </button>
+                <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
+                <button class="mobile-header-btn" onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" title="Settings">⚙️</button>
+                
+            </div>
+        </div>
+        <div class="header-right flex items-center gap-3 hidden md:flex">
+            <div class="user-menu flex items-center gap-3 pr-3 border-r border-gray-200 cursor-pointer relative" onclick="toggleProfileDropdown(event)" id="topProfileMenuBtn">
+                <div class="user-info text-right">
+                    <div class="user-name text-[14px] font-bold text-gray-800" id="sidebarUserName">User</div>
+                    <div class="user-role text-[11px] text-emerald-500 font-semibold uppercase">Resident</div>
+                </div>
+                <div class="user-avatar w-[40px] h-[40px] rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center font-extrabold text-[15px] border-[3px] border-emerald-200">
+                    <span id="userInitial">U</span>
+                </div>
+                <!-- Profile Dropdown -->
+                <div id="profileDropdownContainer" class="hidden absolute top-[52px] right-0 w-[200px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
+                    <div class="px-4 py-3 border-b flex justify-between items-center bg-gray-50 dark:bg-slate-900 border-gray-100 dark:border-slate-700">
+                        <p class="text-xs text-gray-500 font-semibold mb-0">Account Menu</p>
+                    </div>
+                    <div class="py-1 bg-white dark:bg-slate-800">
+                        <button onclick="showPanel('profile'); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-bold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 flex items-center gap-2 py-3 px-4 transition-colors"><span class="text-lg">👤</span> My Profile</button>
+                    </div>
+                    <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
+                        <button onclick="logoutUser()" class="w-full text-left font-bold text-red-600 text-[14px] hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 py-3 px-4 transition-colors"><span class="text-lg">🚪</span> Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">🌙</button>
+            <button onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" id="desktopSettingsBtn" title="Settings" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">⚙️</button>
+            
         </div>
     </header>
 
@@ -751,6 +1540,120 @@
 
                 
             </div>
+
+            <!-- PANEL 6: SETTINGS -->
+            <div id="panel-settings" class="content-panel">
+
+                <!-- Hero Banner (matches admin-settings style) -->
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                    <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(16,185,129,0.2) 0%,transparent 70%);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-60px;left:30%;width:300px;height:150px;background:radial-gradient(ellipse,rgba(59,130,246,0.1) 0%,transparent 70%);"></div>
+                    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">⚙️</div>
+                        <div>
+                            <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Settings</div>
+                            <div style="font-size:13px;color:#94a3b8;">Manage your profile, security, and account preferences</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Horizontal Tab Strip (mobile-friendly, like admin-settings mobile tabs) -->
+                <div class="settings-tabs-strip" style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0 12px;margin-bottom:16px;scrollbar-width:none;">
+                    <button id="stab-profile" onclick="showSettingsTab('profile')" class="settings-tab-pill active" style="display:none;">👤 Profile</button>
+                    <button id="stab-password" onclick="showSettingsTab('password')" class="settings-tab-pill" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;cursor:pointer;background:var(--panel-bg);color:var(--text-muted);font-family:inherit;transition:all 0.2s;">🔑 Password</button>
+                    <button id="stab-security" onclick="showSettingsTab('security')" class="settings-tab-pill" style="display:none;">🔐 Security</button>
+                    <button id="stab-account" onclick="showSettingsTab('account')" class="settings-tab-pill" style="flex-shrink:0;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;cursor:pointer;background:var(--panel-bg);color:var(--text-muted);font-family:inherit;transition:all 0.2s;">🛡️ Account</button>
+                </div>
+
+                <!-- My Activity Stats Row -->
+                <div class="settings-stats-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📦</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#059669;line-height:1;" id="s-statRequests">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Requests</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💬</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#d97706;line-height:1;" id="s-statConcerns">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Concerns</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📅</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#1d4ed8;line-height:1;" id="s-statBookings">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Bookings</div></div>
+                    </div>
+                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:16px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="width:40px;height:40px;border-radius:11px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✅</div>
+                        <div><div style="font-size:20px;font-weight:800;color:#7c3aed;line-height:1;" id="s-statApproved">0</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-top:2px;">Approved</div></div>
+                    </div>
+                </div>
+
+                <!-- ── PROFILE TAB ── -->
+                <div id="stab-content-profile" style="display:none;">
+                    <!-- Card -->
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                            <span style="font-size:15px;">👤</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="settingsProfileForm">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Full Name</label>
+                                        <input type="text" id="s-fullName" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Email Address</label>
+                                        <input type="email" id="s-email" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Contact Number</label>
+                                        <input type="text" id="s-phone" placeholder="09XX XXX XXXX" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Address / Location</label>
+                                        <input type="text" id="s-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                    </div>
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Username</label>
+                                    <input type="text" id="s-username" disabled style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-muted);background:var(--bg-color);cursor:not-allowed;outline:none;">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;">✔ Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── PASSWORD TAB ── -->
+                <div id="stab-content-password" class="hidden">
+                    <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(59,130,246,0.06),transparent);">
+                            <span style="font-size:15px;">🔑</span>
+                            <span style="font-size:14px;font-weight:700;color:var(--text-main);">Change Password</span>
+                        </div>
+                        <div class="settings-card-body" style="padding:20px 22px;">
+                            <form id="settingsPasswordForm" style="max-width:420px;">
+                                <div style="margin-bottom:16px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Current Password</label>
+                                    <input type="password" id="s-currentPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <div style="margin-bottom:16px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">New Password</label>
+                                    <input type="password" id="s-newPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <div style="margin-bottom:20px;">
+                                    <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Confirm New Password</label>
+                                    <input type="password" id="s-confirmPassword" placeholder="••••••••" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                </div>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3);transition:all 0.2s;">🔑 Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+</div>
 
             <!-- PANEL 6: SETTINGS -->
             <div id="panel-settings" class="content-panel">
