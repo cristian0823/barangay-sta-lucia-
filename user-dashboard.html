@@ -1514,6 +1514,7 @@
             window.scrollTo(0, 0);
 
             if (panelId === 'history') loadHistoryView();
+            if (panelId === 'profile') loadProfilePanel();
 
             switch (panelId) {
                 case 'dashboard': loadDashboardStats(); break;
@@ -2078,8 +2079,11 @@
                 : '';
             document.getElementById('borrowMaxHelp').innerHTML = '📦 Max: ' + item.available + ' units available' + pendingNote;
             document.getElementById('borrowPurpose').value = '';
+                        // Ensure we have hydrated data
+            if (!user.phone) await fetchFullProfileData();
             document.getElementById('borrowerFullName').value = user.name || '';
-            document.getElementById('borrowerContact').value = '';
+            document.getElementById('borrowerContact').value = user.phone || '';
+            if (document.getElementById('borrowerAddress')) document.getElementById('borrowerAddress').value = user.address || '';
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
             document.getElementById('borrowModal').classList.remove('hidden');
@@ -3038,7 +3042,28 @@
             if (tab === 'security') loadDashboardTOTPStatus();
         }
 
-        async function loadSettingsView() {
+                async function fetchFullProfileData() {
+            try {
+                const { data, error } = await supabase.from('users').select('*').eq('username', user.username).maybeSingle();
+                if (data) {
+                    user.email = data.email || '';
+                    user.phone = data.phone || data.contact_number || '';
+                    user.address = data.address || '';
+                    user.name = data.full_name || data.fullName || data.name || '';
+                    window.user = user;
+                }
+            } catch(e) { console.error('Error hydrating user details', e); }
+        }
+
+        async function loadProfilePanel() {
+            await fetchFullProfileData();
+            if (document.getElementById('p-fullName')) document.getElementById('p-fullName').value = user.name || '';
+            if (document.getElementById('p-email')) document.getElementById('p-email').value = user.email || '';
+            if (document.getElementById('p-phone')) document.getElementById('p-phone').value = user.phone || '';
+            if (document.getElementById('p-address')) document.getElementById('p-address').value = user.address || '';
+        }
+
+async function loadSettingsView() {
             // Fill profile fields
             document.getElementById('s-fullName').value = user.full_name || user.fullName || user.name || '';
             document.getElementById('s-email').value = user.email || '';
