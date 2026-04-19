@@ -316,7 +316,7 @@
                     <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
                 <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
-                <button class="mobile-header-btn" onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" title="Settings">⚙️</button>
+                
                 
             </div>
         </div>
@@ -344,7 +344,7 @@
             </div>
 
             <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">🌙</button>
-            <button onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" id="desktopSettingsBtn" title="Settings" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">⚙️</button>
+            
             
         </div>
     </header>
@@ -1099,7 +1099,7 @@
                     <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
                 <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
-                <button class="mobile-header-btn" onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" title="Settings">⚙️</button>
+                
                 
             </div>
         </div>
@@ -1127,7 +1127,7 @@
             </div>
 
             <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">🌙</button>
-            <button onclick="showPanel('profile'); setTimeout(()=>showSettingsTab('password'), 50);" id="desktopSettingsBtn" title="Settings" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">⚙️</button>
+            
             
         </div>
     </header>
@@ -2510,7 +2510,7 @@
 
 
         // Logout
-        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
+        document.getElementById('logoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
         document.getElementById('mobileLogoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); logoutUser(); });
 
         // ==========================================
@@ -3327,7 +3327,7 @@
             document.getElementById('borrowModal').classList.remove('hidden');
         }
 
-        document.getElementById('concernForm').addEventListener('submit', async function (e) {
+        document.getElementById('concernForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]'); 
             btn.disabled = true; 
@@ -4058,7 +4058,7 @@
             } catch(e) { console.error('Settings stats error', e); }
         }
 
-        document.getElementById('settingsProfileForm').addEventListener('submit', async function(e) {
+        document.getElementById('settingsProfileForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
             btn.disabled = true; btn.innerHTML = 'Saving...';
@@ -4072,7 +4072,7 @@
             showToast(result.message, result.success ? 'success' : 'error');
         });
 
-        document.getElementById('settingsPasswordForm').addEventListener('submit', async function(e) {
+        document.getElementById('settingsPasswordForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             const np = document.getElementById('s-newPassword').value;
             const cp = document.getElementById('s-confirmPassword').value;
