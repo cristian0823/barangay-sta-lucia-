@@ -422,76 +422,7 @@ async function resetPassword(username, newPassword) {
     }
 }
 
-// ============================================================
-// PASSWORD RESET VIA EMAIL + OTP  (Supabase Edge Function)
-// ============================================================
-// The OTP is sent from a real backend server (Supabase Edge Function)
-// using Resend email API. No third-party SDK needed here.
 
-// Your Supabase project URL (from supabase-config.js)
-
-// Sends a 6-digit OTP to the user's registered email address via Supabase Auth
-async function sendPasswordResetOTP(email) {
-    const supabaseAvailable = await isSupabaseAvailable();
-    email = email.trim().toLowerCase();
-
-    let userFound = false;
-
-    if (supabaseAvailable) {
-        const { data: userRow } = await supabase
-            .from('users')
-            .select('id, email')
-            .ilike('email', email)
-            .maybeSingle();
-        userFound = !!userRow;
-    } else {
-        initializeLocalUsers();
-        const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
-        userFound = users.some(u => (u.email || '').toLowerCase() === email);
-    }
-
-    if (!userFound) {
-        return { success: false, message: 'No account found with that email address.' };
-    }
-
-    // Generate a secure 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedCode = await hashPassword(otpCode);
-
-    // Store email, hash, and timestamp for verification step
-    sessionStorage.setItem('otp_email', email);
-    sessionStorage.setItem('otp_hash', hashedCode);
-    sessionStorage.setItem('otp_timestamp', Date.now().toString());
-
-    // Send OTP directly from frontend using Official EmailJS SDK (Bypasses Domain Restrictions)
-    try {
-        await new Promise((resolve, reject) => {
-            if (window.emailjs) return resolve();
-            const script = document.createElement('script');
-            script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-
-        // Initialize Native EmailJS SDK
-        emailjs.init({ publicKey: "DPEG6BGMwO8ExGg_e" });
-
-        // Send payload forcefully
-        await emailjs.send("service_th96vue", "template_l72erqi", {
-            email: email,
-            passcode: otpCode,
-            otp: otpCode,
-            message: otpCode,
-            Company_Name: "Barangay Sta. Lucia"
-        });
-
-        return { success: true, message: `✅ A 6-digit code has been sent to your email.` };
-    } catch (err) {
-        console.error('EmailJS direct SDK error:', err);
-        return { success: false, message: 'Provider error. Please check EmailJS configuration.' };
-    }
-}
 
 // ── EMAIL NOTIFICATION HELPER ──
 // Sends a targeted email to a specific resident using the existing EmailJS template.
@@ -539,80 +470,7 @@ async function broadcastEmailToAllResidents(title, message, details) {
     }
 }
 
-// Verifies the custom OTP
-async function verifyPasswordResetOTP(email, enteredCode) {
-    email = email.trim().toLowerCase();
-    const storedEmail = (sessionStorage.getItem('otp_email') || '').toLowerCase();
-    const storedHash = sessionStorage.getItem('otp_hash');
-    const storedTime = parseInt(sessionStorage.getItem('otp_timestamp') || '0', 10);
 
-    if (storedEmail !== email) {
-        return { success: false, message: 'Email mismatch. Please restart the process.' };
-    }
-    if (!storedHash || !storedTime) {
-        return { success: false, message: 'No OTP session found. Please request a new code.' };
-    }
-
-    // Check expiration (10 minutes)
-    if (Date.now() - storedTime > 10 * 60 * 1000) {
-        return { success: false, message: 'Verification code has expired. Please request a new one.' };
-    }
-
-    // Verify hash
-    const enteredHash = await hashPassword(enteredCode.trim());
-    if (enteredHash !== storedHash) {
-        return { success: false, message: 'Incorrect code. Please try again.' };
-    }
-
-    return { success: true };
-}
-
-// Resets the password (OTP is usually verified in UI prior to this)
-async function resetPasswordWithOTP(email, enteredCode, newPassword) {
-    email = email.trim().toLowerCase();
-    const storedEmail = (sessionStorage.getItem('otp_email') || '').toLowerCase();
-
-    if (storedEmail !== email) {
-        return { success: false, message: 'Email mismatch. Please restart the process.' };
-    }
-
-    if (enteredCode !== '__supabase_verified__') {
-        const verifyRes = await verifyPasswordResetOTP(email, enteredCode);
-        if (!verifyRes.success) return verifyRes;
-    }
-
-    // OTP verified → reset the password in our custom users table
-    const supabaseAvailable = await isSupabaseAvailable();
-    const hashedPassword = await hashPassword(newPassword);
-
-    if (supabaseAvailable) {
-        const { data: userRow } = await supabase
-            .from('users')
-            .select('id')
-            .ilike('email', email)
-            .maybeSingle();
-        if (!userRow) return { success: false, message: 'User not found.' };
-        const { error } = await supabase
-            .from('users')
-            .update({ password: hashedPassword })
-            .eq('id', userRow.id);
-        if (error) return { success: false, message: 'Failed to reset password. Try again.' };
-    } else {
-        initializeLocalUsers();
-        const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY)) || [];
-        const idx = users.findIndex(u => (u.email || '').toLowerCase() === email);
-        if (idx === -1) return { success: false, message: 'User not found.' };
-        users[idx].password = hashedPassword;
-        localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-    }
-
-    sessionStorage.removeItem('otp_email');
-
-    if (typeof logActivity === 'function') {
-        logActivity('Password Reset', `Password reset via email OTP for: ${email}`);
-    }
-    return { success: true, message: 'Password reset successfully! You can now log in.' };
-}
 
 async function logoutUser() {
     try {
