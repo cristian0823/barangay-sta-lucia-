@@ -4635,22 +4635,9 @@
                     return;
                 }
                 if (emptyState) emptyState.style.display = 'none';
-                tbody.innerHTML = users.map(u => {
-                    const isSuspended = u.suspended_until && new Date(u.suspended_until) > new Date();
-                    const statusBadge = isSuspended
-                        ? '<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
-                        : '<span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Active</span>';
-                    const displayName = u.fullName || u.full_name || u.username;
-                    const phone = u.phone || u.contact_number || u.contactNumber || '';
-                    const address = u.address || '';
-                    return `<tr>
-                        <td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">${u.barangay_id || ''}</td>
-                        <td style="white-space:nowrap;"><strong>${displayName}</strong></td>
-                        <td style="font-size:13px;">${phone}</td>
-                        <td style="font-size:13px;color:#6b7280;">${u.email || ''}</td>
-                        <td style="font-size:12px;">${address}</td>
-                    </tr>`;
-                }).join('');
+                _allUsersList = users;
+                _usersPage = 1;
+                renderUsersPage();
             }
 
             //  BATCH UPLOAD FUNCTIONS 
@@ -5978,24 +5965,9 @@
                     return;
                 }
                 empty.style.display = 'none';
-
-                const statusColors = { pending: { bg: '#fef9c3', color: '#854d0e' }, approved: { bg: '#dcfce7', color: '#166534' }, booked: { bg: '#dcfce7', color: '#166534' }, rejected: { bg: '#fee2e2', color: '#991b1b' }, cancelled: { bg: '#f1f5f9', color: '#475569' } };
-                tbody.innerHTML = mpBookings.map(b => {
-                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
-                    const statusBadge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${b.status}</span>`;
-                    const timeStr = b.timeRange || b.time || '';
-                    const residentName = b.userName || b.user_name || b.username || 'Unknown';
-                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
-                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
-
-                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
-                        <td>${residentDisplay}</td>
-                        <td style="color:var(--text);">${b.date}</td>
-                        <td style="color:var(--text);">${timeStr}</td>
-                        <td style="color:var(--text);">${b.purpose || ''}</td>
-                        <td>${statusBadge}</td>
-                    </tr>`;
-                }).join('');
+                _allMpList = mpBookings;
+                _mpPage = 1;
+                renderMpPage();
             }
 
             async function loadAdminBookings() {
@@ -6077,36 +6049,9 @@
                     return;
                 }
                 empty.style.display = 'none';
-
-                tbody.innerHTML = allBookings.map(b => {
-                    const statusColors = {
-                        pending: { bg: '#fef9c3', color: '#854d0e' },
-                        approved: { bg: '#dcfce7', color: '#166534' },
-                        booked: { bg: '#dcfce7', color: '#166534' },
-                        rejected: { bg: '#fee2e2', color: '#991b1b' },
-                        cancelled: { bg: '#f1f5f9', color: '#475569' }
-                    };
-                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
-                    const statusBadge = `<span style="padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; background:${sc.bg}; color:${sc.color};">${b.status}</span>`;
-
-                    const venue = b.venueName || '';
-                    const timeStr = b.timeRange || b.time || '';
-
-                    const residentName = b.userName || b.user_name || b.username || 'Unknown';
-                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
-                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
-
-                    const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
-
-                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
-                    <td>${residentDisplay}</td>
-                    <td style="color:var(--text);">${venue}</td>
-                    <td style="color:var(--text);">${b.date}</td>
-                    <td style="color:var(--text);">${timeStr}</td>
-                    <td style="color:var(--text);">${b.purpose || ''}${adminComment}</td>
-                    <td>${statusBadge}</td>
-                </tr>`;
-                }).join('');
+                _allCourtList = allBookings;
+                _courtPage = 1;
+                renderCourtPage();
             }
 
             async function approveAdminBooking(bookingId) {
@@ -6805,11 +6750,6 @@
                     const concerns = await getAllConcerns();
                     _allAdminConcerns = concerns;
 
-                    if (!concerns.length) {
-                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;"> No concerns submitted yet</td></tr>';
-                        return;
-                    }
-
                     // Sort: unread first, then by date (oldest first for FCFS)
                     concerns.sort((a, b) => {
                         const aUnread = a.is_read === false ? 0 : 1;
@@ -6818,31 +6758,9 @@
                         return new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0);
                     });
 
-                    const statusColors = {
-                        pending: { bg: '#fef9c3', color: '#854d0e' },
-                        'in_progress': { bg: '#dbeafe', color: '#1e40af' },
-                        'in-progress': { bg: '#dbeafe', color: '#1e40af' },
-                        resolved: { bg: '#dcfce7', color: '#166534' },
-                        closed: { bg: '#f1f5f9', color: '#475569' }
-                    };
-
-                    tbody.innerHTML = concerns.map(c => {
-                        const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#374151' };
-                        const badge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${c.status}</span>`;
-                        const submittedAt = c.createdAt || c.created_at ? new Date(c.createdAt || c.created_at).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : '';
-                        const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || ''}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
-                        const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-                        const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;"> Replied</div>` : '';
-                        const hasImage = c.description && c.description.includes('[ATTACHED_IMAGE_DATA]') || c.imageUrl;
-                        const imgBadge = hasImage ? `<span style="margin-left:6px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:20px;font-weight:700;"> Photo</span>` : '';
-                        return `<tr data-cid="${c.id}" onclick="openConcernRespond(${c.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
-                        <td>${residentDisplay}</td>
-                        <td>${c.address || ''}</td>
-                        <td>${c.category || ''}</td>
-                        <td>${c.title || ''}${responseNote}${imgBadge}</td>
-                        <td>${date}</td>
-                    </tr>`;
-                    }).join('');
+                    _allConcernsList = concerns;
+                    _concernsPage = 1;
+                    renderConcernsPage();
                 } catch (e) {
                     console.error("loadConcerns crash:", e);
                     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
