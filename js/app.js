@@ -781,8 +781,8 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         // Immediately deduct available stock — first-come, first-served reservation
         await supabase.from('equipment').update({ available: item.available - quantity }).eq('id', equipmentId);
 
-        await logActivity('Borrow Request', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
-        await addNotification('admin', 'borrow', `User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
+        await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name}`);
+        await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -837,8 +837,8 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         borrowings.push(newBorrowing);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
-        logActivity('Borrow Request', `Local User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
-        await addNotification('admin', 'borrow', `Local User ${user.fullName || user.username} requested to borrow ${quantity}x ${item.name}`);
+        logActivity('Borrow Request', `Local User requested to borrow ${quantity}x ${item.name}`);
+        await addNotification('admin', 'borrow', `Local User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     }
 }
@@ -1127,7 +1127,7 @@ async function cancelBorrowingRequest(borrowingId) {
             if (eq) await supabase.from('equipment').update({ available: eq.available + borrowing.quantity }).eq('id', borrowing.equipment_id);
         }
         await supabase.from('borrowings').delete().eq('id', borrowingId);
-        await logActivity('Borrow Cancelled', `User ${user.fullName || user.username} cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
+        await logActivity('Borrow Cancelled', `User cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
     } else {
         // Local fallback
@@ -1183,7 +1183,7 @@ async function updateBorrowingRequest(borrowingId, updates) {
         const { error } = await supabase.from('borrowings').update(payload).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
 
-        await logActivity('Borrow Updated', `User ${user.fullName || user.username} updated their equipment request`);
+        await logActivity('Borrow Updated', `User updated their equipment request`);
         return { success: true, message: 'Request updated successfully' };
     } else {
         const borrowings = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
@@ -1212,7 +1212,7 @@ async function updateBorrowingRequest(borrowingId, updates) {
         if (updates.purpose !== undefined) borrowings[index].purpose = updates.purpose;
 
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
-        logActivity('Borrow Updated', `Local User ${user.fullName || user.username} updated their equipment request`);
+        logActivity('Borrow Updated', `Local User updated their equipment request`);
         return { success: true, message: 'Request updated successfully' };
     }
 }
@@ -1272,8 +1272,8 @@ async function submitConcern(category, title, description, address, imageFile = 
         const { error } = await supabase.from('concerns').insert([payload]);
 
         if (error) return { success: false, message: error.message };
-        await logActivity('Concern Submitted', `User ${user.fullName || user.username} submitted a concern: ${title}`);
-        await addNotification('admin', 'concern', `User ${user.fullName || user.username} submitted a concern: ${title}`);
+        await logActivity('Concern Submitted', `User submitted a concern: ${title}`);
+        await addNotification('admin', 'concern', `User submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
@@ -1299,8 +1299,8 @@ async function submitConcern(category, title, description, address, imageFile = 
         };
         concerns.push(newConcern);
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
-        logActivity('Concern Submitted', `Local User ${user.fullName || user.username} submitted a concern: ${title}`);
-        await addNotification('admin', 'concern', `Local User ${user.fullName || user.username} submitted a concern: ${title}`);
+        logActivity('Concern Submitted', `Local User submitted a concern: ${title}`);
+        await addNotification('admin', 'concern', `Local User submitted a concern: ${title}`);
         return { success: true, message: 'Concern submitted successfully' };
     }
 }
@@ -1467,7 +1467,7 @@ async function updateConcernRequest(concernId, updates) {
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
         if (error) return { success: false, message: error.message };
 
-        await logActivity('Concern Updated', `User ${user.fullName || user.username} updated a concern: ${payload.title || concern.title}`);
+        await logActivity('Concern Updated', `User updated a concern: ${payload.title || concern.title}`);
         return { success: true, message: 'Concern updated successfully' };
     } else {
         const concerns = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
@@ -1488,7 +1488,7 @@ async function updateConcernRequest(concernId, updates) {
         }
 
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
-        logActivity('Concern Updated', `Local User ${user.fullName || user.username} updated a concern`);
+        logActivity('Concern Updated', `Local User updated a concern`);
         return { success: true, message: 'Concern updated successfully' };
     }
 }
@@ -1743,8 +1743,8 @@ async function bookCourt(bookingData) {
             }]);
 
             if (error) throw error;
-            await logActivity('Court Booking Submitted', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
-            await addNotification('admin', 'booking', `User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
+            await logActivity('Court Booking Submitted', `User booked the ${venueLabel} for ${combinedTime}`);
+            await addNotification('admin', 'booking', `User booked the ${venueLabel} for ${combinedTime}`);
             broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
@@ -1767,8 +1767,8 @@ async function bookCourt(bookingData) {
     };
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-    logActivity('Court Booking Submitted', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
-    await addNotification('admin', 'booking', `Local User ${user.fullName || user.username} booked the ${venueLabel} for ${combinedTime}`);
+    logActivity('Court Booking Submitted', `Local User booked the ${venueLabel} for ${combinedTime}`);
+    await addNotification('admin', 'booking', `Local User booked the ${venueLabel} for ${combinedTime}`);
     broadcastSync();
     return { success: true, message: 'Venue booked (offline mode)' };
 }
@@ -1853,7 +1853,7 @@ async function updateCourtBooking(bookingId, updates) {
         const { error } = await supabase.from('court_bookings').update(payload).eq('id', bookingId);
         if (error) return { success: false, message: error.message };
 
-        await logActivity('Court Booking Updated', `User ${user.fullName || user.username} updated their booking for ${combinedTime}`);
+        await logActivity('Court Booking Updated', `User updated their booking for ${combinedTime}`);
         broadcastSync();
         return { success: true, message: 'Booking updated successfully' };
     } else {
@@ -1867,7 +1867,7 @@ async function updateCourtBooking(bookingId, updates) {
         if (updates.date !== undefined) bookings[index].date = updates.date;
 
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-        logActivity('Court Booking Updated', `Local User ${user.fullName || user.username} updated their booking for ${combinedTime}`);
+        logActivity('Court Booking Updated', `Local User updated their booking for ${combinedTime}`);
         broadcastSync();
         return { success: true, message: 'Booking updated successfully' };
     }
@@ -2772,7 +2772,7 @@ async function getUserStats(userId) {
 async function logActivity(action, details, severity = 'info') {
     // ISO/IEC 27001 A.12 — Operations Security: enriched audit logging
     const user = getCurrentUser();
-    const adminUsername = user ? (user.username || user.fullName || 'admin') : 'system';
+    const adminUsername = user ? (user.fullName || user.username || 'admin') : 'system';
     const timestamp = new Date().toISOString();
 
     const supabaseAvailable = await isSupabaseAvailable().catch(() => false);
