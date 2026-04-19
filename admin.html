@@ -1127,8 +1127,8 @@
         .pg-btn:hover:not(:disabled) { background:var(--green-50,#f0fdf4); border-color:var(--green,#059669); color:var(--green,#059669); }
         .pg-btn:disabled { opacity:0.4; cursor:not-allowed; }
         .pg-btn.pg-active { background:var(--green,#059669); border-color:var(--green,#059669); color:#fff; }
-        .filter-bar { display:flex; align-items:center; gap:10px; padding:12px 20px 12px; border-bottom:1px solid var(--border,#e2e8f0); flex-wrap:wrap; }
-        .filter-bar select, .filter-bar input[type="text"] { padding:7px 12px; border:1.5px solid var(--border,#e2e8f0); border-radius:8px; background:var(--surface,#fff); color:var(--text,#1e293b); font-size:13px; outline:none; }
+        .filter-bar { display:flex; align-items:center; gap:10px; padding:12px 20px; border-bottom:1px solid var(--border,#e2e8f0); flex-wrap:wrap; }
+        .filter-bar select { padding:7px 12px; border:1.5px solid var(--border,#e2e8f0); border-radius:8px; background:var(--surface,#fff); color:var(--text,#1e293b); font-size:13px; outline:none; }
         .filter-bar select:focus { border-color:var(--green,#059669); }
         .filter-label { font-size:13px; font-weight:600; color:var(--muted,#6b7280); white-space:nowrap; }
 
@@ -2455,6 +2455,7 @@
                                     </thead>
                                     <tbody id="requestsTable"></tbody>
                                 </table>
+                                <div id="requestsPg" class="pg-controls" style="display:none;"></div>
                                 <div id="noRequests" class="empty-state">
                                     <div class="empty-state-icon"></div>
                                     <p>No pending requests</p>
@@ -2501,6 +2502,7 @@
                                     </thead>
                                     <tbody id="courtBookingsTable"></tbody>
                                 </table>
+                                <div id="courtBookingsPg" class="pg-controls" style="display:none;"></div>
                                 <div id="noCourtBookings" class="empty-state" style="display:none;">
                                     <div class="empty-state-icon"></div>
                                     <p>No Court Reservations yet</p>
@@ -2545,6 +2547,7 @@
                                     </thead>
                                     <tbody id="multipurposeBookingsTable"></tbody>
                                 </table>
+                                <div id="multipurposePg" class="pg-controls" style="display:none;"></div>
                                 <div id="noMultipurposeBookings" class="empty-state" style="display:none;">
                                     <div class="empty-state-icon"></div>
                                     <p>No Facility Reservations yet</p>
@@ -2586,7 +2589,8 @@
                             </div>
                         </div>
                         <div class="section-content" style="padding: 0;">
-                            <div class="admin-tables">
+                            <div class="filter-bar"><span class="filter-label">Filter:</span><select id="concernStatusFilter" onchange="applyConcernFilter()"><option value="all">All Status</option><option value="open">Open</option><option value="in-progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div>
+                                <div class="admin-tables">
                                 <table class="data-table">
                                     <thead>
                                         <tr>
@@ -2599,6 +2603,7 @@
                                     </thead>
                                     <tbody id="concernsTable"></tbody>
                                 </table>
+                                <div id="concernsPg" class="pg-controls" style="display:none;"></div>
                             </div>
                         </div>
                     </div>
@@ -2717,6 +2722,7 @@
                                     </thead>
                                     <tbody id="usersTable"></tbody>
                                 </table>
+                                <div id="usersPg" class="pg-controls" style="display:none;"></div>
                                 <div id="noUsers" class="empty-state" style="display: none;">
                                     <div class="empty-state-icon"></div>
                                     <p>No registered users found. Use Batch Upload to add residents.</p>
@@ -4322,208 +4328,165 @@
             let _allActivityLogs = [];
 
 
-            // ═══ PAGINATION ENGINE ════════════════════════════════════════════
+            // ═══ PAGINATION ENGINE ══════════════════════════════════════════
             const PG_SIZE = 8;
-            let _usersPage = 1, _allUsersList = [];
-            let _concernsPage = 1, _allConcernsList = [], _concernFilter = 'all';
-            let _requestsPage = 1, _allRequestsList = [];
-            let _courtPage = 1, _allCourtList = [];
-            let _mpPage = 1, _allMpList = [];
-            let _activityPage = 1;
+            let _pgUsersPage = 1, _pgUsersList = [];
+            let _pgConcernsPage = 1, _pgConcernsList = [], _pgConcernFilter = 'all';
+            let _pgReqPage = 1, _pgReqList = [];
+            let _pgCourtPage = 1, _pgCourtList = [];
+            let _pgMpPage = 1, _pgMpList = [];
+            let _pgActivityPage = 1;
 
-            function renderPagination(containerId, total, perPage, currentPage, gotoFn) {
+            function renderPg(containerId, total, perPage, page, cbName) {
                 const el = document.getElementById(containerId);
                 if (!el) return;
                 const totalPages = Math.ceil(total / perPage);
                 if (totalPages <= 1) { el.style.display = 'none'; return; }
                 el.style.display = 'flex';
-                const start = (currentPage - 1) * perPage + 1;
-                const end = Math.min(currentPage * perPage, total);
+                const s = (page - 1) * perPage + 1;
+                const e = Math.min(page * perPage, total);
                 let btns = '';
                 for (let p = 1; p <= totalPages; p++) {
-                    if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentPage) > 1) {
-                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 2px;">…</span>';
+                    if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - page) > 1) {
+                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 4px;">…</span>';
                         continue;
                     }
-                    btns += '<button class="pg-btn' + (p === currentPage ? ' pg-active' : '') + '" onclick="' + gotoFn + '(' + p + ')">' + p + '</button>';
+                    btns += '<button class="pg-btn' + (p === page ? ' pg-active' : '') + '" onclick="' + cbName + '(' + p + ')">' + p + '</button>';
                 }
-                el.innerHTML =
-                    '<span class="pg-info">Showing ' + start + '–' + end + ' of ' + total + ' records</span>' +
-                    '<div class="pg-btns">' +
-                        '<button class="pg-btn" onclick="' + gotoFn + '(' + (currentPage - 1) + ')"' + (currentPage <= 1 ? ' disabled' : '') + '>‹ Prev</button>' +
-                        btns +
-                        '<button class="pg-btn" onclick="' + gotoFn + '(' + (currentPage + 1) + ')"' + (currentPage >= totalPages ? ' disabled' : '') + '>Next ›</button>' +
-                    '</div>';
+                el.innerHTML = '<span class="pg-info">Showing ' + s + '–' + e + ' of ' + total + '</span>'
+                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>‹</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>›</button></div>';
             }
 
-            // ── Users ──────────────────────────────────────────────────────────
-            function gotoUsersPage(p) { _usersPage = p; renderUsersPage(); }
-            function renderUsersPage() {
+            // ── Users ─────────────────────────────────────────────────────────
+            function gotoUsersPage(p) { _pgUsersPage = p; renderUsersPagePg(); }
+            function renderUsersPagePg() {
                 const tbody = document.getElementById('usersTable');
-                const emptyState = document.getElementById('noUsers');
-                const pgEl = document.getElementById('usersPg');
+                const empty = document.getElementById('noUsers');
                 if (!tbody) return;
-                if (!_allUsersList.length) {
-                    tbody.innerHTML = '';
-                    if (emptyState) emptyState.style.display = 'block';
-                    if (pgEl) pgEl.style.display = 'none';
-                    return;
-                }
-                if (emptyState) emptyState.style.display = 'none';
-                const slice = _allUsersList.slice((_usersPage - 1) * PG_SIZE, _usersPage * PG_SIZE);
+                if (!_pgUsersList.length) { tbody.innerHTML = ''; if(empty) empty.style.display='block'; const pg=document.getElementById('usersPg'); if(pg) pg.style.display='none'; return; }
+                if(empty) empty.style.display='none';
+                const slice = _pgUsersList.slice((_pgUsersPage-1)*PG_SIZE, _pgUsersPage*PG_SIZE);
                 tbody.innerHTML = slice.map(u => {
-                    const displayName = u.fullName || u.full_name || u.username || '';
-                    const phone = u.phone || u.contact_number || u.contactNumber || '';
-                    return '<tr>' +
-                        '<td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">' + (u.barangay_id || '') + '</td>' +
-                        '<td style="white-space:nowrap;"><strong>' + displayName + '</strong></td>' +
-                        '<td style="font-size:13px;">' + phone + '</td>' +
-                        '<td style="font-size:13px;color:#6b7280;">' + (u.email || '') + '</td>' +
-                        '<td style="font-size:12px;">' + (u.address || '') + '</td>' +
-                    '</tr>';
+                    const n = u.fullName||u.full_name||u.username||'';
+                    const ph = u.phone||u.contact_number||u.contactNumber||'';
+                    return '<tr><td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">'+(u.barangay_id||'')+'</td>'
+                        +'<td style="white-space:nowrap;"><strong>'+n+'</strong></td>'
+                        +'<td style="font-size:13px;">'+ph+'</td>'
+                        +'<td style="font-size:13px;color:#6b7280;">'+(u.email||'')+'</td>'
+                        +'<td style="font-size:12px;">'+(u.address||'')+'</td></tr>';
                 }).join('');
-                renderPagination('usersPg', _allUsersList.length, PG_SIZE, _usersPage, 'gotoUsersPage');
+                renderPg('usersPg', _pgUsersList.length, PG_SIZE, _pgUsersPage, 'gotoUsersPage');
             }
 
-            // ── Concerns ───────────────────────────────────────────────────────
-            function applyConcernFilter() {
-                _concernFilter = document.getElementById('concernStatusFilter')?.value || 'all';
-                _concernsPage = 1;
-                renderConcernsPage();
-            }
-            function gotoConcernsPage(p) { _concernsPage = p; renderConcernsPage(); }
-            function renderConcernsPage() {
+            // ── Concerns ─────────────────────────────────────────────────────
+            function applyConcernFilter() { _pgConcernFilter = document.getElementById('concernStatusFilter')?.value||'all'; _pgConcernsPage=1; renderConcernsPg(); }
+            function gotoConcernsPage(p) { _pgConcernsPage = p; renderConcernsPg(); }
+            function renderConcernsPg() {
                 const tbody = document.getElementById('concernsTable');
                 if (!tbody) return;
-                const statusColors = {
-                    open: { bg: '#fef9c3', color: '#854d0e' },
-                    'in-progress': { bg: '#dbeafe', color: '#1e40af' },
-                    resolved: { bg: '#dcfce7', color: '#166534' },
-                    closed: { bg: '#f1f5f9', color: '#475569' }
-                };
-                let filtered = _concernFilter === 'all' ? [..._allConcernsList] : _allConcernsList.filter(c => c.status === _concernFilter);
-                if (!filtered.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;"> No concerns found</td></tr>';
-                    const pg = document.getElementById('concernsPg'); if (pg) pg.style.display = 'none';
-                    return;
-                }
-                const slice = filtered.slice((_concernsPage - 1) * PG_SIZE, _concernsPage * PG_SIZE);
+                const sc = { open:{bg:'#fef9c3',c:'#854d0e'}, 'in-progress':{bg:'#dbeafe',c:'#1e40af'}, 'in_progress':{bg:'#dbeafe',c:'#1e40af'}, resolved:{bg:'#dcfce7',c:'#166534'}, closed:{bg:'#f1f5f9',c:'#475569'} };
+                let list = _pgConcernFilter==='all' ? [..._pgConcernsList] : _pgConcernsList.filter(c=>c.status===_pgConcernFilter);
+                if (!list.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">No concerns found</td></tr>'; const pg=document.getElementById('concernsPg'); if(pg) pg.style.display='none'; return; }
+                const slice = list.slice((_pgConcernsPage-1)*PG_SIZE, _pgConcernsPage*PG_SIZE);
                 tbody.innerHTML = slice.map(c => {
-                    const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#374151' };
-                    const badge = '<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:' + sc.bg + ';color:' + sc.color + ';">' + (c.status || 'open') + '</span>';
-                    const submittedAt = c.createdAt || c.created_at ? new Date(c.createdAt || c.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-                    const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-                    const isUnread = !c.adminRead;
-                    const unreadDot = isUnread ? '<span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>' : '';
-                    return '<tr data-cid="' + c.id + '" style="cursor:pointer;' + (isUnread ? 'font-weight:600;' : '') + '" onclick="openConcernRespond(' + c.id + ')">' +
-                        '<td><div style="line-height:1.3;">' + unreadDot + '<strong>' + (c.userName || '') + '</strong><br><small style="color:#6b7280;font-size:11px;font-weight:400;">' + submittedAt + '</small></div></td>' +
-                        '<td style="font-size:12px;color:#6b7280;">' + (c.address || c.location || '') + '</td>' +
-                        '<td>' + (c.category || '') + '</td>' +
-                        '<td>' + (c.title || '') + '</td>' +
-                        '<td style="font-size:12px;">' + date + '</td>' +
-                        '<td>' + badge + '</td>' +
-                        '<td style="font-size:12px;max-width:120px;">' + (c.adminComment ? '<span style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;display:block;">' + c.adminComment + '</span>' : '') + '</td>' +
-                        '<td><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openConcernRespond(' + c.id + ')">Respond</button></td>' +
-                    '</tr>';
+                    const s = sc[c.status]||{bg:'#f1f5f9',c:'#374151'};
+                    const badge='<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:'+s.bg+';color:'+s.c+';">'+(c.status||'')+'</span>';
+                    const dt = c.createdAt||c.created_at ? new Date(c.createdAt||c.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+                    const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+                    const dot = !c.adminRead ? '<span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;margin-right:5px;vertical-align:middle;"></span>' : '';
+                    const resp = c.response ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">✓ Replied</div>' : '';
+                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">📷 Photo</span>' : '';
+                    return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
+                        +'<td><div style="line-height:1.3;">'+dot+'<strong>'+(c.userName||'')+'</strong><br><small style="color:#6b7280;font-size:11px;">'+dt+'</small></div></td>'
+                        +'<td style="font-size:12px;color:#6b7280;">'+(c.address||'')+'</td>'
+                        +'<td>'+(c.category||'')+'</td>'
+                        +'<td>'+(c.title||'')+resp+img+'</td>'
+                        +'<td style="font-size:12px;">'+date+'</td>'
+                        +'<td>'+badge+'</td>'
+                        +'<td></td>'
+                        +'<td><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openConcernRespond('+c.id+')">Respond</button></td>'
+                        +'</tr>';
                 }).join('');
-                renderPagination('concernsPg', filtered.length, PG_SIZE, _concernsPage, 'gotoConcernsPage');
+                renderPg('concernsPg', list.length, PG_SIZE, _pgConcernsPage, 'gotoConcernsPage');
             }
 
-            // ── Equipment Requests ──────────────────────────────────────────────
-            function gotoRequestsPage(p) { _requestsPage = p; renderRequestsPage(); }
-            function renderRequestsPage() {
+            // ── Equipment Requests ────────────────────────────────────────────
+            function gotoRequestsPage(p) { _pgReqPage=p; renderReqPg(); }
+            function renderReqPg() {
                 const tbody = document.getElementById('requestsTable');
                 const noEl = document.getElementById('noRequests');
                 if (!tbody) return;
-                if (!_allRequestsList.length) {
-                    tbody.innerHTML = '';
-                    if (noEl) noEl.style.display = 'block';
-                    const pg = document.getElementById('requestsPg'); if(pg) pg.style.display='none';
-                    return;
-                }
-                if (noEl) noEl.style.display = 'none';
-                const slice = _allRequestsList.slice((_requestsPage - 1) * PG_SIZE, _requestsPage * PG_SIZE);
+                if (!_pgReqList.length) { tbody.innerHTML=''; if(noEl) noEl.style.display='block'; const pg=document.getElementById('requestsPg'); if(pg) pg.style.display='none'; return; }
+                if(noEl) noEl.style.display='none';
+                const slice = _pgReqList.slice((_pgReqPage-1)*PG_SIZE, _pgReqPage*PG_SIZE);
                 tbody.innerHTML = slice.map(b => {
-                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Unknown';
-                    const residentDisplay = '<div style="line-height:1.2;"><strong>' + (b.userName || '') + '</strong><br><small style="color:#6b7280;font-size:11px;">' + submittedAt + '</small></div>';
-                    return '<tr data-req-id="' + b.id + '" onclick="openRequestRespond(' + b.id + ')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">' +
-                        '<td>' + residentDisplay + '</td>' +
-                        '<td><strong style="color:var(--text);">' + (b.equipment || '') + '</strong></td>' +
-                        '<td style="font-weight:bold;color:var(--text);">' + (b.quantity || 1) + '</td>' +
-                        '<td style="white-space:nowrap;color:var(--muted);">' + (b.borrowDate || '') + '<br>to ' + (b.returnDate || '') + '</td>' +
-                        '<td style="color:var(--text);">' + (b.purpose || '') + '</td>' +
-                        '<td>' + getStatusBadge(b.status) + '</td>' +
-                    '</tr>';
+                    const dt = b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
+                    const rd = '<div style="line-height:1.2;"><strong>'+(b.userName||b.user_name||'')+'</strong><br><small style="color:#6b7280;font-size:11px;">'+dt+'</small></div>';
+                    return '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
+                        +'<td>'+rd+'</td>'
+                        +'<td><strong style="color:var(--text);">'+(b.equipment||'')+'</strong></td>'
+                        +'<td style="font-weight:bold;color:var(--text);">'+(b.quantity||1)+'</td>'
+                        +'<td style="white-space:nowrap;color:var(--muted);">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
+                        +'<td style="color:var(--text);">'+(b.purpose||'')+'</td>'
+                        +'<td>'+getStatusBadge(b.status)+'</td></tr>';
                 }).join('');
-                renderPagination('requestsPg', _allRequestsList.length, PG_SIZE, _requestsPage, 'gotoRequestsPage');
+                renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
             }
 
             // ── Court Bookings ────────────────────────────────────────────────
-            function gotoCourtPage(p) { _courtPage = p; renderCourtPage(); }
-            function renderCourtPage() {
+            function gotoCourtPage(p) { _pgCourtPage=p; renderCourtPg(); }
+            function renderCourtPg() {
                 const tbody = document.getElementById('courtBookingsTable');
                 const empty = document.getElementById('noCourtBookings');
                 if (!tbody) return;
-                if (!_allCourtList.length) {
-                    tbody.innerHTML = '';
-                    if (empty) empty.style.display = 'block';
-                    const pg = document.getElementById('courtBookingsPg'); if(pg) pg.style.display='none';
-                    return;
-                }
-                if (empty) empty.style.display = 'none';
-                const slice = _allCourtList.slice((_courtPage - 1) * PG_SIZE, _courtPage * PG_SIZE);
-                const statusColors = { pending:{bg:'#fef9c3',color:'#854d0e'}, approved:{bg:'#dcfce7',color:'#166534'}, booked:{bg:'#dcfce7',color:'#166534'}, rejected:{bg:'#fee2e2',color:'#991b1b'}, cancelled:{bg:'#f1f5f9',color:'#475569'} };
+                if (!_pgCourtList.length) { tbody.innerHTML=''; if(empty) empty.style.display='block'; const pg=document.getElementById('courtBookingsPg'); if(pg) pg.style.display='none'; return; }
+                if(empty) empty.style.display='none';
+                const sC = { pending:{bg:'#fef9c3',c:'#854d0e'}, approved:{bg:'#dcfce7',c:'#166534'}, booked:{bg:'#dcfce7',c:'#166534'}, rejected:{bg:'#fee2e2',c:'#991b1b'}, cancelled:{bg:'#f1f5f9',c:'#475569'} };
+                const slice = _pgCourtList.slice((_pgCourtPage-1)*PG_SIZE, _pgCourtPage*PG_SIZE);
                 tbody.innerHTML = slice.map(b => {
-                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
-                    const badge = '<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:' + sc.bg + ';color:' + sc.color + ';">' + b.status + '</span>';
-                    const subAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-                    return '<tr data-bid="' + b.id + '" style="cursor:pointer;" onclick="openBookingModal(' + b.id + ')">' +
-                        '<td>' + (b.userName || b.user_name || b.username || '') + '</td>' +
-                        '<td>' + (b.venueName || b.venue_name || (b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall') || '') + '</td>' +
-                        '<td>' + (b.date || '') + '</td>' +
-                        '<td style="font-size:12px;">' + (b.timeRange || b.time || '') + '</td>' +
-                        '<td style="font-size:12px;">' + (b.purpose || '') + '</td>' +
-                        '<td>' + badge + '</td>' +
-                        '<td style="font-size:12px;">' + subAt + '</td>' +
-                    '</tr>';
+                    const s = sC[b.status]||{bg:'#f1f5f9',c:'#374151'};
+                    const badge='<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:'+s.bg+';color:'+s.c+';">'+b.status+'</span>';
+                    const dt = b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+                    return '<tr data-bid="'+b.id+'" onclick="openBookingRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
+                        +'<td>'+(b.userName||b.user_name||b.username||'')+'</td>'
+                        +'<td>'+(b.venueName||b.venue_name||(b.venue==='basketball'?'Basketball Court':'Multi-Purpose Hall')||'')+'</td>'
+                        +'<td>'+(b.date||'')+'</td>'
+                        +'<td style="font-size:12px;">'+(b.timeRange||b.time||'')+'</td>'
+                        +'<td style="font-size:12px;">'+(b.purpose||'')+'</td>'
+                        +'<td>'+badge+'</td>'
+                        +'<td style="font-size:12px;">'+dt+'</td></tr>';
                 }).join('');
-                renderPagination('courtBookingsPg', _allCourtList.length, PG_SIZE, _courtPage, 'gotoCourtPage');
+                renderPg('courtBookingsPg', _pgCourtList.length, PG_SIZE, _pgCourtPage, 'gotoCourtPage');
             }
 
             // ── Multi-Purpose ─────────────────────────────────────────────────
-            function gotoMpPage(p) { _mpPage = p; renderMpPage(); }
-            function renderMpPage() {
+            function gotoMpPage(p) { _pgMpPage=p; renderMpPg(); }
+            function renderMpPg() {
                 const tbody = document.getElementById('multipurposeBookingsTable');
                 const empty = document.getElementById('noMultipurposeBookings');
                 if (!tbody) return;
-                if (!_allMpList.length) {
-                    tbody.innerHTML = '';
-                    if (empty) empty.style.display = 'block';
-                    const pg = document.getElementById('multipurposePg'); if(pg) pg.style.display='none';
-                    return;
-                }
-                if (empty) empty.style.display = 'none';
-                const slice = _allMpList.slice((_mpPage - 1) * PG_SIZE, _mpPage * PG_SIZE);
-                const statusColors = { pending:{bg:'#fef9c3',color:'#854d0e'}, approved:{bg:'#dcfce7',color:'#166534'}, rejected:{bg:'#fee2e2',color:'#991b1b'}, cancelled:{bg:'#f1f5f9',color:'#475569'} };
+                if (!_pgMpList.length) { tbody.innerHTML=''; if(empty) empty.style.display='block'; const pg=document.getElementById('multipurposePg'); if(pg) pg.style.display='none'; return; }
+                if(empty) empty.style.display='none';
+                const sC = { pending:{bg:'#fef9c3',c:'#854d0e'}, approved:{bg:'#dcfce7',c:'#166534'}, booked:{bg:'#dcfce7',c:'#166534'}, rejected:{bg:'#fee2e2',c:'#991b1b'}, cancelled:{bg:'#f1f5f9',c:'#475569'} };
+                const slice = _pgMpList.slice((_pgMpPage-1)*PG_SIZE, _pgMpPage*PG_SIZE);
                 tbody.innerHTML = slice.map(b => {
-                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
-                    const badge = '<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:' + sc.bg + ';color:' + sc.color + ';">' + b.status + '</span>';
-                    const subAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-                    return '<tr data-bid="' + b.id + '" style="cursor:pointer;" onclick="openBookingModal(' + b.id + ')">' +
-                        '<td>' + (b.userName || b.user_name || b.username || '') + '</td>' +
-                        '<td>' + (b.date || '') + '</td>' +
-                        '<td style="font-size:12px;">' + (b.timeRange || b.time || '') + '</td>' +
-                        '<td style="font-size:12px;">' + (b.purpose || '') + '</td>' +
-                        '<td>' + badge + '</td>' +
-                        '<td style="font-size:12px;">' + subAt + '</td>' +
-                        '<td class="action-btns"><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openBookingModal(' + b.id + ')">Review</button></td>' +
-                    '</tr>';
+                    const s = sC[b.status]||{bg:'#f1f5f9',c:'#374151'};
+                    const badge='<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:'+s.bg+';color:'+s.c+';">'+b.status+'</span>';
+                    const nm=b.userName||b.user_name||b.username||'Unknown';
+                    const dt=b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+                    const rd='<div style="line-height:1.2;"><strong>'+nm+'</strong><br><small style="color:#6b7280;font-size:11px;">'+dt+'</small></div>';
+                    return '<tr data-bid="'+b.id+'" onclick="openBookingRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
+                        +'<td>'+rd+'</td>'
+                        +'<td style="color:var(--text);">'+(b.date||'')+'</td>'
+                        +'<td style="color:var(--text);">'+(b.timeRange||b.time||'')+'</td>'
+                        +'<td style="color:var(--text);">'+(b.purpose||'')+'</td>'
+                        +'<td>'+badge+'</td></tr>';
                 }).join('');
-                renderPagination('multipurposePg', _allMpList.length, PG_SIZE, _mpPage, 'gotoMpPage');
+                renderPg('multipurposePg', _pgMpList.length, PG_SIZE, _pgMpPage, 'gotoMpPage');
             }
 
             // ── Activity Log ──────────────────────────────────────────────────
-            function gotoActivityPage(p) { _activityPage = p; renderActivityTable(); }
+            function gotoActivityPage(p) { _pgActivityPage=p; renderActivityTable(); }
 
             let _activeLogFilter = 'all';
 
@@ -4581,8 +4544,8 @@
                 }
                 if (emptyState) emptyState.style.display = 'none';
 
-                const _activityTotal = filtered.length;
-                filtered = filtered.slice((_activityPage-1)*PG_SIZE, _activityPage*PG_SIZE);
+                const _pgActivityTotal = filtered.length;
+                filtered = filtered.slice((_pgActivityPage-1)*PG_SIZE, _pgActivityPage*PG_SIZE);
                 tbody.innerHTML = filtered.map(log => {
                     const dt = new Date(log.createdAt);
                     const dateStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -4603,7 +4566,9 @@
                         <td data-label="Date & Time"><div class="date-cell"><span class="date-main">${dateStr}</span><span class="time-sub">${timeStr}</span></div></td>
                         <td data-label="User / Admin" style="text-align: center;"><div class="admin-cell"><span class="admin-icon"></span> <strong>${log.adminUsername || 'System'}</strong></div></td>
                         <td data-label="Action" style="text-align: center;"><span class="status-badge ${badgeClass}">${log.action}</span></td>
-                        <td data-label="Details" style="text-align: right; max-width:320px;font-size:12px;color:#6b7280;">${log.details || ''}</td>
+                        <td data-label="Details" st
+                renderPg('activityLogPg', (_pgActivityTotal||0), PG_SIZE, _pgActivityPage, 'gotoActivityPage');
+yle="text-align: right; max-width:320px;font-size:12px;color:#6b7280;">${log.details || ''}</td>
                     </tr>`;
                 }).join('');
             }
@@ -4635,9 +4600,25 @@
                     return;
                 }
                 if (emptyState) emptyState.style.display = 'none';
-                _allUsersList = users;
-                _usersPage = 1;
-                renderUsersPage();
+                _pgUsersList = users;
+                _pgUsersPage = 1;
+                tbody.innerHTML = users.map(u => {
+                    const isSuspended = u.suspended_until && new Date(u.suspended_until) > new Date();
+                    const statusBadge = isSuspended
+                        ? '<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
+                        : '<span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Active</span>';
+                    const displayName = u.fullName || u.full_name || u.username;
+                    const phone = u.phone || u.contact_number || u.contactNumber || '';
+                    const address = u.address || '';
+                    return `<tr>
+                        <td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">${u.barangay_id || ''}</td>
+                        <td style="white-space:nowrap;"><strong>${displayName}</strong></td>
+                        <td style="font-size:13px;">${phone}</td>
+                        <td style="font-size:13px;color:#6b7280;">${u.email || ''}</td>
+                        <td style="font-size:12px;">${address}</td>
+                    </tr>`;
+                }).join('');
+                renderPg('usersPg', _pgUsersList.length, PG_SIZE, _pgUsersPage, 'gotoUsersPage');
             }
 
             //  BATCH UPLOAD FUNCTIONS 
@@ -4928,15 +4909,16 @@
 
             async function loadRequests() {
                 const borrowings = await getAllBorrowings();
+                const container = document.getElementById('requestsTable');
                 const noRequests = document.getElementById('noRequests');
 
                 if (borrowings.length === 0) {
-                    document.getElementById('requestsTable').innerHTML = '';
-                    if (noRequests) noRequests.style.display = 'block';
-                    const pg = document.getElementById('requestsPg'); if(pg) pg.style.display='none';
+                    container.innerHTML = '';
+                    noRequests.style.display = 'block';
                     return;
                 }
-                if (noRequests) noRequests.style.display = 'none';
+
+                noRequests.style.display = 'none';
 
                 // Pending first, then oldest within same status (FCFS)
                 const _reqStatusPriority = s => s === 'pending' ? 0 : 1;
@@ -4946,10 +4928,23 @@
                     return new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0);
                 });
 
-                                _allAdminRequestsList = borrowings;
-                _allRequestsList = borrowings;
-                _requestsPage = 1;
-                renderRequestsPage();
+                _allAdminRequestsList = borrowings;
+                _pgReqList = borrowings;
+                _pgReqPage = 1;
+                container.innerHTML = borrowings.map(b => {
+                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
+                    return `
+                <tr data-req-id="${b.id}" onclick="openRequestRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
+                    <td>${residentDisplay}</td>
+                    <td><strong style="color:var(--text);">${b.equipment}</strong></td>
+                    <td style="font-weight:bold;color:var(--text);">${b.quantity}</td>
+                    <td style="white-space: nowrap;color:var(--muted);">${b.borrowDate}<br>to ${b.returnDate}</td>
+                    <td style="color:var(--text);">${b.purpose}</td>
+                    <td>${getStatusBadge(b.status)}</td>
+                </tr>
+            `}).join('');
+                renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
             }
 
             async function loadCourtBookings() {
@@ -5965,9 +5960,27 @@
                     return;
                 }
                 empty.style.display = 'none';
-                _allMpList = mpBookings;
-                _mpPage = 1;
-                renderMpPage();
+
+                const statusColors = { pending: { bg: '#fef9c3', color: '#854d0e' }, approved: { bg: '#dcfce7', color: '#166534' }, booked: { bg: '#dcfce7', color: '#166534' }, rejected: { bg: '#fee2e2', color: '#991b1b' }, cancelled: { bg: '#f1f5f9', color: '#475569' } };
+                _pgMpList = mpBookings;
+                _pgMpPage = 1;
+                tbody.innerHTML = mpBookings.map(b => {
+                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
+                    const statusBadge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${b.status}</span>`;
+                    const timeStr = b.timeRange || b.time || '';
+                    const residentName = b.userName || b.user_name || b.username || 'Unknown';
+                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
+
+                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
+                        <td>${residentDisplay}</td>
+                        <td style="color:var(--text);">${b.date}</td>
+                        <td style="color:var(--text);">${timeStr}</td>
+                        <td style="color:var(--text);">${b.purpose || ''}</td>
+                        <td>${statusBadge}</td>
+                    </tr>`;
+                }).join('');
+                renderPg('multipurposePg', _pgMpList.length, PG_SIZE, _pgMpPage, 'gotoMpPage');
             }
 
             async function loadAdminBookings() {
@@ -6049,9 +6062,38 @@
                     return;
                 }
                 empty.style.display = 'none';
-                _allCourtList = allBookings;
-                _courtPage = 1;
-                renderCourtPage();
+
+                _pgCourtList = allBookings;
+                _pgCourtPage = 1;
+                tbody.innerHTML = allBookings.map(b => {
+                    const statusColors = {
+                        pending: { bg: '#fef9c3', color: '#854d0e' },
+                        approved: { bg: '#dcfce7', color: '#166534' },
+                        booked: { bg: '#dcfce7', color: '#166534' },
+                        rejected: { bg: '#fee2e2', color: '#991b1b' },
+                        cancelled: { bg: '#f1f5f9', color: '#475569' }
+                    };
+                    const sc = statusColors[b.status] || { bg: '#f1f5f9', color: '#374151' };
+                    const statusBadge = `<span style="padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; background:${sc.bg}; color:${sc.color};">${b.status}</span>`;
+
+                    const venue = b.venueName || '';
+                    const timeStr = b.timeRange || b.time || '';
+
+                    const residentName = b.userName || b.user_name || b.username || 'Unknown';
+                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
+                    const residentDisplay = `<div style="line-height:1.2;"><strong>${residentName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
+
+                    const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
+
+                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
+                    <td>${residentDisplay}</td>
+                    <td style="color:var(--text);">${venue}</td>
+                    <td style="color:var(--text);">${b.date}</td>
+                    <td style="color:var(--text);">${timeStr}</td>
+                    <td style="color:var(--text);">${b.purpose || ''}${adminComment}</td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+                }).join('');
             }
 
             async function approveAdminBooking(bookingId) {
@@ -6750,6 +6792,11 @@
                     const concerns = await getAllConcerns();
                     _allAdminConcerns = concerns;
 
+                    if (!concerns.length) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;"> No concerns submitted yet</td></tr>';
+                        return;
+                    }
+
                     // Sort: unread first, then by date (oldest first for FCFS)
                     concerns.sort((a, b) => {
                         const aUnread = a.is_read === false ? 0 : 1;
@@ -6758,9 +6805,34 @@
                         return new Date(a.created_at || a.createdAt || 0) - new Date(b.created_at || b.createdAt || 0);
                     });
 
-                    _allConcernsList = concerns;
-                    _concernsPage = 1;
-                    renderConcernsPage();
+                    const statusColors = {
+                        pending: { bg: '#fef9c3', color: '#854d0e' },
+                        'in_progress': { bg: '#dbeafe', color: '#1e40af' },
+                        'in-progress': { bg: '#dbeafe', color: '#1e40af' },
+                        resolved: { bg: '#dcfce7', color: '#166534' },
+                        closed: { bg: '#f1f5f9', color: '#475569' }
+                    };
+
+                    _pgConcernsList = concerns;
+                    _pgConcernsPage = 1;
+                    tbody.innerHTML = concerns.map(c => {
+                        const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#374151' };
+                        const badge = `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${c.status}</span>`;
+                        const submittedAt = c.createdAt || c.created_at ? new Date(c.createdAt || c.created_at).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : '';
+                        const residentDisplay = `<div style="line-height:1.2;"><strong>${c.userName || ''}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
+                        const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                        const responseNote = c.response ? `<div style="margin-top:4px;font-size:11px;color:#059669;font-style:italic;"> Replied</div>` : '';
+                        const hasImage = c.description && c.description.includes('[ATTACHED_IMAGE_DATA]') || c.imageUrl;
+                        const imgBadge = hasImage ? `<span style="margin-left:6px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:20px;font-weight:700;"> Photo</span>` : '';
+                        return `<tr data-cid="${c.id}" onclick="openConcernRespond(${c.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
+                        <td>${residentDisplay}</td>
+                        <td>${c.address || ''}</td>
+                        <td>${c.category || ''}</td>
+                        <td>${c.title || ''}${responseNote}${imgBadge}</td>
+                        <td>${date}</td>
+                    </tr>`;
+                    }).join('');
+                    renderConcernsPg();
                 } catch (e) {
                     console.error("loadConcerns crash:", e);
                     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
