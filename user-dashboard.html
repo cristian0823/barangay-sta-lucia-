@@ -1496,15 +1496,28 @@
         })();
         // ─────────────────────────────────────────────────────────────────────
 
+        document.getElementById('sidebarUserName').textContent = user.fullName || user.name || user.username || user.email.split('@')[0];
+        document.getElementById('welcomeName').textContent = user.fullName || user.name || user.username || user.email.split('@')[0];
+        document.getElementById('userInitial').textContent = (user.fullName || user.name || user.username || user.email)[0].toUpperCase();
 
-        document.getElementById('sidebarUserName').textContent = user.name || user.email.split('@')[0];
-        document.getElementById('welcomeName').textContent = user.name || user.email.split('@')[0];
-        document.getElementById('userInitial').textContent = (user.name || user.email)[0].toUpperCase();
-        // Mobile header avatar & name
         const mobileAvatar = document.getElementById('mobileHeaderAvatar');
-        if (mobileAvatar) mobileAvatar.textContent = (user.name || user.email)[0].toUpperCase();
+        if (mobileAvatar) mobileAvatar.textContent = (user.fullName || user.name || user.username || user.email)[0].toUpperCase();
         const mobileNameEl = document.getElementById('mobileUserName');
-        if (mobileNameEl) mobileNameEl.textContent = user.name || user.username || user.email.split('@')[0];
+        if (mobileNameEl) mobileNameEl.textContent = user.fullName || user.name || user.username || user.email.split('@')[0];
+
+        // Autofill forms with user data
+        setTimeout(() => {
+            const autofill = [
+                { id: 'borrowerFullName', val: user.fullName || user.name || user.username },
+                { id: 'borrowerContact', val: user.phone || user.contact_number || user.contactNumber || '' },
+                { id: 'borrowerAddress', val: user.address || '' },
+                { id: 'dsName', val: user.fullName || user.name || user.username }
+            ];
+            autofill.forEach(f => {
+                const el = document.getElementById(f.id);
+                if (el && f.val) el.value = f.val;
+            });
+        }, 100);
 
         // Live clock + date for welcome banner
         function updateDashboardClock() {
