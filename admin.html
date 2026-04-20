@@ -201,7 +201,7 @@
         }
 
         .left-sidebar {
-            width: 220px;
+            width: 200px;
             flex-shrink: 0;
             background: #fff;
             border-right: 1.5px solid var(--border);
@@ -210,13 +210,14 @@
             position: sticky;
             top: 64px;
             height: calc(100vh - 64px);
-            overflow-y: auto;
+            overflow-y: hidden;
             z-index: 90;
         }
 
         .left-sidebar-top {
-            padding: 10px 12px 8px;
+            padding: 6px 10px 5px;
             border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .left-sidebar-label {
@@ -231,43 +232,48 @@
         }
 
         .left-sidebar-nav {
-            padding: 6px 8px;
+            padding: 4px 6px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            justify-content: space-evenly;
+            gap: 0;
             flex: 1;
+            overflow: hidden;
         }
 
         .sidebar-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            padding: 10px 14px;
-            border-radius: 14px;
+            padding: 5px 8px;
+            border-radius: 10px;
             border: none;
             background: transparent;
             color: #4b5563;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.12s ease, color 0.12s ease;
             font-family: inherit;
             text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .sidebar-btn .nav-icon-box {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
             background: #f0fdf4;
             border: 1.5px solid #bbf7d0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 13px;
             flex-shrink: 0;
-            transition: all 0.2s ease;
+            transition: background 0.12s ease, border-color 0.12s ease;
         }
 
         .sidebar-btn:hover {
@@ -292,8 +298,9 @@
         }
 
         .left-sidebar-footer {
-            padding: 10px;
+            padding: 6px;
             border-top: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         /* ── Dark Mode Sidebar ── */
