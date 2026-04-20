@@ -3349,6 +3349,8 @@ async function loadSettingsView() {
                         const type = newR.type || '';
                         const msg  = newR.message || '';
 
+                        pollBellNotifications();
+
                         if (type === 'booking_cancelled') {
                             checkPendingNotifications();
                         } else if (type === 'booking_approved') {
