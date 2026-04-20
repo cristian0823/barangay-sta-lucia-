@@ -5226,14 +5226,27 @@
                 _currentRejectEqId = null;
             }
 
-            async function confirmRejectEq() {
+            async function confirmRejectEq(btnElem) {
                 const reason = document.getElementById('rejectEqReasonText').value.trim();
+                let eventBtn = btnElem || (window.event ? window.event.currentTarget : null);
+                
                 if (!reason) {
                     showAlert('Please enter a reason for rejection.', 'error');
                     return;
                 }
+                
+                if (eventBtn) {
+                    eventBtn.disabled = true;
+                    eventBtn.textContent = 'Processing...';
+                }
+
                 const rejEqId = _currentRejectEqId;
                 const result = await rejectEquipmentRequest(rejEqId, reason);
+                
+                if (eventBtn) {
+                    eventBtn.disabled = false;
+                    eventBtn.textContent = 'Reject';
+                }
                 if (result && result.success) {
                     showAlert('Request rejected', 'success');
                     closeRejectEqModal();
@@ -7130,7 +7143,7 @@
                 <div style="display:flex; gap:10px;">
                     <button type="button" onclick="closeRejectEqModal()"
                         style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
-                    <button type="button" onclick="confirmRejectEq()"
+                    <button type='button' onclick='confirmRejectEq(this)'
                         style="flex:1; padding:12px; background:#ef4444; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Reject</button>
                 </div>
             </div>
