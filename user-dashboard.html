@@ -289,6 +289,24 @@
             .settings-card-body { padding: 16px !important; }
             .settings-stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
         }
+        /* ── Equipment icon boxes (matches admin inventory) ── */
+        .eq-icon { width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .eq-Chairs    { background: #eff6ff; border-color: #bfdbfe; }
+        .eq-Tables    { background: #f0fdf4; border-color: #6ee7b7; }
+        .eq-Tents     { background: #fdf4ff; border-color: #e9d5ff; }
+        .eq-Ladder    { background: #fff7ed; border-color: #fed7aa; }
+        .eq-Microphone{ background: #fef2f2; border-color: #fca5a5; }
+        .eq-Speaker   { background: #faf5ff; border-color: #c4b5fd; }
+        .eq-Fan       { background: #eff6ff; border-color: #bfdbfe; }
+        .eq-Default   { background: #f0fdf4; border-color: #bbf7d0; }
+        [data-theme="dark"] .eq-Chairs     { background: rgba(59,130,246,0.12) !important; border-color: rgba(59,130,246,0.25) !important; }
+        [data-theme="dark"] .eq-Tables     { background: rgba(16,185,129,0.12) !important; border-color: rgba(16,185,129,0.25) !important; }
+        [data-theme="dark"] .eq-Tents      { background: rgba(217,70,239,0.12) !important;  border-color: rgba(217,70,239,0.25) !important;  }
+        [data-theme="dark"] .eq-Ladder     { background: rgba(245,158,11,0.12) !important;  border-color: rgba(245,158,11,0.25) !important;  }
+        [data-theme="dark"] .eq-Microphone { background: rgba(239,68,68,0.12) !important;   border-color: rgba(239,68,68,0.25) !important;   }
+        [data-theme="dark"] .eq-Speaker    { background: rgba(139,92,246,0.12) !important;  border-color: rgba(139,92,246,0.25) !important;  }
+        [data-theme="dark"] .eq-Fan        { background: rgba(59,130,246,0.12) !important;  border-color: rgba(59,130,246,0.25) !important;  }
+        [data-theme="dark"] .eq-Default    { background: rgba(16,185,129,0.12) !important;  border-color: rgba(16,185,129,0.25) !important;  }
     </style>
     <link rel="icon" type="image/jpeg" href="barangay.jpg">
 </head>
@@ -2016,21 +2034,20 @@
         }
 
         function getEquipmentIcon(name) {
-            if (!name) name = '';
-            const n = name.trim().toLowerCase();
-            const getBox = (icon, colorClass) => `<div class="w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 shadow-sm ${colorClass}"><i class="bi ${icon}" style="font-size:20px;"></i></div>`;
-
-            if (n === 'chairs' || n.includes('chair')) return getBox('bi-person-workspace', 'bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600');
-            if (n === 'tables' || n.includes('table')) return getBox('bi-table', 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20 text-emerald-600');
-            if (n === 'tents' || n.includes('tent')) return getBox('bi-house-fill', 'bg-fuchsia-50 border-fuchsia-200 dark:bg-fuchsia-500/10 dark:border-fuchsia-500/20 text-fuchsia-600');
-            if (n === 'ladder' || n.includes('ladder')) return getBox('bi-ladder', 'bg-orange-50 border-orange-200 dark:bg-orange-500/10 dark:border-orange-500/20 text-orange-600');
-            if (n === 'microphone' || n.includes('mic')) return getBox('bi-mic-fill', 'bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/20 text-red-500');
-            if (n === 'speaker' || n.includes('speaker')) return getBox('bi-speaker-fill', 'bg-purple-50 border-purple-200 dark:bg-purple-500/10 dark:border-purple-500/20 text-purple-600');
-            if (n.includes('fan')) return getBox('bi-wind', 'bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-500');
-            if (n.includes('projector') || n.includes('screen')) return getBox('bi-projector-fill', 'bg-indigo-50 border-indigo-200 dark:bg-indigo-500/10 dark:border-indigo-500/20 text-indigo-600');
-            if (n.includes('generator') || n.includes('power')) return getBox('bi-lightning-charge-fill', 'bg-yellow-50 border-yellow-200 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600');
-            if (n.includes('camera')) return getBox('bi-camera-fill', 'bg-teal-50 border-teal-200 dark:bg-teal-500/10 dark:border-teal-500/20 text-teal-600');
-            return getBox('bi-box-seam-fill', 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20 text-emerald-600');
+            // Exact same icon map as Admin Inventory
+            const EQUIP_ICON_MAP = {
+                'Chairs':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="6" y="2" width="12" height="10" rx="1.5"/><rect x="4" y="13" width="16" height="3" rx="1.5"/><rect x="6" y="17" width="3" height="5" rx="1"/><rect x="15" y="17" width="3" height="5" rx="1"/></svg>`, cls: 'eq-Chairs' },
+                'Tables':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`, cls: 'eq-Tables' },
+                'Tents':       { html: `<i class="bi bi-house-door-fill" style="font-size:20px;color:#d97706;"></i>`, cls: 'eq-Tents' },
+                'Ladder':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#d97706"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`, cls: 'eq-Ladder' },
+                'Microphone':  { html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#dc2626;"></i>`, cls: 'eq-Microphone' },
+                'Speaker':     { html: `<i class="bi bi-speaker-fill" style="font-size:20px;color:#7c3aed;"></i>`, cls: 'eq-Speaker' },
+                'Electric Fan':{ html: `<i class="bi bi-fan" style="font-size:20px;color:#3b82f6;"></i>`, cls: 'eq-Fan' }
+            };
+            const entry = name ? EQUIP_ICON_MAP[name.trim()] : null;
+            const iconHtml = entry ? entry.html : `<i class="bi bi-box-seam-fill" style="font-size:20px;color:#059669;"></i>`;
+            const iconCls  = entry ? entry.cls  : 'eq-Default';
+            return `<div class="eq-icon ${iconCls}">${iconHtml}</div>`;
         }
 
 
