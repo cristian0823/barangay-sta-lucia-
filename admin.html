@@ -3563,7 +3563,7 @@
                 document.getElementById('statAdmins').textContent = users.filter(u => u.role === 'admin').length;
                 document.getElementById('statEquipmentAdminInfo').textContent = equipment.length;
                 document.getElementById('statPendingAdminInfo').textContent = borrowings.filter(b => b.status === 'pending').length;
-                document.getElementById('statBookingsAdminInfo').textContent = bookings.length;
+                document.getElementById('statBookingsAdminInfo').textContent = bookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
                 document.getElementById('lastUpdatedInfo').textContent = new Date().toLocaleString();
 
                 const currentUser = getCurrentUser();
@@ -4213,7 +4213,7 @@
                 const pendingReqs = borrowings.filter(b => b.status === 'pending');
                 const pendingCons = concerns.filter(c => c.status === 'pending');
                 const upcomingEvts = events.filter(e => e.status === 'approved').length;
-                const totalBookings = bookings.filter(b => b.status !== 'cancelled').length;
+                const totalBookings = bookings.filter(b => b.status === 'pending' || b.status === 'approved').length;
 
                 document.getElementById('pendingRequests').textContent = pendingReqs.length;
                 document.getElementById('pendingConcerns').textContent = pendingCons.length;
