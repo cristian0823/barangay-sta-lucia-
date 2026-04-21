@@ -2216,7 +2216,7 @@
             <button onclick="mobileSwitchSection('events')"> Court Events</button>
             <button onclick="mobileSwitchSection('equipment')"> Inventory</button>
             <button onclick="mobileSwitchSection('reports')">  Reports</button>
-            <button onclick="mobileSwitchSection('activity-log')"> Activity Log</button>
+            <button onclick="mobileSwitchSection('audit-log', 'security-log')"> Activity Log</button>
         </div>
     </div>
 
@@ -2854,7 +2854,7 @@
 
                     <!-- Activity Log Section (Premium) -->
                     
-<div class="section hidden" id="audit-log-section">
+<div class="section" id="audit-log-section" style="display:none;">
     <div class="section-header">
         <div>
             <h2>🧾 Audit Log</h2>
@@ -2884,7 +2884,7 @@
     </div>
 </div>
 
-<div class="section hidden" id="security-log-section">
+<div class="section" id="security-log-section" style="display:none;">
     <div class="section-header">
         <div>
             <h2>🛡️ Security Log</h2>
@@ -4124,7 +4124,7 @@
             function switchSection(section, btn) {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
-                const allSections = ['overview', 'court-bookings', 'multipurpose-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'reports', 'activity-log', 'profile', 'system'];
+                const allSections = ['overview', 'court-bookings', 'multipurpose-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'reports', 'audit-log', 'security-log', 'profile', 'system'];
                 allSections.forEach(s => {
                     const el = document.getElementById(s + '-section');
                     if (el) el.style.display = 'none';
@@ -4132,7 +4132,7 @@
                 var targetSection = document.getElementById(section + '-section');
                 if (targetSection) targetSection.style.display = 'block';
                 // Auto-load section data on switch
-                if (section === 'activity-log') loadActivityLog();
+                if (section === 'audit-log', 'security-log') loadActivityLog();
                 if (section === 'reports') loadSimpleReport();
                 if (section === 'users') loadUsers();
                 if (section === 'equipment') loadEquipment();
@@ -5747,7 +5747,7 @@
                     'events': 4, 
                     'equipment': 5, 
                     'reports': 6, 
-                    'activity-log': 7 
+                    'audit-log', 'security-log': 7 
                 };
                 if (sectionMap[section] !== undefined) btns[sectionMap[section]]?.classList.add('active');
                 switchSection(section, null);
