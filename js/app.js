@@ -1604,7 +1604,7 @@ function getDynamicBookingStatus(item, parsedTimeRange) {
 async function getCourtBookings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('court_bookings').select('*, users(full_name, username)').order('date', { ascending: false });
+        const { data, error } = await supabase.from('facility_reservations').select('*, users(full_name, username)').order('date', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
             return localData.map(item => {
@@ -1733,7 +1733,7 @@ async function bookCourt(bookingData) {
                 .maybeSingle();
             const resolvedUserId = userRow ? userRow.id : user.id;
 
-            const { error } = await supabase.from('court_bookings').insert([{
+            const { error } = await supabase.from('facility_reservations').insert([{
                 user_id: resolvedUserId,
                 date: bookingData.date,
                 time: combinedTime,
@@ -1743,8 +1743,8 @@ async function bookCourt(bookingData) {
             }]);
 
             if (error) throw error;
-            await logActivity('Court Booking Submitted', `User booked the ${venueLabel} for ${combinedTime}`);
-            await addNotification('admin', 'booking', `User booked the ${venueLabel} for ${combinedTime}`);
+            await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${combinedTime}`);
+            await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
             broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
@@ -1767,8 +1767,8 @@ async function bookCourt(bookingData) {
     };
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-    logActivity('Court Booking Submitted', `Local User booked the ${venueLabel} for ${combinedTime}`);
-    await addNotification('admin', 'booking', `Local User booked the ${venueLabel} for ${combinedTime}`);
+    logActivity('Court Reservation Submitted', `Local User reserved the ${venueLabel} for ${combinedTime}`);
+    await addNotification('admin', 'booking', `Local User reserved the ${venueLabel} for ${combinedTime}`);
     broadcastSync();
     return { success: true, message: 'Venue booked (offline mode)' };
 }
@@ -1781,7 +1781,7 @@ async function cancelCourtBooking(bookingId) {
     const supabaseAvailable = await isSupabaseAvailable();
 
     if (supabaseAvailable) {
-        let query = supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+        let query = supabase.from('facility_reservations').update({ status: 'cancelled' }).eq('id', bookingId);
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
         const { error } = await query;
@@ -1809,7 +1809,7 @@ async function updateCourtBooking(bookingId, updates) {
 
     let allBookings = [];
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('court_bookings').select('*').eq('id', bookingId).eq('user_id', user.id).single();
+        const { data, error } = await supabase.from('facility_reservations').select('*').eq('id', bookingId).eq('user_id', user.id).single();
         if (error) return { success: false, message: 'Booking not found' };
         allBookings = [data];
     } else {
@@ -1850,10 +1850,10 @@ async function updateCourtBooking(bookingId, updates) {
         if (updates.purpose !== undefined) payload.purpose = updates.purpose;
         if (updates.date !== undefined) payload.date = updates.date;
 
-        const { error } = await supabase.from('court_bookings').update(payload).eq('id', bookingId);
+        const { error } = await supabase.from('facility_reservations').update(payload).eq('id', bookingId);
         if (error) return { success: false, message: error.message };
 
-        await logActivity('Court Booking Updated', `User updated their booking for ${combinedTime}`);
+        await logActivity('Court Reservation Updated', `User updated their reservation for ${combinedTime}`);
         broadcastSync();
         return { success: true, message: 'Booking updated successfully' };
     } else {
@@ -1867,7 +1867,7 @@ async function updateCourtBooking(bookingId, updates) {
         if (updates.date !== undefined) bookings[index].date = updates.date;
 
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-        logActivity('Court Booking Updated', `Local User updated their booking for ${combinedTime}`);
+        logActivity('Court Reservation Updated', `Local User updated their reservation for ${combinedTime}`);
         broadcastSync();
         return { success: true, message: 'Booking updated successfully' };
     }
@@ -1974,7 +1974,7 @@ async function deleteCourtBooking(bookingId) {
     const supabaseAvailable = await isSupabaseAvailable();
 
     if (supabaseAvailable) {
-        let query = supabase.from('court_bookings').delete().eq('id', bookingId);
+        let query = supabase.from('facility_reservations').delete().eq('id', bookingId);
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
         const { error } = await query;
@@ -1996,28 +1996,28 @@ async function deleteCourtBooking(bookingId) {
 
 async function addAdminComment(bookingId, comment) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    const { error } = await supabase.from('court_bookings').update({ admin_comment: comment }).eq('id', bookingId);
+    const { error } = await supabase.from('facility_reservations').update({ admin_comment: comment }).eq('id', bookingId);
     if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Comment added' };
 }
 
 async function approveCourtBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    const { error } = await supabase.from('court_bookings').update({ status: 'approved' }).eq('id', bookingId);
+    const { error } = await supabase.from('facility_reservations').update({ status: 'approved' }).eq('id', bookingId);
     if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Court booking approved' };
 }
 
 async function rejectCourtBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    const { error } = await supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+    const { error } = await supabase.from('facility_reservations').update({ status: 'cancelled' }).eq('id', bookingId);
     if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Court booking rejected and cancelled' };
 }
 
 async function deleteBooking(bookingId) {
     if (!isAdmin()) return { success: false, message: 'Admin access required' };
-    const { error } = await supabase.from('court_bookings').delete().eq('id', bookingId);
+    const { error } = await supabase.from('facility_reservations').delete().eq('id', bookingId);
     if (!error) broadcastSync();
     return { success: !error, message: error ? error.message : 'Booking deleted' };
 }
@@ -2034,7 +2034,7 @@ async function autoCompleteExpiredBookings() {
     if (supabaseAvailable) {
         try {
             const { error } = await supabase
-                .from('court_bookings')
+                .from('facility_reservations')
                 .update({ status: 'completed' })
                 .in('status', ['approved', 'pending'])
                 .lt('date', todayStr);
@@ -2064,7 +2064,7 @@ async function adminCancelBookingsForDay(date, venue, reason) {
     const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
     
     // 1. Fetch bookings
-    const { data: bookings, error: fetchErr } = await supabase.from('court_bookings')
+    const { data: bookings, error: fetchErr } = await supabase.from('facility_reservations')
         .select('*')
         .eq('date', date)
         .in('status', ['pending', 'approved']);
@@ -2073,11 +2073,11 @@ async function adminCancelBookingsForDay(date, venue, reason) {
 
     // Filter by venue
     const affected = bookings.filter(b => b.venue === venue || b.venue_name === venueLabel || String(b.time).includes(venueLabel));
-    if (affected.length === 0) return { success: true, message: 'No bookings to cancel' };
+    if (affected.length === 0) return { success: true, message: 'No reservations to cancel' };
 
     // 2. Perform updates and create notifications
     for (const b of affected) {
-        await supabase.from('court_bookings').update({
+        await supabase.from('facility_reservations').update({
             status: 'admin_cancelled',
             cancellation_reason: reason
         }).eq('id', b.id);
@@ -2134,7 +2134,7 @@ async function addAdminComment(bookingId, comment) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { error } = await supabase.from('court_bookings').update({ admin_comment: comment }).eq('id', bookingId);
+        const { error } = await supabase.from('facility_reservations').update({ admin_comment: comment }).eq('id', bookingId);
         return { success: !error, message: error ? error.message : 'Comment added' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -2151,22 +2151,22 @@ async function approveCourtBooking(bookingId) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data: booking } = await supabase.from('court_bookings').select('user_id, date, time').eq('id', bookingId).maybeSingle();
-        const { error } = await supabase.from('court_bookings').update({ status: 'approved' }).eq('id', bookingId);
+        const { data: booking } = await supabase.from('facility_reservations').select('user_id, date, time').eq('id', bookingId).maybeSingle();
+        const { error } = await supabase.from('facility_reservations').update({ status: 'approved' }).eq('id', bookingId);
         
         if (!error && booking && booking.user_id) {
             await supabase.from('user_notifications').insert([{
                 user_id: booking.user_id,
                 type: 'booking_approved',
-                message: `Your court booking on ${booking.date} at ${booking.time} has been approved.`,
+                message: `Your court reservation on ${booking.date} at ${booking.time} has been approved.`,
                 meta: { booking_id: bookingId, date: booking.date },
                 is_read: false
             }]);
             broadcastSync();
         }
 
-        if (!error) await logActivity('Booking Approved', `Approved court booking ID: ${bookingId}`);
-        return { success: !error, message: error ? error.message : 'Court booking approved' };
+        if (!error) await logActivity('Reservation Approved', `Approved court reservation ID: ${bookingId}`);
+        return { success: !error, message: error ? error.message : 'Court reservation approved' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         const index = bookings.findIndex(b => b.id === bookingId);
@@ -2180,7 +2180,7 @@ async function approveCourtBooking(bookingId) {
                 id: Date.now(),
                 userId: bookings[index].userId,
                 type: 'booking_approved',
-                message: `Your court booking on ${bookings[index].date} at ${bookings[index].time} has been approved.`,
+                message: `Your court reservation on ${bookings[index].date} at ${bookings[index].time} has been approved.`,
                 meta: { booking_id: bookingId, date: bookings[index].date },
                 isRead: false,
                 createdAt: new Date().toISOString()
@@ -2189,8 +2189,8 @@ async function approveCourtBooking(bookingId) {
             broadcastSync();
         }
 
-        logActivity('Booking Approved', `Approved court booking ID: ${bookingId}`);
-        return { success: true, message: 'Court booking approved' };
+        logActivity('Reservation Approved', `Approved court reservation ID: ${bookingId}`);
+        return { success: true, message: 'Court reservation approved' };
     }
 }
 
@@ -2199,37 +2199,37 @@ async function rejectCourtBooking(bookingId) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data: booking } = await supabase.from('court_bookings').select('user_id, date, time').eq('id', bookingId).maybeSingle();
-        const { error } = await supabase.from('court_bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+        const { data: booking } = await supabase.from('facility_reservations').select('user_id, date, time').eq('id', bookingId).maybeSingle();
+        const { error } = await supabase.from('facility_reservations').update({ status: 'cancelled' }).eq('id', bookingId);
         
         if (!error && booking && booking.user_id) {
             await supabase.from('user_notifications').insert([{
                 user_id: booking.user_id,
                 type: 'booking_rejected',
-                message: `Your court booking on ${booking.date} at ${booking.time} has been rejected.`,
+                message: `Your court reservation on ${booking.date} at ${booking.time} has been rejected.`,
                 meta: { booking_id: bookingId, date: booking.date },
                 is_read: false
             }]);
             broadcastSync();
         }
 
-        if (!error) await logActivity('Booking Rejected', `Rejected court booking ID: ${bookingId}`);
-        return { success: !error, message: error ? error.message : 'Court booking rejected and cancelled' };
+        if (!error) await logActivity('Reservation Rejected', `Rejected court reservation ID: ${bookingId}`);
+        return { success: !error, message: error ? error.message : 'Court reservation rejected and cancelled' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         const index = bookings.findIndex(b => b.id === bookingId);
         if (index === -1) return { success: false, message: 'Booking not found' };
         bookings[index].status = 'cancelled';
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-        logActivity('Booking Rejected', `Rejected court booking ID: ${bookingId}`);
-        return { success: true, message: 'Court booking rejected and cancelled' };
+        logActivity('Reservation Rejected', `Rejected court reservation ID: ${bookingId}`);
+        return { success: true, message: 'Court reservation rejected and cancelled' };
     }
 }
 
 async function updateCourtBookingStatus(bookingId, status) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { error } = await supabase.from('court_bookings').update({ status }).eq('id', bookingId);
+        const { error } = await supabase.from('facility_reservations').update({ status }).eq('id', bookingId);
         return !error;
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -2246,14 +2246,14 @@ async function deleteBooking(bookingId) {
 
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { error } = await supabase.from('court_bookings').delete().eq('id', bookingId);
-        if (!error) await logActivity('Booking Deleted', `Deleted court booking ID: ${bookingId}`);
+        const { error } = await supabase.from('facility_reservations').delete().eq('id', bookingId);
+        if (!error) await logActivity('Reservation Deleted', `Deleted court reservation ID: ${bookingId}`);
         return { success: !error, message: error ? error.message : 'Booking deleted' };
     } else {
         let bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         bookings = bookings.filter(b => b.id !== bookingId);
         localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-        logActivity('Booking Deleted', `Deleted court booking ID: ${bookingId}`);
+        logActivity('Reservation Deleted', `Deleted court reservation ID: ${bookingId}`);
         return { success: true, message: 'Booking deleted' };
     }
 }
@@ -2318,7 +2318,7 @@ async function adminCancelOverlappingBookings(eventData) {
     const reason = `Cancelled due to unexpected Barangay Event: ${eventData.title}`;
 
     if (supabaseAvailable) {
-        const { data: bookings } = await supabase.from('court_bookings')
+        const { data: bookings } = await supabase.from('facility_reservations')
             .select('*')
             .eq('date', date)
             .in('status', ['pending', 'approved']);
@@ -2334,7 +2334,7 @@ async function adminCancelOverlappingBookings(eventData) {
                 const eEnd = timeToMinutes(eTime);
                 
                 if (reqStart < eEnd && reqEnd > eStart) {
-                    await supabase.from('court_bookings').delete().eq('id', b.id);
+                    await supabase.from('facility_reservations').delete().eq('id', b.id);
                     await logActivity('Booking Cancelled by Admin', `Deleted booking ID: ${b.id} due to event ${eventData.title}`);
                     
                     const venueLabel = b.venue === 'basketball' || b.venueName === 'Basketball Court' ? 'Basketball Court' : 'Multi-Purpose Hall';
@@ -2482,12 +2482,12 @@ async function updateCourtBookingDateTime(bookingId, newDate, newTime, newEndTim
     // Usually combined time has venue, so let's just let the caller construct it properly OR fetch venue first
     if (supabaseAvailable) {
         // Fetch current venue
-        const { data: b } = await supabase.from('court_bookings').select('venue, venueName').eq('id', bookingId).single();
-        if(!b) return { success: false, message: 'Booking not found' };
+        const { data: b } = await supabase.from('facility_reservations').select('venue, venueName').eq('id', bookingId).single();
+        if(!b) return { success: false, message: 'Reservation not found' };
         const vName = b.venueName || (b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall');
         const formattedTime = `${vName} | ${newTime}` + (newEndTime ? ` – ${newEndTime}` : '');
         
-        const { error } = await supabase.from('court_bookings')
+        const { error } = await supabase.from('facility_reservations')
             .update({ date: newDate, time: formattedTime, status: newStatus || 'pending' })
             .eq('id', bookingId);
         return { success: !error, message: error ? error.message : 'Booking rescheduled' };
@@ -2734,7 +2734,7 @@ async function getUserStats(userId) {
         const [{ count: boCount }, { count: coCount }, { count: cbCount }] = await Promise.all([
             supabase.from('borrowings').select('*', { count: 'exact', head: true }).eq('user_id', userId),
             supabase.from('concerns').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-            supabase.from('court_bookings').select('*', { count: 'exact', head: true }).eq('user_id', userId)
+            supabase.from('facility_reservations').select('*', { count: 'exact', head: true }).eq('user_id', userId)
         ]);
 
         // Exact filtering is heavy, fallback to fetching myborrowings to filter
@@ -2873,16 +2873,16 @@ async function exportDataBackup(format = 'json') {
     let backupData = {};
 
     if (supabaseAvailable) {
-        const [users, equipment, borrowings, concerns, events, court_bookings, activity_log] = await Promise.all([
+        const [users, equipment, borrowings, concerns, events, facility_reservations, activity_log] = await Promise.all([
             supabase.from('users').select('id,username,full_name,email,role,created_at,offense_count').then(r => r.data || []),
             supabase.from('equipment').select('*').then(r => r.data || []),
             supabase.from('borrowings').select('*').then(r => r.data || []),
             supabase.from('concerns').select('*').then(r => r.data || []),
             supabase.from('events').select('*').then(r => r.data || []),
-            supabase.from('court_bookings').select('*').then(r => r.data || []),
+            supabase.from('facility_reservations').select('*').then(r => r.data || []),
             supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(1000).then(r => r.data || [])
         ]);
-        backupData = { users, equipment, borrowings, concerns, events, court_bookings, activity_log };
+        backupData = { users, equipment, borrowings, concerns, events, facility_reservations, activity_log };
     } else {
         backupData = {
             users: JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]'),
@@ -2890,7 +2890,7 @@ async function exportDataBackup(format = 'json') {
             borrowings: JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY) || '[]'),
             concerns: JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY) || '[]'),
             events: JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY) || '[]'),
-            court_bookings: JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY) || '[]'),
+            facility_reservations: JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY) || '[]'),
             activity_log: JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY) || '[]')
         };
     }

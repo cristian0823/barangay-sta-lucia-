@@ -3346,6 +3346,14 @@
                         <input type="text" id="eventLocation" value="Barangay Basketball Court" required>
                     </div>
                     <div class="form-group">
+                        <label for="eventDescription">Event Details (Description)</label>
+                        <textarea id="eventDescription" placeholder="e.g., Free vaccine drive for residents" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventCapacity">Maximum Capacity Limit</label>
+                        <input type="number" id="eventCapacity" placeholder="Leave empty or 0 for unlimited" min="0">
+                    </div>
+                    <div class="form-group">
                         <label for="eventOrganizer">Organizer</label>
                         <input type="text" id="eventOrganizer" placeholder="Organizer name" required>
                     </div>
@@ -3387,6 +3395,14 @@
                     <div class="form-group">
                         <label for="editEventLocation">Location</label>
                         <input type="text" id="editEventLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEventDescription">Event Details (Description)</label>
+                        <textarea id="editEventDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEventCapacity">Maximum Capacity Limit</label>
+                        <input type="number" id="editEventCapacity" placeholder="Leave empty or 0 for unlimited" min="0">
                     </div>
                     <div class="form-group">
                         <label for="editEventOrganizer">Organizer</label>
@@ -3639,6 +3655,8 @@
                     end_time: document.getElementById('adminSidebarEventEndTime').value,
                     location: venueName,
                     organizer: document.getElementById('adminSidebarEventOrganizer').value,
+                    description: (document.getElementById('adminSidebarEventDesc') || {}).value || '',
+                    capacity: parseInt((document.getElementById('adminSidebarEventCapacity') || {}).value || '0') || 0,
                     status: 'approved'
                 };
 
@@ -3702,8 +3720,8 @@
                         const uid = b.userId || b.user_id;
                         if (!uid) continue;
                         
-                        // 1. Fully delete the conflicting booking from the database so it disappears completely
-                        await supabase.from('court_bookings').delete().eq('id', b.id);
+                        // 1. Fully delete the conflicting reservation from the database so it disappears completely
+                        await supabase.from('facility_reservations').delete().eq('id', b.id);
                         
                         // 2. Insert notification so the user gets the popup
                         await supabase.from('user_notifications').insert([{
@@ -4032,7 +4050,7 @@
                             // Soft-delete using update since RLS blocks physical admin deletion
                             // Store event name in admin_comment so user dashboard popup can read it
                             if (available) {
-                                await supabase.from('court_bookings').update({ 
+                                await supabase.from('facility_reservations').update({ 
                                     status: 'cancelled_by_admin',
                                     admin_comment: eventName
                                 }).eq('id', b.id);
@@ -5169,7 +5187,7 @@
 
             async function deleteCourtBooking(bookingId) {
                 if (await showConfirmModal('Are you sure you want to permanently delete this Court Reservation?', 'Delete Booking', 'Yes, Delete', 'Cancel', 'danger')) {
-                    const result = await (typeof window.deleteBooking === 'function' ? window.deleteBooking(bookingId) : supabase.from('court_bookings').delete().eq('id', bookingId));
+                    const result = await (typeof window.deleteBooking === 'function' ? window.deleteBooking(bookingId) : supabase.from('facility_reservations').delete().eq('id', bookingId));
                     if (result.success || !result.error) {
                         showAlert('Court Reservation deleted', 'success');
                         await loadCourtBookings();
@@ -5374,7 +5392,9 @@
                     time: document.getElementById('eventTime').value,
                     end_time: document.getElementById('eventEndTime').value,
                     location: document.getElementById('eventLocation').value,
-                    organizer: document.getElementById('eventOrganizer').value
+                    organizer: document.getElementById('eventOrganizer').value,
+                    description: document.getElementById('eventDescription').value || '',
+                    capacity: parseInt(document.getElementById('eventCapacity').value || '0') || 0
                 });
 
                 btn.disabled = false;
@@ -5404,6 +5424,8 @@
                     document.getElementById('editEventTime').value = event.time;
                     document.getElementById('editEventEndTime').value = event.end_time || '';
                     document.getElementById('editEventLocation').value = event.location || '';
+                    document.getElementById('editEventDescription').value = event.description || '';
+                    document.getElementById('editEventCapacity').value = event.capacity || 0;
                     document.getElementById('editEventOrganizer').value = event.organizer || '';
 
                     document.getElementById('editEventModal').classList.add('active');
@@ -5425,6 +5447,8 @@
                     time: document.getElementById('editEventTime').value,
                     end_time: document.getElementById('editEventEndTime').value,
                     location: document.getElementById('editEventLocation').value,
+                    description: document.getElementById('editEventDescription').value || '',
+                    capacity: parseInt(document.getElementById('editEventCapacity').value || '0') || 0,
                     organizer: document.getElementById('editEventOrganizer').value
                 });
 
@@ -5675,8 +5699,8 @@
                     Purpose: b.purpose,
                     Status: b.status
                 }));
-                downloadCSV(convertToCSV(data), 'court_bookings_report.csv');
-                showAlert('Bookings CSV Exported', 'success');
+                downloadCSV(convertToCSV(data), 'facility_reservations_report.csv');
+                showAlert('Reservations CSV Exported', 'success');
             }
 
             async function generateConcernsCSV() {
@@ -6114,7 +6138,7 @@
             async function approveAdminBooking(bookingId) {
                 if (!await showConfirmModal('Approve this booking?', 'Approve Booking', 'Approve', 'Cancel', 'info')) return;
                 try {
-                    const { error } = await supabase.from('court_bookings')
+                    const { error } = await supabase.from('facility_reservations')
                         .update({ status: 'approved', admin_comment: null })
                         .eq('id', bookingId);
                     if (error) throw error;
@@ -6144,7 +6168,7 @@
                     return;
                 }
                 try {
-                    const { error } = await supabase.from('court_bookings')
+                    const { error } = await supabase.from('facility_reservations')
                         .update({ status: 'rejected', admin_comment: reason })
                         .eq('id', _rejectBookingId);
                     if (error) throw error;
@@ -6747,6 +6771,8 @@
                     end_time: endT,
                     organizer: document.getElementById('adsOrganizer').value,
                     location: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
+                    description: document.getElementById('adsEventDescription') ? document.getElementById('adsEventDescription').value : '',
+                    capacity: document.getElementById('adsEventCapacity') ? parseInt(document.getElementById('adsEventCapacity').value || '0', 10) : 0,
                     status: 'approved'
                 };
 
@@ -7309,6 +7335,20 @@
                         <div>
                             <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Organizer</label>
                             <input type="text" id="adsOrganizer" required value="Barangay Council"
+                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Event Details (Description)</label>
+                            <textarea id="adsEventDescription" placeholder="e.g., Free vaccine drive for residents" rows="3"
+                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'"></textarea>
+                        </div>
+
+                        <div>
+                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Max Capacity Limit</label>
+                            <input type="number" id="adsEventCapacity" placeholder="Leave empty for unlimited" min="0"
                                 style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
                                 onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
                         </div>

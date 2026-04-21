@@ -1,0 +1,1 @@
+const fs = require('fs'); let code = fs.readFileSync('admin.html', 'utf8'); code = code.replace(/<button type="button" onclick="confirmRejectEq\(\)"/, '<button type=\'button\' onclick=\'confirmRejectEq(this)\''); fs.writeFileSync('admin.html', code);
