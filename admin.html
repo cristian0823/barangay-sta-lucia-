@@ -2896,22 +2896,22 @@
         </button>
     </div>
     
-    <div style="background:#fff; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); overflow:hidden;">
-        <div style="overflow-x:auto;">
-            <table style="width:100%; text-align:left; border-collapse:collapse; min-width:900px;" id="securityLogTable">
-                <thead style="background:#f8fafc; text-transform:uppercase; font-size:11px; font-weight:800; color:#64748b; letter-spacing:0.5px;">
+    <div class="premium-card">
+        <div class="table-responsive">
+            <table class="data-table" id="securityLogTable">
+                <thead>
                     <tr>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0; width:40px;"></th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0; min-width:110px;">TIMESTAMP</th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">EMAIL / USER</th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">EVENT</th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">AUTH</th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">IP ADDRESS</th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">DEVICE</th>
-                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">DETAILS</th>
+                        <th style="width:40px;"></th>
+                        <th>TIMESTAMP</th>
+                        <th>EMAIL / USER</th>
+                        <th>EVENT</th>
+                        <th>AUTH</th>
+                        <th>IP ADDRESS</th>
+                        <th>DEVICE</th>
+                        <th>DETAILS</th>
                     </tr>
                 </thead>
-                <tbody id="securityList" style="background:#fff;">
+                <tbody id="securityList">
                     <!-- Loaded dynamically -->
                 </tbody>
             </table>
@@ -4159,7 +4159,7 @@
                 if (!list) return;
                 list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
                 try {
-                    const { data, error } = await supabase.from('audit_log').select('*, users(id, fullName, username)').order('created_at', { ascending: false }).limit(200);
+                    const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username)').order('created_at', { ascending: false }).limit(200);
                     if (error) throw error;
                     if (!data || data.length === 0) {
                         list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No audit logs found</td></tr>';
@@ -4167,7 +4167,7 @@
                     }
                     list.innerHTML = data.map(a => {
                         const d = new Date(a.created_at);
-                        const who = a.users ? (a.users.fullName || a.users.username) : 'System';
+                        const who = a.users ? (a.users.full_name || a.users.username) : 'System';
                         return `<tr>
                             <td>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</td>
                             <td>${who}</td>
@@ -4188,7 +4188,7 @@
                 if (!list) return;
                 list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
                 try {
-                    const { data, error } = await supabase.from('security_log').select('*, users(id, fullName, email, username)').order('created_at', { ascending: false }).limit(200);
+                    const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(200);
                     if (error) throw error;
                     if (!data || data.length === 0) {
                         list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No security logs found</td></tr>';
@@ -4196,7 +4196,7 @@
                     }
                     list.innerHTML = data.map(s => {
                         const d = new Date(s.created_at);
-                        const uName = s.users ? (s.users.fullName || s.users.username || 'System') : (s.target_username || 'System');
+                        const uName = s.users ? (s.users.full_name || s.users.username || 'System') : (s.target_username || 'System');
                         const uMail = s.users ? (s.users.email || s.users.username || '') : '';
                         const ev = s.event_type || 'Unknown';
                         let bdg = 'background:#e2e8f0;color:#475569;';
