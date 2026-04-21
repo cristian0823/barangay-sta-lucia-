@@ -102,10 +102,25 @@ CREATE TABLE IF NOT EXISTS facility_reservations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
-CREATE TABLE IF NOT EXISTS activity_log (
+CREATE TABLE IF NOT EXISTS audit_log (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    entity_type VARCHAR(100),
+    entity_id INTEGER,
     action VARCHAR(255),
+    details TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+CREATE TABLE IF NOT EXISTS security_log (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    target_username VARCHAR(255),
+    event_type VARCHAR(100),
+    auth_method VARCHAR(50),
+    severity VARCHAR(50),
+    ip_address VARCHAR(100),
+    device_info TEXT,
     details TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
@@ -150,7 +165,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_secret TEXT DEFAULT NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN DEFAULT false;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS equipment_id INTEGER REFERENCES equipment(id) ON DELETE RESTRICT;
 ALTER TABLE borrowings ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
-ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+
 ALTER TABLE events ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0;
 ALTER TABLE events ADD COLUMN IF NOT EXISTS description TEXT;
 -- Add unique constraint on barangay_id if not already present
@@ -167,7 +182,7 @@ END $$;
 ALTER TABLE borrowings DROP COLUMN IF EXISTS user_name;
 ALTER TABLE concerns DROP COLUMN IF EXISTS user_name;
 ALTER TABLE facility_reservations DROP COLUMN IF EXISTS user_name;
-ALTER TABLE activity_log DROP COLUMN IF EXISTS admin_username;
+
 
 
 -- ============================================================
@@ -184,7 +199,7 @@ ALTER TABLE borrowings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE concerns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE facility_reservations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE event_participants ENABLE ROW LEVEL SECURITY;
 
@@ -248,12 +263,17 @@ DROP POLICY IF EXISTS "Enable insert for all users" ON event_participants;
 DROP POLICY IF EXISTS "Enable update for all users" ON event_participants;
 DROP POLICY IF EXISTS "Enable delete for all users" ON event_participants;
 
--- Activity Log
-DROP POLICY IF EXISTS "Enable read access for all users" ON activity_log;
-DROP POLICY IF EXISTS "Enable insert for all users" ON activity_log;
-DROP POLICY IF EXISTS "Enable update for all users" ON activity_log;
-DROP POLICY IF EXISTS "Enable delete for all users" ON activity_log;
-DROP POLICY IF EXISTS "Enable write access for admins" ON activity_log;
+-- Audit Log
+DROP POLICY IF EXISTS "Enable read access for all users" ON audit_log;
+DROP POLICY IF EXISTS "Enable insert for all users" ON audit_log;
+DROP POLICY IF EXISTS "Enable update for all users" ON audit_log;
+DROP POLICY IF EXISTS "Enable delete for all users" ON audit_log;
+
+-- Security Log
+DROP POLICY IF EXISTS "Enable read access for all users" ON security_log;
+DROP POLICY IF EXISTS "Enable insert for all users" ON security_log;
+DROP POLICY IF EXISTS "Enable update for all users" ON security_log;
+DROP POLICY IF EXISTS "Enable delete for all users" ON security_log;
 
 -- User Notifications
 DROP POLICY IF EXISTS "Enable read access for all users" ON user_notifications;
@@ -302,10 +322,10 @@ CREATE POLICY "Enable update for all users" ON event_participants FOR UPDATE USI
 CREATE POLICY "Enable delete for all users" ON event_participants FOR DELETE USING (true);
 
 -- Activity Log Policies
-CREATE POLICY "Enable read access for all users" ON activity_log FOR SELECT USING (true);
-CREATE POLICY "Enable insert for all users" ON activity_log FOR INSERT WITH CHECK (true);
-CREATE POLICY "Enable update for all users" ON activity_log FOR UPDATE USING (true);
-CREATE POLICY "Enable delete for all users" ON activity_log FOR DELETE USING (true);
+
+
+
+
 
 -- User Notifications Policies
 CREATE POLICY "Enable read access for all users" ON user_notifications FOR SELECT USING (true);
@@ -353,7 +373,7 @@ INSERT INTO equipment (name, quantity, available, broken, icon, description) VAL
 ('Electric Fan',   5,   5, 0, '🌀', 'For big events')
 ON CONFLICT (name) DO NOTHING;
 -- 5e: Enable RLS on activity_log
-ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+
 
 -- ============================================================
 -- STEP 6: STORED PROCEDURES (RPCs) FOR INVENTORY MANAGEMENT

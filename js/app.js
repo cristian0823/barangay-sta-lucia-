@@ -1,3 +1,80 @@
+
+window.logAudit = async function(entityType, entityId, action, details) {
+    // Local fallback
+    const logs = JSON.parse(localStorage.getItem(LOCAL_AUDIT_LOG_KEY)) || [];
+    logs.push({
+        id: Date.now(), user_id: (getCurrentUser() || {}).id || null,
+        entity_type: entityType, entity_id: entityId, action: action, details: details,
+        created_at: new Date().toISOString()
+    });
+    localStorage.setItem(LOCAL_AUDIT_LOG_KEY, JSON.stringify(logs));
+
+    try {
+        const u = getCurrentUser() || {};
+        if (window.supabase) {
+            await supabase.from('audit_log').insert([{
+                user_id: u.id || null,
+                entity_type: entityType || 'System',
+                entity_id: entityId,
+                action: action,
+                details: details
+            }]);
+        }
+    } catch(e) { console.error('logAudit failed', e); }
+};
+
+window.logSecurity = async function(eventType, authMethod, severity, details, targetUsername = null) {
+    let ip = 'Unknown';
+    try {
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        ip = ipData.ip;
+    } catch(e) {}
+
+    // Local fallback
+    const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
+    logs.push({
+        id: Date.now(), user_id: (getCurrentUser() || {}).id || null,
+        target_username: targetUsername, event_type: eventType, auth_method: authMethod, 
+        severity: severity, ip_address: ip, device_info: navigator.userAgent, details: details,
+        created_at: new Date().toISOString()
+    });
+    localStorage.setItem(LOCAL_SECURITY_LOG_KEY, JSON.stringify(logs));
+
+    try {
+        const u = getCurrentUser() || {};
+        const device = navigator.userAgent;
+
+        if (window.supabase) {
+            await supabase.from('security_log').insert([{
+                user_id: u.id || null,
+                target_username: targetUsername || u.username || null,
+                event_type: eventType,
+                auth_method: authMethod || 'System',
+                severity: severity,
+                ip_address: ip,
+                device_info: device,
+                details: details
+            }]);
+        }
+    } catch(e) { console.error('logSecurity failed', e); }
+};
+
+window.logActivity = async function(action, details, severity = 'info') {
+    // Migration wrapper
+    const actStr = action || '';
+    const isSecurity = /Login|Logout|User|Password|OTP|Suspend|Role|Admin|Account/i.test(actStr);
+    
+    if (isSecurity) {
+        let evType = actStr.includes('OTP') ? 'OtpVerified' : actStr.includes('Login') ? 'LoginSuccess' : actStr;
+        let authMethod = actStr.includes('OTP') ? 'OTP' : actStr.includes('Login') || actStr.includes('Password') ? 'Password' : 'N/A';
+        await window.logSecurity(evType, authMethod, severity, details);
+    } else {
+        await window.logAudit(actStr, null, 'UPDATE', details);
+    }
+};
+
+
 // Barangay Website - Main JavaScript
 
 // Initialize local storage on load - MUST be first!
@@ -37,7 +114,8 @@ const LOCAL_EVENTS_KEY = 'barangay_local_events';
 const LOCAL_BOOKINGS_KEY = 'barangay_local_bookings';
 
 // Initialize default users in localStorage if not exists
-const LOCAL_ACTIVITY_LOG_KEY = 'barangay_local_activity_log';
+const LOCAL_AUDIT_LOG_KEY = 'barangay_local_audit_log';
+const LOCAL_SECURITY_LOG_KEY = 'barangay_local_security_log';
 const LOCAL_NOTIFICATIONS_KEY = 'barangay_local_notifications';
 
 // Cross-tab synchronization channel
@@ -2769,41 +2847,7 @@ async function getUserStats(userId) {
 
 // ─── Activity Log ────────────────────────────────────────────────────────────
 
-async function logActivity(action, details, severity = 'info') {
-    // ISO/IEC 27001 A.12 — Operations Security: enriched audit logging
-    const user = getCurrentUser();
-    const adminUsername = user ? (user.fullName || user.username || 'admin') : 'system';
-    const timestamp = new Date().toISOString();
-
-    const supabaseAvailable = await isSupabaseAvailable().catch(() => false);
-    if (supabaseAvailable) {
-        try {
-            // Resolve real Supabase integer ID
-            let realUserId = null;
-            if (user) {
-                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
-                if (uRow && uRow.id) realUserId = uRow.id;
-            }
-
-            const { error } = await supabase.from('activity_log').insert([{
-                user_id: realUserId,
-                action: action,
-                details: details,
-                severity: severity,
-                created_at: timestamp
-            }]);
-            
-            if (error) {
-                console.warn('Supabase activity log error, falling back to local', error);
-                _saveActivityLocal(adminUsername, action, details, timestamp, severity);
-            }
-        } catch (e) {
-            _saveActivityLocal(adminUsername, action, details, timestamp, severity);
-        }
-    } else {
-        _saveActivityLocal(adminUsername, action, details, timestamp, severity);
-    }
-}
+/* old logActivity removed */
 
 function _saveActivityLocal(adminUsername, action, details, timestamp, severity = 'info') {
     const logs = JSON.parse(localStorage.getItem(LOCAL_ACTIVITY_LOG_KEY)) || [];
