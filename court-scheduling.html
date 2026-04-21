@@ -669,7 +669,9 @@
                             <p>📅 ${formatDate(event.date)}</p>
                             <p>⏰ ${timeDisplay}</p>
                             <p>👤 Organizer: ${event.organizer}</p>
+                            ${event.capacity ? `<p class="font-bold text-purple-200">👥 Capacity: ${event.capacity} max</p>` : ''}
                         </div>
+                        ${event.description ? `<div class="mt-3 text-sm bg-black/20 p-3 rounded-lg italic shadow-inner border border-white/10">💬 ${event.description}</div>` : ''}
                     </div>
                 `;
             });
