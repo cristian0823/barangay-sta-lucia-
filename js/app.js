@@ -12,8 +12,13 @@ window.logAudit = async function(entityType, entityId, action, details) {
     try {
         const u = getCurrentUser() || {};
         if (window.supabase) {
+            let finalUserId = null;
+            if (u.username) {
+                const { data: uData } = await window.supabase.from('users').select('id').eq('username', u.username).maybeSingle();
+                if (uData) finalUserId = uData.id;
+            }
             await supabase.from('audit_log').insert([{
-                user_id: u.id || null,
+                user_id: finalUserId,
                 entity_type: entityType || 'System',
                 entity_id: entityId,
                 action: action,
@@ -46,8 +51,13 @@ window.logSecurity = async function(eventType, authMethod, severity, details, ta
         const device = navigator.userAgent;
 
         if (window.supabase) {
+            let finalUserId = null;
+            if (u.username) {
+                const { data: uData } = await window.supabase.from('users').select('id').eq('username', u.username).maybeSingle();
+                if (uData) finalUserId = uData.id;
+            }
             await supabase.from('security_log').insert([{
-                user_id: u.id || null,
+                user_id: finalUserId,
                 target_username: targetUsername || u.username || null,
                 event_type: eventType,
                 auth_method: authMethod || 'System',
@@ -646,7 +656,7 @@ async function getEquipment() {
     const today = new Date();
     today.setHours(0,0,0,0);
     const lockedNames = new Set();
-    const pendingQtyMap = {}; // { equipmentName: totalPendingQty }
+    const pendingQtyMap = {}; const approvedQtyMap = {};
     
     if (supabaseAvailable) {
         const { data: bData } = await supabase.from('borrowings').select('equipment, return_date, quantity, status').in('status', ['approved', 'pending']);
@@ -656,7 +666,7 @@ async function getEquipment() {
                     const retDate = new Date(b.return_date);
                     retDate.setDate(retDate.getDate() + 1); // 1 day tolerance
                     retDate.setHours(23,59,59,999);
-                    if (today > retDate) lockedNames.add(b.equipment);
+                    if (today > retDate) lockedNames.add(b.equipment); approvedQtyMap[b.equipment] = (approvedQtyMap[b.equipment] || 0) + (b.quantity || 0);
                 }
                 if (b.status === 'pending') {
                     const name = b.equipment;
