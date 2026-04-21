@@ -14,8 +14,12 @@
 
 
 -- ============================================================
+-- ============================================================
 -- STEP 1: CREATE TABLES
 -- ============================================================
+
+-- Drop legacy activity log for the v1.2 audit & security split
+DROP TABLE IF EXISTS activity_log CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
