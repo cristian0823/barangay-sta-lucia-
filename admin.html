@@ -2566,7 +2566,7 @@
                         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9000; align-items:center; justify-content:center;">
                         <div
                             style="background:#fff; border-radius:16px; padding:28px; width:90%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-                            <h3 style="font-size:18px; font-weight:800; color:#111; margin-bottom:6px;"> Reject Booking
+                            <h3 style="font-size:18px; font-weight:800; color:#111; margin-bottom:6px;"> Reject Reservation
                             </h3>
                             <p style="font-size:13px; color:#6b7280; margin-bottom:18px;">Please provide a reason so the
                                 resident knows why their booking was rejected.</p>
@@ -6136,7 +6136,7 @@
             }
 
             async function approveAdminBooking(bookingId) {
-                if (!await showConfirmModal('Approve this booking?', 'Approve Booking', 'Approve', 'Cancel', 'info')) return;
+                if (!await showConfirmModal('Approve this booking?', 'Approve Reservation', 'Approve', 'Cancel', 'info')) return;
                 try {
                     const { error } = await supabase.from('facility_reservations')
                         .update({ status: 'approved', admin_comment: null })
@@ -7040,12 +7040,12 @@
                     const isPending = booking.status === 'pending' || booking.status === 'booked';
                     if (isPending) {
                         actionsDiv.innerHTML = `
-                            <button onclick="approveAdminBooking(${booking.id}); closeAdminBookingModal();" style="flex:1;padding:12px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Approve Booking</button>
-                            <button onclick="openRejectModal(${booking.id}); closeAdminBookingModal();" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Reject Booking</button>
+                            <button onclick="approveAdminBooking(${booking.id}); closeAdminBookingModal();" style="flex:1;padding:12px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Approve Reservation</button>
+                            <button onclick="openRejectModal(${booking.id}); closeAdminBookingModal();" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Reject Reservation</button>
                         `;
                     } else {
                         actionsDiv.innerHTML = `
-                            <p style="width:100%;font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center;">This booking has already been completely processed.</p>
+                            <p style="width:100%;font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center;">This reservation has already been completely processed.</p>
                             <button type="button" onclick="closeAdminBookingModal()" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text);font-family:inherit;font-size:14px;">Close</button>
                         `;
                     }
@@ -7386,7 +7386,7 @@
                     <div id="adsScheduleList" style="display:flex;flex-direction:column;gap:10px;"></div>
                     <div id="adsEmptyState" style="display:none;text-align:center;padding:28px 0;">
                         <div style="font-size:40px;margin-bottom:10px;"></div>
-                        <p style="font-size:14px;font-weight:700;color:#64748b;margin:0 0 4px 0;">No bookings or events for this day.</p>
+                        <p style="font-size:14px;font-weight:700;color:#64748b;margin:0 0 4px 0;">No reservations or events for this day.</p>
                         <p style="font-size:12px;color:#94a3b8;margin:0;">All time slots are available!</p>
                     </div>
                 </div>
@@ -7400,7 +7400,7 @@
                     
                     <button id="adsCancelMassBtn" onclick="openAdminMassCancelModal()"
                         style="width:100%;padding:14px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(220,38,38,0.3);margin-top:10px;">
-                        <span> Cancel All Bookings for This Day</span>
+                        <span> Cancel All Reservations for This Day</span>
                     </button>
                 </div>
             </div>
@@ -7431,7 +7431,7 @@
             style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
             <div style="background:#fff;border-radius:24px;width:100%;max-width:420px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;padding:24px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <h3 style="font-size:18px; font-weight:800; color:#111;"> Cancel All Bookings</h3>
+                    <h3 style="font-size:18px; font-weight:800; color:#111;"> Cancel All Reservations</h3>
                     <button onclick="document.getElementById('adminMassCancelModal').style.display='none'"
                         style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">&times;</button>
                 </div>
@@ -7451,7 +7451,7 @@
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button type="button" onclick="document.getElementById('adminMassCancelModal').style.display='none'"
-                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Keep Bookings</button>
+                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Keep Reservations</button>
                     <button type="button" onclick="confirmAdminMassCancel()" id="amcConfirmBtn"
                         style="flex:1; padding:12px; background:#dc2626; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Cancel All</button>
                 </div>
@@ -7610,7 +7610,7 @@
             </button>
             <button class="tab-btn" onclick="mobileSwitchSection('court-bookings'); activateBottomTab(this)">
                 <span class="tab-icon"><i class="bi bi-calendar-check-fill"></i></span>
-                <span class="tab-label">Bookings</span>
+                <span class="tab-label">Reservations</span>
             </button>
             <button class="tab-btn" onclick="mobileSwitchSection('requests'); activateBottomTab(this)">
                 <span class="tab-icon"><i class="bi bi-box-fill"></i></span>
