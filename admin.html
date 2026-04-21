@@ -2216,7 +2216,8 @@
             <button onclick="mobileSwitchSection('events')"> Court Events</button>
             <button onclick="mobileSwitchSection('equipment')"> Inventory</button>
             <button onclick="mobileSwitchSection('reports')">  Reports</button>
-            <button onclick="mobileSwitchSection('audit-log', 'security-log')"> Activity Log</button>
+            <button onclick="mobileSwitchSection('audit-log')"> Audit Log</button>
+            <button onclick="mobileSwitchSection('security-log')"> Security Log</button>
         </div>
     </div>
 
@@ -4132,7 +4133,7 @@
                 var targetSection = document.getElementById(section + '-section');
                 if (targetSection) targetSection.style.display = 'block';
                 // Auto-load section data on switch
-                if (section === 'audit-log', 'security-log') loadActivityLog();
+                // Handled securely below
                 if (section === 'reports') loadSimpleReport();
                 if (section === 'users') loadUsers();
                 if (section === 'equipment') loadEquipment();
@@ -5747,7 +5748,8 @@
                     'events': 4, 
                     'equipment': 5, 
                     'reports': 6, 
-                    'audit-log', 'security-log': 7 
+                    'audit-log': 7,
+                    'security-log': 8 
                 };
                 if (sectionMap[section] !== undefined) btns[sectionMap[section]]?.classList.add('active');
                 switchSection(section, null);
