@@ -2853,149 +2853,73 @@
                     </div>
 
                     <!-- Activity Log Section (Premium) -->
-                    <div id="activity-log-section" class="section-container" style="display: none;">
-                        <style>
-                            /*  Activity Log Dark Mode Overrides  */
-                            [data-theme="dark"] #activity-log-section .premium-card {
-                                background: #1e293b !important;
-                                border-color: #334155 !important;
-                            }
-                            [data-theme="dark"] #activity-log-section .section-header {
-                                background: #1e293b !important;
-                                border-color: #334155 !important;
-                                color: #f1f5f9 !important;
-                            }
-                            [data-theme="dark"] #activity-log-section .section-header h3 {
-                                color: #10b981 !important;
-                            }
-                            /* Filter bar */
-                            [data-theme="dark"] #activity-log-section > .premium-card > div:nth-child(2) {
-                                background: #0f172a !important;
-                                border-color: #334155 !important;
-                            }
-                            /* Filter buttons (Light Mode) */
-                            .log-filter-btn {
-                                padding: 5px 13px;
-                                border-radius: 20px;
-                                font-size: 12px;
-                                font-weight: 700;
-                                border: 2px solid #d1fae5;
-                                background: #fff;
-                                color: #065f46;
-                                cursor: pointer;
-                                transition: all 0.2s;
-                            }
-                            .log-filter-btn.active {
-                                border: 2px solid #065f46;
-                                background: #065f46;
-                                color: #fff;
-                            }
-                            
-                            /* Filter buttons (Dark Mode) */
-                            [data-theme="dark"] .log-filter-btn {
-                                background: #1e293b !important;
-                                border-color: #334155 !important;
-                                color: #94a3b8 !important;
-                            }
-                            [data-theme="dark"] .log-filter-btn.active {
-                                background: #065f46 !important;
-                                border-color: #059669 !important;
-                                color: #f1f5f9 !important;
-                            }
-                            /* Search input */
-                            [data-theme="dark"] #logSearchInput {
-                                background: #1e293b !important;
-                                border-color: #334155 !important;
-                                color: #f1f5f9 !important;
-                            }
-                            [data-theme="dark"] #logSearchInput::placeholder {
-                                color: #64748b !important;
-                            }
-                            /* Table */
-                            [data-theme="dark"] #activity-log-section table thead tr {
-                                background: #0f172a !important;
-                            }
-                            [data-theme="dark"] #activity-log-section table thead th {
-                                color: #94a3b8 !important;
-                                border-color: #334155 !important;
-                            }
-                            [data-theme="dark"] #activity-log-section table tbody tr {
-                                border-color: #334155 !important;
-                            }
-                            [data-theme="dark"] #activity-log-section table tbody tr:hover {
-                                background: #334155 !important;
-                            }
-                            [data-theme="dark"] #activity-log-section table tbody td {
-                                color: #cbd5e1 !important;
-                                border-color: #334155 !important;
-                            }
-                            /* Empty state */
-                            [data-theme="dark"] #noActivityLog {
-                                color: #64748b !important;
-                            }
-                        </style>
-                        <div class="premium-card">
-                            <div class="section-header"
-                                style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
+                    
+<div class="section hidden" id="audit-log-section">
+    <div class="section-header">
+        <div>
+            <h2>🧾 Audit Log</h2>
+            <p>System operational tracking for reservations, requests, and concerns.</p>
+        </div>
+        <button onclick="exportAuditLog()" class="premium-btn primary">
+            <i class="bi bi-download"></i> Export CSV
+        </button>
+    </div>
+    <div class="premium-card">
+        <div class="table-responsive">
+            <table class="data-table" id="auditLogTable">
+                <thead>
+                    <tr>
+                        <th>TIMESTAMP</th>
+                        <th>USER</th>
+                        <th>ACTION</th>
+                        <th>ENTITY</th>
+                        <th>DETAILS</th>
+                    </tr>
+                </thead>
+                <tbody id="auditList">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-                                <h3 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--green-xl);">
-                                    System &amp; Transaction History</h3>
-                                <button class="btn btn-primary btn-small" onclick="loadActivityLog()">
-                                    Refresh</button>
-                            </div>
-                            <!-- Filters & Search -->
-                            <div
-                                style="display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 24px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; align-items: center;">
-                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                    <button id="logFilter-all" onclick="setLogFilter('all')"
-                                        class="log-filter-btn active">
-                                        All</button>
-                                    <button id="logFilter-inventory" onclick="setLogFilter('inventory')"
-                                        class="log-filter-btn">
-                                        Inventory</button>
-                                    <button id="logFilter-requests" onclick="setLogFilter('requests')"
-                                        class="log-filter-btn">
-                                        User Requests</button>
-                                    <button id="logFilter-bookings" onclick="setLogFilter('bookings')"
-                                        class="log-filter-btn">
-                                        Court Reservations</button>
-                                    <button id="logFilter-concerns" onclick="setLogFilter('concerns')"
-                                        class="log-filter-btn">
-                                        Concerns</button>
-                                </div>
-                                <input id="logSearchInput" type="text" placeholder=" Search logs..."
-                                    oninput="renderActivityTable()"
-                                    style="flex:1; min-width:160px; padding:7px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:13px; outline:none; background:#fff;">
+<div class="section hidden" id="security-log-section">
+    <div class="section-header">
+        <div>
+            <h2>🛡️ Security Log</h2>
+            <p>Authentication, access control, and anomaly monitoring.</p>
+        </div>
+        <button onclick="exportSecurityLog()" class="premium-btn primary">
+            <i class="bi bi-download"></i> Export CSV
+        </button>
+    </div>
+    
+    <div style="background:#fff; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); overflow:hidden;">
+        <div style="overflow-x:auto;">
+            <table style="width:100%; text-align:left; border-collapse:collapse; min-width:900px;" id="securityLogTable">
+                <thead style="background:#f8fafc; text-transform:uppercase; font-size:11px; font-weight:800; color:#64748b; letter-spacing:0.5px;">
+                    <tr>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0; width:40px;"></th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0; min-width:110px;">TIMESTAMP</th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">EMAIL / USER</th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">EVENT</th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">AUTH</th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">IP ADDRESS</th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">DEVICE</th>
+                        <th style="padding:16px 12px; border-bottom:1px solid #e2e8f0;">DETAILS</th>
+                    </tr>
+                </thead>
+                <tbody id="securityList" style="background:#fff;">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-                                <button onclick="clearLogFilters()" title="Clear all filters"
-                                    style="padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">
-                                     Clear
-                                </button>
-                            </div>
-                            <div class="admin-tables" style="overflow-x: auto; padding: 0 24px 24px;">
-                                <table class="activity-log-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: left;">Date &amp; Time</th>
-                                            <th style="text-align: center;">User / Admin</th>
-                                            <th style="text-align: center;">Action</th>
-                                            <th style="text-align: right;">Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="activityLogTable"></tbody>
-                                </table>
-                                <div id="activityLogPg" class="pg-controls" style="display:none;"></div>
-                                <div id="noActivityLog" class="empty-state"
-                                    style="display:none; text-align:center; padding: 40px;">
-                                    <div style="font-size:40px; margin-bottom:12px;"></div>
-                                    <p style="color: #6b7280;">No activity recorded yet</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!--  MY PROFILE (PREMIUM)  -->
-                    <div id="profile-section" class="section-container" style="display: none;">
+<div id="profile-section" class="section-container" style="display: none;">
                         <div class="section-header"
                             style="margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
                             <h3
