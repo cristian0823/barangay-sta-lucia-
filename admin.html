@@ -2779,26 +2779,60 @@
 
                     <!-- Activity Log Section (Premium) -->
                     
-<div class="section" id="audit-log-section" style="display:none;">
-    <div class="section-header">
-        <div>
-            <h2>🧾 Audit Log</h2>
-            <p>System operational tracking for reservations, requests, and concerns.</p>
+<div class="section-container" id="audit-log-section" style="display:none; padding: 24px;">
+    <div class="section-header" style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+            <i class="bi bi-receipt-cutoff" style="color: #6366f1; font-size: 28px;"></i>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--text-main, #0f172a); margin: 0;">Audit Log</h2>
         </div>
-        <button onclick="exportAuditLog()" class="premium-btn primary">
-            <i class="bi bi-download"></i> Export CSV
-        </button>
+        <p style="color: var(--text-muted, #64748b); font-size: 14px; margin: 0;">System operational tracking for reservations, requests, and concerns.</p>
     </div>
-    <div class="premium-card">
+
+    <!-- Filter Bar -->
+    <div style="background: #fff; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">ACTION</label>
+            <select id="auditFilterAction" onchange="renderAuditLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+                <option value="all">All Actions</option>
+                <option value="Borrow">Borrow Equipment</option>
+                <option value="Reserve">Court Reservation</option>
+                <option value="Concern">Concerns</option>
+                <option value="Event">Events</option>
+            </select>
+        </div>
+        <div style="flex: 1; min-width: 130px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">FROM</label>
+            <input type="date" id="auditFilterFrom" onchange="renderAuditLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 130px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">TO</label>
+            <input type="date" id="auditFilterTo" onchange="renderAuditLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 2; min-width: 200px; position: relative;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">SEARCH</label>
+            <div style="display: flex;">
+                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog()" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+                <button onclick="renderAuditLog()" style="background: #0f172a; color: white; border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+        <div>
+            <button onclick="exportAuditLog()" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div style="background: #fff; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         <div class="table-responsive">
-            <table class="data-table" id="auditLogTable">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="auditLogTable">
                 <thead>
-                    <tr>
-                        <th>TIMESTAMP</th>
-                        <th>USER</th>
-                        <th>ACTION</th>
-                        <th>ENTITY</th>
-                        <th>DETAILS</th>
+                    <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-color, #e2e8f0);">
+                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">TIMESTAMP</th>
+                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">USER</th>
+                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">ACTION</th>
+                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">ENTITY</th>
+                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">DETAILS</th>
                     </tr>
                 </thead>
                 <tbody id="auditList">
@@ -2809,30 +2843,90 @@
     </div>
 </div>
 
-<div class="section" id="security-log-section" style="display:none;">
-    <div class="section-header">
-        <div>
-            <h2>🛡️ Security Log</h2>
-            <p>Authentication, access control, and anomaly monitoring.</p>
+<div class="section-container" id="security-log-section" style="display:none; padding: 24px;">
+    <div class="section-header" style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+            <i class="bi bi-shield-fill-check" style="color: #ef4444; font-size: 28px;"></i>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--text-main, #0f172a); margin: 0;">Security Log</h2>
         </div>
-        <button onclick="exportSecurityLog()" class="premium-btn primary">
-            <i class="bi bi-download"></i> Export CSV
-        </button>
+        <p style="color: var(--text-muted, #64748b); font-size: 14px; margin: 0;">Authentication & session events — OWASP A09:2021 compliant monitoring.</p>
     </div>
-    
-    <div class="premium-card">
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
+            <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text-main, #0f172a);">0</div>
+        </div>
+        <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">FAILED ATTEMPTS TODAY</div>
+            <div id="secStatFailed" style="font-size: 28px; font-weight: 800; color: #eab308;">0</div>
+        </div>
+        <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="bi bi-exclamation-triangle-fill"></i> ANOMALIES TODAY</div>
+            <div id="secStatAnomalies" style="font-size: 28px; font-weight: 800; color: #ef4444;">0</div>
+        </div>
+        <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">TOTAL RECORDS</div>
+            <div id="secStatTotal" style="font-size: 28px; font-weight: 800; color: var(--text-main, #0f172a);">0</div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div style="background: #fff; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">EVENT TYPE</label>
+            <select id="secFilterType" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+                <option value="all">All Events</option>
+                <option value="success">Success Events</option>
+                <option value="failed">Failed Attempts</option>
+                <option value="anomaly">Anomalies</option>
+            </select>
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">AUTH METHOD</label>
+            <select id="secFilterAuth" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+                <option value="all">All Methods</option>
+                <option value="Password">Password</option>
+                <option value="Google">Google</option>
+            </select>
+        </div>
+        <div style="display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 8px;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted, #64748b); cursor: pointer;">
+                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog()" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444;"> Only Anomalies
+            </label>
+        </div>
+        <div style="flex: 1; min-width: 130px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">FROM</label>
+            <input type="date" id="secFilterFrom" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 130px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">TO</label>
+            <input type="date" id="secFilterTo" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 2; min-width: 200px; position: relative;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); margin-bottom: 6px;">SEARCH</label>
+            <div style="display: flex;">
+                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog()" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border-color, #e2e8f0); font-size: 13px; outline: none;">
+                <button onclick="renderSecurityLog()" style="background: #0f172a; color: white; border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div style="background: #fff; border-radius: 12px; border: 1px solid var(--border-color, #e2e8f0); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         <div class="table-responsive">
-            <table class="data-table" id="securityLogTable">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="securityLogTable">
                 <thead>
-                    <tr>
-                        <th style="width:40px;"></th>
-                        <th>TIMESTAMP</th>
-                        <th>EMAIL / USER</th>
-                        <th>EVENT</th>
-                        <th>AUTH</th>
-                        <th>IP ADDRESS</th>
-                        <th>DEVICE</th>
-                        <th>DETAILS</th>
+                    <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-color, #e2e8f0);">
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b); width: 40px;"></th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">TIMESTAMP</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">EMAIL / USER</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">EVENT</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">AUTH</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">IP ADDRESS</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">DEVICE</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted, #64748b);">DETAILS</th>
                     </tr>
                 </thead>
                 <tbody id="securityList">
@@ -4083,77 +4177,205 @@
             }
 
             // ── AUDIT LOG ──
+            let _allAuditLogs = [];
+
             async function loadAuditLog() {
                 const list = document.getElementById('auditList');
                 if (!list) return;
-                list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
+                list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted, #64748b);">Loading...</td></tr>';
                 try {
-                    const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username)').order('created_at', { ascending: false }).limit(200);
+                    const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username)').order('created_at', { ascending: false }).limit(500);
                     if (error) throw error;
-                    if (!data || data.length === 0) {
-                        list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No audit logs found</td></tr>';
-                        return;
-                    }
-                    list.innerHTML = data.map(a => {
-                        const d = new Date(a.created_at);
-                        const who = a.users ? (a.users.full_name || a.users.username) : 'System';
-                        return `<tr>
-                            <td>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</td>
-                            <td>${who}</td>
-                            <td><span style="background:#e0e7ff;color:#3730a3;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;">${a.action || ''}</span></td>
-                            <td>${a.entity_type || ''} ${a.entity_id ? '#'+a.entity_id : ''}</td>
-                            <td>${a.details || ''}</td>
-                        </tr>`;
-                    }).join('');
+                    _allAuditLogs = data || [];
+                    renderAuditLog();
                 } catch(e) {
                     console.error('loadAuditLog error:', e);
                     list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#ef4444;">Error loading audit log</td></tr>';
                 }
             }
 
+            function renderAuditLog() {
+                const list = document.getElementById('auditList');
+                if (!list) return;
+
+                const filterAction = document.getElementById('auditFilterAction')?.value || 'all';
+                const filterFrom = document.getElementById('auditFilterFrom')?.value;
+                const filterTo = document.getElementById('auditFilterTo')?.value;
+                const filterSearch = (document.getElementById('auditFilterSearch')?.value || '').toLowerCase();
+
+                let filtered = _allAuditLogs.filter(a => {
+                    const act = a.action || '';
+                    if (filterAction !== 'all') {
+                        if (filterAction === 'Borrow' && !act.includes('Borrow')) return false;
+                        if (filterAction === 'Reserve' && !act.includes('Reserv')) return false;
+                        if (filterAction === 'Concern' && !act.includes('Concern')) return false;
+                        if (filterAction === 'Event' && !act.includes('Event')) return false;
+                    }
+                    
+                    if (filterFrom) {
+                        const dFrom = new Date(filterFrom);
+                        dFrom.setHours(0,0,0,0);
+                        if (new Date(a.created_at) < dFrom) return false;
+                    }
+                    if (filterTo) {
+                        const dTo = new Date(filterTo);
+                        dTo.setHours(23,59,59,999);
+                        if (new Date(a.created_at) > dTo) return false;
+                    }
+
+                    if (filterSearch) {
+                        const who = a.users ? (a.users.full_name || a.users.username || '') : 'System';
+                        const entity = (a.entity_type || '') + ' ' + (a.entity_id || '');
+                        const det = a.details || '';
+                        const searchStr = `${who} ${entity} ${det} ${act}`.toLowerCase();
+                        if (!searchStr.includes(filterSearch)) return false;
+                    }
+
+                    return true;
+                });
+
+                if (filtered.length === 0) {
+                    list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted, #64748b);">No matching audit logs found</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = filtered.map(a => {
+                    const d = new Date(a.created_at);
+                    const who = a.users ? (a.users.full_name || a.users.username) : 'System';
+                    let actColor = '#3730a3';
+                    let actBg = '#e0e7ff';
+                    if (a.action && a.action.includes('Reject')) { actColor = '#dc2626'; actBg = '#fee2e2'; }
+                    else if (a.action && a.action.includes('Approve')) { actColor = '#059669'; actBg = '#d1fae5'; }
+                    
+                    return `<tr style="border-bottom: 1px solid var(--border-color, #e2e8f0);">
+                        <td style="color: var(--text-muted, #64748b);">${d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})} <span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
+                        <td style="font-weight:600; color: var(--text-main, #0f172a);">${who}</td>
+                        <td><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;">${a.action || ''}</span></td>
+                        <td style="font-size: 12px; color: var(--text-main, #0f172a); font-weight: 500;">${a.entity_type || ''} ${a.entity_id ? '<span style="color:var(--text-muted, #64748b);">#'+a.entity_id+'</span>' : ''}</td>
+                        <td style="font-size:12px; color: var(--text-muted, #64748b);">${a.details || ''}</td>
+                    </tr>`;
+                }).join('');
+            }
+
             // ── SECURITY LOG ──
+            let _allSecurityLogs = [];
+
             async function loadSecurityLog() {
                 const list = document.getElementById('securityList');
                 if (!list) return;
                 list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
                 try {
-                    const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(200);
+                    const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(500);
                     if (error) throw error;
-                    if (!data || data.length === 0) {
-                        list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No security logs found</td></tr>';
-                        return;
-                    }
-                    list.innerHTML = data.map(s => {
-                        const d = new Date(s.created_at);
-                        const uName = s.users ? (s.users.full_name || s.users.username || 'System') : (s.target_username || 'System');
-                        const uMail = s.users ? (s.users.email || s.users.username || '') : '';
-                        const ev = s.event_type || 'Unknown';
-                        let bdg = 'background:#e2e8f0;color:#475569;';
-                        let rowBg = '';
-                        let icon = '';
-                        if (s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend')) {
-                            rowBg = 'background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;';
-                            icon = '⚠️';
-                            bdg = 'background:#fee2e2;color:#dc2626;';
-                        } else if (ev.includes('Success') || ev.includes('Verified')) {
-                            bdg = 'background:#d1fae5;color:#059669;';
-                        }
-                        const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
-                        return `<tr style="border-bottom:1px solid var(--border);${rowBg}">
-                            <td style="text-align:center;">${icon}</td>
-                            <td>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</td>
-                            <td><div style="font-weight:700;">${uName}</div><div style="font-size:12px;color:var(--muted);">${uMail}</div></td>
-                            <td><span style="${bdg}padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;">${ev}</span></td>
-                            <td>${s.auth_method || 'System'}</td>
-                            <td style="font-family:monospace;font-size:12px;">${s.ip_address || '—'}</td>
-                            <td style="font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
-                            <td style="font-size:12px;">${s.details || '—'}</td>
-                        </tr>`;
-                    }).join('');
+                    _allSecurityLogs = data || [];
+                    renderSecurityLog();
                 } catch(e) {
                     console.error('loadSecurityLog error:', e);
                     list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:#ef4444;">Error loading security log</td></tr>';
                 }
+            }
+
+            function renderSecurityLog() {
+                const list = document.getElementById('securityList');
+                if (!list) return;
+
+                const filterType = document.getElementById('secFilterType')?.value || 'all';
+                const filterAuth = document.getElementById('secFilterAuth')?.value || 'all';
+                const filterAnomaly = document.getElementById('secFilterAnomaly')?.checked || false;
+                const filterFrom = document.getElementById('secFilterFrom')?.value;
+                const filterTo = document.getElementById('secFilterTo')?.value;
+                const filterSearch = (document.getElementById('secFilterSearch')?.value || '').toLowerCase();
+
+                let filtered = _allSecurityLogs.filter(s => {
+                    const ev = s.event_type || '';
+                    const isAnomaly = s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend');
+                    const isFailed = ev.includes('Fail');
+
+                    if (filterType === 'success' && !ev.includes('Success') && !ev.includes('Verified')) return false;
+                    if (filterType === 'failed' && !isFailed) return false;
+                    if (filterType === 'anomaly' && !isAnomaly) return false;
+                    
+                    if (filterAuth !== 'all' && (s.auth_method || 'System') !== filterAuth) return false;
+                    if (filterAnomaly && !isAnomaly) return false;
+
+                    if (filterFrom) {
+                        const dFrom = new Date(filterFrom);
+                        dFrom.setHours(0,0,0,0);
+                        if (new Date(s.created_at) < dFrom) return false;
+                    }
+                    if (filterTo) {
+                        const dTo = new Date(filterTo);
+                        dTo.setHours(23,59,59,999);
+                        if (new Date(s.created_at) > dTo) return false;
+                    }
+
+                    if (filterSearch) {
+                        const uName = s.users ? (s.users.full_name || s.users.username || '') : (s.target_username || '');
+                        const uMail = s.users ? (s.users.email || s.users.username || '') : '';
+                        const ip = s.ip_address || '';
+                        const det = s.details || '';
+                        const searchStr = `${uName} ${uMail} ${ip} ${det}`.toLowerCase();
+                        if (!searchStr.includes(filterSearch)) return false;
+                    }
+
+                    return true;
+                });
+
+                // Update Stats
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                
+                let eventsToday = 0;
+                let failedToday = 0;
+                let anomaliesToday = 0;
+
+                _allSecurityLogs.forEach(s => {
+                    const d = new Date(s.created_at);
+                    if (d >= today) {
+                        eventsToday++;
+                        const ev = s.event_type || '';
+                        if (ev.includes('Fail')) failedToday++;
+                        if (s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend')) anomaliesToday++;
+                    }
+                });
+
+                document.getElementById('secStatEventsToday').textContent = eventsToday;
+                document.getElementById('secStatFailed').textContent = failedToday;
+                document.getElementById('secStatAnomalies').textContent = anomaliesToday;
+                document.getElementById('secStatTotal').textContent = filtered.length;
+
+                if (filtered.length === 0) {
+                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted, #64748b);">No matching records found</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = filtered.map(s => {
+                    const d = new Date(s.created_at);
+                    const uName = s.users ? (s.users.full_name || s.users.username || 'System') : (s.target_username || 'System');
+                    const uMail = s.users ? (s.users.email || s.users.username || '') : '';
+                    const ev = s.event_type || 'Unknown';
+                    let bdg = 'background:#f1f5f9;color:#475569;';
+                    let rowBg = '';
+                    let icon = '';
+                    if (s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend')) {
+                        rowBg = 'background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;';
+                        icon = '<i class="bi bi-exclamation-triangle-fill" style="color: #ef4444;"></i>';
+                        bdg = 'background:#fee2e2;color:#dc2626;';
+                    } else if (ev.includes('Success') || ev.includes('Verified')) {
+                        bdg = 'background:#d1fae5;color:#059669;';
+                    }
+                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
+                    return `<tr style="border-bottom:1px solid var(--border-color, #e2e8f0);${rowBg}">
+                        <td style="text-align:center;">${icon}</td>
+                        <td style="color: var(--text-muted, #64748b);">${d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
+                        <td><div style="font-weight:700; color: var(--text-main, #0f172a);">${uName}</div><div style="font-size:11px;color:var(--text-muted, #64748b);">${uMail}</div></td>
+                        <td><span style="${bdg}padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;">${ev}</span></td>
+                        <td style="font-weight: 600; color: var(--text-main, #0f172a);">${s.auth_method || 'System'}</td>
+                        <td style="font-family:monospace;font-size:12px;color: ${icon ? '#ef4444' : 'var(--text-muted, #64748b)'};">${s.ip_address || '—'}</td>
+                        <td style="font-size:11px;color:var(--text-muted, #64748b);" title="${s.device_info || ''}">${device}</td>
+                        <td style="font-size:12px; color: var(--text-muted, #64748b);">${s.details || '—'}</td>
+                    </tr>`;
+                }).join('');
             }
 
             // ── EXPORT FUNCTIONS ──
