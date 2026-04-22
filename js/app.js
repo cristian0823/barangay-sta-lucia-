@@ -1348,7 +1348,7 @@ async function submitConcern(category, title, description, address, imageFile = 
 
         let finalDescription = description;
         if (imageUrl) {
-            finalDescription += "Usern[ATTACHED_IMAGE_DATA]Usern" + imageUrl;
+            finalDescription += "\n[ATTACHED_IMAGE_DATA]\n" + imageUrl;
         }
 
         // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
@@ -1832,7 +1832,6 @@ async function bookCourt(bookingData) {
                 user_id: resolvedUserId,
                 date: bookingData.date,
                 time: combinedTime,
-                venue: venue,
                 purpose: bookingData.purpose || '',
                 status: bookingData.status || 'approved'
             }]);
@@ -1941,7 +1940,7 @@ async function updateCourtBooking(bookingId, updates) {
     const combinedTime = endTime ? `${venueLabel} | ${startTime} – ${endTime}` : `${venueLabel} | ${startTime}`;
 
     if (supabaseAvailable) {
-        const payload = { time: combinedTime, venue: currentVenue };
+        const payload = { time: combinedTime };
         if (updates.purpose !== undefined) payload.purpose = updates.purpose;
         if (updates.date !== undefined) payload.date = updates.date;
 

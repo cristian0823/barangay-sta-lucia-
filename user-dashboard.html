@@ -2324,8 +2324,8 @@
                 
                 if (actualDescription.includes('[ATTACHED_IMAGE_DATA]')) {
                     const parts = actualDescription.split('[ATTACHED_IMAGE_DATA]');
-                    actualDescription = parts[0].trim();
-                    const b64 = parts[1].trim();
+                    actualDescription = parts[0].replace(/Usern/g, '').trim();
+                    const b64 = parts[1].replace(/Usern/g, '').trim();
                     attachedImageHtml = '<div class="mt-3"><img src="' + b64 + '" class="max-h-24 rounded-lg border shadow-sm object-cover" style="border-color: var(--border-color);" alt="Attached photo"></div>';
                 }
 

@@ -6737,8 +6737,8 @@
                     
                     if (actualDesc.includes('[ATTACHED_IMAGE_DATA]')) {
                         const parts = actualDesc.split('[ATTACHED_IMAGE_DATA]');
-                        actualDesc = parts[0].trim();
-                        imageUrl = parts[1].trim();
+                        actualDesc = parts[0].replace(/Usern/g, '').trim();
+                        imageUrl = parts[1].replace(/Usern/g, '').trim();
                     }
 
                     const submittedAt = concern.createdAt || concern.created_at
