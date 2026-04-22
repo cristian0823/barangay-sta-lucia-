@@ -3382,11 +3382,15 @@
 
                 // Cross-tab synchronization
                 if (typeof appSyncChannel !== 'undefined') {
-                    appSyncChannel.addEventListener('message', async (event) => {
-                        if (event.data && event.data.type === 'SYNC_NEEDED') {
+                    const syncHandler = async (event) => {
+                        if ((event.data && event.data.type === 'SYNC_NEEDED') || event.type === 'barangay_sync_needed') {
                             await loadOverview();
                             await loadCourtBookings();
                             await loadEvents();
+                            if (typeof loadRequests === 'function') await loadRequests();
+                            if (typeof loadEquipment === 'function') await loadEquipment();
+                            if (typeof loadConcerns === 'function') await loadConcerns();
+                            if (typeof loadAdminNotifications === 'function') await loadAdminNotifications();
                             await renderAdminCalendar();
                             const dayModal = document.getElementById('adminDayScheduleModal');
                             if (dayModal && dayModal.style.display !== 'none') {
@@ -3395,7 +3399,9 @@
                                 if (dateStr) refreshAdminDaySchedule(dateStr, venue);
                             }
                         }
-                    });
+                    };
+                    appSyncChannel.addEventListener('message', syncHandler);
+                    window.addEventListener('barangay_sync_needed', syncHandler);
                 }
 
                 // Profile form

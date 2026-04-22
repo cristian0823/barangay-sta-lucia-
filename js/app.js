@@ -130,8 +130,32 @@ const LOCAL_NOTIFICATIONS_KEY = 'barangay_local_notifications';
 
 // Cross-tab synchronization channel
 const appSyncChannel = new BroadcastChannel('barangay_app_sync');
+let globalSyncChannel = null;
+
+async function setupGlobalSync() {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable && !globalSyncChannel) {
+        globalSyncChannel = window.supabase.channel('barangay_global_sync');
+        globalSyncChannel.on('broadcast', { event: 'SYNC_NEEDED' }, (payload) => {
+            console.log('[Realtime] Received Global Sync:', payload);
+            appSyncChannel.postMessage({ type: 'SYNC_NEEDED', timestamp: Date.now() });
+            window.dispatchEvent(new Event('barangay_sync_needed'));
+        }).subscribe();
+    }
+}
+setTimeout(setupGlobalSync, 1000);
+
 function broadcastSync() {
     appSyncChannel.postMessage({ type: 'SYNC_NEEDED', timestamp: Date.now() });
+    window.dispatchEvent(new Event('barangay_sync_needed'));
+    
+    if (globalSyncChannel) {
+        globalSyncChannel.send({
+            type: 'broadcast',
+            event: 'SYNC_NEEDED',
+            payload: { timestamp: Date.now() }
+        });
+    }
 }
 
 function initializeLocalUsers() {

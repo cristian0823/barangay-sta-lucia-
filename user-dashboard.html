@@ -3215,13 +3215,19 @@ async function loadSettingsView() {
 
         // Cross-tab synchronization — listen for admin changes from other tabs
         if (typeof appSyncChannel !== 'undefined') {
-            appSyncChannel.addEventListener('message', async (event) => {
-                if (event.data && event.data.type === 'SYNC_NEEDED') {
+            const syncHandler = async (event) => {
+                if ((event.data && event.data.type === 'SYNC_NEEDED') || event.type === 'barangay_sync_needed') {
                     await loadBookingView();
                     await loadEventsView();
                     await loadDashboardStats();
+                    if (typeof loadMyBorrowingsList === 'function') await loadMyBorrowingsList();
+                    if (typeof loadEquipmentView === 'function') await loadEquipmentView();
+                    if (typeof loadConcernsView === 'function') await loadConcernsView();
+                    if (typeof renderUserNotifications === 'function') await renderUserNotifications();
                 }
-            });
+            };
+            appSyncChannel.addEventListener('message', syncHandler);
+            window.addEventListener('barangay_sync_needed', syncHandler);
         }
 
         // ==========================================
