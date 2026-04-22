@@ -4182,16 +4182,23 @@
             async function loadAuditLog() {
                 const list = document.getElementById('auditList');
                 if (!list) return;
-                list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted, #64748b);">Loading...</td></tr>';
+                list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</td></tr>';
+                
                 try {
+                    // Try Supabase first
                     const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username)').order('created_at', { ascending: false }).limit(500);
                     if (error) throw error;
                     _allAuditLogs = data || [];
-                    renderAuditLog();
                 } catch(e) {
-                    console.error('loadAuditLog error:', e);
-                    list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#ef4444;">Error loading audit log</td></tr>';
+                    console.warn('loadAuditLog Supabase error, falling back to local storage:', e);
+                    const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
+                    _allAuditLogs = localLogs.reverse().map(l => ({
+                        ...l,
+                        users: { full_name: 'Local User', username: 'local' }
+                    }));
                 }
+                
+                renderAuditLog();
             }
 
             function renderAuditLog() {
@@ -4204,12 +4211,12 @@
                 const filterSearch = (document.getElementById('auditFilterSearch')?.value || '').toLowerCase();
 
                 let filtered = _allAuditLogs.filter(a => {
-                    const act = a.action || '';
+                    const act = ((a.action || '') + ' ' + (a.entity_type || '')).toLowerCase();
                     if (filterAction !== 'all') {
-                        if (filterAction === 'Borrow' && !act.includes('Borrow')) return false;
-                        if (filterAction === 'Reserve' && !act.includes('Reserv')) return false;
-                        if (filterAction === 'Concern' && !act.includes('Concern')) return false;
-                        if (filterAction === 'Event' && !act.includes('Event')) return false;
+                        if (filterAction === 'Borrow' && !act.includes('borrow')) return false;
+                        if (filterAction === 'Reserve' && !act.includes('reserv')) return false;
+                        if (filterAction === 'Concern' && !act.includes('concern')) return false;
+                        if (filterAction === 'Event' && !act.includes('event')) return false;
                     }
                     
                     if (filterFrom) {
@@ -4263,16 +4270,23 @@
             async function loadSecurityLog() {
                 const list = document.getElementById('securityList');
                 if (!list) return;
-                list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
+                list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</td></tr>';
+                
                 try {
+                    // Try Supabase first
                     const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(500);
                     if (error) throw error;
                     _allSecurityLogs = data || [];
-                    renderSecurityLog();
                 } catch(e) {
-                    console.error('loadSecurityLog error:', e);
-                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:#ef4444;">Error loading security log</td></tr>';
+                    console.warn('loadSecurityLog Supabase error, falling back to local storage:', e);
+                    const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
+                    _allSecurityLogs = localLogs.reverse().map(l => ({
+                        ...l,
+                        users: { full_name: 'Local User', username: 'local', email: 'local@system' }
+                    }));
                 }
+                
+                renderSecurityLog();
             }
 
             function renderSecurityLog() {

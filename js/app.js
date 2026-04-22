@@ -76,7 +76,10 @@ window.logActivity = async function(action, details, severity = 'info') {
     const isSecurity = /Login|Logout|User|Password|OTP|Suspend|Role|Admin|Account/i.test(actStr);
     
     if (isSecurity) {
-        let evType = actStr.includes('OTP') ? 'OtpVerified' : actStr.includes('Login') ? 'LoginSuccess' : actStr;
+        let evType = actStr;
+        if (actStr === 'Login') evType = 'LoginSuccess';
+        else if (actStr === 'OTP') evType = 'OtpVerified';
+        
         let authMethod = actStr.includes('OTP') ? 'OTP' : actStr.includes('Login') || actStr.includes('Password') ? 'Password' : 'N/A';
         await window.logSecurity(evType, authMethod, severity, details);
     } else {
