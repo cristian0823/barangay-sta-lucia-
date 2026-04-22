@@ -630,10 +630,18 @@ async function getEquipment() {
     let equipmentList = [];
 
     if (supabaseAvailable) {
-        // One-time auto-fix for the 210 Chairs bug based on user request
-        await supabase.from('equipment').update({ available: 150 }).eq('name', 'Chairs').eq('available', 210);
-
         const { data, error } = await supabase.from('equipment').select('*').order('id', { ascending: true });
+        
+        if (!error && data) {
+            // One-time auto-fix for corrupted available quantities exceeding max quantity
+            for (const item of data) {
+                if (item.available > item.quantity) {
+                    await supabase.from('equipment').update({ available: item.quantity }).eq('id', item.id);
+                    item.available = item.quantity;
+                }
+            }
+        }
+
         // Fall back to localStorage on error OR if Supabase returned empty data
         if (error || !data || data.length === 0) {
             console.log('[getEquipment] Supabase returned empty or error, falling back to localStorage');
@@ -646,16 +654,15 @@ async function getEquipment() {
         initializeLocalEquipment();
         let data = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
         
-        // One-time auto-fix for local storage
-        let chairsFixed = false;
+        let dataChanged = false;
         data = data.map(item => {
-            if (item.name === 'Chairs' && item.available === 210) {
-                chairsFixed = true;
-                return { ...item, available: 150 };
+            if (item.available > item.quantity) {
+                dataChanged = true;
+                return { ...item, available: item.quantity };
             }
             return item;
         });
-        if (chairsFixed) localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(data));
+        if (dataChanged) localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(data));
         equipmentList = data;
     }
 
@@ -703,7 +710,7 @@ async function getEquipment() {
         icon: item.icon || '📦',
         description: item.description || '',
         quantity: item.quantity || 0,
-        available: item.available || 0,
+        available: Math.min(item.available || 0, item.quantity || 0),
         broken: item.broken || 0,
         pending: pendingQtyMap[item.name] || 0,
         isLocked: lockedNames.has(item.name || 'Unknown')
