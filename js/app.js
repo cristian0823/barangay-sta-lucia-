@@ -385,7 +385,8 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                 } else {
                     sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
                 }
-                logActivity('Login', `User logged in: ${sessionData.username}`);
+                const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin login' : 'User login';
+                window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
             }
 
             return { success: true, user: sessionData };
@@ -402,8 +403,13 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             const updates = { login_fail_count: newCount };
             if (newCount >= 5) {
                 updates.lockout_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+                window.logSecurity('Brute Force Attempt', 'Password', 'critical', `Brute force attempt detected for ${username}. Account locked.`, username);
+            } else {
+                window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username} (${newCount}/5).`, username);
             }
             await supabase.from('users').update(updates).eq('id', failedUser.id);
+        } else {
+            window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for unknown user: ${username}`, username);
         }
 
         if (error) {
@@ -448,7 +454,8 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             } else {
                 sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
             }
-            logActivity('Login', `Local User logged in: ${sessionData.username}`);
+            const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin login' : 'User login';
+            window.logSecurity('Login Success', 'Password', 'info', `Local ${lType} successful.`, sessionData.username);
         }
 
         return { success: true, user: sessionData };
@@ -869,7 +876,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         // Immediately deduct available stock — first-come, first-served reservation
         await supabase.from('equipment').update({ available: item.available - quantity }).eq('id', equipmentId);
 
-        await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name}`);
+        await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     } else {
@@ -925,7 +932,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         borrowings.push(newBorrowing);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
-        logActivity('Borrow Request', `Local User requested to borrow ${quantity}x ${item.name}`);
+        logActivity('Borrow Request', `Local User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `Local User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     }
@@ -1831,7 +1838,7 @@ async function bookCourt(bookingData) {
             }]);
 
             if (error) throw error;
-            await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${combinedTime}`);
+            await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
             await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
             broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
@@ -1855,7 +1862,7 @@ async function bookCourt(bookingData) {
     };
     bookings.push(newBooking);
     localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
-    logActivity('Court Reservation Submitted', `Local User reserved the ${venueLabel} for ${combinedTime}`);
+    logActivity('Court Reservation Submitted', `Local User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
     await addNotification('admin', 'booking', `Local User reserved the ${venueLabel} for ${combinedTime}`);
     broadcastSync();
     return { success: true, message: 'Venue booked (offline mode)' };

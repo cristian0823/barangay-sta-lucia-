@@ -2215,8 +2215,7 @@
             <button onclick="mobileSwitchSection('concerns')"> Concerns</button>
             <button onclick="mobileSwitchSection('events')"> Court Events</button>
             <button onclick="mobileSwitchSection('equipment')"> Inventory</button>
-            <button onclick="mobileSwitchSection('reports')">  Reports</button>
-            <button onclick="mobileSwitchSection('audit-log')"> Audit Log</button>
+                        <button onclick="mobileSwitchSection('audit-log')"> Audit Log</button>
             <button onclick="mobileSwitchSection('security-log')"> Security Log</button>
         </div>
     </div>
@@ -2281,10 +2280,7 @@
                     <button class="sidebar-btn" onclick="switchSection('equipment', this)">
                         <span class="nav-icon-box"><i class="bi bi-box-seam-fill"></i></span> Inventory
                     </button>
-                    <button class="sidebar-btn" onclick="switchSection('reports', this)">
-                        <span class="nav-icon-box"><i class="bi bi-file-earmark-bar-graph-fill"></i></span> Reports
-                    </button>
-                    
+                                        
                 <span class="left-sidebar-label" style="margin-top:12px;">SECURITY</span>
                 <button class="sidebar-btn" onclick="switchSection('audit-log', this)">
                     <span class="sidebar-icon">🧾</span>
@@ -2777,78 +2773,6 @@
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
                                 <button class="btn btn-light" onclick="document.getElementById('batchUploadModal').classList.remove('active');resetBatchUpload()">Cancel</button>
                                 <button class="btn btn-primary" id="batchUploadBtn" onclick="submitBatchUpload()" disabled>Upload Residents</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="reports-section" class="section-container" style="display: none;">
-                        <div class="section-header"
-                            style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h3> Barangay Report</h3>
-                                <span style="font-size:13px;color:var(--muted);">Consolidated timeline of all barangay
-                                    transactions (Equipment, Concerns, Reservations)</span>
-                            </div>
-                            <button class="btn btn-small btn-primary" onclick="window.print()"> Print Report</button>
-                        </div>
-                        <!-- Filters -->
-                        <div style="padding:18px 22px;background:var(--panel-bg,#f9fafb);border-radius:14px;border:1.5px solid var(--border,#e5e7eb);display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:20px 26px 0;">
-                            <div>
-                                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;">Date From</label>
-                                <input type="date" id="reportDateFrom" onchange="applyReportFilters()" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text);">
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;">Date To</label>
-                                <input type="date" id="reportDateTo" onchange="applyReportFilters()" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text);">
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;">Type</label>
-                                <select id="reportTypeFilter" onchange="applyReportFilters()" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text);">
-                                    <option value="">All Types</option>
-                                    <option value="Equipment">Equipment Borrowing</option>
-                                    <option value="Concern">Citizen Concern</option>
-                                    <option value="Reservation">Court Reservation</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;">Status</label>
-                                <select id="reportStatusFilter" onchange="applyReportFilters()" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text);">
-                                    <option value="">All Statuses</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                    <option value="resolved">Resolved</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-small btn-light" onclick="resetReportFilters()">Clear Filters</button>
-                        </div>
-                        <div class="section-content" style="padding: 0;">
-                            <div class="admin-tables">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Transaction Type</th>
-                                            <th>Resident</th>
-                                            <th>Details / Purpose</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="simpleReportTable"></tbody>
-                                </table>
-                                <div id="noSimpleReport" class="empty-state" style="display:none;">
-                                    <div class="empty-state-icon"></div>
-                                    <p>No transactions found</p>
-                                </div>
-                                <!-- Pagination -->
-                                <div id="reportPagination" style="display:flex;align-items:center;justify-content:space-between;padding:14px 26px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;">
-                                    <span id="reportPageInfo" style="font-size:13px;color:var(--muted);"></span>
-                                    <div style="display:flex;gap:8px;">
-                                        <button id="reportPrevBtn" class="btn btn-small btn-light" onclick="changeReportPage(-1)" disabled> Prev</button>
-                                        <button id="reportNextBtn" class="btn btn-small btn-light" onclick="changeReportPage(1)" disabled>Next </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -4125,7 +4049,7 @@
             function switchSection(section, btn) {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
-                const allSections = ['overview', 'court-bookings', 'multipurpose-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'reports', 'audit-log', 'security-log', 'profile', 'system'];
+                const allSections = ['overview', 'court-bookings', 'multipurpose-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'audit-log', 'security-log', 'profile', 'system'];
                 allSections.forEach(s => {
                     const el = document.getElementById(s + '-section');
                     if (el) el.style.display = 'none';
@@ -4135,8 +4059,7 @@
                 // Auto-load section data on switch
                 if (section === 'audit-log') loadAuditLog();
                 if (section === 'security-log') loadSecurityLog();
-                if (section === 'reports') loadSimpleReport();
-                if (section === 'users') loadUsers();
+                                if (section === 'users') loadUsers();
                 if (section === 'equipment') loadEquipment();
                 if (section === 'requests') loadRequests();
                 if (section === 'concerns') loadConcerns();
@@ -5855,7 +5778,6 @@
                     'concerns': 3, 
                     'events': 4, 
                     'equipment': 5, 
-                    'reports': 6, 
                     'audit-log': 7,
                     'security-log': 8 
                 };
@@ -6301,137 +6223,7 @@
                 }
             }
 
-            let _allReportTransactions = [];
-            let _reportPage = 1;
-            const REPORT_PAGE_SIZE = 15;
-
-            async function loadSimpleReport() {
-                const tbody = document.getElementById('simpleReportTable');
-                const noData = document.getElementById('noSimpleReport');
-                if (!tbody) return;
-
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">Loading...</td></tr>';
-                noData.style.display = 'none';
-
-                try {
-                    const [borrowings, concerns, bookings] = await Promise.all([
-                        getAllBorrowings(),
-                        getAllConcerns(),
-                        getCourtBookings()
-                    ]);
-
-                    let transactions = [];
-
-                    borrowings.forEach(b => {
-                        transactions.push({
-                            date: new Date(b.created_at || new Date()),
-                            type: ' Equipment Borrowing',
-                            typeKey: 'Equipment',
-                            user: b.userName || b.user_name || 'Resident',
-                            details: `Requested ${b.quantity}x ${b.equipment} for ${b.purpose || 'general use'}.`,
-                            status: b.status,
-                            actionClick: `openRequestRespond(${b.id})`
-                        });
-                    });
-
-                    concerns.forEach(c => {
-                        transactions.push({
-                            date: new Date(c.createdAt || c.created_at || new Date()),
-                            type: ' Citizen Concern',
-                            typeKey: 'Concern',
-                            user: c.userName || 'Resident',
-                            details: `Reported [${c.category}] - ${c.title}.`,
-                            status: c.status,
-                            actionClick: `openConcernRespond(${c.id})`
-                        });
-                    });
-
-                    bookings.forEach(b => {
-                        transactions.push({
-                            date: new Date(b.createdAt || b.created_at || new Date()),
-                            type: ' Court Reservation',
-                            typeKey: 'Reservation',
-                            user: b.userName || b.user_name || 'Resident',
-                            details: `Reserved ${b.venueName || 'Court'} on ${b.date} at ${b.time} for ${b.purpose}.`,
-                            status: b.status,
-                            actionClick: `openBookingRespond(${b.id})`
-                        });
-                    });
-
-                    transactions.sort((a, b) => b.date - a.date);
-                    _allReportTransactions = transactions;
-                    _reportPage = 1;
-                    applyReportFilters();
-
-                } catch (e) {
-                    console.error('Error loading report:', e);
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:red;">Failed to load report</td></tr>';
-                }
-            }
-
-            function applyReportFilters() {
-                const dateFrom = document.getElementById('reportDateFrom')?.value;
-                const dateTo = document.getElementById('reportDateTo')?.value;
-                const typeF = document.getElementById('reportTypeFilter')?.value || '';
-                const statusF = document.getElementById('reportStatusFilter')?.value || '';
-
-                let filtered = _allReportTransactions.filter(t => {
-                    if (typeF && !t.typeKey.includes(typeF)) return false;
-                    if (statusF && t.status !== statusF) return false;
-                    if (dateFrom && t.date < new Date(dateFrom)) return false;
-                    if (dateTo && t.date > new Date(dateTo + 'T23:59:59')) return false;
-                    return true;
-                });
-
-                renderReportPage(filtered, 1);
-            }
-
-            function resetReportFilters() {
-                const ids = ['reportDateFrom', 'reportDateTo', 'reportTypeFilter', 'reportStatusFilter'];
-                ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-                renderReportPage(_allReportTransactions, 1);
-            }
-
-            function changeReportPage(dir) {
-                const dateFrom = document.getElementById('reportDateFrom')?.value;
-                const dateTo = document.getElementById('reportDateTo')?.value;
-                const typeF = document.getElementById('reportTypeFilter')?.value || '';
-                const statusF = document.getElementById('reportStatusFilter')?.value || '';
-                let filtered = _allReportTransactions.filter(t => {
-                    if (typeF && !t.typeKey.includes(typeF)) return false;
-                    if (statusF && t.status !== statusF) return false;
-                    if (dateFrom && t.date < new Date(dateFrom)) return false;
-                    if (dateTo && t.date > new Date(dateTo + 'T23:59:59')) return false;
-                    return true;
-                });
-                renderReportPage(filtered, _reportPage + dir);
-            }
-
-            function renderReportPage(transactions, page) {
-                const tbody = document.getElementById('simpleReportTable');
-                const noData = document.getElementById('noSimpleReport');
-                const total = transactions.length;
-                const totalPages = Math.max(1, Math.ceil(total / REPORT_PAGE_SIZE));
-                page = Math.max(1, Math.min(page, totalPages));
-                _reportPage = page;
-                const start = (page - 1) * REPORT_PAGE_SIZE;
-                const slice = transactions.slice(start, start + REPORT_PAGE_SIZE);
-                if (total === 0) {
-                    tbody.innerHTML = '';
-                    noData.style.display = 'block';
-                } else {
-                    noData.style.display = 'none';
-                    tbody.innerHTML = slice.map(t => {
-                        return '<tr onclick="' + t.actionClick + '" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'"><td width="15%" style="color:var(--muted,#6b7280); font-size:13px;">' + t.date.toLocaleDateString() + ' <span style="font-size:11px;">' + t.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></td><td width="20%"><strong>' + t.type + '</strong></td><td width="20%">' + t.user + '</td><td width="30%" style="font-size:13px;">' + t.details + '</td><td width="15%">' + getStatusBadge(t.status) + '</td></tr>';
-                    }).join('');
-                }
-                const info = document.getElementById('reportPageInfo');
-                const prevBtn = document.getElementById('reportPrevBtn');
-                const nextBtn = document.getElementById('reportNextBtn');
-                if (info) info.textContent = total > 0 ? 'Showing ' + (start + 1) + '-' + Math.min(start + REPORT_PAGE_SIZE, total) + ' of ' + total + ' records' : '';
-                if (prevBtn) prevBtn.disabled = page <= 1;
-                if (nextBtn) nextBtn.disabled = page >= totalPages;
-            }
+            
 
             // PLACEHOLDER_ADMIN_NOTIF
             // ==========================================
