@@ -4184,20 +4184,25 @@
                 if (!list) return;
                 list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</td></tr>';
                 
+                let supabaseLogs = [];
                 try {
-                    // Try Supabase first
                     const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username)').order('created_at', { ascending: false }).limit(500);
-                    if (error) throw error;
-                    _allAuditLogs = data || [];
+                    if (!error && data) supabaseLogs = data;
                 } catch(e) {
-                    console.warn('loadAuditLog Supabase error, falling back to local storage:', e);
-                    const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
-                    _allAuditLogs = localLogs.reverse().map(l => ({
-                        ...l,
-                        users: { full_name: 'Local User', username: 'local' }
-                    }));
+                    console.warn('loadAuditLog Supabase error:', e);
                 }
                 
+                const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
+                const formattedLocalLogs = localLogs.map(l => ({
+                    ...l,
+                    users: { full_name: 'Local User', username: 'local' }
+                }));
+
+                const allLogsMap = new Map();
+                formattedLocalLogs.forEach(l => allLogsMap.set(new Date(l.created_at).getTime(), l));
+                supabaseLogs.forEach(l => allLogsMap.set(new Date(l.created_at).getTime(), l));
+                
+                _allAuditLogs = Array.from(allLogsMap.values()).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
                 renderAuditLog();
             }
 
@@ -4272,20 +4277,25 @@
                 if (!list) return;
                 list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</td></tr>';
                 
+                let supabaseLogs = [];
                 try {
-                    // Try Supabase first
                     const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(500);
-                    if (error) throw error;
-                    _allSecurityLogs = data || [];
+                    if (!error && data) supabaseLogs = data;
                 } catch(e) {
-                    console.warn('loadSecurityLog Supabase error, falling back to local storage:', e);
-                    const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
-                    _allSecurityLogs = localLogs.reverse().map(l => ({
-                        ...l,
-                        users: { full_name: 'Local User', username: 'local', email: 'local@system' }
-                    }));
+                    console.warn('loadSecurityLog Supabase error:', e);
                 }
                 
+                const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
+                const formattedLocalLogs = localLogs.map(l => ({
+                    ...l,
+                    users: { full_name: 'Local User', username: 'local', email: 'local@system' }
+                }));
+
+                const allLogsMap = new Map();
+                formattedLocalLogs.forEach(l => allLogsMap.set(new Date(l.created_at).getTime(), l));
+                supabaseLogs.forEach(l => allLogsMap.set(new Date(l.created_at).getTime(), l));
+                
+                _allSecurityLogs = Array.from(allLogsMap.values()).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
                 renderSecurityLog();
             }
 
