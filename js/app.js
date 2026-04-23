@@ -29,20 +29,48 @@ window.logAudit = async function(entityType, entityId, action, details) {
 };
 
 window.logSecurity = async function(eventType, authMethod, severity, details, targetUsername = null) {
+    // Helper: get local IP via WebRTC (no external API needed)
+    async function getLocalIP() {
+        return new Promise((resolve) => {
+            const timeout = setTimeout(() => resolve(null), 2000);
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                pc.createDataChannel('');
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                pc.onicecandidate = (e) => {
+                    if (!e || !e.candidate) return;
+                    const ipMatch = /([0-9]{1,3}\.){3}[0-9]{1,3}/.exec(e.candidate.candidate);
+                    if (ipMatch) {
+                        clearTimeout(timeout);
+                        pc.close();
+                        resolve(ipMatch[0]);
+                    }
+                };
+            } catch(e) { clearTimeout(timeout); resolve(null); }
+        });
+    }
+
     let ip = 'Unknown';
-    try {
-        const ipRes = await fetch('https://api.ipify.org?format=json');
-        if (!ipRes.ok) throw new Error();
-        const ipData = await ipRes.json();
-        ip = ipData.ip;
-    } catch(e) {
+    // 1. Try WebRTC local IP first (works even with adblockers)
+    const localIP = await getLocalIP();
+    if (localIP) {
+        ip = localIP;
+    } else {
+        // 2. Try public IP APIs as fallback
         try {
-            const res2 = await fetch('https://jsonip.com/');
-            if (!res2.ok) throw new Error();
-            const data2 = await res2.json();
-            ip = data2.ip || '127.0.0.1';
-        } catch(e2) {
-            ip = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'Masked/Blocked IP';
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            if (!ipRes.ok) throw new Error();
+            const ipData = await ipRes.json();
+            ip = ipData.ip;
+        } catch(e) {
+            try {
+                const res2 = await fetch('https://jsonip.com/');
+                if (!res2.ok) throw new Error();
+                const data2 = await res2.json();
+                ip = data2.ip;
+            } catch(e2) {
+                ip = 'Unavailable';
+            }
         }
     }
 
