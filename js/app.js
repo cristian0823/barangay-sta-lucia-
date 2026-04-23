@@ -59,35 +59,36 @@ window.getDeviceIP = async function() {
 
 window.logSecurity = async function(eventType, authMethod, severity, details, targetUsername = null) {
     const ip = await window.getDeviceIP();
+    const u = getCurrentUser() || {};
+    // Resolve which username to use — prefer current session, fall back to targetUsername
+    const resolvedUsername = u.username || targetUsername || null;
 
-    // Local fallback
+    // Local fallback log
     const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
     logs.push({
-        id: Date.now(), user_id: (getCurrentUser() || {}).id || null,
-        target_username: targetUsername, event_type: eventType, auth_method: authMethod, 
+        id: Date.now(), user_id: u.id || null,
+        target_username: resolvedUsername, event_type: eventType, auth_method: authMethod,
         severity: severity, ip_address: ip, device_info: navigator.userAgent, details: details,
         created_at: new Date().toISOString()
     });
     localStorage.setItem(LOCAL_SECURITY_LOG_KEY, JSON.stringify(logs));
 
     try {
-        const u = getCurrentUser() || {};
-        const device = navigator.userAgent;
-
         if (window.supabase) {
-            let finalUserId = null;
-            if (u.username) {
-                const { data: uData } = await window.supabase.from('users').select('id').eq('username', u.username).maybeSingle();
+            let finalUserId = u.id || null;
+            // Look up user ID by username if not already known
+            if (!finalUserId && resolvedUsername) {
+                const { data: uData } = await window.supabase.from('users').select('id').eq('username', resolvedUsername).maybeSingle();
                 if (uData) finalUserId = uData.id;
             }
             await supabase.from('security_log').insert([{
                 user_id: finalUserId,
-                target_username: targetUsername || u.username || null,
+                target_username: resolvedUsername,
                 event_type: eventType,
                 auth_method: authMethod || 'System',
                 severity: severity,
                 ip_address: ip,
-                device_info: device,
+                device_info: navigator.userAgent,
                 details: details
             }]);
         }
