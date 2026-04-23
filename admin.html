@@ -4304,13 +4304,13 @@
                 }
                 
                 const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
-                const cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
                 const formattedLocalLogs = localLogs.map(l => ({
                     ...l,
+                    // Use the full_name and email stored at log-write time, not the current admin session
                     users: { 
-                        full_name: cu ? cu.fullName : 'Barangay Administrator', 
-                        username: cu ? cu.username : 'admin1', 
-                        email: cu ? cu.email : 'cristianjames0808@gmail.com' 
+                        full_name: l.full_name || l.target_username || 'Unknown User', 
+                        username:  l.target_username || 'unknown', 
+                        email:     l.email || l.target_username || '' 
                     }
                 }));
 

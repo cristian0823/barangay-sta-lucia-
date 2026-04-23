@@ -72,7 +72,10 @@ window.logSecurity = async function(eventType, authMethod, severity, details, ta
     const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
     logs.push({
         id: Date.now(), user_id: u.id || null,
-        target_username: resolvedUsername, event_type: eventType, auth_method: authMethod,
+        target_username: resolvedUsername,
+        full_name: u.fullName || u.full_name || resolvedUsername || 'Unknown',
+        email: u.email || resolvedUsername || '',
+        event_type: eventType, auth_method: authMethod,
         severity: severity, ip_address: ip, device_info: navigator.userAgent, details: details,
         created_at: new Date().toISOString()
     });
