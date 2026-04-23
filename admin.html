@@ -2816,8 +2816,8 @@
             </div>
         </div>
         <div>
-            <button onclick="exportAuditLog()" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <i class="bi bi-download"></i> Export
+            <button onclick="printAuditLog()" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-printer"></i> Print
             </button>
         </div>
     </div>
@@ -2830,10 +2830,10 @@
                     <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">TIMESTAMP</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">PERFORMED BY</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">ROLE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">ACTION</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">MODULE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">STATUS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">ROLE</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">ACTION</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">MODULE</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">STATUS</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: right;"></th>
                     </tr>
@@ -4354,10 +4354,10 @@
                     return `<tr style="border-bottom: 1px solid var(--border);">
                         <td style="padding:12px;color:var(--text-muted);white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
                         <td style="padding:12px;font-weight:600;color:var(--text-main);">${who}</td>
-                        <td style="padding:12px;"><span style="${roleStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
-                        <td style="padding:12px;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;">${actionLabel}</span></td>
-                        <td style="padding:12px;font-size:12px;color:var(--text-main);font-weight:500;">${module_}</td>
-                        <td style="padding:12px;"><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-main);"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
+                        <td style="padding:12px;text-align:center;white-space:nowrap;"><span style="${roleStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
+                        <td style="padding:12px;text-align:center;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${actionLabel}</span></td>
+                        <td style="padding:12px;font-size:12px;color:var(--text-main);font-weight:500;text-align:center;">${module_}</td>
+                        <td style="padding:12px;text-align:center;"><span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-main);"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
                         <td style="padding:12px;font-size:12px;color:var(--text-muted);max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.details || ''}</td>
                         <td style="padding:12px;text-align:right;">
                             <button onclick="showAuditDetails('${logDataStr}')" style="background:transparent;border:1px solid var(--border);color:var(--text-main);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Details</button>
@@ -4621,21 +4621,17 @@
                 if (typeof showAlert === 'function') showAlert('Audit log cleared successfully.', 'success');
             }
 
-            // ── EXPORT FUNCTIONS ──
-            function exportAuditLog() {
+            function printAuditLog() {
                 const table = document.getElementById('auditLogTable');
                 if (!table) return;
-                let csv = [];
-                table.querySelectorAll('tr').forEach(row => {
-                    const cols = [];
-                    row.querySelectorAll('th, td').forEach(col => cols.push('"' + col.textContent.trim().replace(/"/g, '""') + '"'));
-                    csv.push(cols.join(','));
+                
+                // Clone table to safely modify it for printing (remove the ACTIONS column)
+                const clone = table.cloneNode(true);
+                clone.querySelectorAll('tr').forEach(tr => {
+                    if (tr.lastElementChild) tr.lastElementChild.remove();
                 });
-                const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'audit_log_' + new Date().toISOString().slice(0,10) + '.csv';
-                a.click();
+                
+                openPrintWindow('Barangay Sta. Lucia - System Audit Log', clone.outerHTML);
             }
 
             function exportSecurityLog() {
