@@ -32,9 +32,19 @@ window.logSecurity = async function(eventType, authMethod, severity, details, ta
     let ip = 'Unknown';
     try {
         const ipRes = await fetch('https://api.ipify.org?format=json');
+        if (!ipRes.ok) throw new Error();
         const ipData = await ipRes.json();
         ip = ipData.ip;
-    } catch(e) {}
+    } catch(e) {
+        try {
+            const res2 = await fetch('https://jsonip.com/');
+            if (!res2.ok) throw new Error();
+            const data2 = await res2.json();
+            ip = data2.ip || '127.0.0.1';
+        } catch(e2) {
+            ip = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '127.0.0.1' : 'Masked/Blocked IP';
+        }
+    }
 
     // Local fallback
     const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
