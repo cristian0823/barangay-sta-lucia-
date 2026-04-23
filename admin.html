@@ -2872,13 +2872,22 @@
         </div>
     </div>
 
+    <!-- Quick Filter Tabs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">✅ Login Events</button>
+        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">📋 All Events</button>
+        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">❌ Failed Only</button>
+        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">⚠️ Anomalies</button>
+    </div>
+
     <!-- Filter Bar -->
     <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">EVENT TYPE</label>
             <select id="secFilterType" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
                 <option value="all">All Events</option>
-                <option value="success">Success Events</option>
+                <option value="logins" selected>Login Events Only</option>
+                <option value="success">Success Only</option>
                 <option value="failed">Failed Attempts</option>
                 <option value="anomaly">Anomalies</option>
             </select>
@@ -4313,6 +4322,27 @@
                 renderSecurityLog();
             }
 
+            function setSecQuickFilter(type) {
+                const sel = document.getElementById('secFilterType');
+                if (sel) sel.value = type;
+                // Update pill button active styles
+                ['logins','all','failed','anomaly'].forEach(t => {
+                    const btn = document.getElementById('sqf_' + t);
+                    if (!btn) return;
+                    if (t === type) {
+                        const colors = { logins:'#10b981', all:'#3b82f6', failed:'#f97316', anomaly:'#ef4444' };
+                        btn.style.background = colors[t] || '#6366f1';
+                        btn.style.borderColor = colors[t] || '#6366f1';
+                        btn.style.color = '#fff';
+                    } else {
+                        btn.style.background = 'transparent';
+                        btn.style.borderColor = 'var(--border)';
+                        btn.style.color = 'var(--text-muted)';
+                    }
+                });
+                renderSecurityLog();
+            }
+
             function renderSecurityLog() {
                 const list = document.getElementById('securityList');
                 if (!list) return;
@@ -4327,10 +4357,13 @@
                 let filtered = _allSecurityLogs.filter(s => {
                     const ev = s.event_type || '';
                     const isAnomaly = s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend');
-                    const isFailed = ev.includes('Fail');
+                    const isLogin   = ev.includes('Login') || ev.includes('Logout');
+                    const isSuccess = ev.includes('Success') || ev === 'Admin Login' || ev === 'User Login' || ev.includes('Verified');
+                    const isFailed  = ev.includes('Fail') || ev === 'Account Locked';
 
-                    if (filterType === 'success' && !ev.includes('Success') && !ev.includes('Verified')) return false;
-                    if (filterType === 'failed' && !isFailed) return false;
+                    if (filterType === 'logins'  && !isLogin) return false;
+                    if (filterType === 'success' && !isSuccess) return false;
+                    if (filterType === 'failed'  && !isFailed) return false;
                     if (filterType === 'anomaly' && !isAnomaly) return false;
                     
                     if (filterAuth !== 'all' && (s.auth_method || 'System') !== filterAuth) return false;
