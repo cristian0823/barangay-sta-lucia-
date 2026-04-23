@@ -57,8 +57,13 @@ window.getDeviceIP = async function() {
     return 'Unavailable';
 };
 
+// Pre-fetch and cache device IP at page load so logSecurity never has to wait
+let _cachedDeviceIP = 'Unavailable';
+window.getDeviceIP().then(ip => { if (ip) _cachedDeviceIP = ip; });
+
 window.logSecurity = async function(eventType, authMethod, severity, details, targetUsername = null) {
-    const ip = await window.getDeviceIP();
+    // Use cached IP — already resolved at page load, no delay
+    const ip = _cachedDeviceIP;
     const u = getCurrentUser() || {};
     // Resolve which username to use — prefer current session, fall back to targetUsername
     const resolvedUsername = u.username || targetUsername || null;
