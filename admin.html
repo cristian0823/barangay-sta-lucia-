@@ -2835,6 +2835,7 @@
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">MODULE</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">STATUS</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: right;">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody id="auditList">
@@ -4208,15 +4209,30 @@
                     console.warn('loadAuditLog Supabase error:', e);
                 }
                 
-                const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
-                const cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-                const formattedLocalLogs = localLogs.map(l => ({
-                    ...l,
-                    users: { 
-                        full_name: cu ? cu.fullName : 'Barangay Administrator', 
-                        username: cu ? cu.username : 'admin1' 
+                // Build a user lookup map from Supabase
+                const _userMap = {};
+                try {
+                    const { data: _allUsers } = await supabase.from('users').select('id, full_name, email, username, role');
+                    if (_allUsers) {
+                        _allUsers.forEach(u => {
+                            if (u.id) _userMap[String(u.id)] = u;
+                        });
                     }
-                }));
+                } catch(e) {}
+
+                const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
+                const formattedLocalLogs = localLogs.map(l => {
+                    const idKey = String(l.user_id || '');
+                    const dbUser = _userMap[idKey] || {};
+                    return {
+                        ...l,
+                        users: { 
+                            full_name: dbUser.full_name || 'Unknown User', 
+                            username: dbUser.username || 'unknown',
+                            role: dbUser.role || 'user'
+                        }
+                    };
+                });
 
                 const allLogsMap = new Map();
                 formattedLocalLogs.forEach(l => allLogsMap.set(new Date(l.created_at).getTime(), l));
@@ -4255,7 +4271,7 @@
                 });
 
                 if (filtered.length === 0) {
-                    list.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted,#64748b);">No matching audit logs found</td></tr>';
+                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted,#64748b);">No matching audit logs found</td></tr>';
                     return;
                 }
 
@@ -4323,6 +4339,17 @@
                     else if (actionLabel === 'Rejected' || actionLabel === 'Deleted') { actColor = '#dc2626'; actBg = '#fee2e2'; }
                     else if (actionLabel === 'Pending' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#b45309'; actBg = '#fef3c7'; }
 
+                    // Pass entire row data to modal via JSON
+                    const logDataStr = encodeURIComponent(JSON.stringify({
+                        timestamp: d.toLocaleString('en-US', {month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                        who: who,
+                        role: roleLabel,
+                        action: actionLabel,
+                        module: module_,
+                        status: status.label,
+                        details: a.details || ''
+                    }));
+
                     return `<tr style="border-bottom: 1px solid var(--border);">
                         <td style="padding:12px;color:var(--text-muted);white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
                         <td style="padding:12px;font-weight:600;color:var(--text-main);">${who}</td>
@@ -4330,9 +4357,30 @@
                         <td style="padding:12px;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;">${actionLabel}</span></td>
                         <td style="padding:12px;font-size:12px;color:var(--text-main);font-weight:500;">${module_}</td>
                         <td style="padding:12px;"><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-main);"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
-                        <td style="padding:12px;font-size:12px;color:var(--text-muted);max-width:280px;">${a.details || ''}</td>
+                        <td style="padding:12px;font-size:12px;color:var(--text-muted);max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.details || ''}</td>
+                        <td style="padding:12px;text-align:right;">
+                            <button onclick="showAuditDetails('${logDataStr}')" style="background:transparent;border:1px solid var(--border);color:var(--text-main);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Details</button>
+                        </td>
                     </tr>`;
                 }).join('');
+            }
+            
+            function showAuditDetails(encodedData) {
+                try {
+                    const data = JSON.parse(decodeURIComponent(encodedData));
+                    document.getElementById('auditModalTimestamp').textContent = data.timestamp;
+                    document.getElementById('auditModalUser').textContent = data.who;
+                    document.getElementById('auditModalRole').textContent = data.role.replace(/[^a-zA-Z ]/g, '').trim();
+                    document.getElementById('auditModalAction').textContent = data.action;
+                    document.getElementById('auditModalModule').textContent = data.module;
+                    document.getElementById('auditModalStatus').textContent = data.status;
+                    document.getElementById('auditModalDetails').textContent = data.details;
+                    document.getElementById('auditDetailsModal').style.display = 'flex';
+                } catch(e) { console.error("Error opening audit details", e); }
+            }
+            
+            function closeAuditDetails() {
+                document.getElementById('auditDetailsModal').style.display = 'none';
             }
 
             // ── SECURITY LOG ──
@@ -7950,6 +7998,44 @@
                 element.classList.add('active');
             }
         </script>
+        
+        <!-- Audit Details Modal -->
+        <div id="auditDetailsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:var(--bg-color,#fff);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.1);display:flex;flex-direction:column;overflow:hidden;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border,#e2e8f0);display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-main,#1e293b);">Audit Log Details</h3>
+                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--text-muted,#64748b);cursor:pointer;">&times;</button>
+                </div>
+                <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:70vh;">
+                    <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;">
+                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Timestamp:</span>
+                        <span id="auditModalTimestamp" style="color:var(--text-main,#1e293b);"></span>
+                        
+                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Performed By:</span>
+                        <span id="auditModalUser" style="color:var(--text-main,#1e293b);font-weight:600;"></span>
+                        
+                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Role:</span>
+                        <span id="auditModalRole" style="color:var(--text-main,#1e293b);"></span>
+                        
+                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Action:</span>
+                        <span id="auditModalAction" style="color:var(--text-main,#1e293b);font-weight:600;"></span>
+                        
+                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Module:</span>
+                        <span id="auditModalModule" style="color:var(--text-main,#1e293b);"></span>
+                        
+                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Status:</span>
+                        <span id="auditModalStatus" style="color:var(--text-main,#1e293b);"></span>
+                    </div>
+                    <div>
+                        <div style="font-weight:600;color:var(--text-muted,#64748b);font-size:13px;margin-bottom:8px;">Details:</div>
+                        <div id="auditModalDetails" style="background:var(--card-bg,#f8fafc);padding:12px;border-radius:8px;border:1px solid var(--border,#e2e8f0);font-size:13px;color:var(--text-main,#1e293b);white-space:pre-wrap;word-break:break-word;"></div>
+                    </div>
+                </div>
+                <div style="padding:16px 20px;border-top:1px solid var(--border,#e2e8f0);text-align:right;">
+                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text-main,#1e293b);color:var(--bg-color,#fff);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+                </div>
+            </div>
+        </div>
 </body>
 
 </html>
