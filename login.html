@@ -638,6 +638,29 @@
                     } else {
                         window.logSecurity('Login Success', 'Password', 'info', `${_lType} successful.`, result.user.username);
                     }
+
+                    // ── CLEANUP: Remove any Login Failed / Account Locked records for this
+                    //    user from the current session — if they got in, failed attempts don't matter
+                    try {
+                        const _logKey = 'barangay_local_security_log';
+                        const _localLogs = JSON.parse(localStorage.getItem(_logKey)) || [];
+                        const _cleaned = _localLogs.filter(l => {
+                            const et = l.event_type || '';
+                            const isFailedEvent = et === 'Login Failed' || et === 'Account Locked';
+                            const isSameUser = (l.target_username || '').toLowerCase() === (result.user.username || '').toLowerCase();
+                            return !(isFailedEvent && isSameUser);
+                        });
+                        localStorage.setItem(_logKey, JSON.stringify(_cleaned));
+                        // Also delete from Supabase
+                        if (window.supabase && result.user.id) {
+                            window.supabase.from('security_log')
+                                .delete()
+                                .in('event_type', ['Login Failed', 'Account Locked'])
+                                .eq('user_id', result.user.id)
+                                .then(() => {});
+                        }
+                    } catch(e) { console.warn('Cleanup failed attempts log error:', e); }
+
                     showToast('Login successful! Redirecting...', 'success');
                     setTimeout(() => redirectToDashboard(), 1000);
                 } else {
