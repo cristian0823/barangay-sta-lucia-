@@ -4302,17 +4302,34 @@
                 } catch(e) {
                     console.warn('loadSecurityLog Supabase error:', e);
                 }
-                
-                const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
-                const formattedLocalLogs = localLogs.map(l => ({
-                    ...l,
-                    // Use the full_name and email stored at log-write time, not the current admin session
-                    users: { 
-                        full_name: l.full_name || l.target_username || 'Unknown User', 
-                        username:  l.target_username || 'unknown', 
-                        email:     l.email || l.target_username || '' 
+
+                // Build a user lookup map (by username AND by user id) from Supabase
+                const _userMap = {};
+                try {
+                    const { data: _allUsers } = await supabase.from('users').select('id, full_name, email, username');
+                    if (_allUsers) {
+                        _allUsers.forEach(u => {
+                            if (u.username) _userMap[u.username.toLowerCase()] = u;
+                            if (u.id)       _userMap[String(u.id)] = u;
+                        });
                     }
-                }));
+                } catch(e) {}
+
+                const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
+                const formattedLocalLogs = localLogs.map(l => {
+                    // Look up real user data from Supabase user map
+                    const key = (l.target_username || '').toLowerCase();
+                    const idKey = String(l.user_id || '');
+                    const dbUser = _userMap[key] || _userMap[idKey] || {};
+                    return {
+                        ...l,
+                        users: {
+                            full_name: dbUser.full_name || l.full_name || l.target_username || 'Unknown User',
+                            username:  l.target_username || 'unknown',
+                            email:     dbUser.email || l.email || ''
+                        }
+                    };
+                });
 
                 const allLogsMap = new Map();
                 formattedLocalLogs.forEach(l => allLogsMap.set(new Date(l.created_at).getTime(), l));
