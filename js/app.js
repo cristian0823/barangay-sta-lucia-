@@ -443,17 +443,15 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                     sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
                 }
                 const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
-                // Get real device IP and check if it's new
-                const currentIP = await window.getDeviceIP();
+                // Use cached IP (pre-fetched at page load — no delay)
+                const currentIP = _cachedDeviceIP;
                 const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
                 if (currentIP !== 'Unavailable' && !knownIps.includes(currentIP)) {
                     knownIps.push(currentIP);
                     localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
                     if (knownIps.length === 1) {
-                        // Very first login ever — just record normally
                         window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, sessionData.username);
                     } else {
-                        // Known account, but new/different IP — suspicious
                         window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, sessionData.username);
                     }
                 } else {
@@ -527,17 +525,15 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                 sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
             }
             const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
-            // Get real device IP and check if it's new
-            const currentIP = await window.getDeviceIP();
+            // Use cached IP (pre-fetched at page load — no delay)
+            const currentIP = _cachedDeviceIP;
             const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
             if (currentIP !== 'Unavailable' && !knownIps.includes(currentIP)) {
                 knownIps.push(currentIP);
                 localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
                 if (knownIps.length === 1) {
-                    // Very first login ever — just record normally
                     window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, sessionData.username);
                 } else {
-                    // Known account, but new/different IP — suspicious
                     window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, sessionData.username);
                 }
             } else {
