@@ -4356,10 +4356,12 @@
 
                 let filtered = _allSecurityLogs.filter(s => {
                     const ev = s.event_type || '';
-                    const isAnomaly = s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend');
-                    const isLogin   = ev.includes('Login') || ev.includes('Logout');
-                    const isSuccess = ev.includes('Success') || ev === 'Admin Login' || ev === 'User Login' || ev.includes('Verified');
+                    // Exact success login/logout events (excludes Login Failed, Account Locked)
+                    const LOGIN_SUCCESS_EVENTS = ['Admin Login','User Login','Login Success','Admin Logout','User Logout','Logout'];
+                    const isLogin   = LOGIN_SUCCESS_EVENTS.includes(ev);
+                    const isSuccess = ['Admin Login','User Login','Login Success','OTP Verified'].includes(ev) || ev.includes('Verified');
                     const isFailed  = ev.includes('Fail') || ev === 'Account Locked';
+                    const isAnomaly = s.severity === 'critical' || s.severity === 'warning' || isFailed || ev.includes('Suspend') || ev === 'Suspicious Login Activity';
 
                     if (filterType === 'logins'  && !isLogin) return false;
                     if (filterType === 'success' && !isSuccess) return false;
