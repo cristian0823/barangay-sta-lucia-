@@ -2828,11 +2828,13 @@
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="auditLogTable">
                 <thead>
                     <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted);">TIMESTAMP</th>
-                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted);">USER</th>
-                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted);">ACTION</th>
-                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted);">ENTITY</th>
-                        <th style="padding: 16px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">TIMESTAMP</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">PERFORMED BY</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">ROLE</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">ACTION</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">MODULE</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">STATUS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
                     </tr>
                 </thead>
                 <tbody id="auditList">
@@ -4200,7 +4202,7 @@
                 
                 let supabaseLogs = [];
                 try {
-                    const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username)').order('created_at', { ascending: false }).limit(500);
+                    const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username, email, role)').order('created_at', { ascending: false }).limit(500);
                     if (!error && data) supabaseLogs = data;
                 } catch(e) {
                     console.warn('loadAuditLog Supabase error:', e);
@@ -4236,53 +4238,99 @@
                 let filtered = _allAuditLogs.filter(a => {
                     const act = ((a.action || '') + ' ' + (a.entity_type || '')).toLowerCase();
                     if (filterAction !== 'all') {
-                        if (filterAction === 'Borrow' && !act.includes('borrow')) return false;
-                        if (filterAction === 'Reserve' && !act.includes('reserv')) return false;
+                        if (filterAction === 'Borrow'  && !act.includes('borrow'))  return false;
+                        if (filterAction === 'Reserve' && !act.includes('reserv'))  return false;
                         if (filterAction === 'Concern' && !act.includes('concern')) return false;
-                        if (filterAction === 'Event' && !act.includes('event')) return false;
+                        if (filterAction === 'Event'   && !act.includes('event'))   return false;
                     }
-                    
-                    if (filterFrom) {
-                        const dFrom = new Date(filterFrom);
-                        dFrom.setHours(0,0,0,0);
-                        if (new Date(a.created_at) < dFrom) return false;
-                    }
-                    if (filterTo) {
-                        const dTo = new Date(filterTo);
-                        dTo.setHours(23,59,59,999);
-                        if (new Date(a.created_at) > dTo) return false;
-                    }
-
+                    if (filterFrom) { const d = new Date(filterFrom); d.setHours(0,0,0,0); if (new Date(a.created_at) < d) return false; }
+                    if (filterTo)   { const d = new Date(filterTo);   d.setHours(23,59,59,999); if (new Date(a.created_at) > d) return false; }
                     if (filterSearch) {
                         const who = a.users ? (a.users.full_name || a.users.username || '') : 'System';
-                        const entity = (a.entity_type || '') + ' ' + (a.entity_id || '');
+                        const mod = a.entity_type || '';
                         const det = a.details || '';
-                        const searchStr = `${who} ${entity} ${det} ${act}`.toLowerCase();
-                        if (!searchStr.includes(filterSearch)) return false;
+                        if (!`${who} ${mod} ${det} ${act}`.toLowerCase().includes(filterSearch)) return false;
                     }
-
                     return true;
                 });
 
                 if (filtered.length === 0) {
-                    list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted, #64748b);">No matching audit logs found</td></tr>';
+                    list.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted,#64748b);">No matching audit logs found</td></tr>';
                     return;
                 }
 
+                // Derive a human-readable action label
+                function getActionLabel(action) {
+                    if (!action) return 'System';
+                    if (action.includes('Borrow Request') || action === 'Borrow Request') return 'Borrow Request';
+                    if (action.includes('Borrow Approved') || action.includes('Approve')) return 'Approved';
+                    if (action.includes('Borrow Rejected') || action.includes('Reject')) return 'Rejected';
+                    if (action.includes('Borrow Return'))  return 'Returned';
+                    if (action.includes('Reservation') || action.includes('Reserve')) return 'Reservation';
+                    if (action.includes('Booking Approved')) return 'Approved';
+                    if (action.includes('Booking Rejected')) return 'Rejected';
+                    if (action.includes('Concern')) return 'Concern Filed';
+                    if (action.includes('Event')) return 'Event Action';
+                    if (action.includes('Batch Upload') || action.includes('Upload')) return 'Batch Upload';
+                    if (action.includes('Delete') || action.includes('Remove')) return 'Deleted';
+                    if (action.includes('Update') || action.includes('Edit')) return 'Updated';
+                    if (action.includes('Login')) return 'Login';
+                    if (action.includes('Logout')) return 'Logout';
+                    return action;
+                }
+
+                // Derive status from action/details
+                function getStatus(action, details) {
+                    const a = (action || '').toLowerCase();
+                    const d = (details || '').toLowerCase();
+                    if (a.includes('approved') || a.includes('approve') || d.includes('approved')) return { label: 'Approved', dot: '#22c55e' };
+                    if (a.includes('rejected') || a.includes('reject') || d.includes('rejected')) return { label: 'Rejected', dot: '#ef4444' };
+                    if (a.includes('returned')) return { label: 'Returned', dot: '#3b82f6' };
+                    if (a.includes('request') || a.includes('submitted') || a.includes('reserved')) return { label: 'Pending', dot: '#f59e0b' };
+                    if (a.includes('delete') || a.includes('removed')) return { label: 'Deleted', dot: '#ef4444' };
+                    if (a.includes('batch') || a.includes('upload') || a.includes('update') || a.includes('edit')) return { label: 'Completed', dot: '#22c55e' };
+                    if (a.includes('login') || a.includes('logout')) return { label: 'Done', dot: '#22c55e' };
+                    return { label: '—', dot: '#94a3b8' };
+                }
+
+                // Derive module from entity_type or action
+                function getModule(entity_type, action) {
+                    const et = (entity_type || '').toLowerCase();
+                    const ac = (action || '').toLowerCase();
+                    if (et.includes('borrow') || ac.includes('borrow') || ac.includes('equipment')) return 'Equipment';
+                    if (et.includes('reserv') || ac.includes('reserv') || ac.includes('booking') || ac.includes('court') || ac.includes('hall')) return 'Reservation';
+                    if (et.includes('concern') || ac.includes('concern')) return 'Concerns';
+                    if (et.includes('event') || ac.includes('event')) return 'Events';
+                    if (et.includes('user') || ac.includes('user') || ac.includes('resident') || ac.includes('batch')) return 'Users';
+                    if (ac.includes('login') || ac.includes('logout')) return 'Auth';
+                    return entity_type || 'System';
+                }
+
                 list.innerHTML = filtered.map(a => {
-                    const d = new Date(a.created_at);
-                    const who = a.users ? (a.users.full_name || a.users.username) : 'System';
-                    let actColor = '#3730a3';
-                    let actBg = '#e0e7ff';
-                    if (a.action && a.action.includes('Reject')) { actColor = '#dc2626'; actBg = '#fee2e2'; }
-                    else if (a.action && a.action.includes('Approve')) { actColor = '#059669'; actBg = '#d1fae5'; }
-                    
+                    const d    = new Date(a.created_at);
+                    const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
+                    const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
+                    const roleLabel = role === 'admin' ? '🛡️ Admin' : role === 'user' ? '👤 User' : '⚙️ System';
+                    const roleColor = role === 'admin' ? '#7c3aed' : role === 'user' ? '#0284c7' : '#64748b';
+                    const roleStyle = `background:${role==='admin'?'#f3e8ff':role==='user'?'#e0f2fe':'#f1f5f9'};color:${roleColor};`;
+                    const actionLabel = getActionLabel(a.action);
+                    const module_     = getModule(a.entity_type, a.action);
+                    const status      = getStatus(a.action, a.details);
+
+                    // Action badge colour
+                    let actColor = '#3730a3', actBg = '#e0e7ff';
+                    if (actionLabel === 'Approved' || actionLabel === 'Returned') { actColor = '#059669'; actBg = '#d1fae5'; }
+                    else if (actionLabel === 'Rejected' || actionLabel === 'Deleted') { actColor = '#dc2626'; actBg = '#fee2e2'; }
+                    else if (actionLabel === 'Pending' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#b45309'; actBg = '#fef3c7'; }
+
                     return `<tr style="border-bottom: 1px solid var(--border);">
-                        <td style="padding: 12px; color: var(--text-muted);">${d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})} <span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
-                        <td style="padding: 12px; font-weight:600; color: var(--text-main);">${who}</td>
-                        <td style="padding: 12px;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;">${a.action || ''}</span></td>
-                        <td style="padding: 12px; font-size: 12px; color: var(--text-main); font-weight: 500;">${a.entity_type || ''} ${a.entity_id ? '<span style="color:var(--text-muted);">#'+a.entity_id+'</span>' : ''}</td>
-                        <td style="padding: 12px; font-size:12px; color: var(--text-muted);">${a.details || ''}</td>
+                        <td style="padding:12px;color:var(--text-muted);white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
+                        <td style="padding:12px;font-weight:600;color:var(--text-main);">${who}</td>
+                        <td style="padding:12px;"><span style="${roleStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
+                        <td style="padding:12px;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;">${actionLabel}</span></td>
+                        <td style="padding:12px;font-size:12px;color:var(--text-main);font-weight:500;">${module_}</td>
+                        <td style="padding:12px;"><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-main);"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
+                        <td style="padding:12px;font-size:12px;color:var(--text-muted);max-width:280px;">${a.details || ''}</td>
                     </tr>`;
                 }).join('');
             }
