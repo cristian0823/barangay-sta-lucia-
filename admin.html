@@ -4437,20 +4437,22 @@
             // ── CLEAR LOG FUNCTIONS ──
             async function clearSecurityLogs() {
                 if (!confirm('Clear ALL security log records? This cannot be undone.')) return;
-                // Clear local storage logs + known IPs
+                // Clear localStorage logs + known IPs
                 localStorage.removeItem('barangay_local_security_log');
                 Object.keys(localStorage).filter(k => k.startsWith('known_ips_')).forEach(k => localStorage.removeItem(k));
-                // Clear Supabase logs and reset account lockouts
-                try {
-                    if (window.supabase) {
-                        await window.supabase.from('security_log').delete().gt('id', 0);
-                        // Also reset any locked accounts
-                        await window.supabase.from('users').update({ login_fail_count: 0, lockout_until: null }).gt('id', 0);
-                    }
-                } catch(e) {
-                    // Fallback delete method
-                    try { await window.supabase.from('security_log').delete().gte('created_at', '2000-01-01'); } catch(e2) {}
-                    try { await window.supabase.from('users').update({ login_fail_count: 0, lockout_until: null }).gte('created_at', '2000-01-01'); } catch(e3) {}
+                if (window.supabase) {
+                    // Delete all security_log rows using timestamp (works with UUID ids)
+                    const { error: delErr } = await window.supabase
+                        .from('security_log')
+                        .delete()
+                        .lte('created_at', new Date().toISOString());
+                    if (delErr) console.warn('security_log delete error:', delErr);
+                    // Reset login_fail_count and lockout for ALL users
+                    const { error: resetErr } = await window.supabase
+                        .from('users')
+                        .update({ login_fail_count: 0, lockout_until: null })
+                        .lte('created_at', new Date().toISOString());
+                    if (resetErr) console.warn('users reset error:', resetErr);
                 }
                 _allSecurityLogs = [];
                 renderSecurityLog();
