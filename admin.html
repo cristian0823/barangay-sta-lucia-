@@ -4387,24 +4387,42 @@
                     const uName = s.users ? (s.users.full_name || s.users.username || 'System') : (s.target_username || 'System');
                     const uMail = s.users ? (s.users.email || s.users.username || '') : '';
                     const ev = s.event_type || 'Unknown';
-                    let bdg = 'background:#f1f5f9;color:#475569;';
+
+                    // Badge & row color per event type
+                    let bdg = 'background:#e0e7ff;color:#3730a3;'; // default blue
                     let rowBg = '';
                     let icon = '';
-                    if (s.severity === 'critical' || s.severity === 'warning' || ev.includes('Fail') || ev.includes('Suspend')) {
-                        rowBg = 'background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;';
-                        icon = '<i class="bi bi-exclamation-triangle-fill" style="color: #ef4444;"></i>';
-                        bdg = 'background:#fee2e2;color:#dc2626;';
-                    } else if (ev.includes('Success') || ev.includes('Verified')) {
+
+                    if (ev === 'Login Success' || ev === 'Admin Login' || ev === 'User Login') {
                         bdg = 'background:#d1fae5;color:#059669;';
+                        icon = '<i class="bi bi-check-circle-fill" style="color:#059669;"></i>';
+                    } else if (ev === 'New IP Detected') {
+                        rowBg = 'background:rgba(234,179,8,0.07);border-left:4px solid #eab308;';
+                        icon = '<i class="bi bi-geo-alt-fill" style="color:#eab308;"></i>';
+                        bdg = 'background:#fef9c3;color:#a16207;';
+                    } else if (ev === 'Suspicious Login Activity') {
+                        rowBg = 'background:rgba(239,68,68,0.07);border-left:4px solid #ef4444;';
+                        icon = '<i class="bi bi-shield-exclamation" style="color:#ef4444;"></i>';
+                        bdg = 'background:#fee2e2;color:#dc2626;';
+                    } else if (ev === 'Login Failed') {
+                        rowBg = 'background:rgba(249,115,22,0.06);border-left:4px solid #f97316;';
+                        icon = '<i class="bi bi-x-circle-fill" style="color:#f97316;"></i>';
+                        bdg = 'background:#ffedd5;color:#c2410c;';
+                    } else if (s.severity === 'critical' || ev.includes('Suspend')) {
+                        rowBg = 'background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;';
+                        icon = '<i class="bi bi-exclamation-triangle-fill" style="color:#ef4444;"></i>';
+                        bdg = 'background:#fee2e2;color:#dc2626;';
                     }
+
                     const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
+                    const ipColor = (ev === 'New IP Detected' || ev === 'Suspicious Login Activity') ? '#ef4444' : 'var(--text-muted)';
                     return `<tr style="border-bottom:1px solid var(--border);${rowBg}">
                         <td style="padding: 12px; text-align:center;">${icon}</td>
                         <td style="padding: 12px; color: var(--text-muted);">${d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
                         <td style="padding: 12px;"><div style="font-weight:700; color: var(--text-main);">${uName}</div><div style="font-size:11px;color:var(--text-muted);">${uMail}</div></td>
                         <td style="padding: 12px;"><span style="${bdg}padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${ev}</span></td>
                         <td style="padding: 12px; font-weight: 600; color: var(--text-main);">${s.auth_method || 'System'}</td>
-                        <td style="padding: 12px; font-family:monospace;font-size:12px;color: ${icon ? '#ef4444' : 'var(--text-muted)'};">${s.ip_address || '—'}</td>
+                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || '—'}</td>
                         <td style="padding: 12px; font-size:11px;color:var(--text-muted);" title="${s.device_info || ''}">${device}</td>
                         <td style="padding: 12px; font-size:12px; color: var(--text-muted);">${s.details || '—'}</td>
                     </tr>`;

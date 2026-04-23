@@ -422,8 +422,24 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                 } else {
                     sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
                 }
-                const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin login' : 'User login';
-                window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
+                const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
+                // Check for new IP
+                const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
+                let ipForCheck = 'Unknown';
+                try {
+                    const ipRes = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipRes.json();
+                    ipForCheck = ipData.ip;
+                } catch(e) {
+                    try { const r2 = await fetch('https://jsonip.com/'); const d2 = await r2.json(); ipForCheck = d2.ip; } catch(e2) {}
+                }
+                if (ipForCheck !== 'Unknown' && !knownIps.includes(ipForCheck)) {
+                    knownIps.push(ipForCheck);
+                    localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
+                    window.logSecurity('New IP Detected', 'Password', 'warning', `${lType} from new IP address. First login from this location.`, sessionData.username);
+                } else {
+                    window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
+                }
             }
 
             return { success: true, user: sessionData };
@@ -440,9 +456,9 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             const updates = { login_fail_count: newCount };
             if (newCount >= 5) {
                 updates.lockout_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-                window.logSecurity('Brute Force Attempt', 'Password', 'critical', `Brute force attempt detected for ${username}. Account locked.`, username);
+                window.logSecurity('Suspicious Login Activity', 'Password', 'critical', `Multiple failed attempts for ${username}. Account temporarily locked for 15 minutes.`, username);
             } else {
-                window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username} (${newCount}/5).`, username);
+                window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username} (attempt ${newCount} of 5).`, username);
             }
             await supabase.from('users').update(updates).eq('id', failedUser.id);
         } else {
@@ -491,13 +507,31 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             } else {
                 sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
             }
-            const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin login' : 'User login';
-            window.logSecurity('Login Success', 'Password', 'info', `Local ${lType} successful.`, sessionData.username);
+            const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
+            // Check for new IP
+            const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
+            let ipForCheck = 'Unknown';
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                ipForCheck = ipData.ip;
+            } catch(e) {
+                try { const r2 = await fetch('https://jsonip.com/'); const d2 = await r2.json(); ipForCheck = d2.ip; } catch(e2) {}
+            }
+            if (ipForCheck !== 'Unknown' && !knownIps.includes(ipForCheck)) {
+                knownIps.push(ipForCheck);
+                localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
+                window.logSecurity('New IP Detected', 'Password', 'warning', `${lType} from new IP address. First login from this location.`, sessionData.username);
+            } else {
+                window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
+            }
         }
 
         return { success: true, user: sessionData };
     }
 
+    // Log failed local login
+    window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username}.`, username);
     return { success: false, message: 'Barangay ID not found. Please contact the Barangay Office.' };
 }
 
