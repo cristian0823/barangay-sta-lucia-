@@ -7998,38 +7998,38 @@
         
         <!-- Audit Details Modal -->
         <div id="auditDetailsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-            <div style="background:var(--card-bg);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">
+            <div style="background:var(--surface,#fff);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">
                 <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-main);">Audit Log Details</h3>
-                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;">&times;</button>
+                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text);">Audit Log Details</h3>
+                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--muted);cursor:pointer;">&times;</button>
                 </div>
                 <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:70vh;">
                     <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;">
-                        <span style="font-weight:600;color:var(--text-muted);">Timestamp:</span>
-                        <span id="auditModalTimestamp" style="color:var(--text-main);"></span>
+                        <span style="font-weight:600;color:var(--muted);">Timestamp:</span>
+                        <span id="auditModalTimestamp" style="color:var(--text);"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted);">Performed By:</span>
-                        <span id="auditModalUser" style="color:var(--text-main);font-weight:600;"></span>
+                        <span style="font-weight:600;color:var(--muted);">Performed By:</span>
+                        <span id="auditModalUser" style="color:var(--text);font-weight:600;"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted);">Role:</span>
-                        <span id="auditModalRole" style="color:var(--text-main);"></span>
+                        <span style="font-weight:600;color:var(--muted);">Role:</span>
+                        <span id="auditModalRole" style="color:var(--text);"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted);">Action:</span>
-                        <span id="auditModalAction" style="color:var(--text-main);font-weight:600;"></span>
+                        <span style="font-weight:600;color:var(--muted);">Action:</span>
+                        <span id="auditModalAction" style="color:var(--text);font-weight:600;"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted);">Module:</span>
-                        <span id="auditModalModule" style="color:var(--text-main);"></span>
+                        <span style="font-weight:600;color:var(--muted);">Module:</span>
+                        <span id="auditModalModule" style="color:var(--text);"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted);">Status:</span>
-                        <span id="auditModalStatus" style="color:var(--text-main);"></span>
+                        <span style="font-weight:600;color:var(--muted);">Status:</span>
+                        <span id="auditModalStatus" style="color:var(--text);"></span>
                     </div>
                     <div>
-                        <div style="font-weight:600;color:var(--text-muted);font-size:13px;margin-bottom:8px;">Details:</div>
-                        <div id="auditModalDetails" style="background:var(--bg-color);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text-main);white-space:pre-wrap;word-break:break-word;"></div>
+                        <div style="font-weight:600;color:var(--muted);font-size:13px;margin-bottom:8px;">Details:</div>
+                        <div id="auditModalDetails" style="background:var(--panel-bg,#f8fafc);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text);white-space:pre-wrap;word-break:break-word;"></div>
                     </div>
                 </div>
                 <div style="padding:16px 20px;border-top:1px solid var(--border);text-align:right;">
-                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text-main);color:var(--bg-color);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text);color:var(--surface,#fff);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
                 </div>
             </div>
         </div>
