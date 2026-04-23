@@ -2835,7 +2835,7 @@
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">MODULE</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">STATUS</th>
                         <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: right;">ACTIONS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: right;"></th>
                     </tr>
                 </thead>
                 <tbody id="auditList">
@@ -4327,17 +4327,18 @@
                     const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
                     const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
                     const roleLabel = role === 'admin' ? '🛡️ Admin' : role === 'user' ? '👤 User' : '⚙️ System';
-                    const roleColor = role === 'admin' ? '#7c3aed' : role === 'user' ? '#0284c7' : '#64748b';
-                    const roleStyle = `background:${role==='admin'?'#f3e8ff':role==='user'?'#e0f2fe':'#f1f5f9'};color:${roleColor};`;
+                    const roleColor = role === 'admin' ? '#8b5cf6' : role === 'user' ? '#0ea5e9' : '#94a3b8';
+                    const roleBg = role === 'admin' ? 'rgba(139,92,246,0.15)' : role === 'user' ? 'rgba(14,165,233,0.15)' : 'rgba(148,163,184,0.15)';
+                    const roleStyle = `display:inline-flex;align-items:center;gap:4px;background:${roleBg};color:${roleColor};`;
                     const actionLabel = getActionLabel(a.action);
                     const module_     = getModule(a.entity_type, a.action);
                     const status      = getStatus(a.action, a.details);
 
                     // Action badge colour
-                    let actColor = '#3730a3', actBg = '#e0e7ff';
-                    if (actionLabel === 'Approved' || actionLabel === 'Returned') { actColor = '#059669'; actBg = '#d1fae5'; }
-                    else if (actionLabel === 'Rejected' || actionLabel === 'Deleted') { actColor = '#dc2626'; actBg = '#fee2e2'; }
-                    else if (actionLabel === 'Pending' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#b45309'; actBg = '#fef3c7'; }
+                    let actColor = '#6366f1', actBg = 'rgba(99,102,241,0.15)';
+                    if (actionLabel === 'Approved' || actionLabel === 'Returned') { actColor = '#10b981'; actBg = 'rgba(16,185,129,0.15)'; }
+                    else if (actionLabel === 'Rejected' || actionLabel === 'Deleted') { actColor = '#ef4444'; actBg = 'rgba(239,68,68,0.15)'; }
+                    else if (actionLabel === 'Pending' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#f59e0b'; actBg = 'rgba(245,158,11,0.15)'; }
 
                     // Pass entire row data to modal via JSON
                     const logDataStr = encodeURIComponent(JSON.stringify({
@@ -4370,7 +4371,7 @@
                     const data = JSON.parse(decodeURIComponent(encodedData));
                     document.getElementById('auditModalTimestamp').textContent = data.timestamp;
                     document.getElementById('auditModalUser').textContent = data.who;
-                    document.getElementById('auditModalRole').textContent = data.role.replace(/[^a-zA-Z ]/g, '').trim();
+                    document.getElementById('auditModalRole').textContent = data.role;
                     document.getElementById('auditModalAction').textContent = data.action;
                     document.getElementById('auditModalModule').textContent = data.module;
                     document.getElementById('auditModalStatus').textContent = data.status;
@@ -8001,38 +8002,38 @@
         
         <!-- Audit Details Modal -->
         <div id="auditDetailsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-            <div style="background:var(--bg-color,#fff);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.1);display:flex;flex-direction:column;overflow:hidden;">
-                <div style="padding:16px 20px;border-bottom:1px solid var(--border,#e2e8f0);display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-main,#1e293b);">Audit Log Details</h3>
-                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--text-muted,#64748b);cursor:pointer;">&times;</button>
+            <div style="background:var(--card-bg);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-main);">Audit Log Details</h3>
+                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;">&times;</button>
                 </div>
                 <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:70vh;">
                     <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;">
-                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Timestamp:</span>
-                        <span id="auditModalTimestamp" style="color:var(--text-main,#1e293b);"></span>
+                        <span style="font-weight:600;color:var(--text-muted);">Timestamp:</span>
+                        <span id="auditModalTimestamp" style="color:var(--text-main);"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Performed By:</span>
-                        <span id="auditModalUser" style="color:var(--text-main,#1e293b);font-weight:600;"></span>
+                        <span style="font-weight:600;color:var(--text-muted);">Performed By:</span>
+                        <span id="auditModalUser" style="color:var(--text-main);font-weight:600;"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Role:</span>
-                        <span id="auditModalRole" style="color:var(--text-main,#1e293b);"></span>
+                        <span style="font-weight:600;color:var(--text-muted);">Role:</span>
+                        <span id="auditModalRole" style="color:var(--text-main);"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Action:</span>
-                        <span id="auditModalAction" style="color:var(--text-main,#1e293b);font-weight:600;"></span>
+                        <span style="font-weight:600;color:var(--text-muted);">Action:</span>
+                        <span id="auditModalAction" style="color:var(--text-main);font-weight:600;"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Module:</span>
-                        <span id="auditModalModule" style="color:var(--text-main,#1e293b);"></span>
+                        <span style="font-weight:600;color:var(--text-muted);">Module:</span>
+                        <span id="auditModalModule" style="color:var(--text-main);"></span>
                         
-                        <span style="font-weight:600;color:var(--text-muted,#64748b);">Status:</span>
-                        <span id="auditModalStatus" style="color:var(--text-main,#1e293b);"></span>
+                        <span style="font-weight:600;color:var(--text-muted);">Status:</span>
+                        <span id="auditModalStatus" style="color:var(--text-main);"></span>
                     </div>
                     <div>
-                        <div style="font-weight:600;color:var(--text-muted,#64748b);font-size:13px;margin-bottom:8px;">Details:</div>
-                        <div id="auditModalDetails" style="background:var(--card-bg,#f8fafc);padding:12px;border-radius:8px;border:1px solid var(--border,#e2e8f0);font-size:13px;color:var(--text-main,#1e293b);white-space:pre-wrap;word-break:break-word;"></div>
+                        <div style="font-weight:600;color:var(--text-muted);font-size:13px;margin-bottom:8px;">Details:</div>
+                        <div id="auditModalDetails" style="background:var(--bg-color);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text-main);white-space:pre-wrap;word-break:break-word;"></div>
                     </div>
                 </div>
-                <div style="padding:16px 20px;border-top:1px solid var(--border,#e2e8f0);text-align:right;">
-                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text-main,#1e293b);color:var(--bg-color,#fff);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+                <div style="padding:16px 20px;border-top:1px solid var(--border);text-align:right;">
+                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text-main);color:var(--bg-color);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
                 </div>
             </div>
         </div>
