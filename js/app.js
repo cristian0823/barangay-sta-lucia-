@@ -28,51 +28,37 @@ window.logAudit = async function(entityType, entityId, action, details) {
     } catch(e) { console.error('logAudit failed', e); }
 };
 
-window.logSecurity = async function(eventType, authMethod, severity, details, targetUsername = null) {
-    // Helper: get local IP via WebRTC (no external API needed)
-    async function getLocalIP() {
-        return new Promise((resolve) => {
+// Shared IP detection — works without external APIs via WebRTC
+window.getDeviceIP = async function() {
+    // 1. WebRTC (works even with adblockers, gets local network IP like 192.168.x.x)
+    try {
+        const ip = await new Promise((resolve) => {
             const timeout = setTimeout(() => resolve(null), 2000);
-            try {
-                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                pc.createDataChannel('');
-                pc.createOffer().then(offer => pc.setLocalDescription(offer));
-                pc.onicecandidate = (e) => {
-                    if (!e || !e.candidate) return;
-                    const ipMatch = /([0-9]{1,3}\.){3}[0-9]{1,3}/.exec(e.candidate.candidate);
-                    if (ipMatch) {
-                        clearTimeout(timeout);
-                        pc.close();
-                        resolve(ipMatch[0]);
-                    }
-                };
-            } catch(e) { clearTimeout(timeout); resolve(null); }
+            const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+            pc.createDataChannel('');
+            pc.createOffer().then(o => pc.setLocalDescription(o));
+            pc.onicecandidate = (e) => {
+                if (!e || !e.candidate) return;
+                const m = /([0-9]{1,3}\.){3}[0-9]{1,3}/.exec(e.candidate.candidate);
+                if (m) { clearTimeout(timeout); pc.close(); resolve(m[0]); }
+            };
         });
-    }
+        if (ip) return ip;
+    } catch(e) {}
+    // 2. Public IP APIs as fallback
+    try {
+        const r = await fetch('https://api.ipify.org?format=json');
+        if (r.ok) { const d = await r.json(); return d.ip; }
+    } catch(e) {}
+    try {
+        const r2 = await fetch('https://jsonip.com/');
+        if (r2.ok) { const d2 = await r2.json(); return d2.ip; }
+    } catch(e) {}
+    return 'Unavailable';
+};
 
-    let ip = 'Unknown';
-    // 1. Try WebRTC local IP first (works even with adblockers)
-    const localIP = await getLocalIP();
-    if (localIP) {
-        ip = localIP;
-    } else {
-        // 2. Try public IP APIs as fallback
-        try {
-            const ipRes = await fetch('https://api.ipify.org?format=json');
-            if (!ipRes.ok) throw new Error();
-            const ipData = await ipRes.json();
-            ip = ipData.ip;
-        } catch(e) {
-            try {
-                const res2 = await fetch('https://jsonip.com/');
-                if (!res2.ok) throw new Error();
-                const data2 = await res2.json();
-                ip = data2.ip;
-            } catch(e2) {
-                ip = 'Unavailable';
-            }
-        }
-    }
+window.logSecurity = async function(eventType, authMethod, severity, details, targetUsername = null) {
+    const ip = await window.getDeviceIP();
 
     // Local fallback
     const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
@@ -451,20 +437,19 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                     sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
                 }
                 const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
-                // Check for new IP
+                // Get real device IP and check if it's new
+                const currentIP = await window.getDeviceIP();
                 const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
-                let ipForCheck = 'Unknown';
-                try {
-                    const ipRes = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipRes.json();
-                    ipForCheck = ipData.ip;
-                } catch(e) {
-                    try { const r2 = await fetch('https://jsonip.com/'); const d2 = await r2.json(); ipForCheck = d2.ip; } catch(e2) {}
-                }
-                if (ipForCheck !== 'Unknown' && !knownIps.includes(ipForCheck)) {
-                    knownIps.push(ipForCheck);
+                if (currentIP !== 'Unavailable' && !knownIps.includes(currentIP)) {
+                    knownIps.push(currentIP);
                     localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
-                    window.logSecurity('New IP Detected', 'Password', 'warning', `${lType} from new IP address. First login from this location.`, sessionData.username);
+                    if (knownIps.length === 1) {
+                        // Very first login ever — just record normally
+                        window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, sessionData.username);
+                    } else {
+                        // Known account, but new/different IP — suspicious
+                        window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, sessionData.username);
+                    }
                 } else {
                     window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
                 }
@@ -536,20 +521,19 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                 sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
             }
             const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
-            // Check for new IP
+            // Get real device IP and check if it's new
+            const currentIP = await window.getDeviceIP();
             const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
-            let ipForCheck = 'Unknown';
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                ipForCheck = ipData.ip;
-            } catch(e) {
-                try { const r2 = await fetch('https://jsonip.com/'); const d2 = await r2.json(); ipForCheck = d2.ip; } catch(e2) {}
-            }
-            if (ipForCheck !== 'Unknown' && !knownIps.includes(ipForCheck)) {
-                knownIps.push(ipForCheck);
+            if (currentIP !== 'Unavailable' && !knownIps.includes(currentIP)) {
+                knownIps.push(currentIP);
                 localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
-                window.logSecurity('New IP Detected', 'Password', 'warning', `${lType} from new IP address. First login from this location.`, sessionData.username);
+                if (knownIps.length === 1) {
+                    // Very first login ever — just record normally
+                    window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, sessionData.username);
+                } else {
+                    // Known account, but new/different IP — suspicious
+                    window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, sessionData.username);
+                }
             } else {
                 window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
             }
@@ -667,22 +651,23 @@ async function broadcastEmailToAllResidents(title, message, details) {
 
 
 async function logoutUser() {
-    try {
-        if (window.supabase) {
-            await window.supabase.auth.signOut();
-        }
-    } catch(err) {
-        console.error('Supabase signout error:', err);
-    }
-    try {
-        const _curr = getCurrentUser();
-        if (_curr && (_curr.role === 'admin' || _curr.role === 'superadmin')) {
-            await logActivity('Admin Logout', `${_curr.username || _curr.fullName || 'System'} logged out`, 'info');
-        }
-    } catch(e) {}
+    const _curr = getCurrentUser();
+    // Clear session immediately for instant redirect (no delay)
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
+    // Redirect right away — logs happen in background
     window.location.href = 'index.html';
+    // Fire-and-forget background logging
+    try {
+        if (_curr) {
+            const logType = (_curr.role === 'admin' || _curr.role === 'superadmin') ? 'Admin Logout' : 'User Logout';
+            const logDetails = `${_curr.username || _curr.fullName || 'System'} logged out`;
+            window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
+        }
+        if (window.supabase) {
+            window.supabase.auth.signOut().catch(() => {});
+        }
+    } catch(err) {}
 }
 
 function redirectToDashboard() {

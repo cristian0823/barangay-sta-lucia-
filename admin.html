@@ -2911,6 +2911,11 @@
                 <button onclick="renderSecurityLog()" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
+        <div style="display: flex; flex-direction: column; justify-content: flex-end;">
+            <button onclick="clearSecurityLogs()" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;" title="Clear all local security log records">
+                <i class="bi bi-trash3"></i> Clear Logs
+            </button>
+        </div>
     </div>
 
     <!-- Table -->
@@ -4427,6 +4432,37 @@
                         <td style="padding: 12px; font-size:12px; color: var(--text-muted);">${s.details || '—'}</td>
                     </tr>`;
                 }).join('');
+            }
+
+            // ── CLEAR LOG FUNCTIONS ──
+            async function clearSecurityLogs() {
+                if (!confirm('Clear ALL security log records? This cannot be undone.')) return;
+                // Clear local storage
+                localStorage.removeItem('barangay_local_security_log');
+                // Also clear known IPs so next login is treated fresh
+                Object.keys(localStorage).filter(k => k.startsWith('known_ips_')).forEach(k => localStorage.removeItem(k));
+                // Clear Supabase table
+                try {
+                    if (window.supabase) {
+                        await window.supabase.from('security_log').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    }
+                } catch(e) { console.warn('Supabase clear failed:', e); }
+                _allSecurityLogs = [];
+                renderSecurityLog();
+                if (typeof showAlert === 'function') showAlert('Security log cleared successfully.', 'success');
+            }
+
+            async function clearAuditLogs() {
+                if (!confirm('Clear ALL audit log records? This cannot be undone.')) return;
+                localStorage.removeItem('barangay_local_audit_log');
+                try {
+                    if (window.supabase) {
+                        await window.supabase.from('audit_log').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    }
+                } catch(e) { console.warn('Supabase clear failed:', e); }
+                _allAuditLogs = [];
+                renderAuditLog();
+                if (typeof showAlert === 'function') showAlert('Audit log cleared successfully.', 'success');
             }
 
             // ── EXPORT FUNCTIONS ──
