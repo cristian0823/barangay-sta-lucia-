@@ -4401,13 +4401,13 @@
                     if (ev === 'Login Success' || ev === 'Admin Login' || ev === 'User Login') {
                         bdg = 'background:#d1fae5;color:#059669;';
                         icon = '<i class="bi bi-check-circle-fill" style="color:#059669;"></i>';
-                    } else if (ev === 'New IP Detected') {
+                    } else if (ev === 'Suspicious Login Activity') {
                         rowBg = 'background:rgba(234,179,8,0.07);border-left:4px solid #eab308;';
                         icon = '<i class="bi bi-geo-alt-fill" style="color:#eab308;"></i>';
                         bdg = 'background:#fef9c3;color:#a16207;';
-                    } else if (ev === 'Suspicious Login Activity') {
+                    } else if (ev === 'Account Locked') {
                         rowBg = 'background:rgba(239,68,68,0.07);border-left:4px solid #ef4444;';
-                        icon = '<i class="bi bi-shield-exclamation" style="color:#ef4444;"></i>';
+                        icon = '<i class="bi bi-shield-lock-fill" style="color:#ef4444;"></i>';
                         bdg = 'background:#fee2e2;color:#dc2626;';
                     } else if (ev === 'Login Failed') {
                         rowBg = 'background:rgba(249,115,22,0.06);border-left:4px solid #f97316;';
@@ -4437,19 +4437,24 @@
             // ── CLEAR LOG FUNCTIONS ──
             async function clearSecurityLogs() {
                 if (!confirm('Clear ALL security log records? This cannot be undone.')) return;
-                // Clear local storage
+                // Clear local storage logs + known IPs
                 localStorage.removeItem('barangay_local_security_log');
-                // Also clear known IPs so next login is treated fresh
                 Object.keys(localStorage).filter(k => k.startsWith('known_ips_')).forEach(k => localStorage.removeItem(k));
-                // Clear Supabase table
+                // Clear Supabase logs and reset account lockouts
                 try {
                     if (window.supabase) {
-                        await window.supabase.from('security_log').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                        await window.supabase.from('security_log').delete().gt('id', 0);
+                        // Also reset any locked accounts
+                        await window.supabase.from('users').update({ login_fail_count: 0, lockout_until: null }).gt('id', 0);
                     }
-                } catch(e) { console.warn('Supabase clear failed:', e); }
+                } catch(e) {
+                    // Fallback delete method
+                    try { await window.supabase.from('security_log').delete().gte('created_at', '2000-01-01'); } catch(e2) {}
+                    try { await window.supabase.from('users').update({ login_fail_count: 0, lockout_until: null }).gte('created_at', '2000-01-01'); } catch(e3) {}
+                }
                 _allSecurityLogs = [];
                 renderSecurityLog();
-                if (typeof showAlert === 'function') showAlert('Security log cleared successfully.', 'success');
+                if (typeof showAlert === 'function') showAlert('Security log cleared and account lockouts reset.', 'success');
             }
 
             async function clearAuditLogs() {

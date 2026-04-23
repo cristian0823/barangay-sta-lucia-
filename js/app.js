@@ -469,7 +469,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             const updates = { login_fail_count: newCount };
             if (newCount >= 5) {
                 updates.lockout_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-                window.logSecurity('Suspicious Login Activity', 'Password', 'critical', `Multiple failed attempts for ${username}. Account temporarily locked for 15 minutes.`, username);
+                window.logSecurity('Account Locked', 'Password', 'critical', `Too many failed attempts for ${username}. Account locked for 15 minutes.`, username);
             } else {
                 window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username} (attempt ${newCount} of 5).`, username);
             }
