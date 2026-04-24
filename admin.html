@@ -4226,11 +4226,21 @@
                     }
                 } catch(e) {}
 
+                const localUsersList = JSON.parse(localStorage.getItem('barangay_local_users')) || [];
                 const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
                 const formattedLocalLogs = localLogs.map(l => {
                     let idKey = String(l.user_id || '');
                     if (idKey === 'null') idKey = '';
-                    const dbUser = _userMap[idKey] || {};
+                    
+                    let dbUser = _userMap[idKey];
+                    if (!dbUser && idKey) {
+                        const localU = localUsersList.find(u => String(u.id) === idKey);
+                        if (localU) {
+                            dbUser = { full_name: localU.fullName, username: localU.username, role: localU.role };
+                        }
+                    }
+                    dbUser = dbUser || {};
+
                     return {
                         ...l,
                         users: { 
@@ -4425,15 +4435,26 @@
                 } catch(e) {}
 
                 const localLogs = JSON.parse(localStorage.getItem('barangay_local_security_log')) || [];
+                const localUsersList = JSON.parse(localStorage.getItem('barangay_local_users')) || [];
                 const formattedLocalLogs = localLogs.map(l => {
                     // Look up real user data from Supabase user map
                     const key = (l.target_username || '').toLowerCase();
-                    const idKey = String(l.user_id || '');
-                    const dbUser = _userMap[key] || _userMap[idKey] || {};
+                    let idKey = String(l.user_id || '');
+                    if (idKey === 'null') idKey = '';
+                    
+                    let dbUser = _userMap[key] || _userMap[idKey];
+                    if (!dbUser && idKey) {
+                        const localU = localUsersList.find(u => String(u.id) === idKey);
+                        if (localU) {
+                            dbUser = { full_name: localU.fullName, username: localU.username, role: localU.role };
+                        }
+                    }
+                    dbUser = dbUser || {};
+
                     return {
                         ...l,
                         users: {
-                            full_name: dbUser.full_name || l.full_name || l.target_username || 'Unknown User',
+                            full_name: dbUser.full_name || l.full_name || l.target_username || (idKey ? 'Unknown User' : 'System'),
                             username:  l.target_username || 'unknown',
                             email:     dbUser.email || l.email || ''
                         }
