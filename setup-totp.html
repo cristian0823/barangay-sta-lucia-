@@ -435,6 +435,13 @@
                 } else {
                     sessionStorage.setItem('currentUser', JSON.stringify(user));
                 }
+                
+                // Log the first-time login success via Google Auth setup
+                if (typeof window.logSecurity === 'function') {
+                    const authM = user.role === 'admin' ? 'Password' : 'Google Auth';
+                    window.logSecurity('Login Success', authM, 'info', 'Login successful.', user.username);
+                }
+
                 sessionStorage.removeItem('totp_pending_user');
                 sessionStorage.removeItem('totp_remember_me');
             }

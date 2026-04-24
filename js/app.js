@@ -672,7 +672,7 @@ async function logoutUser() {
     // Fire-and-forget background logging
     try {
         if (_curr) {
-            const logType = (_curr.role === 'admin' || _curr.role === 'superadmin') ? 'Admin Logout' : 'User Logout';
+            const logType = 'Logout';
             const logDetails = `${_curr.username || _curr.fullName || 'System'} logged out`;
             window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
         }
