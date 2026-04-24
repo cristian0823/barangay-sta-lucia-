@@ -608,13 +608,11 @@
 
                     const isAdmin = result.user.role === 'admin';
 
-                    // TOTP check — only for non-admin users who voluntarily enabled it
-                    if (!isAdmin) {
-                        const info = await fetchUserTOTPInfo(result.user.id);
-                        if (info.totp_enabled) {
-                            showTOTPPanel(result.user, rememberMe);
-                            return;
-                        }
+                    // TOTP check — for BOTH admins and users who have enabled it
+                    const info = await fetchUserTOTPInfo(result.user.id);
+                    if (info.totp_enabled) {
+                        showTOTPPanel(result.user, rememberMe);
+                        return;
                     }
 
                     // Commit session and redirect

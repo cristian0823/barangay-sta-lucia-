@@ -931,6 +931,9 @@
             onclick="showSection('profile'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">👤
             Profile</button>
         <button class="mobile-section-tab"
+            onclick="showSection('security'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">🔐
+            Security</button>
+        <button class="mobile-section-tab"
             onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">📊
             System</button>
     </div>
@@ -944,6 +947,9 @@
             <nav class="sidebar-nav">
                 <button class="nav-item active" onclick="showSection('profile')" id="profileBtn">
                     <i class="bi bi-person-fill"></i> My Profile
+                </button>
+                <button class="nav-item" onclick="showSection('security')" id="securityBtn">
+                    <i class="bi bi-shield-lock-fill"></i> Security / 2FA
                 </button>
                 <button class="nav-item" onclick="showSection('system')" id="systemBtn">
                     <i class="bi bi-bar-chart-fill"></i> System Info
@@ -1028,7 +1034,58 @@
                 </div>
             </div>
 
-            <!-- ── SYSTEM INFO ── -->
+            <!-- SECURITY / 2FA SECTION -->
+            <div id="security-section" class="hidden">
+                <div class="section-hero">
+                    <div class="section-hero-content">
+                        <div class="section-hero-icon">🔐</div>
+                        <div>
+                            <div class="section-hero-title">Security / 2FA</div>
+                            <div class="section-hero-sub">Protect your admin account with Google Authenticator</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div class="card-head-title"><i class="bi bi-shield-lock-fill"></i> Google Authenticator (TOTP)</div>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+                            Add an extra layer of protection. When enabled, you will need a <strong>6-digit code</strong> from
+                            <strong>Google Authenticator</strong> on your phone every time you log in.
+                        </p>
+
+                        <div id="adminTotpStatus" style="margin-bottom:18px;padding:14px 16px;border-radius:12px;background:#f8fafc;border:1.5px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <span style="font-size:26px;" id="adminTotpIcon">⏳</span>
+                                <div>
+                                    <div style="font-size:14px;font-weight:700;color:#0f172a;" id="adminTotpLabel">Checking status...</div>
+                                    <div style="font-size:12px;color:#64748b;margin-top:2px;" id="adminTotpSub"></div>
+                                </div>
+                            </div>
+                            <span id="adminTotpBadge" style="padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;"></span>
+                        </div>
+
+                        <div id="adminTotpActions">
+                            <a href="setup-totp.html" id="adminEnableBtn"
+                               style="display:none;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);text-decoration:none;text-align:center;width:100%;display:none;align-items:center;justify-content:center;gap:8px;">
+                                <i class="bi bi-qr-code"></i> Enable Google Authenticator
+                            </a>
+                            <button id="adminDisableBtn" onclick="disableAdminTOTP()"
+                               style="display:none;width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3);">
+                                <i class="bi bi-shield-x"></i> Disable Google Authenticator
+                            </button>
+                        </div>
+
+                        <div style="margin-top:16px;padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:12px;color:#1e40af;line-height:1.5;">
+                            <strong>ℹ️ Note:</strong> After enabling 2FA, you must enter your Google Authenticator code on every login. Make sure to back up your secret key in case you lose access to your phone.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <div id="system-section" class="hidden">
                 <div class="section-hero">
                     <div class="section-hero-content">
@@ -1132,7 +1189,9 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/darkmode.js"></script>
     <script src="js/crypto-utils.js"></script>
-        <script src="js/app.js"></script>
+    <script src="js/otpauth.js"></script>
+    <script src="js/totp-handler.js"></script>
+    <script src="js/app.js"></script>
     <script>
         function showToast(message, type = 'success') {
             const icons = { success: '✅', error: '❌', info: 'ℹ️' };
@@ -1156,10 +1215,58 @@
         }
 
         function showSection(section) {
-            ['profile', 'system'].forEach(s => {
-                document.getElementById(s + '-section').classList.toggle('hidden', s !== section);
-                document.getElementById(s + 'Btn').classList.toggle('active', s === section);
+            ['profile', 'security', 'system'].forEach(s => {
+                const el = document.getElementById(s + '-section');
+                if (el) el.classList.toggle('hidden', s !== section);
+                const btn = document.getElementById(s + 'Btn');
+                if (btn) btn.classList.toggle('active', s === section);
             });
+            if (section === 'security') loadAdminTOTPStatus();
+        }
+
+        async function loadAdminTOTPStatus() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const icon = document.getElementById('adminTotpIcon');
+            const label = document.getElementById('adminTotpLabel');
+            const sub = document.getElementById('adminTotpSub');
+            const badge = document.getElementById('adminTotpBadge');
+            const enableBtn = document.getElementById('adminEnableBtn');
+            const disableBtn = document.getElementById('adminDisableBtn');
+
+            const info = await fetchUserTOTPInfo(user.id);
+            if (info.totp_enabled) {
+                icon.textContent = '✅';
+                label.textContent = 'Google Authenticator is Active';
+                sub.textContent = 'Your account is protected with 2-Factor Authentication.';
+                badge.textContent = 'Enabled';
+                badge.style.background = '#d1fae5';
+                badge.style.color = '#065f46';
+                enableBtn.style.display = 'none';
+                disableBtn.style.display = 'block';
+            } else {
+                icon.textContent = '⚠️';
+                label.textContent = 'Google Authenticator is Not Enabled';
+                sub.textContent = 'Your account has no 2FA protection. Enable it now for extra security.';
+                badge.textContent = 'Disabled';
+                badge.style.background = '#fef2f2';
+                badge.style.color = '#b91c1c';
+                enableBtn.style.display = 'flex';
+                disableBtn.style.display = 'none';
+            }
+        }
+
+        async function disableAdminTOTP() {
+            if (!confirm('Disable Google Authenticator? Your admin login will have less protection.')) return;
+            const user = getCurrentUser();
+            if (!user) return;
+            const result = await disableTOTPInDB(user.id);
+            if (result.success) {
+                showToast('Google Authenticator disabled', 'success');
+                loadAdminTOTPStatus();
+            } else {
+                showToast('Failed: ' + result.message, 'error');
+            }
         }
 
         async function loadUsers() {
