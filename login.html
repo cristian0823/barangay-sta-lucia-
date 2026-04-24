@@ -615,7 +615,17 @@
                         return;
                     }
 
-                    // Commit session and redirect
+                    // ── Non-admin users MUST set up Google Authenticator before accessing the dashboard
+                    if (!isAdmin && !info.totp_enabled) {
+                        // Store session as pending — setup-totp.html will finalize it
+                        sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
+                        sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
+                        showToast('Please set up Google Authenticator to continue.', 'success');
+                        setTimeout(() => window.location.href = 'setup-totp.html', 1200);
+                        return;
+                    }
+
+                    // Commit session and redirect (admin path when no TOTP yet)
                     if (rememberMe) {
                         localStorage.setItem('currentUser', JSON.stringify(result.user));
                     } else {

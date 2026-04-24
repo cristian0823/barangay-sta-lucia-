@@ -150,7 +150,7 @@
 
         <div class="badge">🔐 Two-Factor Authentication Setup</div>
         <h1>Setup Google Authenticator</h1>
-        <p class="subtitle">Protect your account with an extra layer of security. This only takes a minute.</p>
+        <p class="subtitle">This is a <strong>required security step</strong>. Your account cannot be accessed until Google Authenticator is set up. This only takes a minute.</p>
 
         <!-- Step Indicator -->
         <div class="steps">
@@ -186,7 +186,6 @@
             </div>
 
             <button class="btn-main" onclick="goToStep2()">I've Scanned the Code →</button>
-            <button class="btn-secondary" onclick="skipSetup()" id="skipBtn" style="display:none;">Skip for now</button>
         </div>
 
         <!-- Step 2: Verify Code -->
@@ -259,10 +258,9 @@
                 return;
             }
 
-            // Show skip button only for non-admin (optional 2FA)
-            if (pendingUser.role !== 'admin') {
-                document.getElementById('skipBtn').style.display = 'block';
-            }
+            // 2FA setup is now MANDATORY for users redirected from login
+            // The skip button is hidden for all cases — no skipping allowed
+            // (admins set up 2FA voluntarily from admin-settings.html)
 
             await initSetup();
             startTimer();
