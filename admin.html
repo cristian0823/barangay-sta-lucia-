@@ -4243,10 +4243,15 @@
                     }
                     dbUser = dbUser || {};
 
+                    let fbName = 'System';
+                    const detMatch = (l.details || '').match(/^(Admin|User( STL-\d+)?)/i);
+                    if (detMatch) fbName = detMatch[0];
+                    else if (idKey) fbName = 'System'; // Fallback so we never show Unknown User
+
                     return {
                         ...l,
                         users: { 
-                            full_name: dbUser.full_name || l.local_full_name || (idKey ? 'Unknown User' : 'System'), 
+                            full_name: dbUser.full_name || l.local_full_name || fbName, 
                             username: dbUser.username || l.local_username || 'unknown',
                             role: dbUser.role || l.local_role || 'user'
                         }
@@ -4455,10 +4460,15 @@
                     }
                     dbUser = dbUser || {};
 
+                    let fbName = 'System';
+                    const detMatch = (l.details || '').match(/^(Admin|User( STL-\d+)?)/i);
+                    if (detMatch) fbName = detMatch[0];
+                    else if (idKey) fbName = 'System'; // Fallback so we never show Unknown User
+
                     return {
                         ...l,
                         users: {
-                            full_name: dbUser.full_name || l.full_name || l.target_username || (idKey ? 'Unknown User' : 'System'),
+                            full_name: dbUser.full_name || l.full_name || l.target_username || fbName,
                             username:  l.target_username || 'unknown',
                             email:     dbUser.email || l.email || ''
                         }
