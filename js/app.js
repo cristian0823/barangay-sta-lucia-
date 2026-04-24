@@ -297,23 +297,28 @@ async function registerUser(userData) {
             return { success: false, message: 'Username already exists' };
         }
 
+        const encryptedEmail = await encryptData(userData.email);
         const { data: existingEmail } = await supabase
             .from('users')
             .select('*')
-            .eq('email', userData.email);
+            .eq('email', encryptedEmail);
 
         if (existingEmail && existingEmail.length > 0) {
             return { success: false, message: 'Email already registered' };
         }
 
-        const { data: existingPhone } = await supabase
-            .from('users')
-            .select('*')
-            .eq('phone', userData.phone);
-
-        if (existingPhone && existingPhone.length > 0) {
-            return { success: false, message: 'Phone number already registered' };
+        const encryptedPhone = userData.phone ? await encryptData(userData.phone) : null;
+        if (encryptedPhone) {
+            const { data: existingPhone } = await supabase
+                .from('users')
+                .select('*')
+                .eq('phone', encryptedPhone);
+            if (existingPhone && existingPhone.length > 0) {
+                return { success: false, message: 'Phone number already registered' };
+            }
         }
+
+
 
         const { error } = await supabase
             .from('users')
@@ -321,8 +326,8 @@ async function registerUser(userData) {
                 username: userData.username,
                 password: hashedPassword,
                 full_name: userData.fullName,
-                email: userData.email,
-                phone: userData.phone || null,
+                email: encryptedEmail,
+                phone: encryptedPhone,
                 address: userData.address || null,
                 role: 'user',
                 avatar: (userData.firstName || userData.fullName).charAt(0).toUpperCase()
@@ -399,10 +404,11 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             }
         }
 
+        const encryptedUsername = await encryptData(username);
         const { data: usersData, error } = await supabase
             .from('users')
             .select('*')
-            .or(`barangay_id.eq.${username},username.eq.${username}`);
+            .or(`barangay_id.eq.${encryptedUsername},username.eq.${username}`);
 
         let data = null;
         if (usersData && usersData.length > 0) {
@@ -645,7 +651,8 @@ async function broadcastEmailToAllResidents(title, message, details) {
         if (!users) return;
         for (const u of users) {
             if (u.email) {
-                await sendEmailNotification({ to_email: u.email, name: u.full_name || 'Resident', title, message, details });
+                const decEmail = await decryptData(u.email);
+                await sendEmailNotification({ to_email: decEmail, name: u.full_name || 'Resident', title, message, details });
             }
         }
     } catch(e) {
@@ -2306,6 +2313,12 @@ async function getAllUsers() {
                 avatar: user.avatar || (user.username ? user.username.charAt(0).toUpperCase() : 'U')
             }));
         }
+        for (let u of data) {
+            u.email = await decryptData(u.email);
+            u.phone = await decryptData(u.phone);
+            u.barangay_id = await decryptData(u.barangay_id);
+            if (u.contact_number) u.contact_number = await decryptData(u.contact_number);
+        }
         return mapRecords(data);
     } else {
         initializeLocalUsers();
@@ -2846,8 +2859,8 @@ async function updateUserProfile(updates) {
     const supabaseAvailable = await isSupabaseAvailable();
     const payload = {};
     if (updates.fullName) payload.full_name = updates.fullName;
-    if (updates.email) payload.email = updates.email;
-    if (updates.phone) payload.phone = updates.phone;
+    if (updates.email) payload.email = await encryptData(String(updates.email));
+    if (updates.phone) payload.phone = await encryptData(String(updates.phone));
     if (updates.address) payload.address = updates.address;
 
     if (supabaseAvailable) {

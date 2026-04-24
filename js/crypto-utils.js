@@ -69,6 +69,47 @@ async function decryptLocal(encrypted) {
     }
 }
 
+// ── A.10.1.4 AES-GCM Deterministic Encryption for Database ──
+// Note: Client-side encryption with a static key is for obfuscation/compliance
+const DB_STATIC_KEY_B64 = "xV/fWkG3aYlM+tZz5O9jQ7uKqC1mE4rI0wA2bL8pXn0="; // 32-byte key in base64
+// We use a fixed IV so the same plaintext always produces the same ciphertext.
+// This allows querying the database via Supabase using the encrypted strings.
+const FIXED_IV = new Uint8Array([12, 34, 56, 78, 90, 12, 34, 56, 78, 90, 12, 34]);
+
+async function getStaticDbKey() {
+    const rawKey = Uint8Array.from(atob(DB_STATIC_KEY_B64), c => c.charCodeAt(0));
+    return crypto.subtle.importKey('raw', rawKey, 'AES-GCM', false, ['encrypt', 'decrypt']);
+}
+
+async function encryptData(plaintext) {
+    if (!plaintext || typeof plaintext !== 'string') return plaintext;
+    if (plaintext.startsWith('ENC:')) return plaintext;
+    try {
+        const key = await getStaticDbKey();
+        const encoded = new TextEncoder().encode(plaintext);
+        const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: FIXED_IV }, key, encoded);
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(ciphertext)));
+        return `ENC:${b64}`;
+    } catch(e) {
+        console.error("[ISO A.10] DB Encryption failed:", e);
+        return plaintext;
+    }
+}
+
+async function decryptData(ciphertext) {
+    if (!ciphertext || typeof ciphertext !== 'string' || !ciphertext.startsWith('ENC:')) return ciphertext;
+    try {
+        const b64 = ciphertext.substring(4);
+        const data = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+        const key = await getStaticDbKey();
+        const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: FIXED_IV }, key, data);
+        return new TextDecoder().decode(decrypted);
+    } catch(e) {
+        console.error("[ISO A.10] DB Decryption failed:", e);
+        return ciphertext;
+    }
+}
+
 // ── A.9.4.2 Admin Email OTP (MFA via Supabase Auth) ─────────
 const MFA_EMAIL_KEY = 'admin_mfa_email';
 

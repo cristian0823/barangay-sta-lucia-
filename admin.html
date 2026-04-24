@@ -4204,7 +4204,12 @@
                 let supabaseLogs = [];
                 try {
                     const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username, email, role)').order('created_at', { ascending: false }).limit(500);
-                    if (!error && data) supabaseLogs = data;
+                    if (!error && data) {
+                        for (let l of data) {
+                            if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
+                        }
+                        supabaseLogs = data;
+                    }
                 } catch(e) {
                     console.warn('loadAuditLog Supabase error:', e);
                 }
@@ -4212,7 +4217,7 @@
                 // Build a user lookup map from Supabase
                 const _userMap = {};
                 try {
-                    const { data: _allUsers } = await supabase.from('users').select('id, full_name, email, username, role');
+                    const _allUsers = await getAllUsers(); // Auto-decrypts!
                     if (_allUsers) {
                         _allUsers.forEach(u => {
                             if (u.id) _userMap[String(u.id)] = u;
@@ -4395,7 +4400,12 @@
                 let supabaseLogs = [];
                 try {
                     const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(500);
-                    if (!error && data) supabaseLogs = data;
+                    if (!error && data) {
+                        for (let l of data) {
+                            if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
+                        }
+                        supabaseLogs = data;
+                    }
                 } catch(e) {
                     console.warn('loadSecurityLog Supabase error:', e);
                 }
@@ -4403,7 +4413,7 @@
                 // Build a user lookup map (by username AND by user id) from Supabase
                 const _userMap = {};
                 try {
-                    const { data: _allUsers } = await supabase.from('users').select('id, full_name, email, username');
+                    const _allUsers = await getAllUsers(); // Auto-decrypts!
                     if (_allUsers) {
                         _allUsers.forEach(u => {
                             if (u.username) _userMap[u.username.toLowerCase()] = u;
@@ -5184,11 +5194,11 @@
                     for (const row of _batchRows) {
                         if (!row.barangay_id || !row.full_name) { skipped++; continue; }
                         const payload = {
-                            barangay_id: row.barangay_id,
+                            barangay_id: await encryptData(String(row.barangay_id)),
                             full_name: row.full_name,
-                            username: row.barangay_id,
-                            email: row.email || null,
-                            phone: row.phone || null,
+                            username: String(row.barangay_id),
+                            email: row.email ? await encryptData(String(row.email)) : null,
+                            phone: row.phone ? await encryptData(String(row.phone)) : null,
                             address: row.address || null,
                             role: 'user',
                             password: 'resident_no_pwd'
