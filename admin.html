@@ -4228,14 +4228,15 @@
 
                 const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
                 const formattedLocalLogs = localLogs.map(l => {
-                    const idKey = String(l.user_id || '');
+                    let idKey = String(l.user_id || '');
+                    if (idKey === 'null') idKey = '';
                     const dbUser = _userMap[idKey] || {};
                     return {
                         ...l,
                         users: { 
-                            full_name: dbUser.full_name || 'Unknown User', 
-                            username: dbUser.username || 'unknown',
-                            role: dbUser.role || 'user'
+                            full_name: dbUser.full_name || l.local_full_name || (idKey ? 'Unknown User' : 'System'), 
+                            username: dbUser.username || l.local_username || 'unknown',
+                            role: dbUser.role || l.local_role || 'user'
                         }
                     };
                 });

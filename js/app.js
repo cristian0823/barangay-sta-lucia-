@@ -1,19 +1,32 @@
-
 window.logAudit = async function(entityType, entityId, action, details) {
+    let u = getCurrentUser();
+    if (!u) {
+        try {
+            const pending = sessionStorage.getItem('totp_pending_user');
+            if (pending) u = JSON.parse(pending);
+        } catch(e) {}
+    }
+    u = u || {};
+    
     // Local fallback
     const logs = JSON.parse(localStorage.getItem(LOCAL_AUDIT_LOG_KEY)) || [];
     logs.push({
-        id: Date.now(), user_id: (getCurrentUser() || {}).id || null,
+        id: Date.now(), 
+        user_id: u.id || null,
+        local_username: u.username || 'System',
+        local_full_name: u.fullName || u.full_name || 'System',
+        local_role: u.role || 'system',
         entity_type: entityType, entity_id: entityId, action: action, details: details,
         created_at: new Date().toISOString()
     });
     localStorage.setItem(LOCAL_AUDIT_LOG_KEY, JSON.stringify(logs));
 
     try {
-        const u = getCurrentUser() || {};
         if (window.supabase) {
             let finalUserId = null;
-            if (u.username) {
+            if (u.id && typeof u.id === 'string' && u.id.length > 20) {
+                finalUserId = u.id;
+            } else if (u.username) {
                 const { data: uData } = await window.supabase.from('users').select('id').eq('username', u.username).maybeSingle();
                 if (uData) finalUserId = uData.id;
             }
