@@ -6584,6 +6584,19 @@
                         .update({ status: 'approved', admin_comment: null })
                         .eq('id', bookingId);
                     if (error) throw error;
+                    
+                    const booking = _allAdminBookingsList ? _allAdminBookingsList.find(b => b.id === bookingId) : null;
+                    if (booking && booking.user_id) {
+                        const vName = booking.venue || 'Facility';
+                        await supabase.from('user_notifications').insert([{
+                            user_id: String(booking.user_id),
+                            type: 'booking_approved',
+                            message: `Your reservation for ${vName} on ${booking.date} has been approved.`,
+                            is_read: false
+                        }]);
+                        if (typeof broadcastSync === 'function') broadcastSync();
+                    }
+
                     showAlert('Booking approved!', 'success');
                     _updateBookingRow(bookingId, 'approved');
                 } catch (e) {
@@ -6614,6 +6627,19 @@
                         .update({ status: 'rejected', admin_comment: reason })
                         .eq('id', _rejectBookingId);
                     if (error) throw error;
+
+                    const booking = _allAdminBookingsList ? _allAdminBookingsList.find(b => b.id === _rejectBookingId) : null;
+                    if (booking && booking.user_id) {
+                        const vName = booking.venue || 'Facility';
+                        await supabase.from('user_notifications').insert([{
+                            user_id: String(booking.user_id),
+                            type: 'booking_rejected',
+                            message: `Your reservation for ${vName} on ${booking.date} was rejected. Reason: ${reason}`,
+                            is_read: false
+                        }]);
+                        if (typeof broadcastSync === 'function') broadcastSync();
+                    }
+
                     const _rejBid = _rejectBookingId;
                     closeRejectModal();
                     showAlert('Booking rejected.', 'success');

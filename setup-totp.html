@@ -423,7 +423,7 @@
             setStepState(3);
         }
 
-        function finishSetup() {
+        async function finishSetup() {
             // Complete the deferred login session
             const pendingRaw = sessionStorage.getItem('totp_pending_user');
             if (pendingRaw) {
@@ -441,6 +441,29 @@
                     const authM = user.role === 'admin' ? 'Password' : 'Google Auth';
                     window.logSecurity('Login Success', authM, 'info', 'Login successful.', user.username);
                 }
+
+                // Cleanup failed attempts
+                try {
+                    const _logKey = 'barangay_local_security_log';
+                    const _localLogs = JSON.parse(localStorage.getItem(_logKey)) || [];
+                    const _cleaned = _localLogs.filter(l => {
+                        const et = l.event_type || '';
+                        const isFailedEvent = et === 'Login Failed' || et === 'Account Locked';
+                        const isSameUser = (l.target_username || '').toLowerCase() === (user.username || '').toLowerCase();
+                        return !(isFailedEvent && isSameUser);
+                    });
+                    localStorage.setItem(_logKey, JSON.stringify(_cleaned));
+                    if (window.supabase && user.username) {
+                        await window.supabase.from('security_log').delete()
+                            .in('event_type', ['Login Failed', 'Account Locked'])
+                            .eq('target_username', user.username);
+                        if (user.id) {
+                            await window.supabase.from('security_log').delete()
+                                .in('event_type', ['Login Failed', 'Account Locked'])
+                                .eq('user_id', user.id);
+                        }
+                    }
+                } catch(e) { console.warn('Cleanup error:', e); }
 
                 sessionStorage.removeItem('totp_pending_user');
                 sessionStorage.removeItem('totp_remember_me');

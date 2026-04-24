@@ -1788,9 +1788,11 @@
 
                 let iconHtml = '🔔';
                 if (n.type === 'booking_approved') iconHtml = '📅';
+                if (n.type === 'booking_rejected') iconHtml = '❌';
                 if (n.type === 'concern_resolved') iconHtml = '✅';
                 if (n.type === 'equipment_approved') iconHtml = '📦';
                 if (n.type === 'booking_cancelled' || n.type === 'event_conflict') iconHtml = '⚠️';
+                if (n.type === 'event_added') iconHtml = '🎉';
 
                 const html = `
                     <div class="${containerCss}" onclick="handleBellClick('${n.id}')">
