@@ -4245,9 +4245,18 @@
 
                     let fbName = 'System';
                     const detMatch = (l.details || '').match(/^(Admin|User( STL-\d+)?)/i);
-                    if (detMatch) fbName = detMatch[0];
+                    if (detMatch) {
+                        const m = detMatch[0];
+                        if (m.toLowerCase() === 'admin') fbName = 'Barangay Administrator';
+                        else if (m.toLowerCase() === 'user') fbName = 'Barangay Resident';
+                        else if (m.toLowerCase().startsWith('user stl-')) {
+                            const usernameMatch = m.substring(5).toUpperCase();
+                            // Attempt to look up the user by username to get their full name
+                            const userObj = Object.values(_userMap).find(u => (u.username||'').toUpperCase() === usernameMatch);
+                            fbName = userObj && userObj.full_name ? userObj.full_name : usernameMatch;
+                        } else fbName = m;
+                    }
                     else if (idKey) fbName = 'System'; // Fallback so we never show Unknown User
-
                     return {
                         ...l,
                         users: { 
@@ -4462,7 +4471,16 @@
 
                     let fbName = 'System';
                     const detMatch = (l.details || '').match(/^(Admin|User( STL-\d+)?)/i);
-                    if (detMatch) fbName = detMatch[0];
+                    if (detMatch) {
+                        const m = detMatch[0];
+                        if (m.toLowerCase() === 'admin') fbName = 'Barangay Administrator';
+                        else if (m.toLowerCase() === 'user') fbName = 'Barangay Resident';
+                        else if (m.toLowerCase().startsWith('user stl-')) {
+                            const usernameMatch = m.substring(5).toUpperCase();
+                            const userObj = Object.values(_userMap).find(u => (u.username||'').toUpperCase() === usernameMatch);
+                            fbName = userObj && userObj.full_name ? userObj.full_name : usernameMatch;
+                        } else fbName = m;
+                    }
                     else if (idKey) fbName = 'System'; // Fallback so we never show Unknown User
 
                     return {
