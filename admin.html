@@ -4207,7 +4207,9 @@
                     const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username, email, role)').order('created_at', { ascending: false }).limit(500);
                     if (!error && data) {
                         for (let l of data) {
-                            if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
+                            try {
+                                if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
+                            } catch(e) {}
                         }
                         supabaseLogs = data;
                     }
@@ -4414,7 +4416,9 @@
                     const { data, error } = await supabase.from('security_log').select('*, users(id, full_name, email, username)').order('created_at', { ascending: false }).limit(500);
                     if (!error && data) {
                         for (let l of data) {
-                            if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
+                            try {
+                                if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
+                            } catch(e) {}
                         }
                         supabaseLogs = data;
                     }

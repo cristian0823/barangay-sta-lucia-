@@ -2327,10 +2327,12 @@ async function getAllUsers() {
             }));
         }
         for (let u of data) {
-            u.email = await decryptData(u.email);
-            u.phone = await decryptData(u.phone);
-            u.barangay_id = await decryptData(u.barangay_id);
-            if (u.contact_number) u.contact_number = await decryptData(u.contact_number);
+            try {
+                if (u.email) u.email = await decryptData(u.email);
+                if (u.phone) u.phone = await decryptData(u.phone);
+                if (u.barangay_id) u.barangay_id = await decryptData(u.barangay_id);
+                if (u.contact_number) u.contact_number = await decryptData(u.contact_number);
+            } catch(e) { console.error('Error decrypting user fields', e); }
         }
         return mapRecords(data);
     } else {
