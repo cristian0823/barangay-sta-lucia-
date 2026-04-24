@@ -4238,7 +4238,7 @@
                     if (!dbUser && idKey) {
                         const localU = localUsersList.find(u => String(u.id) === idKey);
                         if (localU) {
-                            dbUser = { full_name: localU.fullName, username: localU.username, role: localU.role };
+                            dbUser = { fullName: localU.fullName, full_name: localU.fullName, username: localU.username, role: localU.role };
                         }
                     }
                     dbUser = dbUser || {};
@@ -4253,14 +4253,15 @@
                             const usernameMatch = m.substring(5).toUpperCase();
                             // Attempt to look up the user by username to get their full name
                             const userObj = Object.values(_userMap).find(u => (u.username||'').toUpperCase() === usernameMatch);
-                            fbName = userObj && userObj.full_name ? userObj.full_name : usernameMatch;
+                            fbName = userObj && (userObj.fullName || userObj.full_name) ? (userObj.fullName || userObj.full_name) : usernameMatch;
                         } else fbName = m;
                     }
                     else if (idKey) fbName = 'System'; // Fallback so we never show Unknown User
+
                     return {
                         ...l,
                         users: { 
-                            full_name: dbUser.full_name || l.local_full_name || fbName, 
+                            full_name: dbUser.fullName || dbUser.full_name || l.local_full_name || fbName, 
                             username: dbUser.username || l.local_username || 'unknown',
                             role: dbUser.role || l.local_role || 'user'
                         }
@@ -4464,7 +4465,7 @@
                     if (!dbUser && idKey) {
                         const localU = localUsersList.find(u => String(u.id) === idKey);
                         if (localU) {
-                            dbUser = { full_name: localU.fullName, username: localU.username, role: localU.role };
+                            dbUser = { fullName: localU.fullName, full_name: localU.fullName, username: localU.username, role: localU.role };
                         }
                     }
                     dbUser = dbUser || {};
@@ -4478,7 +4479,7 @@
                         else if (m.toLowerCase().startsWith('user stl-')) {
                             const usernameMatch = m.substring(5).toUpperCase();
                             const userObj = Object.values(_userMap).find(u => (u.username||'').toUpperCase() === usernameMatch);
-                            fbName = userObj && userObj.full_name ? userObj.full_name : usernameMatch;
+                            fbName = userObj && (userObj.fullName || userObj.full_name) ? (userObj.fullName || userObj.full_name) : usernameMatch;
                         } else fbName = m;
                     }
                     else if (idKey) fbName = 'System'; // Fallback so we never show Unknown User
@@ -4486,7 +4487,7 @@
                     return {
                         ...l,
                         users: {
-                            full_name: dbUser.full_name || l.full_name || l.target_username || fbName,
+                            full_name: dbUser.fullName || dbUser.full_name || l.full_name || l.target_username || fbName,
                             username:  l.target_username || 'unknown',
                             email:     dbUser.email || l.email || ''
                         }
