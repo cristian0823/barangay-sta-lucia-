@@ -2442,7 +2442,7 @@
                                     <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;">LIVE</span>
                                 </div>
                                 <div id="overviewActivityFeed" style="display:flex;flex-direction:column;gap:0;max-height:220px;overflow-y:auto;">
-                                    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Loading...</div>
+                                    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -4232,7 +4232,7 @@
             async function loadAuditLog() {
                 const list = document.getElementById('auditList');
                 if (!list) return;
-                list.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</td></tr>';
+                list.innerHTML = '';
                 
                 let supabaseLogs = [];
                 try {
@@ -4476,7 +4476,7 @@
             async function loadSecurityLog() {
                 const list = document.getElementById('securityList');
                 if (!list) return;
-                list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</td></tr>';
+                list.innerHTML = '';
                 
                 let supabaseLogs = [];
                 try {
@@ -5192,7 +5192,7 @@
             async function loadActivityLog() {
                 const tbody = document.getElementById('activityLogTable');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+                tbody.innerHTML = '';
                 try {
                     _allActivityLogs = await getActivityLog();
                     renderActivityTable();
@@ -5206,7 +5206,7 @@
                 const tbody = document.getElementById('usersTable');
                 const emptyState = document.getElementById('noUsers');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af;">Loading...</td></tr>';
+                tbody.innerHTML = '';
                 let users = await getAllUsers();
                 users = users.filter(u => u.role !== 'admin');
 
@@ -6520,7 +6520,7 @@
                 const tbody = document.getElementById('multipurposeBookingsTable');
                 const empty = document.getElementById('noMultipurposeBookings');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
+                tbody.innerHTML = '';
 
                 let allBookings = await getCourtBookings();
                 _allAdminBookingsList = allBookings;
@@ -6606,7 +6606,7 @@
             async function loadAdminBookings() {
                 const tbody = document.getElementById('courtBookingsTable');
                 const empty = document.getElementById('noCourtBookings');
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
+                tbody.innerHTML = '';
 
                 let allBookings = await getCourtBookings();
                 _allAdminBookingsList = allBookings;
@@ -7297,6 +7297,39 @@
                 }
             };
 
+            // Add Realtime functionality for Admin
+            async function initAdminRealtime() {
+                if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
+                    supabase.channel('admin-realtime')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'borrowings' }, payload => {
+                            if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadStats === 'function') loadStats();
+                            if (document.getElementById('requests-section')?.style.display !== 'none' && typeof loadRequests === 'function') loadRequests();
+                            if (typeof loadActivityLog === 'function') loadActivityLog();
+                        })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'facility_reservations' }, payload => {
+                            if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadStats === 'function') loadStats();
+                            if (document.getElementById('court-bookings-section')?.style.display !== 'none' && typeof loadCourtBookings === 'function') loadCourtBookings();
+                            if (document.getElementById('multipurpose-bookings-section')?.style.display !== 'none' && typeof loadMultipurposeBookings === 'function') loadMultipurposeBookings();
+                            if (typeof loadActivityLog === 'function') loadActivityLog();
+                        })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'concerns' }, payload => {
+                            if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadStats === 'function') loadStats();
+                            if (document.getElementById('concerns-section')?.style.display !== 'none' && typeof loadConcerns === 'function') loadConcerns();
+                            if (typeof loadActivityLog === 'function') loadActivityLog();
+                        })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, payload => {
+                            if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadStats === 'function') loadStats();
+                            if (typeof loadEvents === 'function') loadEvents();
+                            if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                        })
+                        .subscribe();
+                }
+            }
+
             // Initialize on load
             document.addEventListener('DOMContentLoaded', () => {
                 // Populate admin name next to logo from registered account
@@ -7315,6 +7348,7 @@
                 loadOverview();
                 loadAdminNotifications();
                 renderAdminCalendar();
+                initAdminRealtime();
                 if (typeof initInactivityTimer === 'function') initInactivityTimer();
             });
 
@@ -7330,7 +7364,7 @@
             async function loadConcerns() {
                 const tbody = document.getElementById('concernsTable');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#6b7280;">Loading...</td></tr>';
+                tbody.innerHTML = '';
 
                 try {
                     const concerns = await getAllConcerns();
@@ -8132,6 +8166,9 @@
             @media (max-width: 768px) {
                 #mobileBottomNav {
                     display: flex !important;
+                }
+                .left-sidebar {
+                    display: none !important;
                 }
                 
                 /* Bottom Tab Nav Styling matched with User Dashboard */

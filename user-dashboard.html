@@ -669,7 +669,7 @@
                             <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
                         </div>
                         <div class="p-6">
-                            <div id="myConcernsList" class="grid grid-cols-1 md:grid-cols-2 gap-6"><p style="color: var(--text-muted);" class="italic text-sm">Loading concerns...</p></div>
+                            <div id="myConcernsList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                         </div>
                     </div>
 
@@ -720,7 +720,7 @@
                         <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming court reservations.</p>
                     </div>
                     <div class="p-6">
-                        <div id="myReservationsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"><p style="color: var(--text-muted);" class="italic text-sm">Loading reservations...</p></div>
+                        <div id="myReservationsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"></div>
                     </div>
                 </div>
 
@@ -732,7 +732,7 @@
                     <h2 class="text-3xl font-extrabold text-purple-600 mb-2">🎉 Upcoming Court Events</h2>
                     <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
                 </div>
-                <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"><p class="text-gray-500 italic col-span-full">Loading events...</p></div>
+                <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"></div>
             </div>
 
             
@@ -883,7 +883,7 @@
                         </button>
                     </div>
                     <div id="unifiedHistoryList" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <p class="text-gray-400 italic text-sm">Loading history...</p>
+                        
                     </div>
                 </div>
             </div>
@@ -2995,7 +2995,7 @@
         // ==========================================
         async function loadHistoryView() {
             const container = document.getElementById('unifiedHistoryList');
-            container.innerHTML = '<p class="text-gray-500 italic text-sm">Loading history...</p>';
+            container.innerHTML = '';
             try {
                 const results = await Promise.allSettled([
                     typeof getMyBorrowings === 'function' ? getMyBorrowings() : Promise.resolve([]),
@@ -3170,7 +3170,7 @@ async function loadSettingsView() {
             const statusText = document.getElementById('s-totpStatusText');
             const statusBadge = document.getElementById('s-totpStatusBadge');
             if (!actionsEl) return;
-            actionsEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Loading...</p>';
+            actionsEl.innerHTML = '';
 
             try {
                 const info = await fetchUserTOTPInfo(user.id);
