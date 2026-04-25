@@ -4099,16 +4099,26 @@
 
                     await logActivity('Mass Booking Cancelled', `Cancelled ${dayBookings.length} bookings on ${adminSelectedDate} for event: ${eventName}`);
 
-                    // 4. Success cleanup
+                    // 4. Close modal and open Add Event form directly so admin can finalize event details
                     document.getElementById('adminMassCancelModal').style.display = 'none';
-                    const successModal = document.getElementById('adminEventSuccessModal');
-                    if (successModal) {
-                        successModal.querySelector('h3').textContent = 'Bookings Cancelled!';
-                        successModal.querySelector('p').textContent = `All bookings were removed, users were notified, and the event "${eventName}" was scheduled.`;
-                        successModal.style.display = 'flex';
-                    }
-
                     await renderAdminCalendar();
+
+                    // Open the day schedule popup and show the Add Event form with pre-filled name
+                    if (typeof openAdminDaySchedulePopup === 'function') {
+                        await openAdminDaySchedulePopup(adminSelectedDate, 'basketball');
+                    } else {
+                        // Fallback: open adsEventModal directly
+                        const modal = document.getElementById('adminDayScheduleModal');
+                        if (modal) modal.style.display = 'flex';
+                    }
+                    // Pre-fill and show the event form
+                    setTimeout(() => {
+                        if (typeof openAdsEventModal === 'function') openAdsEventModal();
+                        const titleEl = document.getElementById('adsEventTitle');
+                        if (titleEl) titleEl.value = eventName;
+                        const descEl = document.getElementById('adsEventDescription');
+                        if (descEl) descEl.value = reason;
+                    }, 300);
 
                 } catch (err) {
                     console.error('Mass Cancel Error:', err);
@@ -7068,11 +7078,20 @@
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
                 const [allBookings, allEvents] = await Promise.all([getCourtBookings(), getEvents()]);
 
-                const dayBookings = allBookings.filter(b =>
-                    b.date === dateStr &&
-                    b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' &&
-                    (b.venue === venue || b.venueName === venueLabel)
-                );
+                const adminNow = new Date();
+                const adminTodayStr = adminNow.toISOString().slice(0, 10);
+                const dayBookings = allBookings.filter(b => {
+                    if (b.date !== dateStr) return false;
+                    if (b.status === 'cancelled' || b.status === 'cancelled_by_admin' || b.status === 'rejected') return false;
+                    if (!(b.venue === venue || b.venueName === venueLabel)) return false;
+                    // Hide past end-time bookings for today from schedule list
+                    if (b.date === adminTodayStr && b.end_time) {
+                        const [h, m] = b.end_time.split(':').map(Number);
+                        const endDt = new Date(); endDt.setHours(h, m, 0, 0);
+                        if (endDt < adminNow) return false;
+                    }
+                    return true;
+                });
                 const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
 
                 const list = document.getElementById('adsScheduleList');
@@ -7142,6 +7161,7 @@
                     let taken = false;
                     for (const b of allBookings) {
                         if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' &&
+                            b.status !== 'cancelled_by_admin' && b.status !== 'completed' &&
                             (b.venue === venue || b.venueName === venueLabel)) {
                             let tRange = b.timeRange || b.time;
                             if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
