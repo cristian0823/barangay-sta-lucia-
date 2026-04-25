@@ -413,7 +413,7 @@
                     <div class="nav-icon-box"><i class="bi bi-megaphone-fill"></i></div> Concerns
                 </button>
                 <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Court Reservation
+                    <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Facility Reservation
                 </button>
                 <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></div> Events
@@ -546,7 +546,7 @@
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
                                 <div style="width:32px;height:32px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:16px;">🏀</div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Court Reservations</div>
+                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Facility Reservations</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Basketball & Multi-purpose</div>
                                 </div>
                                 <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
@@ -687,7 +687,7 @@
             <div id="panel-booking" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Reservation</h2>
+                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Facility Reservation</h2>
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
@@ -724,7 +724,7 @@
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
                         <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Active Reservations</h3>
-                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming court reservations.</p>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming facility reservations.</p>
                     </div>
                     <div class="p-6">
                         <div id="myReservationsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"></div>
@@ -889,7 +889,7 @@
                             <option value="all">All Activities</option>
                             <option value="borrowing">Borrowings</option>
                             <option value="concern">Concerns</option>
-                            <option value="court reservation">Court Reservations</option>
+                            <option value="facility reservation">Facility Reservations</option>
                         </select>
                         <button onclick="loadHistoryView()" class="px-5 py-2 w-full md:w-auto justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-emerald-600 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
                             🔄 Refresh Log
@@ -1061,7 +1061,7 @@
                 <div class="border-t border-gray-100 dark:border-gray-700 mt-4 pt-4">
                     <!-- Toggle Button -->
                     <button id="dsToggleFormBtn" onclick="openDsBookingModal()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
-                        <span>＋ Add Court Reservation</span>
+                        <span>＋ Add Facility Reservation</span>
                     </button>
                 </div>
             </div>
@@ -1074,7 +1074,7 @@
             <div class="bg-gradient-to-br from-blue-700 to-blue-500 p-6 relative flex-shrink-0">
                 <button onclick="closeDsBookingModal()" type="button" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition">✕</button>
                 <div class="text-3xl mb-2">📝</div>
-                <h3 class="text-xl font-extrabold text-white mb-0.5">Add Court Reservation</h3>
+                <h3 class="text-xl font-extrabold text-white mb-0.5">Add Facility Reservation</h3>
                 <p class="text-sm text-white/80 m-0">Fill out details to reserve a slot</p>
             </div>
             <div class="overflow-y-auto px-6 py-5">
@@ -1136,7 +1136,7 @@
                     style="width:100%;padding:14px;background:#fef2f2;color:#dc2626;font-weight:700;font-size:14px;border-radius:14px;border:1.5px solid #fecaca;cursor:pointer;transition:all 0.2s;">
                     ❌ Cancel Reservation Completely
                 </button>
-                <p style="font-size:11px;color:#9ca3af;text-align:center;margin:0;">You can reschedule your booking using the Court Reservation panel.</p>
+                <p style="font-size:11px;color:#9ca3af;text-align:center;margin:0;">You can reschedule your booking using the Facility Reservation panel.</p>
             </div>
         </div>
     </div>
@@ -1243,7 +1243,7 @@
         <div style="background:var(--panel-bg,#fff);border-radius:20px;width:100%;max-width:430px;box-shadow:0 24px 60px rgba(0,0,0,0.2);padding:0;overflow:hidden;border:1.5px solid var(--border-color,#e5e7eb);">
             <div style="background:linear-gradient(135deg,#2563eb,#3b82f6);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
                 <div>
-                    <h3 style="color:#fff;font-size:18px;font-weight:800;margin:0;">Edit Court Reservation</h3>
+                    <h3 style="color:#fff;font-size:18px;font-weight:800;margin:0;">Edit Facility Reservation</h3>
                     <p style="color:rgba(255,255,255,0.75);font-size:12px;margin:4px 0 0;">Update your reservation details</p>
                 </div>
                 <button onclick="closeEditCourtBookingModal()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>
@@ -2481,7 +2481,7 @@
             const titleEl = document.getElementById('bookingPanelTitle');
             const subtitleEl = document.getElementById('bookingPanelSubtitle');
             if (venue === 'basketball') {
-                if (titleEl) titleEl.innerHTML = '📅 Court Reservation';
+                if (titleEl) titleEl.innerHTML = '📅 Facility Reservation';
                 if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay basketball court.';
             } else {
                 if (titleEl) titleEl.innerHTML = '🏢 Hall Reservation';
@@ -2657,7 +2657,7 @@
                 banner.innerHTML = `🔄 Rescheduling Mode Active:<br><span class="text-xs font-normal text-blue-700">Original Time: ${m.original_time}. Review time and confirm.</span>`;
                 banner.classList.remove('hidden');
             } else {
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Reservation</span>';
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Facility Reservation</span>';
                 let banner = document.getElementById('dsRescheduleBanner');
                 if(banner) banner.classList.add('hidden');
             }
@@ -2849,7 +2849,7 @@
             if (window.pendingRescheduleData) {
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span>🔄 Confirm Reschedule</span>';
             } else {
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Reservation</span>';
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Facility Reservation</span>';
             }
         }
 
@@ -2920,7 +2920,7 @@
                 document.getElementById('dsStartTime').value = '';
                 document.getElementById('dsEndTime').value = '';
                 closeDsBookingModal();
-                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Court Reservation</span>';
+                document.getElementById('dsToggleFormBtn').innerHTML = '<span>＋ Add Facility Reservation</span>';
                 await refreshDsSchedule(date, venue);
                 await loadBookingView();
                 await loadDashboardStats();
@@ -3132,7 +3132,7 @@
                 let all = [];
                 bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '📦', colorClass: 'bg-blue-100 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400' }));
                 con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', colorClass: 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-400' }));
-                boo.forEach(b => all.push({ type: 'Court Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
+                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
                 all.sort((a,b) => b.date - a.date);
                 allHistoryData = all;
                 currentPageHistory = 1;

@@ -2209,7 +2209,7 @@
             <button class="mobile-sidebar-close" onclick="closeMobileSidebar()"></button>
         </div>
         <div class="mobile-sidebar-nav" id="mobileSidebarNav">
-            <button onclick="mobileSwitchSection('court-bookings')"> Court Reservations</button>
+            <button onclick="mobileSwitchSection('court-bookings')"> Facility Reservations</button>
      <button onclick="mobileSwitchSection('multipurpose-bookings')"> Multi-Purpose Hall</button>
             <button onclick="mobileSwitchSection('requests')"> Equipment Requests</button>
             <button onclick="mobileSwitchSection('concerns')"> Concerns</button>
@@ -2263,7 +2263,7 @@
                         <span class="nav-icon-box"><i class="bi bi-grid-1x2-fill"></i></span> Overview
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">
-                        <span class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></span> Court Reservations
+                        <span class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></span> Facility Reservations
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('multipurpose-bookings', this)">
                         <span class="nav-icon-box"><i class="bi bi-building-fill"></i></span> Multi-Purpose Hall
@@ -2375,7 +2375,7 @@
                                 onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])"
                                 class="quick-action-card" style="--qa-color:#3b82f6;">
                                 <div class="qa-icon" style="color:var(--qa-color)"><i class="bi bi-calendar-check-fill"></i></div>
-                                <div class="qa-label">Court Reservations</div>
+                                <div class="qa-label">Facility Reservations</div>
                                 <div class="qa-sub">Review &amp; approve</div>
                                 <i class="bi bi-arrow-right-short qa-arrow"></i>
                             </button>
@@ -2495,10 +2495,10 @@
                     <div id="court-bookings-section" class="section-container" style="display: none;">
                         <div class="section-header">
                             <div>
-                                <h3> Court Reservations Management</h3>
+                                <h3> Facility Reservations Management</h3>
                                 <p style="margin-top: 5px; font-size: 13px; color: var(--muted);">Review, approve or
                                     reject
-                                    resident Court Reservation requests.</p>
+                                    resident Facility Reservation requests.</p>
                             </div>
                             <button class="btn btn-small btn-light" onclick="loadAdminBookings()"> Refresh</button>
                         </div>
@@ -2533,7 +2533,7 @@
                                 <div id="courtBookingsPg" class="pg-controls" style="display:none;"></div>
                                 <div id="noCourtBookings" class="empty-state" style="display:none;">
                                     <div class="empty-state-icon"></div>
-                                    <p>No Court Reservations yet</p>
+                                    <p>No Facility Reservations yet</p>
                                 </div>
                             </div>
                         </div>
@@ -2811,7 +2811,7 @@
             <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
                 <option value="all">All Actions</option>
                 <option value="Borrow">Borrow Equipment</option>
-                <option value="Reserve">Court Reservation</option>
+                <option value="Reserve">Facility Reservation</option>
                 <option value="Concern">Concerns</option>
                 <option value="Event">Events</option>
             </select>
@@ -3187,7 +3187,7 @@
                                     </div>
                                     <div
                                         style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Court Reservations</div>
+                                        Facility Reservations</div>
                                     <div id="statBookingsAdminInfo"
                                         style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
                                 </div>
@@ -3730,7 +3730,7 @@
                         await supabase.from('user_notifications').insert([{
                             user_id: uid,
                             type: 'booking_cancelled',
-                            message: `Your Court Reservation on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to an official event: "${eventTitle}". Please reschedule.`,
+                            message: `Your Facility Reservation on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to an official event: "${eventTitle}". Please reschedule.`,
                             meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventTitle },
                             is_read: false
                         }]);
@@ -4031,7 +4031,7 @@
                                 const notifPayloads = allUsers.map(u => ({
                                     user_id: u.id,
                                     type: 'event_added',
-                                    message: ` New Barangay Event: "${eventName}" on ${new Date(adminSelectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. Court Reservations on this day have been cancelled.`,
+                                    message: ` New Barangay Event: "${eventName}" on ${new Date(adminSelectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. Facility Reservations on this day have been cancelled.`,
                                     meta: { event_title: eventName, date: adminSelectedDate },
                                     is_read: false
                                 }));
@@ -4070,7 +4070,7 @@
                             
                             // Dispatch user_notification to trigger the popup logic
                             if (uid) {
-                                const notifMsg = `Your Court Reservation on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to a sudden event: "${eventName}". Reason: ${reason} Please choose to reschedule or cancel completely.`;
+                                const notifMsg = `Your Facility Reservation on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to a sudden event: "${eventName}". Reason: ${reason} Please choose to reschedule or cancel completely.`;
                                 const notifMeta = { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventName };
                                 if (available) {
                                     await supabase.from('user_notifications').insert([{
@@ -5113,7 +5113,7 @@
             const LOG_FILTER_KEYWORDS = {
                 inventory: ['Inventory Update', 'Equipment Added', 'Equipment'],
                 requests: ['Borrow Request', 'Borrow Approved', 'Borrow Rejected', 'Borrow Returned', 'Borrow Cancelled'],
-                bookings: ['Court Reservation'],
+                bookings: ['Facility Reservation'],
                 concerns: ['Concern Submitted', 'Concern Updated', 'Concern Deleted'],
             };
 
@@ -5687,7 +5687,7 @@
             async function handleApproveCourtBooking(bookingId) {
                 const result = await approveCourtBooking(bookingId);
                 if (result.success) {
-                    showAlert('Court Reservation approved', 'success');
+                    showAlert('Facility Reservation approved', 'success');
                     // Send targeted email to the resident
                     try {
                         const bookings = await getCourtBookings();
@@ -5699,8 +5699,8 @@
                             if (email) {
                                 await sendEmailNotification({
                                     to_email: email, name,
-                                    title: 'Court Reservation Approved ',
-                                    message: `Good news! Your Court Reservation has been APPROVED.`,
+                                    title: 'Facility Reservation Approved ',
+                                    message: `Good news! Your Facility Reservation has been APPROVED.`,
                                     details: `Venue: ${b.venueName || b.venue || 'Court'} | Date: ${b.date} | Time: ${b.time || ''}`
                                 });
                             }
@@ -5720,7 +5720,7 @@
 
                 const result = await rejectCourtBooking(bookingId);
                 if (result.success) {
-                    showAlert('Court Reservation rejected', 'success');
+                    showAlert('Facility Reservation rejected', 'success');
                     // Send targeted email to the resident
                     try {
                         const bookings = await getCourtBookings();
@@ -5732,8 +5732,8 @@
                             if (email) {
                                 await sendEmailNotification({
                                     to_email: email, name,
-                                    title: 'Court Reservation Update  Œ',
-                                    message: `We regret to inform you that your Court Reservation has been REJECTED.`,
+                                    title: 'Facility Reservation Update  Œ',
+                                    message: `We regret to inform you that your Facility Reservation has been REJECTED.`,
                                     details: `Venue: ${b.venueName || b.venue || 'Court'} | Date: ${b.date}${comment ? ' | Reason: ' + comment : ''}`
                                 });
                             }
@@ -5749,7 +5749,7 @@
             async function restoreCourtBooking(bookingId) {
                 const result = await updateCourtBookingStatus(bookingId, 'booked');
                 if (result.success) {
-                    showAlert('Court Reservation restored', 'success');
+                    showAlert('Facility Reservation restored', 'success');
                     await loadCourtBookings();
                     await loadStats();
                 } else {
@@ -5758,7 +5758,7 @@
             }
 
             async function cancelCourtBookingAdmin(bookingId) {
-                if (await showConfirmModal('Are you sure you want to cancel this Court Reservation?', 'Cancel Booking', 'Yes, Cancel', 'No', 'warning')) {
+                if (await showConfirmModal('Are you sure you want to cancel this Facility Reservation?', 'Cancel Booking', 'Yes, Cancel', 'No', 'warning')) {
                     const result = await cancelCourtBooking(bookingId);
                     if (result.success) {
                         showAlert('Booking cancelled', 'success');
@@ -5770,10 +5770,10 @@
             }
 
             async function deleteCourtBooking(bookingId) {
-                if (await showConfirmModal('Are you sure you want to permanently delete this Court Reservation?', 'Delete Booking', 'Yes, Delete', 'Cancel', 'danger')) {
+                if (await showConfirmModal('Are you sure you want to permanently delete this Facility Reservation?', 'Delete Booking', 'Yes, Delete', 'Cancel', 'danger')) {
                     const result = await (typeof window.deleteBooking === 'function' ? window.deleteBooking(bookingId) : supabase.from('facility_reservations').delete().eq('id', bookingId));
                     if (result.success || !result.error) {
-                        showAlert('Court Reservation deleted', 'success');
+                        showAlert('Facility Reservation deleted', 'success');
                         await loadCourtBookings();
                         await loadStats();
                     } else {
@@ -6465,7 +6465,7 @@
             }
 
             // ==========================================
-            // Court Reservations ADMIN MANAGEMENT
+            // Facility Reservations ADMIN MANAGEMENT
             // ==========================================
 
             //  Live Polling for booking sections 
@@ -7776,7 +7776,7 @@
                 <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:24px 28px; position:relative; flex-shrink:0;">
                     <button onclick="closeAdminBookingModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
                     <div style="font-size:30px;margin-bottom:8px;"></div>
-                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Court Reservation</h3>
+                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Facility Reservation</h3>
                     <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminBookingHeaderSub"></p>
                 </div>
 
@@ -7974,7 +7974,7 @@
                     <button onclick="document.getElementById('adminMassCancelModal').style.display='none'"
                         style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">&times;</button>
                 </div>
-                <p style="font-size:13px; color:#4b5563; margin-bottom:18px;">You are about to cancel all user Court Reservations for <strong id="amcDateText"></strong>. All affected users will be notified.</p>
+                <p style="font-size:13px; color:#4b5563; margin-bottom:18px;">You are about to cancel all user Facility Reservations for <strong id="amcDateText"></strong>. All affected users will be notified.</p>
 
                 <div style="margin-bottom:14px;">
                     <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Event Name *</label>
