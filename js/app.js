@@ -1824,7 +1824,8 @@ async function getCourtBookings() {
             const localData = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
             return localData.map(item => {
                 const parsed = parseBookingTime(item.time);
-                return { ...item, venueName: item.venueName || parsed.venueName, timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown' };
+                const vName = item.venueName || parsed.venueName || '';
+                return { ...item, venueName: vName, venue: vName.toLowerCase().includes('hall') ? 'hall' : 'basketball', timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown' };
             });
         }
         return (data || []).map(item => {
@@ -1835,6 +1836,7 @@ async function getCourtBookings() {
                 userId: item.user_id,
                 userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
                 venueName: item.venue_name || item.venue || parsed.venueName,
+                venue: (item.venue_name || item.venue || parsed.venueName || '').toLowerCase().includes('hall') ? 'hall' : 'basketball',
                 timeRange: parsed.timeRange || item.time,
                 date: item.date,
                 time: item.time,
@@ -1847,7 +1849,8 @@ async function getCourtBookings() {
         const data = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         return data.map(item => {
             const parsed = parseBookingTime(item.time);
-            return { ...item, venueName: item.venueName || parsed.venueName, timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown', status: getDynamicBookingStatus(item, parsed.timeRange) };
+            const vName = item.venueName || parsed.venueName || '';
+            return { ...item, venueName: vName, venue: vName.toLowerCase().includes('hall') ? 'hall' : 'basketball', timeRange: parsed.timeRange, userName: item.userName || item.user_name || 'Unknown', status: getDynamicBookingStatus(item, parsed.timeRange) };
         });
     }
 }
