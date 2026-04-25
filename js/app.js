@@ -1767,6 +1767,10 @@ async function subscribeToEvents(callback) {
             { event: '*', schema: 'public', table: 'events' },
             (payload) => {
                 console.log('Realtime events payload received:', payload);
+                if (typeof window._eventsCache !== 'undefined') window._eventsCache = null;
+                if (typeof window._eventsCacheTime !== 'undefined') window._eventsCacheTime = null;
+                if (typeof _eventsCache !== 'undefined') _eventsCache = null;
+                if (typeof _eventsCacheTime !== 'undefined') _eventsCacheTime = null;
                 if (typeof callback === 'function') callback(payload);
             }
         )
