@@ -1769,6 +1769,7 @@
         });
 
         function renderBellNotifications(notifs) {
+            window.currentBellNotifs = notifs;
             const listEl = document.getElementById('bellDropdownList');
             const emptyEl = document.getElementById('bellEmptyState');
             const desktopBadge = document.getElementById('bellBadgeDesktop');
@@ -1839,10 +1840,36 @@
         }
 
         async function handleBellClick(notifId) {
+            // Find notification details
+            const notif = (window.currentBellNotifs || []).find(n => String(n.id) === String(notifId));
+            if (notif) {
+                const modal = document.getElementById('bellDetailsModal');
+                const titleEl = document.getElementById('bdModalTitle');
+                const msgEl = document.getElementById('bdModalMsg');
+                const iconEl = document.getElementById('bdModalIcon');
+                if (modal && titleEl && msgEl && iconEl) {
+                    let iconHtml = '🔔', titleText = 'Notification';
+                    if (notif.type === 'booking_approved') { iconHtml = '📅'; titleText = 'Reservation Approved'; }
+                    if (notif.type === 'booking_rejected') { iconHtml = '❌'; titleText = 'Reservation Rejected'; }
+                    if (notif.type === 'concern_resolved') { iconHtml = '✅'; titleText = 'Concern Resolved'; }
+                    if (notif.type === 'equipment_approved') { iconHtml = '📦'; titleText = 'Equipment Request'; }
+                    if (notif.type === 'booking_cancelled' || notif.type === 'event_conflict') { iconHtml = '⚠️'; titleText = 'Reservation Cancelled'; }
+                    if (notif.type === 'event_added' || notif.type === 'event_cancelled') { iconHtml = '🎉'; titleText = 'Barangay Event'; }
+                    
+                    iconEl.innerHTML = iconHtml;
+                    titleEl.textContent = titleText;
+                    msgEl.textContent = notif.message;
+                    
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            }
+
             if (typeof markUserNotificationAsRead === 'function') {
                 await markUserNotificationAsRead(notifId);
                 pollBellNotifications(); 
             }
+        }
         }
 
         window.markAllBellNotificationsRead = async () => {
@@ -2570,7 +2597,7 @@
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 else if (bookedDates.includes(dateStr)) { 
-                    dayDiv.className += 'bg-red-100 text-red-700 border-2 border-red-300 cursor-pointer hover:bg-red-200 hover:scale-105'; 
+                    dayDiv.className += 'bg-red-600 text-white border-2 border-red-700 cursor-pointer hover:bg-red-700 hover:scale-105 shadow-md'; 
                     dayDiv.title = 'Has Bookings. Click to see schedule.';
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
@@ -3626,5 +3653,30 @@ async function loadSettingsView() {
         </button>
     </nav>
 
-    </body>
+    
+    <!-- ========== BELL DETAILS MODAL ========== -->
+    <div id="bellDetailsModal" class="hidden fixed inset-0 z-[12000] items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden transform transition-all relative">
+            <button onclick="document.getElementById('bellDetailsModal').classList.add('hidden'); document.getElementById('bellDetailsModal').classList.remove('flex');" 
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white transition cursor-pointer z-10 bg-transparent border-none text-2xl font-bold leading-none">
+                &times;
+            </button>
+            <div class="p-6 text-center pt-8">
+                <div id="bdModalIcon" class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                    🔔
+                </div>
+                <h3 id="bdModalTitle" class="text-xl font-bold text-gray-900 dark:text-white mb-3">Notification</h3>
+                <p id="bdModalMsg" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed"></p>
+            </div>
+            <div class="p-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700">
+                <button onclick="document.getElementById('bellDetailsModal').classList.add('hidden'); document.getElementById('bellDetailsModal').classList.remove('flex');" 
+                        class="w-full py-2.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold rounded-xl transition cursor-pointer">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- ========================================== -->
+
+</body>
 </html>

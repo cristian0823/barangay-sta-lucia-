@@ -3998,8 +3998,8 @@
                 const organizer = document.getElementById('amcOrganizer') ? document.getElementById('amcOrganizer').value.trim() : 'Barangay Council';
                 const capacity = document.getElementById('amcCapacity') ? parseInt(document.getElementById('amcCapacity').value || '0', 10) : 0;
                 const amcStartTime = document.getElementById('amcStartTime') ? document.getElementById('amcStartTime').value : '07:00';
-                const amcEndTime = document.getElementById('amcEndTime') ? document.getElementById('amcEndTime').value : '22:00';
-                if (!eventName || !reason || !organizer || !amcStartTime || !amcEndTime) {
+                const amcEndTime = '22:00';
+                if (!eventName || !reason || !organizer || !amcStartTime) {
                     showAlert('Please fill in all required fields including Start and End Time.', 'error');
                     return;
                 }
@@ -8031,21 +8031,7 @@
                             <option value="22:00">10:00 PM</option>
                         </select>
                     </div>
-                    <div style="flex:1;">
-                        <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">End Time *</label>
-                        <select id="amcEndTime" required style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box; background:#fff;"
-                            onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
-                            <option value="">Select...</option>
-                            <option value="07:00">7:00 AM</option><option value="08:00">8:00 AM</option>
-                            <option value="09:00">9:00 AM</option><option value="10:00">10:00 AM</option>
-                            <option value="11:00">11:00 AM</option><option value="12:00">12:00 PM</option>
-                            <option value="13:00">1:00 PM</option><option value="14:00">2:00 PM</option>
-                            <option value="15:00">3:00 PM</option><option value="16:00">4:00 PM</option>
-                            <option value="17:00">5:00 PM</option><option value="18:00">6:00 PM</option>
-                            <option value="19:00">7:00 PM</option><option value="20:00">8:00 PM</option>
-                            <option value="21:00">9:00 PM</option><option value="22:00" selected>10:00 PM</option>
-                        </select>
-                    </div>
+                    
                 </div>
                 <div style="margin-bottom:20px;">
                     <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Reason / Details *</label>
