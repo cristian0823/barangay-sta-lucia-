@@ -1879,8 +1879,8 @@
                     return;
                 }
 
-                // Also check event_conflict for legacy, but primarily booking_cancelled
-                const conflicts = notifs.filter(n => n.type === 'booking_cancelled' || n.type === 'event_conflict');
+                // booking_cancelled is handled exclusively by checkPendingNotifications to avoid duplicate popups
+                const conflicts = notifs.filter(n => n.type === 'event_conflict');
                 if (conflicts.length === 0) return;
                 _activeConflictNotif = conflicts[0];
                 const meta = _activeConflictNotif.meta || {};
@@ -3371,18 +3371,16 @@ async function loadSettingsView() {
         }
 
         function showNextNotification() {
-            const modal = document.getElementById('rescheduleCancelModal');
-            if (!modal) return;
-            if (userCancellationNotifications.length === 0) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                return;
-            }
+            // Always use the orange Reservation Cancelled popup - hide dark modal permanently
+            const darkModal = document.getElementById('rescheduleCancelModal');
+            if (darkModal) { darkModal.classList.add('hidden'); darkModal.classList.remove('flex'); }
+            if (userCancellationNotifications.length === 0) return;
             curCancelNotif = userCancellationNotifications[0];
-            const msgEl = document.getElementById('rcmMessage');
+            _activeConflictNotif = curCancelNotif;
+            const msgEl = document.getElementById('conflictNotifMsg');
             if (msgEl) msgEl.textContent = curCancelNotif.message;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            const orangeModal = document.getElementById('conflictNotifModal');
+            if (orangeModal) { orangeModal.classList.remove('hidden'); orangeModal.classList.add('flex'); }
         }
 
         // ONE-CLICK DISMISSAL
