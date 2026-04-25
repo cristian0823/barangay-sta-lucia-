@@ -2782,8 +2782,15 @@ async function deleteEvent(eventId) {
         const { data: eventRecord } = await supabase.from('events').select('title, date, time').eq('id', eventId).maybeSingle();
         const { error } = await supabase.from('events').delete().eq('id', eventId);
         if (!error) {
+            _eventsCache = null;
+            _eventsCacheTime = 0;
             if (typeof window._eventsCache !== 'undefined') window._eventsCache = null;
             if (typeof window._eventsCacheTime !== 'undefined') window._eventsCacheTime = null;
+            
+            // Fix ghosting: always remove from local storage so it doesn't get merged back
+            let localEvs = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+            localEvs = localEvs.filter(e => String(e.id) !== String(eventId));
+            localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(localEvs));
             await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
             // Broadcast cancellation notification to ALL registered users
             if (eventRecord) {
@@ -2806,7 +2813,7 @@ async function deleteEvent(eventId) {
         return { success: !error, message: error ? error.message : 'Event deleted successfully' };
     } else {
         let events = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
-        events = events.filter(e => e.id !== eventId);
+        events = events.filter(e => String(e.id) !== String(eventId));
         localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(events));
         logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
         return { success: true, message: 'Event deleted successfully' };
@@ -3488,4 +3495,45 @@ function timeToMinutes(tStr) {
     if (modifier === 'pm') hours = parseInt(hours) + 12;
     return parseInt(hours) * 60 + parseInt(minutes || 0);
 }
+
+// Added for Event Rescheduling Support
+async function updateEvent(id, eventData) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    const eventWithStatus = { ...eventData, status: 'approved' };
+    let success = false;
+    let errorMsg = '';
+
+    if (supabaseAvailable) {
+        try {
+            const { error } = await supabase.from('events').update(eventWithStatus).eq('id', id);
+            if (!error) {
+                await logActivity('Event Updated', `Updated event: ${eventData.title} on ${eventData.date}`);
+                success = true;
+                _eventsCache = null;
+                _eventsCacheTime = 0;
+                
+                // Remove from local storage so it doesn't get merged back as a ghost
+                let localEvs = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+                localEvs = localEvs.filter(e => String(e.id) !== String(id));
+                localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(localEvs));
+            } else {
+                errorMsg = error.message;
+            }
+        } catch(e) { errorMsg = e.message; }
+    } else {
+        const events = JSON.parse(localStorage.getItem('barangay_events') || '[]');
+        const idx = events.findIndex(e => String(e.id) === String(id));
+        if (idx !== -1) {
+            events[idx] = { ...events[idx], ...eventWithStatus };
+            localStorage.setItem('barangay_events', JSON.stringify(events));
+            success = true;
+            _eventsCache = null;
+            _eventsCacheTime = 0;
+        } else {
+            errorMsg = 'Event not found locally';
+        }
+    }
+    return { success, message: success ? 'Event updated successfully' : errorMsg };
+}
+window.updateEvent = updateEvent;
 
