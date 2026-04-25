@@ -327,7 +327,17 @@
             </div>
             <!-- MOBILE RIGHT CONTROLS -->
             <div class="mobile-header-controls">
-                <div class="mobile-header-avatar" onclick="showPanel('profile')" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
+                <div class="mobile-header-avatar" onclick="toggleMobileProfileDropdown(event)" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
+                
+                <!-- Mobile Profile Dropdown -->
+                <div id="mobileProfileDropdownContainer" class="hidden absolute top-[48px] right-0 w-[180px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
+                    <div class="py-1 bg-white dark:bg-slate-800">
+                        <button onclick="showPanel('profile'); document.getElementById('mobileProfileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
+                    </div>
+                    <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
+                        <button onclick="logoutUser()" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-red-50 hover:text-red-600 dark:text-gray-100 py-3 px-4 transition-colors">Logout</button>
+                    </div>
+                </div>
                 <!-- Mobile Bell -->
                 <button class="mobile-header-btn relative" onclick="toggleBellDropdown()" title="Notifications" style="font-size: 16px;">
                     🔔
@@ -1666,9 +1676,18 @@
                 const bell = document.getElementById('bellDropdownContainer');
                 if (bell && !bell.classList.contains('hidden')) bell.classList.add('hidden');
             }
+            function toggleMobileProfileDropdown(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('mobileProfileDropdownContainer');
+                if (dropdown) dropdown.classList.toggle('hidden');
+                const bell = document.getElementById('bellDropdownContainer');
+                if (bell && !bell.classList.contains('hidden')) bell.classList.add('hidden');
+            }
             document.addEventListener('click', () => {
                 const pd = document.getElementById('profileDropdownContainer');
                 if (pd) pd.classList.add('hidden');
+                const mpd = document.getElementById('mobileProfileDropdownContainer');
+                if (mpd) mpd.classList.add('hidden');
                 const bd = document.getElementById('bellDropdownContainer');
                 if (bd) bd.classList.add('hidden');
             });
