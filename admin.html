@@ -1501,7 +1501,6 @@
                 height: 60px;
             }
 
-            .dashboard-logo span,
             .user-info,
             .logout-btn {
                 display: none;
@@ -1620,13 +1619,14 @@
 
             /* Tables: horizontal scroll */
             .admin-tables {
-                overflow-x: hidden;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .data-table {
-                min-width: 0 !important;
+                min-width: 800px !important;
                 width: 100% !important;
-                table-layout: fixed;
+                table-layout: auto;
             }
             
             .recent-summary-row {
@@ -2217,6 +2217,9 @@
             <button onclick="mobileSwitchSection('equipment')"> Inventory</button>
                         <button onclick="mobileSwitchSection('audit-log')"> Audit Log</button>
             <button onclick="mobileSwitchSection('security-log')"> Security Log</button>
+            <div style="height: 1px; background: var(--border); margin: 8px 0;"></div>
+            <button onclick="window.location.href='admin-settings.html'" style="color: var(--text);">⚙️ Settings</button>
+            <button onclick="logoutUser()" style="color: var(--danger);">🚪 Logout</button>
         </div>
     </div>
 
@@ -2875,7 +2878,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+    <div class="stats-grid" style="gap: 16px; margin-bottom: 24px;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
             <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text-main);">0</div>
@@ -8153,11 +8156,11 @@
                 <span class="tab-label">Requests</span>
             </button>
             <button class="tab-btn" onclick="mobileSwitchSection('concerns'); activateBottomTab(this)">
-                <span class="tab-icon"></span>
+                <span class="tab-icon"><i class="bi bi-megaphone-fill"></i></span>
                 <span class="tab-label">Concerns</span>
             </button>
             <button class="tab-btn" onclick="openMobileSidebar()">
-                <span class="tab-icon"></span>
+                <span class="tab-icon"><i class="bi bi-list"></i></span>
                 <span class="tab-label">Menu</span>
             </button>
         </nav>
