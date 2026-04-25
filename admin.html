@@ -2453,6 +2453,19 @@
                             <h3>Equipment Borrowing Requests</h3>
                         </div>
                         <div class="section-content" style="padding: 0;">
+                            <!-- Filter Tabs & Search Bar -->
+                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--border); gap:12px; background:var(--panel-bg);">
+                                <div style="display:flex; gap:8px; flex-wrap:wrap;" id="reqFilterTabs">
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--primary); color:#fff; border:none;" onclick="setReqTab('all', this)">All</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('pending', this)">Pending</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('approved', this)">Approved</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('returned', this)">Returned</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('rejected', this)">Rejected</button>
+                                </div>
+                                <div style="position:relative; max-width:250px; width:100%;">
+                                    <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text-main);">
+                                </div>
+                            </div>
                             <div class="admin-tables">
                                 <table class="data-table">
                                     <thead>
@@ -4589,7 +4602,7 @@
                     if (filterType === 'failed'  && !isFailed) return false;
                     if (filterType === 'anomaly' && !isAnomaly) return false;
                     
-                    if (filterAuth !== 'all' && (s.auth_method || 'System') !== filterAuth) return false;
+                    if (filterAuth !== 'all' && !(s.auth_method || 'System').includes(filterAuth)) return false;
                     if (filterAnomaly && !isAnomaly) return false;
 
                     if (filterFrom) {
@@ -4968,11 +4981,11 @@
                     const resp = c.response ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">✓ Replied</div>' : '';
                     const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">📷 Photo</span>' : '';
                     return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
-                        +'<td><div style="line-height:1.3;">'+dot+'<strong>'+(c.userName||'')+'</strong><br><small style="color:#6b7280;font-size:11px;">'+dt+'</small></div></td>'
-                        +'<td style="font-size:12px;color:#6b7280;">'+(c.address||'')+'</td>'
-                        +'<td>'+(c.category||'')+'</td>'
-                        +'<td>'+(c.title||'')+resp+img+'</td>'
-                        +'<td style="font-size:12px;">'+date+'</td>'
+                        +'<td><div style="line-height:1.3;">'+dot+'<strong style="color:var(--text-main);">'+(c.userName||'')+'</strong><br><small style="color:var(--text-muted);font-size:11px;">'+dt+'</small></div></td>'
+                        +'<td style="font-size:12px;color:var(--text-muted);">'+(c.address||'')+'</td>'
+                        +'<td style="color:var(--text-main);">'+(c.category||'')+'</td>'
+                        +'<td style="color:var(--text-main);">'+(c.title||'')+resp+img+'</td>'
+                        +'<td style="font-size:12px;color:var(--text-muted);">'+date+'</td>'
                         +'<td>'+badge+'</td>'
                         +'<td><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openConcernRespond('+c.id+')">Respond</button></td>'
                         +'</tr>';
@@ -4981,6 +4994,40 @@
             }
 
             // ── Equipment Requests ────────────────────────────────────────────
+            let _pgReqFilter = 'all';
+            let _pgReqSearch = '';
+            
+            function setReqTab(status, btn) {
+                _pgReqFilter = status;
+                document.querySelectorAll('.req-tab-btn').forEach(b => {
+                    b.style.background = 'var(--bg)';
+                    b.style.color = 'var(--text-main)';
+                    b.style.border = '1px solid var(--border)';
+                });
+                btn.style.background = 'var(--primary)';
+                btn.style.color = '#fff';
+                btn.style.border = 'none';
+                applyReqFilter();
+            }
+
+            function applyReqFilter() {
+                _pgReqSearch = (document.getElementById('reqFilterSearch')?.value || '').toLowerCase();
+                let list = _allAdminRequestsList;
+                if (_pgReqFilter !== 'all') {
+                    list = list.filter(r => (r.status || 'pending').toLowerCase() === _pgReqFilter);
+                }
+                if (_pgReqSearch) {
+                    list = list.filter(r => {
+                        const name = (r.userName || r.user_name || '').toLowerCase();
+                        const eq = (r.equipment || '').toLowerCase();
+                        return name.includes(_pgReqSearch) || eq.includes(_pgReqSearch);
+                    });
+                }
+                _pgReqList = list;
+                _pgReqPage = 1;
+                renderReqPg();
+            }
+
             function gotoRequestsPage(p) { _pgReqPage=p; renderReqPg(); }
             function renderReqPg() {
                 const tbody = document.getElementById('requestsTable');
@@ -4991,13 +5038,13 @@
                 const slice = _pgReqList.slice((_pgReqPage-1)*PG_SIZE, _pgReqPage*PG_SIZE);
                 tbody.innerHTML = slice.map(b => {
                     const dt = b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
-                    const rd = '<div style="line-height:1.2;"><strong>'+(b.userName||b.user_name||'')+'</strong><br><small style="color:#6b7280;font-size:11px;">'+dt+'</small></div>';
+                    const rd = '<div style="line-height:1.2;"><strong style="color:var(--text-main);">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:var(--text-muted);font-size:11px;">'+dt+'</small></div>';
                     return '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
                         +'<td>'+rd+'</td>'
-                        +'<td><strong style="color:var(--text);">'+(b.equipment||'')+'</strong></td>'
-                        +'<td style="font-weight:bold;color:var(--text);">'+(b.quantity||1)+'</td>'
-                        +'<td style="white-space:nowrap;color:var(--muted);">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
-                        +'<td style="color:var(--text);">'+(b.purpose||'')+'</td>'
+                        +'<td><strong style="color:var(--text-main);">'+(b.equipment||'')+'</strong></td>'
+                        +'<td style="font-weight:bold;color:var(--text-main);">'+(b.quantity||1)+'</td>'
+                        +'<td style="white-space:nowrap;color:var(--text-muted);">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
+                        +'<td style="color:var(--text-main);">'+(b.purpose||'')+'</td>'
                         +'<td>'+getStatusBadge(b.status)+'</td></tr>';
                 }).join('');
                 renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
@@ -5498,22 +5545,7 @@
                 });
 
                 _allAdminRequestsList = borrowings;
-                _pgReqList = borrowings;
-                _pgReqPage = 1;
-                container.innerHTML = borrowings.map(b => {
-                    const submittedAt = b.created_at || b.createdAt ? new Date(b.created_at || b.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : 'Unknown';
-                    const residentDisplay = `<div style="line-height:1.2;"><strong>${b.userName}</strong><br><small style="color:#6b7280;font-size:11px;">${submittedAt}</small></div>`;
-                    return `
-                <tr data-req-id="${b.id}" onclick="openRequestRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
-                    <td>${residentDisplay}</td>
-                    <td><strong style="color:var(--text);">${b.equipment}</strong></td>
-                    <td style="font-weight:bold;color:var(--text);">${b.quantity}</td>
-                    <td style="white-space: nowrap;color:var(--muted);">${b.borrowDate}<br>to ${b.returnDate}</td>
-                    <td style="color:var(--text);">${b.purpose}</td>
-                    <td>${getStatusBadge(b.status)}</td>
-                </tr>
-            `}).join('');
-                renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
+                applyReqFilter();
             }
 
             async function loadCourtBookings() {
