@@ -1123,7 +1123,7 @@
             <!-- Header -->
             <div style="background:linear-gradient(135deg,#f59e0b,#ef4444);padding:32px 24px 24px;text-align:center;">
                 <div style="font-size:48px;margin-bottom:12px;line-height:1;">⚠️</div>
-                <h3 style="font-size:22px;font-weight:800;color:#fff;margin:0 0 12px;letter-spacing:-0.02em;">Booking Conflict</h3>
+                <h3 style="font-size:22px;font-weight:800;color:#fff;margin:0 0 12px;letter-spacing:-0.02em;">Reservation Cancelled</h3>
                 <p id="conflictNotifMsg" style="font-size:14px;color:rgba(255,255,255,0.95);margin:0 auto;line-height:1.6;max-width:90%;"></p>
             </div>
             <!-- Actions -->
@@ -3034,7 +3034,7 @@
                     '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + timeStr + '</span></div>' +
                     '<div class="flex items-center gap-2' + (e.capacity || e.description ? ' mb-2' : '') + '"><span class="text-sm">By ' + e.organizer + '</span></div>' +
                     (e.capacity ? '<div class="flex items-center gap-2 mb-2"><span class="text-sm font-bold text-indigo-100">👥 Capacity: ' + e.capacity + ' max</span></div>' : '') +
-                    (e.description ? '<div class="mt-3 text-sm bg-black/20 p-3 rounded-lg italic shadow-inner border border-white/10">💬 ' + (typeof window.escapeHtml === 'function' ? escapeHtml(e.description) : e.description) + '</div>' : '') +
+                    ''  +
                     '</div></div>';
             }).join('');
         }

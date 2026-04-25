@@ -3995,8 +3995,10 @@
                 const reason = document.getElementById('amcReason').value.trim();
                 const btn = document.getElementById('amcConfirmBtn');
 
-                if (!eventName || !reason) {
-                    showAlert('Please provide both the Event Name and Reason.', 'error');
+                const organizer = document.getElementById('amcOrganizer') ? document.getElementById('amcOrganizer').value.trim() : 'Barangay Council';
+                const capacity = document.getElementById('amcCapacity') ? parseInt(document.getElementById('amcCapacity').value || '0', 10) : 0;
+                if (!eventName || !reason || !organizer) {
+                    showAlert('Please provide Event Name, Organizer, and Reason.', 'error');
                     return;
                 }
 
@@ -4016,8 +4018,10 @@
                         time: '07:00',
                         start_time: '07:00',
                         end_time: '22:00',
-                        organizer: 'Barangay Council',
+                        organizer: organizer || 'Barangay Council',
                         location: 'Basketball Court',
+                        capacity: capacity || 0,
+                        description: '',
                         status: 'approved',
                         created_at: new Date().toISOString()
                     };
@@ -4099,26 +4103,17 @@
 
                     await logActivity('Mass Booking Cancelled', `Cancelled ${dayBookings.length} bookings on ${adminSelectedDate} for event: ${eventName}`);
 
-                    // 4. Close modal and open Add Event form directly so admin can finalize event details
+                    // 4. Close modal and show success
                     document.getElementById('adminMassCancelModal').style.display = 'none';
-                    await renderAdminCalendar();
-
-                    // Open the day schedule popup and show the Add Event form with pre-filled name
-                    if (typeof openAdminDaySchedulePopup === 'function') {
-                        await openAdminDaySchedulePopup(adminSelectedDate, 'basketball');
-                    } else {
-                        // Fallback: open adsEventModal directly
-                        const modal = document.getElementById('adminDayScheduleModal');
-                        if (modal) modal.style.display = 'flex';
+                    // Clear form
+                    ['amcEventName','amcOrganizer','amcCapacity','amcReason'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+                    const successModal = document.getElementById('adminEventSuccessModal');
+                    if (successModal) {
+                        successModal.querySelector('h3').textContent = 'All Reservations Cancelled!';
+                        successModal.querySelector('p').textContent = `All bookings on ${adminSelectedDate} were cancelled, users were notified, and the event "${eventName}" was added to block this day.`;
+                        successModal.style.display = 'flex';
                     }
-                    // Pre-fill and show the event form
-                    setTimeout(() => {
-                        if (typeof openAdsEventModal === 'function') openAdsEventModal();
-                        const titleEl = document.getElementById('adsEventTitle');
-                        if (titleEl) titleEl.value = eventName;
-                        const descEl = document.getElementById('adsEventDescription');
-                        if (descEl) descEl.value = reason;
-                    }, 300);
+                    await renderAdminCalendar();
 
                 } catch (err) {
                     console.error('Mass Cancel Error:', err);
@@ -7999,6 +7994,18 @@
                 <div style="margin-bottom:14px;">
                     <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Event Name *</label>
                     <input type="text" id="amcEventName" required placeholder="e.g. Barangay Fiesta, Basketball Tournament..."
+                        style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box;"
+                        onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Organizer *</label>
+                    <input type="text" id="amcOrganizer" required placeholder="e.g. Barangay Council"
+                        style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box;"
+                        onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Capacity (max attendees)</label>
+                    <input type="number" id="amcCapacity" placeholder="e.g. 100" min="0"
                         style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box;"
                         onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
                 </div>
