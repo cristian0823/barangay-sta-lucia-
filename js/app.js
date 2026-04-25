@@ -2778,6 +2778,8 @@ async function deleteEvent(eventId) {
         const { data: eventRecord } = await supabase.from('events').select('title, date, time').eq('id', eventId).maybeSingle();
         const { error } = await supabase.from('events').delete().eq('id', eventId);
         if (!error) {
+            if (typeof window._eventsCache !== 'undefined') window._eventsCache = null;
+            if (typeof window._eventsCacheTime !== 'undefined') window._eventsCacheTime = null;
             await logActivity('Event Deleted', `Deleted event ID: ${eventId}`);
             // Broadcast cancellation notification to ALL registered users
             if (eventRecord) {
