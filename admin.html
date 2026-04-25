@@ -5499,6 +5499,10 @@
                 return `<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${sc.bg};color:${sc.color};">${status}</span>`;
             }
             function _updateReqRow(id, newStatus) {
+                if (typeof _allAdminRequestsList !== 'undefined') {
+                    const req = _allAdminRequestsList.find(r => r.id === id);
+                    if (req) req.status = newStatus;
+                }
                 const row = document.querySelector(`tr[data-req-id="${id}"]`);
                 if (!row) return;
                 const cells = row.querySelectorAll('td');
@@ -5513,6 +5517,13 @@
                 }
             }
             function _updateBookingRow(id, newStatus, reason) {
+                if (typeof _allAdminBookingsList !== 'undefined') {
+                    const bk = _allAdminBookingsList.find(b => b.id === id);
+                    if (bk) {
+                        bk.status = newStatus;
+                        if (reason) bk.rejection_reason = reason;
+                    }
+                }
                 const row = document.querySelector(`tr[data-bid="${id}"]`);
                 if (!row) return;
                 const cells = row.querySelectorAll('td');
