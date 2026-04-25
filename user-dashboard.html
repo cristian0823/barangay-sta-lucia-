@@ -884,13 +884,25 @@
                 </div>
                 
                 <div class="glass-card p-6 min-h-[500px]">
-                    <div class="flex justify-end mb-6">
-                        <button onclick="loadHistoryView()" class="px-5 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-emerald-600 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                        <select id="historyFilter" onchange="currentPageHistory = 1; renderHistory()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-semibold shadow-sm w-full md:w-auto">
+                            <option value="all">All Activities</option>
+                            <option value="borrowing">Borrowings</option>
+                            <option value="concern">Concerns</option>
+                            <option value="court reservation">Court Reservations</option>
+                        </select>
+                        <button onclick="loadHistoryView()" class="px-5 py-2 w-full md:w-auto justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-emerald-600 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
                             🔄 Refresh Log
                         </button>
                     </div>
-                    <div id="unifiedHistoryList" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div id="unifiedHistoryList" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                         
+                    </div>
+                    <!-- Pagination Controls -->
+                    <div class="flex justify-between items-center mt-auto border-t border-gray-200 dark:border-slate-700 pt-4">
+                        <button onclick="prevPageHistory()" class="px-4 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                        <span id="historyPaginationInfo" class="text-sm text-gray-500 dark:text-gray-400 font-medium">Page 1 of 1</span>
+                        <button onclick="nextPageHistory()" class="px-4 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
                     </div>
                 </div>
             </div>
@@ -3009,40 +3021,30 @@
         // ==========================================
         // 5.5 MY HISTORY
         // ==========================================
-        async function loadHistoryView() {
+        let allHistoryData = [];
+        let currentPageHistory = 1;
+        const HISTORY_PER_PAGE = 6;
+
+        function renderHistory() {
             const container = document.getElementById('unifiedHistoryList');
-            container.innerHTML = '';
-            try {
-                const results = await Promise.allSettled([
-                    typeof getMyBorrowings === 'function' ? getMyBorrowings() : Promise.resolve([]),
-                    typeof getMyConcerns === 'function' ? getMyConcerns() : Promise.resolve([]),
-                    (async () => {
-                        if (typeof getCourtBookings === 'function') {
-                            const bookings = await getCourtBookings();
-                            // Resolve real Supabase ID and use string comparison to handle type mismatches
-                            let resolvedUid = String(user.id);
-                            try {
-                                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
-                                if (uRow) resolvedUid = String(uRow.id);
-                            } catch(_) {}
-                            return bookings.filter(b =>
-                                String(b.user_id) === resolvedUid || String(b.userId) === resolvedUid
-                            );
-                        }
-                        return [];
-                    })()
-                ]);
-                const bor = results[0].status === 'fulfilled' ? (results[0].value || []) : [];
-                const con = results[1].status === 'fulfilled' ? (results[1].value || []) : [];
-                const boo = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
-                
-                let all = [];
-                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '📦', colorClass: 'bg-blue-100 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400' }));
-                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', colorClass: 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-400' }));
-                boo.forEach(b => all.push({ type: 'Court Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
-                all.sort((a,b) => b.date - a.date);
-                if (all.length === 0) { container.innerHTML = '<p class="text-gray-500 italic text-[15px] font-bold mt-4">No activity history found yet. If you believe this is an error, please try logging out and in again.</p>'; return; }
-                container.innerHTML = all.map(a => {
+            const filterEl = document.getElementById('historyFilter');
+            const filterVal = filterEl ? filterEl.value.toLowerCase() : 'all';
+            
+            let filtered = allHistoryData;
+            if (filterVal !== 'all') {
+                filtered = allHistoryData.filter(a => a.type.toLowerCase() === filterVal);
+            }
+
+            const totalPages = Math.max(1, Math.ceil(filtered.length / HISTORY_PER_PAGE));
+            if (currentPageHistory > totalPages) currentPageHistory = totalPages;
+            
+            const startIdx = (currentPageHistory - 1) * HISTORY_PER_PAGE;
+            const currentItems = filtered.slice(startIdx, startIdx + HISTORY_PER_PAGE);
+
+            if (filtered.length === 0) { 
+                container.innerHTML = '<p class="text-gray-500 italic text-[15px] font-bold mt-4 col-span-full text-center">No activity history found matching the filter.</p>'; 
+            } else {
+                container.innerHTML = currentItems.map(a => {
                     const displayStatus = a.status === 'completed' ? 'Completed'
                         : a.status === 'cancelled_by_admin' ? 'Cancelled by Admin'
                         : a.status === 'cancelled' ? 'Cancelled'
@@ -3078,6 +3080,63 @@
     </div>
 </div>`;
                 }).join('');
+            }
+
+            const info = document.getElementById('historyPaginationInfo');
+            if(info) info.textContent = `Page ${currentPageHistory} of ${totalPages}`;
+            
+            const prevBtn = document.querySelector('button[onclick="prevPageHistory()"]');
+            const nextBtn = document.querySelector('button[onclick="nextPageHistory()"]');
+            if(prevBtn) prevBtn.disabled = currentPageHistory === 1;
+            if(nextBtn) nextBtn.disabled = currentPageHistory === totalPages;
+        }
+
+        function prevPageHistory() {
+            if(currentPageHistory > 1) { currentPageHistory--; renderHistory(); }
+        }
+        function nextPageHistory() {
+            const filterEl = document.getElementById('historyFilter');
+            const filterVal = filterEl ? filterEl.value.toLowerCase() : 'all';
+            const filtered = filterVal === 'all' ? allHistoryData : allHistoryData.filter(a => a.type.toLowerCase() === filterVal);
+            const totalPages = Math.ceil(filtered.length / HISTORY_PER_PAGE);
+            if(currentPageHistory < totalPages) { currentPageHistory++; renderHistory(); }
+        }
+
+        async function loadHistoryView() {
+            const container = document.getElementById('unifiedHistoryList');
+            container.innerHTML = '';
+            try {
+                const results = await Promise.allSettled([
+                    typeof getMyBorrowings === 'function' ? getMyBorrowings() : Promise.resolve([]),
+                    typeof getMyConcerns === 'function' ? getMyConcerns() : Promise.resolve([]),
+                    (async () => {
+                        if (typeof getCourtBookings === 'function') {
+                            const bookings = await getCourtBookings();
+                            // Resolve real Supabase ID and use string comparison to handle type mismatches
+                            let resolvedUid = String(user.id);
+                            try {
+                                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                                if (uRow) resolvedUid = String(uRow.id);
+                            } catch(_) {}
+                            return bookings.filter(b =>
+                                String(b.user_id) === resolvedUid || String(b.userId) === resolvedUid
+                            );
+                        }
+                        return [];
+                    })()
+                ]);
+                const bor = results[0].status === 'fulfilled' ? (results[0].value || []) : [];
+                const con = results[1].status === 'fulfilled' ? (results[1].value || []) : [];
+                const boo = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
+                
+                let all = [];
+                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '📦', colorClass: 'bg-blue-100 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400' }));
+                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', colorClass: 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-400' }));
+                boo.forEach(b => all.push({ type: 'Court Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
+                all.sort((a,b) => b.date - a.date);
+                allHistoryData = all;
+                currentPageHistory = 1;
+                renderHistory();
             } catch(e) { console.error(e); container.innerHTML = '<p class="text-red-500 text-sm">Error loading history.</p>'; }
         }
 
