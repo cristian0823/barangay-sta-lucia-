@@ -2792,7 +2792,7 @@
     <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">ACTION</label>
-            <select id="auditFilterAction" onchange="renderAuditLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
                 <option value="all">All Actions</option>
                 <option value="Borrow">Borrow Equipment</option>
                 <option value="Reserve">Court Reservation</option>
@@ -2802,17 +2802,17 @@
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="auditFilterFrom" onchange="renderAuditLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="auditFilterTo" onchange="renderAuditLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 2; min-width: 200px; position: relative;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">SEARCH</label>
             <div style="display: flex;">
-                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog()" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
-                <button onclick="renderAuditLog()" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+                <button onclick="renderAuditLog(true)" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
         <div>
@@ -2842,6 +2842,12 @@
                     <!-- Loaded dynamically -->
                 </tbody>
             </table>
+        </div>
+        <!-- Audit Log Pagination Controls -->
+        <div id="auditPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
+            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
+            <span id="auditPageInfo" style="font-size: 13px; color: var(--text-muted);">Page 1 of 1</span>
+            <button id="auditNextBtn" onclick="changeAuditPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
         </div>
     </div>
 </div>
@@ -2887,7 +2893,7 @@
     <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">EVENT TYPE</label>
-            <select id="secFilterType" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
                 <option value="all">All Events</option>
                 <option value="logins" selected>Login Events Only</option>
                 <option value="success">Success Only</option>
@@ -2897,7 +2903,7 @@
         </div>
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">AUTH METHOD</label>
-            <select id="secFilterAuth" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
                 <option value="all">All Methods</option>
                 <option value="Password">Password</option>
                 <option value="Google">Google</option>
@@ -2905,22 +2911,22 @@
         </div>
         <div style="display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 8px;">
             <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;">
-                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog()" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444;"> Only Anomalies
+                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444;"> Only Anomalies
             </label>
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="secFilterFrom" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="secFilterTo" onchange="renderSecurityLog()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 2; min-width: 200px; position: relative;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">SEARCH</label>
             <div style="display: flex;">
-                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog()" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
-                <button onclick="renderSecurityLog()" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+                <button onclick="renderSecurityLog(true)" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: flex-end;">
@@ -2950,6 +2956,12 @@
                     <!-- Loaded dynamically -->
                 </tbody>
             </table>
+        </div>
+        <!-- Security Log Pagination Controls -->
+        <div id="securityPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
+            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
+            <span id="securityPageInfo" style="font-size: 13px; color: var(--text-muted);">Page 1 of 1</span>
+            <button id="securityNextBtn" onclick="changeSecurityPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
         </div>
     </div>
 </div>
@@ -4196,6 +4208,13 @@
 
             // ── AUDIT LOG ──
             let _allAuditLogs = [];
+            let auditCurrentPage = 1;
+            const auditItemsPerPage = 10;
+            
+            function changeAuditPage(dir) {
+                auditCurrentPage += dir;
+                renderAuditLog();
+            }
 
             async function loadAuditLog() {
                 const list = document.getElementById('auditList');
@@ -4276,7 +4295,9 @@
                 renderAuditLog();
             }
 
-            function renderAuditLog() {
+            function renderAuditLog(resetPage = false) {
+                if (resetPage) auditCurrentPage = 1;
+
                 const list = document.getElementById('auditList');
                 if (!list) return;
 
@@ -4356,7 +4377,18 @@
                     return entity_type || 'System';
                 }
 
-                list.innerHTML = filtered.map(a => {
+                const totalPages = Math.max(1, Math.ceil(filtered.length / auditItemsPerPage));
+                if (auditCurrentPage > totalPages) auditCurrentPage = totalPages;
+                if (auditCurrentPage < 1) auditCurrentPage = 1;
+
+                document.getElementById('auditPageInfo').textContent = `Page ${auditCurrentPage} of ${totalPages}`;
+                document.getElementById('auditPrevBtn').disabled = auditCurrentPage <= 1;
+                document.getElementById('auditNextBtn').disabled = auditCurrentPage >= totalPages;
+
+                const startIndex = (auditCurrentPage - 1) * auditItemsPerPage;
+                const paginated = filtered.slice(startIndex, startIndex + auditItemsPerPage);
+
+                list.innerHTML = paginated.map(a => {
                     const d    = new Date(a.created_at);
                     const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
                     const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
@@ -4420,6 +4452,13 @@
 
             // ── SECURITY LOG ──
             let _allSecurityLogs = [];
+            let securityCurrentPage = 1;
+            const securityItemsPerPage = 10;
+            
+            function changeSecurityPage(dir) {
+                securityCurrentPage += dir;
+                renderSecurityLog();
+            }
 
             async function loadSecurityLog() {
                 const list = document.getElementById('securityList');
@@ -4523,7 +4562,9 @@
                 renderSecurityLog();
             }
 
-            function renderSecurityLog() {
+            function renderSecurityLog(resetPage = false) {
+                if (resetPage) securityCurrentPage = 1;
+
                 const list = document.getElementById('securityList');
                 if (!list) return;
 
@@ -4602,7 +4643,18 @@
                     return;
                 }
 
-                list.innerHTML = filtered.map(s => {
+                const totalPages = Math.max(1, Math.ceil(filtered.length / securityItemsPerPage));
+                if (securityCurrentPage > totalPages) securityCurrentPage = totalPages;
+                if (securityCurrentPage < 1) securityCurrentPage = 1;
+
+                document.getElementById('securityPageInfo').textContent = `Page ${securityCurrentPage} of ${totalPages}`;
+                document.getElementById('securityPrevBtn').disabled = securityCurrentPage <= 1;
+                document.getElementById('securityNextBtn').disabled = securityCurrentPage >= totalPages;
+
+                const startIndex = (securityCurrentPage - 1) * securityItemsPerPage;
+                const paginated = filtered.slice(startIndex, startIndex + securityItemsPerPage);
+
+                list.innerHTML = paginated.map(s => {
                     const d = new Date(s.created_at);
                     const uName = s.users ? (s.users.full_name || s.users.username || 'System') : (s.target_username || 'System');
                     const uMail = s.users ? (s.users.email || s.users.username || '') : '';
