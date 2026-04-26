@@ -674,8 +674,8 @@
                         return;
                     }
 
-                    // ── Non-admin users MUST set up Google Authenticator before accessing the dashboard
-                    if (!isAdmin && !totpEnabled) {
+                    // ── EVERYONE MUST set up Google Authenticator before accessing the dashboard
+                    if (!totpEnabled) {
                         // Store session as pending — setup-totp.html will finalize it
                         sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
                         sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
