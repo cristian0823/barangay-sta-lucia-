@@ -3594,8 +3594,14 @@ async function sendPasswordResetOTP(email) {
             email: email,
             name: targetUser.full_name || targetUser.username || 'Admin',
             title: 'Password Reset OTP',
-            message: 'Your password reset OTP code is: ' + otp,
-            details: 'This code will expire in 10 minutes. If you did not request this, please ignore this email.',
+            // Common EmailJS template variable names — cover all likely combos
+            otp_code: otp,
+            otp: otp,
+            code: otp,
+            message: otp,
+            expiry_time: '10 minutes',
+            expiry: '10 minutes',
+            details: 'This code will expire in 10 minutes.',
             Company_Name: 'Barangay Sta. Lucia'
         });
 
