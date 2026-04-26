@@ -2448,13 +2448,13 @@
                             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--border); gap:12px; background:var(--panel-bg);">
                                 <div style="display:flex; gap:8px; flex-wrap:wrap;" id="reqFilterTabs">
                                     <button class="btn btn-small req-tab-btn" style="background:var(--primary); color:#fff; border:none;" onclick="setReqTab('all', this)">All</button>
-                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('pending', this)">Pending</button>
-                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('approved', this)">Approved</button>
-                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('returned', this)">Returned</button>
-                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text-main); border:1px solid var(--border);" onclick="setReqTab('rejected', this)">Rejected</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setReqTab('pending', this)">Pending</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setReqTab('approved', this)">Approved</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setReqTab('returned', this)">Returned</button>
+                                    <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setReqTab('rejected', this)">Rejected</button>
                                 </div>
                                 <div style="position:relative; max-width:250px; width:100%;">
-                                    <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text-main);">
+                                    <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
                                 </div>
                             </div>
                             <div class="admin-tables">
@@ -2500,7 +2500,7 @@
                                     <button class="btn btn-small cb-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setCourtBookingTab('Cancelled', this)">Cancelled/Rejected</button>
                                 </div>
                                 <div style="display:flex; gap:12px; align-items:center; max-width:450px; width:100%;">
-                                    <select id="courtBookingVenueFilter" onchange="loadAdminBookings()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text-main); font-weight:600;">
+                                    <select id="courtBookingVenueFilter" onchange="loadAdminBookings()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text); font-weight:600;">
                                         <option value="all">All Venues</option>
                                         <option value="basketball">Basketball Court</option>
                                         <option value="multipurpose">Multi-Purpose Hall</option>
@@ -2750,16 +2750,16 @@
     <div class="section-header" style="margin-bottom: 24px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
             <i class="bi bi-receipt-cutoff" style="color: #6366f1; font-size: 28px;"></i>
-            <h2 style="font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0;">Audit Log</h2>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Audit Log</h2>
         </div>
-        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">System operational tracking for reservations, requests, and concerns.</p>
+        <p style="color: var(--muted); font-size: 14px; margin: 0;">System operational tracking for reservations, requests, and concerns.</p>
     </div>
 
     <!-- Filter Bar -->
     <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">ACTION</label>
-            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">ACTION</label>
+            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
                 <option value="all">All Actions</option>
                 <option value="Borrow">Borrow Equipment</option>
                 <option value="Reserve">Facility Reservation</option>
@@ -2768,18 +2768,18 @@
             </select>
         </div>
         <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
+            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
+            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 2; min-width: 200px; position: relative;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">SEARCH</label>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
             <div style="display: flex;">
-                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
-                <button onclick="renderAuditLog(true)" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+                <button onclick="renderAuditLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
         <div>
@@ -2795,14 +2795,14 @@
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="auditLogTable">
                 <thead>
                     <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">TIMESTAMP</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">PERFORMED BY</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">ROLE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">ACTION</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">MODULE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center;">STATUS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: right;"></th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">TIMESTAMP</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">PERFORMED BY</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">ROLE</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">ACTION</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">MODULE</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">STATUS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DETAILS</th>
+                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: right;"></th>
                     </tr>
                 </thead>
                 <tbody id="auditList">
@@ -2812,9 +2812,9 @@
         </div>
         <!-- Audit Log Pagination Controls -->
         <div id="auditPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
-            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
-            <span id="auditPageInfo" style="font-size: 13px; color: var(--text-muted);">Page 1 of 1</span>
-            <button id="auditNextBtn" onclick="changeAuditPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
+            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
+            <span id="auditPageInfo" style="font-size: 13px; color: var(--muted);">Page 1 of 1</span>
+            <button id="auditNextBtn" onclick="changeAuditPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
         </div>
     </div>
 </div>
@@ -2823,19 +2823,19 @@
     <div class="section-header" style="margin-bottom: 24px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
             <i class="bi bi-shield-fill-check" style="color: #ef4444; font-size: 28px;"></i>
-            <h2 style="font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0;">Security Log</h2>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Security Log</h2>
         </div>
-        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Authentication & session events — OWASP A09:2021 compliant monitoring.</p>
+        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication & session events — OWASP A09:2021 compliant monitoring.</p>
     </div>
 
     <!-- Stats Cards -->
     <div class="stats-grid" style="gap: 16px; margin-bottom: 24px;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
-            <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text-main);">0</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
+            <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
         </div>
         <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">FAILED ATTEMPTS TODAY</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">FAILED ATTEMPTS TODAY</div>
             <div id="secStatFailed" style="font-size: 28px; font-weight: 800; color: #eab308;">0</div>
         </div>
         <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
@@ -2843,24 +2843,24 @@
             <div id="secStatAnomalies" style="font-size: 28px; font-weight: 800; color: #ef4444;">0</div>
         </div>
         <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">TOTAL RECORDS</div>
-            <div id="secStatTotal" style="font-size: 28px; font-weight: 800; color: var(--text-main);">0</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">TOTAL RECORDS</div>
+            <div id="secStatTotal" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
         </div>
     </div>
 
     <!-- Quick Filter Tabs -->
     <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
         <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">✅ Login Events</button>
-        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">📋 All Events</button>
-        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">❌ Failed Only</button>
-        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">⚠️ Anomalies</button>
+        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">📋 All Events</button>
+        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">❌ Failed Only</button>
+        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">⚠️ Anomalies</button>
     </div>
 
     <!-- Filter Bar -->
     <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">EVENT TYPE</label>
-            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">EVENT TYPE</label>
+            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
                 <option value="all">All Events</option>
                 <option value="logins" selected>Login Events Only</option>
                 <option value="success">Success Only</option>
@@ -2869,31 +2869,31 @@
             </select>
         </div>
         <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">AUTH METHOD</label>
-            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">AUTH METHOD</label>
+            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
                 <option value="all">All Methods</option>
                 <option value="Password">Password</option>
                 <option value="Google">Google</option>
             </select>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 8px;">
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;">
                 <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444;"> Only Anomalies
             </label>
         </div>
         <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
+            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
+            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 2; min-width: 200px; position: relative;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">SEARCH</label>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
             <div style="display: flex;">
-                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 13px; outline: none;">
-                <button onclick="renderSecurityLog(true)" style="background: var(--text-main); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+                <button onclick="renderSecurityLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: flex-end;">
@@ -2909,14 +2909,14 @@
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="securityLogTable">
                 <thead>
                     <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); width: 40px;"></th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">TIMESTAMP</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">EMAIL / USER</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">EVENT</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">AUTH</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">IP ADDRESS</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DEVICE</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted);">DETAILS</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted); width: 40px;"></th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">TIMESTAMP</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">EMAIL / USER</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">EVENT</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">AUTH</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">IP ADDRESS</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DEVICE</th>
+                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DETAILS</th>
                     </tr>
                 </thead>
                 <tbody id="securityList">
@@ -2926,9 +2926,9 @@
         </div>
         <!-- Security Log Pagination Controls -->
         <div id="securityPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
-            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
-            <span id="securityPageInfo" style="font-size: 13px; color: var(--text-muted);">Page 1 of 1</span>
-            <button id="securityNextBtn" onclick="changeSecurityPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
+            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
+            <span id="securityPageInfo" style="font-size: 13px; color: var(--muted);">Page 1 of 1</span>
+            <button id="securityNextBtn" onclick="changeSecurityPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
         </div>
     </div>
 </div>
@@ -4303,7 +4303,7 @@
                 });
 
                 if (filtered.length === 0) {
-                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted,#64748b);">No matching audit logs found</td></tr>';
+                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No matching audit logs found</td></tr>';
                     return;
                 }
 
@@ -4395,15 +4395,15 @@
                     }));
 
                     return `<tr style="border-bottom: 1px solid var(--border);">
-                        <td style="padding:12px;color:var(--text-muted);white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
-                        <td style="padding:12px;font-weight:600;color:var(--text-main);">${who}</td>
+                        <td style="padding:12px;color:var(--muted);white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
+                        <td style="padding:12px;font-weight:600;color:var(--text);">${who}</td>
                         <td style="padding:12px;text-align:center;white-space:nowrap;"><span style="${roleStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
                         <td style="padding:12px;text-align:center;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${actionLabel}</span></td>
-                        <td style="padding:12px;font-size:12px;color:var(--text-main);font-weight:500;text-align:center;">${module_}</td>
-                        <td style="padding:12px;text-align:center;"><span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-main);"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
-                        <td style="padding:12px;font-size:12px;color:var(--text-muted);max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.details || ''}</td>
+                        <td style="padding:12px;font-size:12px;color:var(--text);font-weight:500;text-align:center;">${module_}</td>
+                        <td style="padding:12px;text-align:center;"><span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;color:var(--text);"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
+                        <td style="padding:12px;font-size:12px;color:var(--muted);max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.details || ''}</td>
                         <td style="padding:12px;text-align:right;">
-                            <button onclick="showAuditDetails('${logDataStr}')" style="background:transparent;border:1px solid var(--border);color:var(--text-main);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Details</button>
+                            <button onclick="showAuditDetails('${logDataStr}')" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Details</button>
                         </td>
                     </tr>`;
                 }).join('');
@@ -4533,7 +4533,7 @@
                     } else {
                         btn.style.background = 'transparent';
                         btn.style.borderColor = 'var(--border)';
-                        btn.style.color = 'var(--text-muted)';
+                        btn.style.color = 'var(--muted)';
                     }
                 });
                 renderSecurityLog();
@@ -4616,7 +4616,7 @@
                 document.getElementById('secStatTotal').textContent = filtered.length;
 
                 if (filtered.length === 0) {
-                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted, #64748b);">No matching records found</td></tr>';
+                    list.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No matching records found</td></tr>';
                     return;
                 }
 
@@ -4664,16 +4664,16 @@
                     }
 
                     const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
-                    const ipColor = (ev === 'New IP Detected' || ev === 'Suspicious Login Activity') ? '#ef4444' : 'var(--text-muted)';
+                    const ipColor = (ev === 'New IP Detected' || ev === 'Suspicious Login Activity') ? '#ef4444' : 'var(--muted)';
                     return `<tr style="border-bottom:1px solid var(--border);${rowBg}">
                         <td style="padding: 12px; text-align:center;">${icon}</td>
-                        <td style="padding: 12px; color: var(--text-muted);">${d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
-                        <td style="padding: 12px;"><div style="font-weight:700; color: var(--text-main);">${uName}</div><div style="font-size:11px;color:var(--text-muted);">${uMail}</div></td>
+                        <td style="padding: 12px; color: var(--muted);">${d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
+                        <td style="padding: 12px;"><div style="font-weight:700; color: var(--text);">${uName}</div><div style="font-size:11px;color:var(--muted);">${uMail}</div></td>
                         <td style="padding: 12px;"><span style="${bdg}padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${ev}</span></td>
-                        <td style="padding: 12px; font-weight: 600; color: var(--text-main);">${s.auth_method || 'System'}</td>
+                        <td style="padding: 12px; font-weight: 600; color: var(--text);">${s.auth_method || 'System'}</td>
                         <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || '—'}</td>
-                        <td style="padding: 12px; font-size:11px;color:var(--text-muted);" title="${s.device_info || ''}">${device}</td>
-                        <td style="padding: 12px; font-size:12px; color: var(--text-muted);">${s.details || '—'}</td>
+                        <td style="padding: 12px; font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
+                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || '—'}</td>
                     </tr>`;
                 }).join('');
             }
@@ -4945,11 +4945,11 @@
                     const resp = c.response ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">✓ Replied</div>' : '';
                     const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">📷 Photo</span>' : '';
                     return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
-                        +'<td><div style="line-height:1.3;">'+dot+'<strong style="color:var(--text-main);">'+(c.userName||'')+'</strong><br><small style="color:var(--text-muted);font-size:11px;">'+dt+'</small></div></td>'
-                        +'<td style="font-size:12px;color:var(--text-muted);">'+(c.address||'')+'</td>'
-                        +'<td style="color:var(--text-main);">'+(c.category||'')+'</td>'
-                        +'<td style="color:var(--text-main);">'+(c.title||'')+resp+img+'</td>'
-                        +'<td style="font-size:12px;color:var(--text-muted);">'+date+'</td>'
+                        +'<td><div style="line-height:1.3;">'+dot+'<strong style="color:var(--text);">'+(c.userName||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div></td>'
+                        +'<td style="font-size:12px;color:var(--muted);">'+(c.address||'')+'</td>'
+                        +'<td style="color:var(--text);">'+(c.category||'')+'</td>'
+                        +'<td style="color:var(--text);">'+(c.title||'')+resp+img+'</td>'
+                        +'<td style="font-size:12px;color:var(--muted);">'+date+'</td>'
                         +'<td>'+badge+'</td>'
                         +'<td><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openConcernRespond('+c.id+')">Respond</button></td>'
                         +'</tr>';
@@ -4965,7 +4965,7 @@
                 _pgReqFilter = status;
                 document.querySelectorAll('.req-tab-btn').forEach(b => {
                     b.style.background = 'var(--bg)';
-                    b.style.color = 'var(--text-main)';
+                    b.style.color = 'var(--text)';
                     b.style.border = '1px solid var(--border)';
                 });
                 btn.style.background = 'var(--primary)';
@@ -5002,7 +5002,7 @@
                 const slice = _pgReqList.slice((_pgReqPage-1)*PG_SIZE, _pgReqPage*PG_SIZE);
                 tbody.innerHTML = slice.map(b => {
                     const dt = b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
-                    const rd = '<div style="line-height:1.2;"><strong style="color:var(--text-main);">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:var(--text-muted);font-size:11px;">'+dt+'</small></div>';
+                    const rd = '<div style="line-height:1.2;"><strong style="color:var(--text);">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div>';
                     
                     let cleanPurpose = b.purpose || '';
                     if(cleanPurpose.includes('| Purpose:')) {
@@ -5011,13 +5011,13 @@
                     }
                     if(cleanPurpose.length > 50) cleanPurpose = cleanPurpose.substring(0, 50) + '...';
                     
-                    const purposeHtml = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span style="color:var(--text-main);font-size:13px;">'+cleanPurpose+'</span><button style="background:transparent;border:1px solid var(--border-color);color:var(--text-main);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseout="this.style.borderColor=\'var(--border-color)\';this.style.color=\'var(--text-main)\'">View Details</button></div>';
+                    const purposeHtml = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span style="color:var(--text);font-size:13px;">'+cleanPurpose+'</span><button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">View Details</button></div>';
 
                     return '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
                         +'<td>'+rd+'</td>'
-                        +'<td><strong style="color:var(--text-main);">'+(b.equipment||'')+'</strong></td>'
-                        +'<td style="font-weight:bold;color:var(--text-main);">'+(b.quantity||1)+'</td>'
-                        +'<td style="white-space:nowrap;color:var(--text-muted);font-size:12px;">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
+                        +'<td><strong style="color:var(--text);">'+(b.equipment||'')+'</strong></td>'
+                        +'<td style="font-weight:bold;color:var(--text);">'+(b.quantity||1)+'</td>'
+                        +'<td style="white-space:nowrap;color:var(--muted);font-size:12px;">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
                         +'<td style="width:300px;">'+purposeHtml+'</td>'
                         +'<td>'+getStatusBadge(b.status)+'</td></tr>';
                 }).join('');
@@ -6591,9 +6591,10 @@
             async function loadAdminBookings() {
                 const tbody = document.getElementById('courtBookingsTable');
                 const empty = document.getElementById('noCourtBookings');
-                tbody.innerHTML = '';
-
+                
                 let allBookings = await getCourtBookings();
+                if (!tbody) return;
+                tbody.innerHTML = '';
                 _allAdminBookingsList = allBookings;
 
                 // Auto-remove past bookings from display
@@ -6857,7 +6858,7 @@
                                 return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f1f5f9);">
                                     <div style="font-size:16px;min-width:22px;text-align:center;">${icon}</div>
                                     <div style="flex:1;min-width:0;">
-                                        <div style="font-size:12px;font-weight:600;color:var(--text-main,#1a2e1f);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${action}</div>
+                                        <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${action}</div>
                                         <div style="font-size:11px;color:#6b7280;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${detail || actor}</div>
                                         <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${timeStr}</div>
                                     </div>
@@ -7647,43 +7648,43 @@
                         });
                         
                         purposeHtml = `
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border-color,#e5e7eb); margin-bottom:16px;">
-                                <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:var(--primary,#10b981);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">Resident Information</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border); margin-bottom:16px;">
+                                <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:var(--primary,#10b981);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);padding-bottom:6px;">Resident Information</p>
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                                    <div><span style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px;">Contact No.</span><strong style="font-size:13px;color:var(--text-main);">${parsedContact}</strong></div>
-                                    <div><span style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px;">Requested Time</span><strong style="font-size:13px;color:var(--text-main);">${parsedTime}</strong></div>
-                                    <div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px;">Address</span><strong style="font-size:13px;color:var(--text-main);">${parsedAddress}</strong></div>
+                                    <div><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Contact No.</span><strong style="font-size:13px;color:var(--text);">${parsedContact}</strong></div>
+                                    <div><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Requested Time</span><strong style="font-size:13px;color:var(--text);">${parsedTime}</strong></div>
+                                    <div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Address</span><strong style="font-size:13px;color:var(--text);">${parsedAddress}</strong></div>
                                 </div>
-                                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Main Purpose</p>
-                                <p style="margin:0;font-size:15px;font-weight:600;color:var(--text-main);line-height:1.5;">${parsedPurpose}</p>
+                                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Main Purpose</p>
+                                <p style="margin:0;font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${parsedPurpose}</p>
                             </div>
                         `;
                     } else {
                         purposeHtml = `
-                            <div style="margin-bottom:16px;background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border-color,#e5e7eb);">
-                                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Purpose</p>
-                                <p style="margin:0;font-size:14px;color:var(--text-main);line-height:1.6;">${rawPurpose || 'No purpose provided.'}</p>
+                            <div style="margin-bottom:16px;background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border);">
+                                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Purpose</p>
+                                <p style="margin:0;font-size:14px;color:var(--text);line-height:1.6;">${rawPurpose || 'No purpose provided.'}</p>
                             </div>
                         `;
                     }
 
                     detailsDiv.innerHTML = `
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Resident</p>
-                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text-main,#111);">${req.userName || '-'}</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Resident</p>
+                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text);">${req.userName || '-'}</p>
                             </div>
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Item & Quantity</p>
-                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text-main);">${req.equipment} (x${req.quantity})</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Item & Quantity</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${req.equipment} (x${req.quantity})</p>
                             </div>
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Duration</p>
-                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text-main);">${req.borrowDate} <br>to ${req.returnDate}</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Duration</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${req.borrowDate} <br>to ${req.returnDate}</p>
                             </div>
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Requested</p>
-                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text-main);">${submittedAt}</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Requested</p>
+                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">${submittedAt}</p>
                             </div>
                         </div>
                         ${purposeHtml}
@@ -7703,8 +7704,8 @@
                         `;
                     } else {
                         actionsDiv.innerHTML = `
-                            <p style="width:100%;font-size:13px;color:var(--text-muted);margin-bottom:16px;text-align:center;">This request has already been ${req.status}.</p>
-                            <button type="button" onclick="closeAdminRequestModal()" style="width:100%;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text-main);font-family:inherit;font-size:14px;">Close</button>
+                            <p style="width:100%;font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center;">This request has already been ${req.status}.</p>
+                            <button type="button" onclick="closeAdminRequestModal()" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text);font-family:inherit;font-size:14px;">Close</button>
                         `;
                     }
                 }
