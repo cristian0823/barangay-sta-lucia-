@@ -3540,3 +3540,111 @@ async function updateEvent(id, eventData) {
 }
 window.updateEvent = updateEvent;
 
+// --- FORGOT PASSWORD OTP FLOW VIA EMAILJS ---
+async function sendPasswordResetOTP(email) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    email = email.trim().toLowerCase();
+
+    let userFound = false;
+    let targetUser = null;
+
+    if (supabaseAvailable) {
+        const { data, error } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+        if (!error && data) {
+            userFound = true;
+            targetUser = data;
+        }
+    } else {
+        const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
+        targetUser = users.find(u => (u.email || '').toLowerCase() === email);
+        if (targetUser) userFound = true;
+    }
+
+    if (!userFound) {
+        return { success: false, message: 'We could not find an account associated with this email.' };
+    }
+
+    // Since the system defaults role 'Admin' and 'admin', check both. Also sometimes 'User'.
+    if (targetUser.role !== 'admin' && targetUser.role !== 'Admin') {
+         return { success: false, message: 'Password reset is only available for admin accounts at this time.' };
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = Date.now() + 10 * 60 * 1000; // 10 mins
+
+    sessionStorage.setItem('otp_email', email);
+    sessionStorage.setItem('otp_code', otp);
+    sessionStorage.setItem('otp_expiry', expiry.toString());
+
+    try {
+        if (!window.emailjs) {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+            document.head.appendChild(script);
+            await new Promise((resolve) => script.onload = resolve);
+        }
+        
+        emailjs.init({ publicKey: 'DPEG6BGMwO8ExGg_e' });
+        
+        await emailjs.send('service_th96vue', 'template_l72erqi', {
+            to_name: targetUser.full_name || targetUser.username || 'Admin',
+            user_email: email,
+            message: 'Your password reset OTP code is: ' + otp + '. This code will expire in 10 minutes.'
+        });
+
+        return { success: true, message: 'A 6-digit code has been sent to your email.' };
+    } catch (err) {
+        console.error('EmailJS error:', err);
+        return { success: false, message: 'Failed to send email. Please check your internet connection or contact support.' };
+    }
+}
+
+async function verifyPasswordResetOTP(email, code) {
+    email = email.trim().toLowerCase();
+    const storedEmail = sessionStorage.getItem('otp_email');
+    const storedCode  = sessionStorage.getItem('otp_code');
+    const storedExp   = sessionStorage.getItem('otp_expiry');
+
+    if (!storedEmail || !storedCode || !storedExp) {
+        return { success: false, message: 'Session expired. Please request a new code.' };
+    }
+
+    if (email !== storedEmail) {
+        return { success: false, message: 'Email mismatch. Please request a new code.' };
+    }
+
+    if (Date.now() > parseInt(storedExp)) {
+        sessionStorage.removeItem('otp_code');
+        return { success: false, message: 'OTP has expired. Please request a new code.' };
+    }
+
+    if (code !== storedCode) {
+        return { success: false, message: 'Incorrect OTP code.' };
+    }
+
+    return { success: true, message: 'OTP verified successfully.' };
+}
+
+async function resetPasswordWithOTP(email, token, newPassword) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    email = email.trim().toLowerCase();
+
+    if (supabaseAvailable) {
+        // Find user by email, since password reset relies on email
+        const { error } = await supabase.from('users').update({ password: newPassword }).eq('email', email);
+        if (error) return { success: false, message: error.message };
+        return { success: true, message: 'Password updated successfully. You can now login.' };
+    } else {
+        const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
+        const idx = users.findIndex(u => (u.email || '').toLowerCase() === email);
+        if (idx === -1) return { success: false, message: 'User not found.' };
+        users[idx].password = newPassword;
+        localStorage.setItem('barangay_users', JSON.stringify(users));
+        return { success: true, message: 'Password updated successfully. You can now login.' };
+    }
+}
+
+window.sendPasswordResetOTP = sendPasswordResetOTP;
+window.verifyPasswordResetOTP = verifyPasswordResetOTP;
+window.resetPasswordWithOTP = resetPasswordWithOTP;
+
