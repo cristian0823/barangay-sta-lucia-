@@ -340,10 +340,10 @@
                 </div>
                 <!-- Mobile Bell -->
                 <button class="mobile-header-btn relative" onclick="toggleBellDropdown(event)" title="Notifications" style="font-size: 16px;">
-                    🔔
+                    <i class="bi bi-bell-fill"></i>
                     <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
-                <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode">🌙</button>
+                <button class="mobile-header-btn dark-mode-toggle" onclick="toggleDarkMode()" id="mobileDarkModeBtn" title="Toggle Dark Mode"><i class="bi bi-moon-fill"></i></button>
                 
                 
             </div>
@@ -352,12 +352,12 @@
             <!-- Desktop Bell -->
             <div class="relative flex items-center justify-center">
                 <button onclick="toggleBellDropdown(event)" id="desktopBellBtn" title="Notifications" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg relative">
-                    🔔
+                    <i class="bi bi-bell-fill"></i>
                     <span id="bellBadgeDesktop" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
             </div>
 
-            <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg">🌙</button>
+            <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg"><i class="bi bi-moon-fill"></i></button>
 
             <div class="h-8 w-px bg-gray-200 dark:bg-slate-700 mx-1"></div>
             
@@ -386,7 +386,7 @@
                     <div class="absolute -top-2 right-[120px] md:right-[15px] w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45 dark:bg-slate-800 dark:border-slate-700 hidden md:block"></div>
                     <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 relative z-10 w-full" onclick="event.stopPropagation()">
                         <h3 class="font-bold text-gray-800 text-[15px] dark:text-gray-100">Notifications</h3>
-                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" class="text-xs text-emerald-600 hover:underline font-semibold flex items-center gap-1"><span class="text-sm">✔</span> Mark all read</button>
+                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" class="text-xs text-emerald-600 hover:underline font-semibold flex items-center gap-1"><span class="text-sm"><i class="bi bi-check-all"></i></span> Mark all read</button>
                     </div>
                     <div id="bellDropdownList" class="max-h-[380px] overflow-y-auto flex flex-col relative z-10 w-full" onclick="event.stopPropagation()">
                         <p id="bellEmptyState" class="text-center text-sm text-gray-500 py-6 hidden dark:text-gray-400">No new notifications.</p>
@@ -435,7 +435,7 @@
                     <div style="position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:rgba(16,185,129,0.15);border-radius:50%;"></div>
                     <div style="position:absolute;bottom:-40px;left:40%;width:220px;height:110px;background:radial-gradient(ellipse,rgba(20,184,166,0.15) 0%,transparent 70%);"></div>
                     <div style="position:relative;z-index:1;">
-                        <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0;">Welcome back, <span id="welcomeName">Resident</span>! 👋</h2>
+                        <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0;">Welcome back, <span id="welcomeName">Resident</span>! </h2>
                     </div>
                 </div>
 
@@ -467,28 +467,28 @@
                 <!-- Quick Actions -->
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;">
                     <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:#3b82f6;">
-                        <span class="uqa-icon">📦</span>
+                        <span class="uqa-icon"><i class="bi bi-box-seam"></i></span>
                         <div class="uqa-label">Borrow Equipment</div>
                         <div class="uqa-sub">Request barangay items</div>
-                        <span class="uqa-arrow">→</span>
+                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                     <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:#f59e0b;">
-                        <span class="uqa-icon">💬</span>
+                        <span class="uqa-icon"><i class="bi bi-chat-left-text-fill"></i></span>
                         <div class="uqa-label">Report a Concern</div>
                         <div class="uqa-sub">Submit issues or feedback</div>
-                        <span class="uqa-arrow">→</span>
+                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                     <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:#8b5cf6;">
-                        <span class="uqa-icon">📅</span>
+                        <span class="uqa-icon"><i class="bi bi-calendar-check-fill"></i></span>
                         <div class="uqa-label">Reserve the Court</div>
                         <div class="uqa-sub">Reserve a time slot</div>
-                        <span class="uqa-arrow">→</span>
+                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                     <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:#10b981;">
-                        <span class="uqa-icon">🎉</span>
+                        <span class="uqa-icon"><i class="bi bi-calendar-event-fill"></i></span>
                         <div class="uqa-label">Upcoming Events</div>
                         <div class="uqa-sub">Barangay activities</div>
-                        <span class="uqa-arrow">→</span>
+                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                 </div>
 
@@ -497,7 +497,7 @@
                     <!-- My Status Card -->
                     <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-                            <div style="width:36px;height:36px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📊</div>
+                            <div style="width:36px;height:36px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-bar-chart-fill"></i></div>
                             <div>
                                 <div style="font-size:14px;font-weight:700;color:var(--text-main);">My Overview</div>
                                 <div style="font-size:11px;color:var(--text-muted);">Your service activity</div>
@@ -505,19 +505,19 @@
                         </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('equipment')">
                                 <div class="px-4 py-3 flex justify-between items-center bg-blue-50/50 dark:bg-blue-900/10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">📦</span>Active Borrowings</span>
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-box-seam"></i></span>Active Borrowings</span>
                                     <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:#3b82f6;">—</span>
                                 </div>
                             </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('concerns')">
                                 <div class="px-4 py-3 flex justify-between items-center bg-amber-50/50 dark:bg-amber-900/10 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">💬</span>Open Concerns</span>
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-megaphone-fill"></i></span>Open Concerns</span>
                                     <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:#f59e0b;">—</span>
                                 </div>
                             </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('booking')">
                                 <div class="px-4 py-3 flex justify-between items-center bg-purple-50/50 dark:bg-purple-900/10 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2">📅</span>Upcoming Reservations</span>
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-calendar-check-fill"></i></span>Upcoming Reservations</span>
                                     <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#8b5cf6;">—</span>
                                 </div>
                             </div>
@@ -526,7 +526,7 @@
                     <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                             <div style="display:flex;align-items:center;gap:10px;">
-                                <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏘️</div>
+                                <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-houses-fill"></i></div>
                                 <div>
                                     <div style="font-size:14px;font-weight:700;color:var(--text-main);">Barangay Services</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Available to residents</div>
@@ -536,7 +536,7 @@
                         </div>
                         <div style="display:flex;flex-direction:column;gap:10px;">
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
-                                <div style="width:32px;height:32px;border-radius:8px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:16px;">📦</div>
+                                <div style="width:32px;height:32px;border-radius:8px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-box-seam"></i></div>
                                 <div style="flex:1;">
                                     <div style="font-size:13px;font-weight:700;color:var(--text-main);">Equipment Lending</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Chairs, tables & more</div>
@@ -544,7 +544,7 @@
                                 <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
-                                <div style="width:32px;height:32px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:16px;">🏀</div>
+                                <div style="width:32px;height:32px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-dribbble"></i></div>
                                 <div style="flex:1;">
                                     <div style="font-size:13px;font-weight:700;color:var(--text-main);">Facility Reservations</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Basketball & Multi-purpose</div>
@@ -552,7 +552,7 @@
                                 <span style="font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
-                                <div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:16px;">💬</div>
+                                <div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-chat-left-text-fill"></i></div>
                                 <div style="flex:1;">
                                     <div style="font-size:13px;font-weight:700;color:var(--text-main);">Citizen Concerns</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Report issues 24/7</div>
@@ -568,13 +568,13 @@
             <div id="panel-equipment" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-end flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 class="text-3xl font-extrabold text-emerald-600 mb-2">📦 Equipment Borrowing</h2>
+                        <h2 class="text-3xl font-extrabold text-emerald-600 mb-2"><i class="bi bi-box-seam mr-2"></i>Equipment Borrowing</h2>
                         <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
                     </div>
                 </div>
                 <div class="mb-6">
                     <div style="position:relative;">
-                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;">🔍</span>
+                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;"><i class="bi bi-search"></i></span>
                         <input
                             id="equipmentSearchInput"
                             type="text"
@@ -591,11 +591,11 @@
                 <div class="glass-card p-6">
                     <div class="flex items-center justify-between mb-4" style="gap:12px;flex-wrap:wrap;">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-xl">📋</div>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-xl"><i class="bi bi-card-list"></i></div>
                             <div><h3 class="text-xl font-bold text-gray-800 dark:text-white">My Borrowing History</h3><p class="text-xs text-gray-500">Track all your equipment requests</p></div>
                         </div>
                         <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
-                            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
+                            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;"><i class="bi bi-search"></i></span>
                             <input
                                 id="borrowingSearchInput"
                                 type="text"
@@ -615,7 +615,7 @@
             <!-- PANEL 3: CONCERNS -->
             <div id="panel-concerns" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="panel-header text-amber-500">💬 Submit a Concern</h2>
+                    <h2 class="panel-header text-amber-500"><i class="bi bi-chat-left-text-fill mr-2"></i>Submit a Concern</h2>
                     <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
                 </div>
                 
@@ -624,7 +624,7 @@
                     <!-- Form Secton -->
                     <div class="w-full glass-card overflow-hidden">
                         <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-5 border-b" style="border-color: var(--border-color);">
-                            <h3 class="text-base font-extrabold text-white">📝 New Report</h3>
+                            <h3 class="text-base font-extrabold text-white"><i class="bi bi-pencil-square mr-2"></i>New Report</h3>
                             <p class="text-xs text-amber-100 mt-0.5">Please provide details about your concern.</p>
                         </div>
                         <div class="p-5">
@@ -637,11 +637,11 @@
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Category <span class="text-red-500">*</span></label>
                                     <select id="concernCategory" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 transition-all outline-none">
                                         <option value="" disabled selected>Select a category...</option>
-                                        <option value="Road Issue">🚧 Road Issue / Pothole</option>
-                                        <option value="Electric">⚡ Electric / Power Outage</option>
-                                        <option value="Water Leak">💧 Water Leak / Broken Pipe</option>
-                                        <option value="Waste & Cleanliness">🗑️ Waste & Cleanliness</option>
-                                        <option value="Other">📝 Other</option>
+                                        <option value="Road Issue"> Road Issue / Pothole</option>
+                                        <option value="Electric"> Electric / Power Outage</option>
+                                        <option value="Water Leak"> Water Leak / Broken Pipe</option>
+                                        <option value="Waste & Cleanliness"> Waste & Cleanliness</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
                                 <div class="space-y-1.5">
@@ -653,7 +653,7 @@
                                     <textarea id="concernDescription" required rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
                                 </div>
                                 <div class="space-y-1.5 p-4 bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100 rounded-xl border border-amber-100 dark:border-amber-800/30">
-                                    <label class="block text-sm font-bold mb-1">📷 Attach Photo <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-bold mb-1"><i class="bi bi-camera-fill mr-2"></i>Attach Photo <span class="text-red-500">*</span></label>
                                     <p class="text-[11px] opacity-80 mb-3 leading-relaxed">Adding an image helps the admin understand and address your concern faster.</p>
                                     <div id="imagePreviewContainer" class="hidden mb-3 relative inline-block">
                                         <img id="concernImagePreview" src="" alt="Preview" class="max-w-full h-32 rounded-lg border-2 border-amber-300 dark:border-amber-600 shadow-sm object-cover">
@@ -663,7 +663,7 @@
                                 </div>
                                 
                                 <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl text-white bg-amber-500 hover:bg-amber-600 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none">
-                                    Submit Report →
+                                    Submit Report <i class="bi bi-arrow-right"></i>
                                 </button>
                             </form>
                         </div>
@@ -672,7 +672,7 @@
                     <!-- History Section -->
                     <div class="w-full glass-card overflow-hidden">
                         <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);">
-                            <h3 class="text-base font-bold" style="color: var(--text-main);">📋 Report History</h3>
+                            <h3 class="text-base font-bold" style="color: var(--text-main);"><i class="bi bi-card-list"></i> Report History</h3>
                             <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
                         </div>
                         <div class="p-6">
@@ -687,21 +687,21 @@
             <div id="panel-booking" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600">📅 Court Reservation</h2>
+                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600"><i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation</h2>
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95">🏀 Basketball Court</button>
-                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);">🏢 Multi-Purpose Hall</button>
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
+                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
                     </div>
                 </div>
                 <div class="glass-card p-6 mb-8">
                     <div class="flex justify-between items-center mb-6">
                         <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
                         <div class="flex gap-2">
-                            <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">←</button>
+                            <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-left"></i></button>
                             <button onclick="(function(){const t=new Date();bookingYear=t.getFullYear();bookingMonth=t.getMonth();renderBookingCalendar();})()" class="px-3 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition border border-emerald-400 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" style="min-width:52px;">Today</button>
-                            <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);">→</button>
+                            <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-right"></i></button>
                         </div>
                     </div>
                     <div class="grid grid-cols-7 gap-1 mb-3">
@@ -723,7 +723,7 @@
                 </div>
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
-                        <h3 class="text-base font-bold" style="color: var(--text-main);">📋 My Active Reservations</h3>
+                        <h3 class="text-base font-bold" style="color: var(--text-main);"><i class="bi bi-card-list"></i> My Active Reservations</h3>
                         <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming facility reservations.</p>
                     </div>
                     <div class="p-6">
@@ -736,7 +736,7 @@
             <!-- PANEL 5: EVENTS -->
             <div id="panel-events" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2">🎉 Upcoming Court Events</h2>
+                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2"><i class="bi bi-calendar-event-fill mr-2"></i>Upcoming Court Events</h2>
                     <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
                 </div>
                 <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"></div>
@@ -748,7 +748,7 @@
                 <!-- Hero Banner -->
                 <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">👤</div>
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-person-fill"></i></div>
                         <div>
                             <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Profile</div>
                             <div style="font-size:13px;color:#94a3b8;">Manage your personal and account information</div>
@@ -762,7 +762,7 @@
                     <!-- Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
                         <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
-                            <span style="font-size:15px;">👤</span>
+                            <span style="font-size:15px;"><i class="bi bi-person-fill"></i></span>
                             <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
                         </div>
                         <div class="settings-card-body" style="padding:20px 22px;">
@@ -788,7 +788,7 @@
                                     </div>
                                 </div>
                                 
-                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;">✔ Save Changes</button>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;"><i class="bi bi-check-circle mr-2"></i>Save Changes</button>
                             </form>
                         </div>
                     </div>
@@ -834,7 +834,7 @@
                         <div class="settings-card-body" style="padding:20px 22px;">
                             <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:10px;">
                                 <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Account Type</span>
-                                <span style="padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #bbf7d0;">👤 Resident</span>
+                                <span style="padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #bbf7d0;"><i class="bi bi-person-fill"></i> Resident</span>
                             </div>
                             <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:10px;">
                                 <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Status</span>
@@ -854,7 +854,7 @@
                         </div>
                         <div class="settings-card-body" style="padding:20px 22px;">
                             <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Sign out of your account on this device.</p>
-                            <button id="mobileLogoutBtn" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#fef2f2;color:#b91c1c;border:1.5px solid #fecaca;transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">🚪 Logout</button>
+                            <button id="mobileLogoutBtn" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#fef2f2;color:#b91c1c;border:1.5px solid #fecaca;transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'"><i class="bi bi-box-arrow-right mr-2"></i>Logout</button>
                         </div>
                     </div>
                     <!-- Danger Zone Card -->
@@ -865,7 +865,7 @@
                         </div>
                         <div class="settings-card-body" style="padding:20px 22px;">
                             <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Once your account is deleted, it cannot be recovered.</p>
-                            <button onclick="deleteSettingsAccount()" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#ef4444;color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3);transition:all 0.2s;">🗑️ Delete My Account</button>
+                            <button onclick="deleteSettingsAccount()" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#ef4444;color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3);transition:all 0.2s;"> Delete My Account</button>
                         </div>
                     </div>
                 </div>
@@ -962,7 +962,7 @@
                                 </div>
                             </div>
                             <div class="flex flex-col items-center">
-                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center"><span class="text-emerald-600 dark:text-emerald-300 text-xl">→</span></div>
+                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center"><span class="text-emerald-600 dark:text-emerald-300 text-xl"><i class="bi bi-arrow-right"></i></span></div>
                                 <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="borrowDuration">0 days</div>
                             </div>
                             <div class="flex-1 text-center">
@@ -1145,7 +1145,7 @@
     <div id="conflictConfirmModal" class="fixed inset-0 z-[400] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);">
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-xs overflow-hidden" style="animation:fadeInUp 0.3s ease;">
             <div style="padding:28px 24px;text-align:center;">
-                <div style="font-size:42px;margin-bottom:12px;">🗑️</div>
+                <div style="font-size:42px;margin-bottom:12px;"></div>
                 <h3 style="font-size:18px;font-weight:800;color:#1f2937;margin:0 0 8px;">Are you sure?</h3>
                 <p style="font-size:13px;color:#6b7280;margin:0 0 24px;line-height:1.6;">This will permanently cancel your court booking. This action cannot be undone.</p>
                 <div style="display:flex;gap:10px;">
@@ -1815,7 +1815,7 @@
                 
                 const timeStr = n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Just now';
 
-                let iconHtml = '🔔';
+                let iconHtml = '<i class="bi bi-bell-fill"></i>';
                 if (n.type === 'booking_approved') iconHtml = '📅';
                 if (n.type === 'booking_rejected') iconHtml = '❌';
                 if (n.type === 'concern_resolved') iconHtml = '✅';
@@ -1848,7 +1848,7 @@
                 const msgEl = document.getElementById('bdModalMsg');
                 const iconEl = document.getElementById('bdModalIcon');
                 if (modal && titleEl && msgEl && iconEl) {
-                    let iconHtml = '🔔', titleText = 'Notification';
+                    let iconHtml = '<i class="bi bi-bell-fill"></i>', titleText = 'Notification';
                     if (notif.type === 'booking_approved') { iconHtml = '📅'; titleText = 'Reservation Approved'; }
                     if (notif.type === 'booking_rejected') { iconHtml = '❌'; titleText = 'Reservation Rejected'; }
                     if (notif.type === 'concern_resolved') { iconHtml = '✅'; titleText = 'Concern Resolved'; }
@@ -1988,7 +1988,7 @@
         }
 
         function backToConflictChoice() {
-            // Step: "No" on confirmation → go back to Reschedule/Cancel choice
+            // Step: "No" on confirmation <i class="bi bi-arrow-right"></i> go back to Reschedule/Cancel choice
             const confirmModal = document.getElementById('conflictConfirmModal');
             if (confirmModal) { confirmModal.classList.add('hidden'); confirmModal.classList.remove('flex'); }
             const choiceModal = document.getElementById('conflictNotifModal');
@@ -2116,7 +2116,7 @@
             const list = await getMyBorrowings();
             const container = document.getElementById('myBorrowingsList');
             if (!list || list.length === 0) {
-                container.innerHTML = '<div class="flex flex-col items-center justify-center py-12 text-center col-span-full"><div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-4xl mb-4">📦</div><p class="text-gray-500 font-medium">No borrowing history yet</p></div>';
+                container.innerHTML = '<div class="flex flex-col items-center justify-center py-12 text-center col-span-full"><div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-4xl mb-4"><i class="bi bi-box-seam"></i></div><p class="text-gray-500 font-medium">No borrowing history yet</p></div>';
                 return;
             }
             const sorted = [...list].sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
@@ -2131,7 +2131,7 @@
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + statusBorder + ' shadow-sm hover:shadow-md transition-all duration-300">' +
                     '<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div class="flex items-start gap-4">' + equipIcon + 
                     '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-emerald-600 font-bold">x' + b.quantity + '</span></p></div></div>' +
-                    '<div class="flex flex-col items-end gap-2">' + statusBadge + '<div class="text-xs text-gray-400 flex items-center gap-1">📅 ' + formatDate(b.borrowDate) + ' → ' + formatDate(b.returnDate) + '</div></div></div>' +
+                    '<div class="flex flex-col items-end gap-2">' + statusBadge + '<div class="text-xs text-gray-400 flex items-center gap-1">📅 ' + formatDate(b.borrowDate) + ' <i class="bi bi-arrow-right"></i> ' + formatDate(b.returnDate) + '</div></div></div>' +
                     rejectionMsg +
                     (b.status === 'pending' ? '<div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between"><p class="text-xs text-amber-600 font-medium flex items-center gap-1">⏳ Waiting for approval</p><div class="flex gap-2"><button onclick="cancelEqRequest(' + b.id + ')" class="px-4 py-2 rounded-lg text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Cancel</button></div></div>' : '') +
                     '</div>';
@@ -2221,7 +2221,7 @@
                 const start = new Date(borrowStartDate);
                 const diffDays = Math.ceil(Math.abs(d - start) / (1000*60*60*24)) + 1;
                 if (durText) durText.textContent = diffDays + (diffDays > 1 ? ' days' : ' day');
-                if (rangeDisplay) rangeDisplay.innerHTML = '<span class="text-emerald-600">📅 ' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' → ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
+                if (rangeDisplay) rangeDisplay.innerHTML = '<span class="text-emerald-600">📅 ' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' <i class="bi bi-arrow-right"></i> ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
             } else {
                 if (rDisp) {
                     rDisp.innerHTML = '<div class="text-lg font-bold text-teal-700">Select date</div><div class="text-xs text-teal-500">from calendar</div>';
@@ -2456,7 +2456,7 @@
             }
             
             btn.disabled = false; 
-            btn.innerHTML = 'Submit Report →';
+            btn.innerHTML = 'Submit Report <i class="bi bi-arrow-right"></i>';
         });
 
         // Image Preview Logic
@@ -2507,7 +2507,7 @@
             const titleEl = document.getElementById('bookingPanelTitle');
             const subtitleEl = document.getElementById('bookingPanelSubtitle');
             if (venue === 'basketball') {
-                if (titleEl) titleEl.innerHTML = '📅 Court Reservation';
+                if (titleEl) titleEl.innerHTML = '<i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation';
                 if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay basketball court.';
             } else {
                 if (titleEl) titleEl.innerHTML = '🏢 Hall Reservation';
@@ -2681,7 +2681,7 @@
             _dsCurrentDate = dateStr;
             _dsCurrentVenue = selectedVenue;
 
-            const venueLabel = selectedVenue === 'basketball' ? '🏀 Basketball Court' : '🏢 Multi-Purpose Hall';
+            const venueLabel = selectedVenue === 'basketball' ? '<i class="bi bi-dribbble mr-2"></i>Basketball Court' : '<i class="bi bi-building mr-2"></i>Multi-Purpose Hall';
             const d = new Date(dateStr + 'T00:00:00');
             const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -2802,7 +2802,7 @@
             });
             dayEvents.forEach(e => {
                 const timeStr = fmt12(e.time) + (e.end_time ? ' – ' + fmt12(e.end_time) : '');
-                const venueEvLabel = (e.venue === 'multipurpose' || (e.location && e.location.includes('Multi-Purpose'))) ? '🏢 Multi-Purpose Hall' : '🏀 Basketball Court';
+                const venueEvLabel = (e.venue === 'multipurpose' || (e.location && e.location.includes('Multi-Purpose'))) ? '<i class="bi bi-building mr-2"></i>Multi-Purpose Hall' : '<i class="bi bi-dribbble mr-2"></i>Basketball Court';
                 entries.push({ type: 'event', timeStr, label: e.title, purpose: (e.organizer ? 'By ' + e.organizer + ' · ' : '') + venueEvLabel });
             });
 
@@ -3267,7 +3267,7 @@ async function loadSettingsView() {
                 phone: document.getElementById('s-phone').value.trim(),
                 address: document.getElementById('s-address').value.trim()
             });
-            btn.disabled = false; btn.innerHTML = '✔ Save Changes';
+            btn.disabled = false; btn.innerHTML = '<i class="bi bi-check-circle mr-2"></i>Save Changes';
             showToast(result.message, result.success ? 'success' : 'error');
         });
 
@@ -3639,11 +3639,11 @@ async function loadSettingsView() {
                 <span class="tab-label">Bookings</span>
         </button>
         <button onclick="showPanel('equipment')" id="tab-equipment" class="tab-btn">
-            <span class="tab-icon">📦</span>
+            <span class="tab-icon"><i class="bi bi-box-seam"></i></span>
             <span class="tab-label">Items</span>
         </button>
         <button onclick="showPanel('concerns')" id="tab-concerns" class="tab-btn">
-            <span class="tab-icon">💬</span>
+            <span class="tab-icon"><i class="bi bi-chat-left-text-fill"></i></span>
             <span class="tab-label">Concerns</span>
         </button>
         <button onclick="showPanel('history')" id="tab-history" class="tab-btn">
@@ -3662,7 +3662,7 @@ async function loadSettingsView() {
             </button>
             <div class="p-6 text-center pt-8">
                 <div id="bdModalIcon" class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
-                    🔔
+                    <i class="bi bi-bell-fill"></i>
                 </div>
                 <h3 id="bdModalTitle" class="text-xl font-bold text-gray-900 dark:text-white mb-3">Notification</h3>
                 <p id="bdModalMsg" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed"></p>
