@@ -643,17 +643,30 @@
 
                     const isAdmin = result.user.role === 'admin';
 
-                    // TOTP check — use values already fetched from SELECT * during login.
-                    // Fall back to a DB fetch only if the field is absent (e.g. local-storage path).
-                    let totpEnabled  = result.user.totp_enabled;
-                    let totpSecret   = result.user.totp_secret;
-                    if (totpEnabled === undefined || totpEnabled === null) {
-                        const info = await fetchUserTOTPInfo(result.user.id);
-                        totpEnabled = info.totp_enabled;
-                        totpSecret  = info.totp_secret;
+                    // ── TOTP CHECK ───────────────────────────────────────────────
+                    // Always fetch fresh from DB by username (guaranteed correct).
+                    // Never rely on cached/mapped totp_enabled which can be stale or false.
+                    let totpEnabled = false;
+                    let totpSecret  = null;
+                    try {
+                        if (window.supabase) {
+                            const { data: totpRow } = await window.supabase
+                                .from('users')
+                                .select('totp_secret, totp_enabled, id')
+                                .eq('username', result.user.username)
+                                .maybeSingle();
+                            if (totpRow) {
+                                totpEnabled = !!totpRow.totp_enabled;
+                                totpSecret  = totpRow.totp_secret || null;
+                            }
+                        }
+                    } catch(e) {
+                        console.warn('[TOTP] Fresh DB fetch failed, falling back to user object:', e);
+                        totpEnabled = !!result.user.totp_enabled;
+                        totpSecret  = result.user.totp_secret || null;
                     }
 
-                    if (totpEnabled) {
+                    if (totpEnabled && totpSecret) {
                         // Attach secret to user object so submitTOTPCode can use it
                         result.user.totp_secret  = totpSecret;
                         result.user.totp_enabled = true;
@@ -662,7 +675,7 @@
                     }
 
                     // ── Non-admin users MUST set up Google Authenticator before accessing the dashboard
-                    if (!isAdmin && !info.totp_enabled) {
+                    if (!isAdmin && !totpEnabled) {
                         // Store session as pending — setup-totp.html will finalize it
                         sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
                         sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
