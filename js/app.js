@@ -3587,9 +3587,11 @@ async function sendPasswordResetOTP(email) {
         emailjs.init({ publicKey: 'DPEG6BGMwO8ExGg_e' });
         
         await emailjs.send('service_th96vue', 'template_l72erqi', {
-            to_name: targetUser.full_name || targetUser.username || 'Admin',
-            user_email: email,
-            message: 'Your password reset OTP code is: ' + otp + '. This code will expire in 10 minutes.'
+            email: email,
+            name: targetUser.full_name || targetUser.username || 'Admin',
+            title: 'Password Reset OTP',
+            message: 'Your password reset OTP code is: ' + otp,
+            details: 'This code will expire in 10 minutes. If you did not request this, please ignore this email.'
         });
 
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
