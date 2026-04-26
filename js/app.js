@@ -3590,7 +3590,7 @@ async function sendPasswordResetOTP(email) {
 
         window.emailjs.init({ publicKey: 'DPEG6BGMwO8ExGg_e' });
 
-        const sendResult = await window.emailjs.send('service_th96vue', 'template_l72erqi', {
+        const sendResult = await window.emailjs.send('service_th96vue', 'template_rkfevs3', {
             email: email,
             name: targetUser.full_name || targetUser.username || 'Admin',
             title: 'Password Reset OTP',
