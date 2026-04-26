@@ -3578,26 +3578,31 @@ async function sendPasswordResetOTP(email) {
 
     try {
         if (!window.emailjs) {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-            document.head.appendChild(script);
-            await new Promise((resolve) => script.onload = resolve);
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
         }
         
-        emailjs.init({ publicKey: 'DPEG6BGMwO8ExGg_e' });
+        window.emailjs.init({ publicKey: 'DPEG6BGMwO8ExGg_e' });
         
-        await emailjs.send('service_th96vue', 'template_l72erqi', {
+        await window.emailjs.send('service_th96vue', 'template_l72erqi', {
             email: email,
             name: targetUser.full_name || targetUser.username || 'Admin',
             title: 'Password Reset OTP',
             message: 'Your password reset OTP code is: ' + otp,
-            details: 'This code will expire in 10 minutes. If you did not request this, please ignore this email.'
+            details: 'This code will expire in 10 minutes. If you did not request this, please ignore this email.',
+            Company_Name: "Barangay Sta. Lucia"
         });
 
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
         console.error('EmailJS error:', err);
-        return { success: false, message: 'Failed to send email. Please check your internet connection or contact support.' };
+        const errMsg = err && err.text ? err.text : (err && err.message ? err.message : String(err));
+        return { success: false, message: 'Failed to send email. ' + errMsg };
     }
 }
 
