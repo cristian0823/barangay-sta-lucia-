@@ -402,6 +402,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         if (matchedDefault) {
             const { data: checkUser } = await supabase.from('users').select('*').eq('username', username).maybeSingle();
             if (!checkUser) {
+                // Only create user if they don't exist at all
                 const defaultHashed = await hashPassword(matchedDefault.password);
                 await supabase.from('users').insert([{
                     username: matchedDefault.username,
@@ -415,6 +416,8 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                 // Auto-fix email if default changed (e.g. for MFA)
                 await supabase.from('users').update({ email: matchedDefault.email }).eq('id', checkUser.id);
             }
+            // NOTE: We intentionally do NOT reset/restore the password here.
+            // If admin changed their password via forgot-password, we respect that.
         }
 
         const encryptedUsername = await encryptData(username);
@@ -429,11 +432,14 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             const isAdmin = userMatch.role === 'admin' || userMatch.username.toLowerCase().startsWith('admin');
             
             if (isAdmin) {
-                if (userMatch.password === password || userMatch.password === hashedPassword) {
+                // ALWAYS compare using hashed password — never accept plain-text match
+                // This ensures changed passwords are respected
+                if (userMatch.password === hashedPassword) {
                     data = userMatch;
-                    if (userMatch.password === password && password !== hashedPassword) {
-                        await supabase.from('users').update({ password: hashedPassword }).eq('id', userMatch.id);
-                    }
+                } else if (userMatch.password === password && password !== hashedPassword) {
+                    // Legacy: DB has plain-text password — accept but immediately upgrade to hash
+                    data = userMatch;
+                    await supabase.from('users').update({ password: hashedPassword }).eq('id', userMatch.id);
                 }
             } else {
                 // Passwordless for residents
@@ -523,11 +529,16 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
     if (user) {
         const isAdmin = user.role === 'admin' || user.username.toLowerCase().startsWith('admin');
         if (isAdmin) {
-            if (user.password !== password && user.password !== localHashedPassword) {
-                user = null;
+            // Primary check: hashed password match
+            if (user.password === localHashedPassword) {
+                // Good — password matches as hash
             } else if (user.password === password && password !== localHashedPassword) {
+                // Legacy plain-text stored — accept once and upgrade to hash
                 user.password = localHashedPassword;
                 localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+            } else {
+                // Password doesn't match either form — reject login
+                user = null;
             }
         }
     }
@@ -2938,13 +2949,21 @@ async function changePassword(currentPassword, newPassword) {
 
     const supabaseAvailable = await isSupabaseAvailable();
 
+    // Always hash for comparison since DB stores hashed passwords
+    const hashedCurrent = await hashPassword(currentPassword);
+    const hashedNew     = await hashPassword(newPassword);
+
     if (supabaseAvailable) {
         const { data: dbUser } = await supabase.from('users').select('password').eq('id', user.id).single();
-        if (!dbUser || dbUser.password !== currentPassword) {
+        if (!dbUser) return { success: false, message: 'User not found.' };
+
+        // Accept both hashed and (legacy) plain-text stored passwords
+        const passwordMatches = dbUser.password === hashedCurrent || dbUser.password === currentPassword;
+        if (!passwordMatches) {
             return { success: false, message: 'Current password is incorrect' };
         }
 
-        const { error } = await supabase.from('users').update({ password: newPassword }).eq('id', user.id);
+        const { error } = await supabase.from('users').update({ password: hashedNew }).eq('id', user.id);
         if (error) return { success: false, message: error.message };
         return { success: true, message: 'Password changed successfully' };
     } else {
@@ -2952,10 +2971,12 @@ async function changePassword(currentPassword, newPassword) {
         const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY));
         const index = users.findIndex(u => u.id === user.id);
         if (index === -1) return { success: false, message: 'User not found' };
-        if (users[index].password !== currentPassword) {
+
+        const passwordMatches = users[index].password === hashedCurrent || users[index].password === currentPassword;
+        if (!passwordMatches) {
             return { success: false, message: 'Current password is incorrect' };
         }
-        users[index].password = newPassword;
+        users[index].password = hashedNew;
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
         return { success: true, message: 'Password changed successfully' };
     }
@@ -3549,10 +3570,36 @@ async function sendPasswordResetOTP(email) {
     let targetUser = null;
 
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+        // Try plain-text email first (default accounts store email in plain text)
+        let { data, error } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
         if (!error && data) {
             userFound = true;
             targetUser = data;
+        }
+
+        // If not found, try encrypted email
+        if (!userFound && typeof encryptData === 'function') {
+            const encryptedEmail = await encryptData(email);
+            const { data: data2, error: error2 } = await supabase.from('users').select('*').eq('email', encryptedEmail).maybeSingle();
+            if (!error2 && data2) {
+                userFound = true;
+                targetUser = data2;
+            }
+        }
+
+        // If still not found, try fetching all admin users and match decrypted
+        if (!userFound) {
+            const { data: allAdmins } = await supabase.from('users').select('*').eq('role', 'admin');
+            if (allAdmins && allAdmins.length > 0 && typeof decryptData === 'function') {
+                for (const u of allAdmins) {
+                    const decrypted = await decryptData(u.email || '');
+                    if ((decrypted || '').toLowerCase() === email) {
+                        userFound = true;
+                        targetUser = u;
+                        break;
+                    }
+                }
+            }
         }
     } else {
         const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
@@ -3572,7 +3619,9 @@ async function sendPasswordResetOTP(email) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = Date.now() + 10 * 60 * 1000; // 10 mins
 
+    // Store both email AND the matched user's ID so the reset can use ID-based update
     sessionStorage.setItem('otp_email', email);
+    sessionStorage.setItem('otp_user_id', String(targetUser.id));
     sessionStorage.setItem('otp_code', otp);
     sessionStorage.setItem('otp_expiry', expiry.toString());
 
@@ -3637,16 +3686,45 @@ async function resetPasswordWithOTP(email, token, newPassword) {
     const supabaseAvailable = await isSupabaseAvailable();
     email = email.trim().toLowerCase();
 
+    // Hash the new password the same way login does (SHA-256)
+    let hashedNew = newPassword;
+    if (typeof hashPassword === 'function') {
+        hashedNew = await hashPassword(newPassword);
+    }
+
     if (supabaseAvailable) {
-        // Find user by email, since password reset relies on email
-        const { error } = await supabase.from('users').update({ password: newPassword }).eq('email', email);
-        if (error) return { success: false, message: error.message };
+        // Prefer ID-based update (stored in sessionStorage by sendPasswordResetOTP)
+        const userId = sessionStorage.getItem('otp_user_id');
+
+        let updateError = null;
+
+        if (userId) {
+            // Update by user ID — 100% reliable regardless of email format
+            const { error } = await supabase.from('users').update({ password: hashedNew }).eq('id', userId);
+            updateError = error;
+        } else {
+            // Fallback: try plain-text email match
+            const { error } = await supabase.from('users').update({ password: hashedNew }).eq('email', email);
+            updateError = error;
+
+            // If 0 rows updated, try encrypted email
+            if (!updateError && typeof encryptData === 'function') {
+                const encryptedEmail = await encryptData(email);
+                const { error: e2 } = await supabase.from('users').update({ password: hashedNew }).eq('email', encryptedEmail);
+                updateError = e2;
+            }
+        }
+
+        if (updateError) return { success: false, message: updateError.message };
+
+        // Clean up session flags
+        sessionStorage.removeItem('otp_user_id');
         return { success: true, message: 'Password updated successfully. You can now login.' };
     } else {
         const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
         const idx = users.findIndex(u => (u.email || '').toLowerCase() === email);
         if (idx === -1) return { success: false, message: 'User not found.' };
-        users[idx].password = newPassword;
+        users[idx].password = hashedNew;
         localStorage.setItem('barangay_users', JSON.stringify(users));
         return { success: true, message: 'Password updated successfully. You can now login.' };
     }
