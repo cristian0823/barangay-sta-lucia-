@@ -3593,15 +3593,8 @@ async function sendPasswordResetOTP(email) {
         const sendResult = await window.emailjs.send('service_th96vue', 'template_rkfevs3', {
             email: email,
             name: targetUser.full_name || targetUser.username || 'Admin',
-            title: 'Password Reset OTP',
-            // Common EmailJS template variable names — cover all likely combos
-            otp_code: otp,
-            otp: otp,
-            code: otp,
-            message: otp,
-            expiry_time: '10 minutes',
-            expiry: '10 minutes',
-            details: 'This code will expire in 10 minutes.',
+            passcode: otp,
+            time: '10 minutes',
             Company_Name: 'Barangay Sta. Lucia'
         });
 
