@@ -5044,12 +5044,22 @@
                 tbody.innerHTML = slice.map(b => {
                     const dt = b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
                     const rd = '<div style="line-height:1.2;"><strong style="color:var(--text-main);">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:var(--text-muted);font-size:11px;">'+dt+'</small></div>';
+                    
+                    let cleanPurpose = b.purpose || '';
+                    if(cleanPurpose.includes('| Purpose:')) {
+                        const m = cleanPurpose.match(/Purpose:\s*([^|]+)/);
+                        if(m) cleanPurpose = m[1].trim();
+                    }
+                    if(cleanPurpose.length > 50) cleanPurpose = cleanPurpose.substring(0, 50) + '...';
+                    
+                    const purposeHtml = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span style="color:var(--text-main);font-size:13px;">'+cleanPurpose+'</span><button style="background:transparent;border:1px solid var(--border-color);color:var(--text-main);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseout="this.style.borderColor=\'var(--border-color)\';this.style.color=\'var(--text-main)\'">View Details</button></div>';
+
                     return '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
                         +'<td>'+rd+'</td>'
                         +'<td><strong style="color:var(--text-main);">'+(b.equipment||'')+'</strong></td>'
                         +'<td style="font-weight:bold;color:var(--text-main);">'+(b.quantity||1)+'</td>'
-                        +'<td style="white-space:nowrap;color:var(--text-muted);">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
-                        +'<td style="color:var(--text-main);">'+(b.purpose||'')+'</td>'
+                        +'<td style="white-space:nowrap;color:var(--text-muted);font-size:12px;">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
+                        +'<td style="width:300px;">'+purposeHtml+'</td>'
                         +'<td>'+getStatusBadge(b.status)+'</td></tr>';
                 }).join('');
                 renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
@@ -7671,29 +7681,59 @@
                     const submittedAt = req.created_at || req.createdAt 
                         ? new Date(req.created_at || req.createdAt).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'})
                         : '-';
+                        
+                    let purposeHtml = '';
+                    let rawPurpose = req.purpose || '';
+                    if (rawPurpose.includes('[Time:') && rawPurpose.includes('| Purpose:')) {
+                        let parsedTime = '-', parsedPurpose = '-', parsedContact = '-', parsedAddress = '-';
+                        rawPurpose.split(' | ').forEach(p => {
+                            if(p.startsWith('[Time:')) parsedTime = p.replace('[Time: ', '').replace(']', '').trim();
+                            else if(p.startsWith('Purpose:')) parsedPurpose = p.replace('Purpose: ', '').trim();
+                            else if(p.startsWith('Contact:')) parsedContact = p.replace('Contact: ', '').trim();
+                            else if(p.startsWith('Address:')) parsedAddress = p.replace('Address: ', '').trim();
+                        });
+                        
+                        purposeHtml = `
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border-color,#e5e7eb); margin-bottom:16px;">
+                                <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:var(--primary,#10b981);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">Resident Information</p>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                                    <div><span style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px;">Contact No.</span><strong style="font-size:13px;color:var(--text-main);">${parsedContact}</strong></div>
+                                    <div><span style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px;">Requested Time</span><strong style="font-size:13px;color:var(--text-main);">${parsedTime}</strong></div>
+                                    <div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px;">Address</span><strong style="font-size:13px;color:var(--text-main);">${parsedAddress}</strong></div>
+                                </div>
+                                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Main Purpose</p>
+                                <p style="margin:0;font-size:15px;font-weight:600;color:var(--text-main);line-height:1.5;">${parsedPurpose}</p>
+                            </div>
+                        `;
+                    } else {
+                        purposeHtml = `
+                            <div style="margin-bottom:16px;background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border-color,#e5e7eb);">
+                                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Purpose</p>
+                                <p style="margin:0;font-size:14px;color:var(--text-main);line-height:1.6;">${rawPurpose || 'No purpose provided.'}</p>
+                            </div>
+                        `;
+                    }
+
                     detailsDiv.innerHTML = `
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Resident</p>
-                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text,#111);">${req.userName || '-'}</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Resident</p>
+                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text-main,#111);">${req.userName || '-'}</p>
                             </div>
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Item & Quantity</p>
-                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${req.equipment} (x${req.quantity})</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Item & Quantity</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text-main);">${req.equipment} (x${req.quantity})</p>
                             </div>
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Duration</p>
-                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${req.borrowDate} <br>to ${req.returnDate}</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Duration</p>
+                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text-main);">${req.borrowDate} <br>to ${req.returnDate}</p>
                             </div>
-                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border,#e5e7eb);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Requested</p>
-                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">${submittedAt}</p>
+                            <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:12px; border:1px solid var(--border-color,#e5e7eb);">
+                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--text-muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Requested</p>
+                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text-main);">${submittedAt}</p>
                             </div>
                         </div>
-                        <div style="margin-bottom:16px;background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border,#e5e7eb);">
-                            <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted,#9ca3af);text-transform:uppercase;letter-spacing:0.5px;">Purpose</p>
-                            <p style="margin:0;font-size:14px;color:var(--text);line-height:1.6;">${req.purpose || 'No purpose provided.'}</p>
-                        </div>
+                        ${purposeHtml}
                     `;
                 }
 
@@ -7701,17 +7741,17 @@
                 if (actionsDiv) {
                     if (req.status === 'pending') {
                         actionsDiv.innerHTML = `
-                            <button onclick="approveRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Approve Details</button>
+                            <button onclick="approveRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Approve Request</button>
                             <button onclick="rejectRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"> Reject</button>
                         `;
                     } else if (req.status === 'approved') {
                         actionsDiv.innerHTML = `
-                            <button onclick="returnRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 10px rgba(59,130,246,0.3);" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 14px rgba(59,130,246,0.4)';" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 10px rgba(59,130,246,0.3)';"> 📦 Mark as Returned</button>
+                            <button onclick="returnRequest(${req.id}); closeAdminRequestModal();" style="flex:1;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 10px rgba(59,130,246,0.3);" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 14px rgba(59,130,246,0.4)';" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 10px rgba(59,130,246,0.3)';"><i class="bi bi-box-seam"></i> Mark as Returned</button>
                         `;
                     } else {
                         actionsDiv.innerHTML = `
-                            <p style="width:100%;font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center;">This request has already been ${req.status}.</p>
-                            <button type="button" onclick="closeAdminRequestModal()" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text);font-family:inherit;font-size:14px;">Close</button>
+                            <p style="width:100%;font-size:13px;color:var(--text-muted);margin-bottom:16px;text-align:center;">This request has already been ${req.status}.</p>
+                            <button type="button" onclick="closeAdminRequestModal()" style="width:100%;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;font-weight:600;cursor:pointer;background:var(--panel-bg);color:var(--text-main);font-family:inherit;font-size:14px;">Close</button>
                         `;
                     }
                 }
