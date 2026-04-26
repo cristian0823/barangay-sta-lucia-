@@ -426,11 +426,21 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             .select('*')
             .or(`barangay_id.eq.${encryptedUsername},username.eq.${username}`);
 
-        let data = null;
+        let supabaseUserFound = false;
         if (usersData && usersData.length > 0) {
+            supabaseUserFound = true;
             const userMatch = usersData[0];
             const isAdmin = userMatch.role === 'admin' || userMatch.username.toLowerCase().startsWith('admin');
-            
+
+            // ── Check lockout FIRST (before password check) ─────────
+            if (userMatch.lockout_until && new Date(userMatch.lockout_until) > new Date()) {
+                return { success: false, message: 'Account temporarily locked. Try again later.' };
+            }
+            if (userMatch.suspended_until && new Date(userMatch.suspended_until) > new Date()) {
+                const retryDate = new Date(userMatch.suspended_until).toLocaleDateString();
+                return { success: false, message: `Account suspended until ${retryDate}` };
+            }
+
             if (isAdmin) {
                 // ALWAYS compare using hashed password — never accept plain-text match
                 // This ensures changed passwords are respected
@@ -448,14 +458,6 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         }
 
         if (data) {
-            // Check server-side lockout before granting access
-            if (data.lockout_until && new Date(data.lockout_until) > new Date()) {
-                return { success: false, message: 'Account temporarily locked. Try again later.' };
-            }
-            if (data.suspended_until && new Date(data.suspended_until) > new Date()) {
-                const retryDate = new Date(data.suspended_until).toLocaleDateString();
-                return { success: false, message: `Account suspended until ${retryDate}` };
-            }
             // Reset fail count on successful login
             await supabase.from('users').update({ login_fail_count: 0, lockout_until: null, last_login_at: new Date().toISOString() }).eq('id', data.id);
             const sessionData = {
@@ -491,23 +493,36 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         }
 
         // Track failed login server-side and apply lockout after 5 attempts
-        const { data: failedUser } = await supabase
-            .from('users')
-            .select('id, login_fail_count, lockout_until')
-            .eq('username', username)
-            .maybeSingle();
-        if (failedUser) {
-            const newCount = (failedUser.login_fail_count || 0) + 1;
-            const updates = { login_fail_count: newCount };
-            if (newCount >= 5) {
-                updates.lockout_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-                window.logSecurity('Account Locked', 'Password', 'critical', `Too many failed attempts for ${username}. Account locked for 15 minutes.`, username);
-            } else {
-                window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username} (attempt ${newCount} of 5).`, username);
+        if (supabaseUserFound) {
+            // User EXISTS in Supabase but password was wrong — increment fail count
+            const { data: failedUser } = await supabase
+                .from('users')
+                .select('id, login_fail_count, lockout_until')
+                .eq('username', username)
+                .maybeSingle();
+            if (failedUser) {
+                const newCount = (failedUser.login_fail_count || 0) + 1;
+                const updates = { login_fail_count: newCount };
+                if (newCount >= 5) {
+                    updates.lockout_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+                    window.logSecurity('Account Locked', 'Password', 'critical', `Too many failed attempts for ${username}. Account locked for 15 minutes.`, username);
+                } else {
+                    window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username} (attempt ${newCount} of 5).`, username);
+                }
+                await supabase.from('users').update(updates).eq('id', failedUser.id);
             }
-            await supabase.from('users').update(updates).eq('id', failedUser.id);
+
+            if (error) {
+                console.error('Supabase Login Error:', error);
+            }
+
+            // ── CRITICAL: User found in Supabase but password wrong —
+            // Do NOT fall through to local storage fallback.
+            // Local storage could have a stale/old password and bypass security.
+            return { success: false, message: 'Incorrect password. Please try again.' };
         } else {
-            window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for unknown user: ${username}`, username);
+            // User not found in Supabase at all — try local storage fallback
+            window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for unknown Supabase user: ${username}`, username);
         }
 
         if (error) {
@@ -3700,7 +3715,12 @@ async function resetPasswordWithOTP(email, token, newPassword) {
 
         if (userId) {
             // Update by user ID — 100% reliable regardless of email format
-            const { error } = await supabase.from('users').update({ password: hashedNew }).eq('id', userId);
+            // Also clear lockout so the account is immediately accessible with new password
+            const { error } = await supabase.from('users').update({
+                password: hashedNew,
+                login_fail_count: 0,
+                lockout_until: null
+            }).eq('id', userId);
             updateError = error;
         } else {
             // Fallback: try plain-text email match
