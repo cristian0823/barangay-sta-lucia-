@@ -3577,6 +3577,7 @@ async function sendPasswordResetOTP(email) {
     sessionStorage.setItem('otp_expiry', expiry.toString());
 
     try {
+        // EmailJS is pre-loaded in forgot-password.html — just init & send
         if (!window.emailjs) {
             await new Promise((resolve, reject) => {
                 const script = document.createElement('script');
@@ -3586,18 +3587,19 @@ async function sendPasswordResetOTP(email) {
                 document.head.appendChild(script);
             });
         }
-        
+
         window.emailjs.init({ publicKey: 'DPEG6BGMwO8ExGg_e' });
-        
-        await window.emailjs.send('service_th96vue', 'template_l72erqi', {
+
+        const sendResult = await window.emailjs.send('service_th96vue', 'template_l72erqi', {
             email: email,
             name: targetUser.full_name || targetUser.username || 'Admin',
             title: 'Password Reset OTP',
             message: 'Your password reset OTP code is: ' + otp,
             details: 'This code will expire in 10 minutes. If you did not request this, please ignore this email.',
-            Company_Name: "Barangay Sta. Lucia"
+            Company_Name: 'Barangay Sta. Lucia'
         });
 
+        console.log('EmailJS send result:', sendResult);
         return { success: true, message: 'A 6-digit code has been sent to your email.' };
     } catch (err) {
         console.error('EmailJS error:', err);
