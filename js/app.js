@@ -426,6 +426,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             .select('*')
             .or(`barangay_id.eq.${encryptedUsername},username.eq.${username}`);
 
+        let data = null;
         let supabaseUserFound = false;
         if (usersData && usersData.length > 0) {
             supabaseUserFound = true;
