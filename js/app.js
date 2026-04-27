@@ -709,22 +709,26 @@ async function broadcastEmailToAllResidents(title, message, details) {
 
 async function logoutUser() {
     const _curr = getCurrentUser();
-    // Clear session immediately for instant redirect (no delay)
+    // Clear session
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
-    // Redirect right away — logs happen in background
-    window.location.href = 'index.html';
-    // Fire-and-forget background logging
+    
+    // Attempt to log securely before redirecting so the browser doesn't cancel the request
     try {
         if (_curr) {
             const logType = 'Logout';
             const logDetails = `${_curr.username || _curr.fullName || 'System'} logged out`;
-            window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
+            await window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
         }
         if (window.supabase) {
-            window.supabase.auth.signOut().catch(() => {});
+            await window.supabase.auth.signOut().catch(() => {});
         }
-    } catch(err) {}
+    } catch(err) {
+        console.error('Logout logging error:', err);
+    }
+    
+    // Redirect after logs are securely saved
+    window.location.href = 'index.html';
 }
 
 function redirectToDashboard() {
