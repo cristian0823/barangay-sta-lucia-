@@ -254,191 +254,6 @@
                 <div class="feat-item"><span class="feat-icon">📅</span><span class="feat-text">Community Events</span></div>
             </div>
         </div>
-
-            border-radius: 12px;
-            padding: 11px 16px;
-            text-align: left;
-        }
-        .feat-icon { font-size: 20px; flex-shrink: 0; }
-        .feat-text { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.88); }
-
-        .back-link {
-            position: fixed; top: 20px; left: 20px; z-index: 100;
-            display: inline-flex; align-items: center; gap: 7px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.22);
-            color: #fff; text-decoration: none;
-            font-size: 13px; font-weight: 600;
-            padding: 8px 16px 8px 12px;
-            border-radius: 100px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-        }
-        .back-link:hover {
-            background: rgba(255,255,255,0.25);
-            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-        }
-        .back-link .arrow { font-size: 15px; line-height: 1; }
-
-        /* ── RIGHT PANEL ── */
-        .panel-right {
-            flex: 1;
-            background: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 52px;
-            overflow-y: auto;
-        }
-
-        .form-box { width: 100%; max-width: 400px; }
-
-        .form-title    { font-size: 30px; font-weight: 800; color: #064e3b; margin-bottom: 6px; }
-        .form-subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
-
-        /* Alert */
-        .alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; font-weight: 500; }
-        .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-        .hidden { display: none !important; }
-
-        /* Fields */
-        .field { margin-bottom: 17px; }
-        .field label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 7px; }
-        .field-wrap  { position: relative; }
-        .field input {
-            width: 100%; padding: 12px 16px;
-            border: 2px solid #e5e7eb; border-radius: 12px;
-            font-size: 14px; font-family: inherit; color: #1f2937;
-            background: #fff; outline: none; transition: all 0.2s;
-        }
-        .field input:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
-        .field input::placeholder { color: #9ca3af; }
-
-        /* Remember */
-        .check-row { display: flex; align-items: center; gap: 9px; margin-bottom: 24px; }
-        .check-row input[type="checkbox"] { width: 17px; height: 17px; accent-color: #10b981; cursor: pointer; flex-shrink: 0; }
-        .check-row label { font-size: 14px; color: #6b7280; cursor: pointer; }
-
-        /* Button */
-        .btn-main {
-            width: 100%; padding: 14px; border: none; border-radius: 12px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff; font-size: 16px; font-weight: 700;
-            cursor: pointer; font-family: inherit;
-            box-shadow: 0 4px 20px rgba(16,185,129,0.38);
-            transition: all 0.25s;
-        }
-        .btn-main:hover { background: linear-gradient(135deg, #059669, #047857); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(16,185,129,0.45); }
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        .form-footer { text-align: center; margin-top: 24px; }
-        .form-footer p { font-size: 14px; color: #6b7280; }
-        .form-footer a { color: #059669; font-weight: 700; text-decoration: none; }
-        .form-footer a:hover { text-decoration: underline; }
-        .terms-lnk { margin-top: 10px; }
-        .terms-lnk a { font-size: 13px; color: #9ca3af; font-weight: 400; text-decoration: underline; }
-
-
-
-        .security-badge {
-            display: flex; align-items: center; gap: 8px;
-            background: #ecfdf5; border: 1px solid #d1fae5;
-            border-radius: 10px; padding: 10px 14px;
-            font-size: 12px; color: #065f46; font-weight: 600;
-            margin-top: 20px;
-        }
-        .security-badge svg { flex-shrink: 0; }
-
-        /* TOTP step panel */
-        .totp-panel {
-            background: #f8fafc; border: 2px solid #d1fae5;
-            border-radius: 16px; padding: 24px; margin-top: 4px;
-        }
-        .totp-title { font-size: 16px; font-weight: 800; color: #064e3b; margin-bottom: 4px; }
-        .totp-sub   { font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.5; }
-        .code-wrap  { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
-        .code-digit {
-            width: 46px; height: 54px; border: 2px solid #e5e7eb; border-radius: 10px;
-            font-size: 22px; font-weight: 700; text-align: center; color: #1f2937;
-            font-family: monospace; outline: none; transition: all 0.2s; background: #fff;
-        }
-        .code-digit:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.12); }
-        .code-digit.filled { border-color: #10b981; background: #f0fdf4; }
-        .totp-timer { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
-        .totp-timer-text { font-size: 12px; color: #9ca3af; }
-        .totp-back {
-            width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 10px;
-            background: transparent; color: #6b7280; font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; margin-top: 8px; font-family: inherit;
-        }
-        .totp-back:hover { border-color: #9ca3af; color: #374151; }
-
-        /* Toast */
-        #toast {
-            position: fixed; bottom: 24px; right: 24px; z-index: 999;
-            padding: 13px 20px; border-radius: 12px;
-            font-size: 14px; font-weight: 600;
-            transform: translateY(80px); transition: transform 0.3s ease;
-            pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        }
-        #toast.success { background: #10b981; color: #fff; }
-        #toast.error   { background: #ef4444; color: #fff; }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 820px) {
-            .panel-left  { width: 38%; padding: 48px 28px; }
-            .panel-right { padding: 36px 32px; }
-        }
-
-        @media (max-width: 600px) {
-            body { flex-direction: column; overflow: auto; }
-
-            .panel-left {
-                width: 100%; min-height: auto;
-                padding: 28px 24px 24px;
-                flex-direction: row; flex-wrap: wrap; justify-content: center;
-            }
-            .logo-wrap { width: 68px; height: 68px; margin-bottom: 0; margin-right: 14px; flex-shrink: 0; }
-            .brand-name { font-size: 17px; text-align: left; margin-bottom: 3px; }
-            .brand-sub  { font-size: 12px; text-align: left; margin-bottom: 0; }
-            .feat-list  { display: none; }
-            .back-link  { position: static; transform: none; width: 100%; text-align: center; margin-top: 12px; }
-
-            .panel-right { flex: 1; padding: 28px 20px; align-items: flex-start; }
-            .form-title    { font-size: 24px; }
-            .form-subtitle { margin-bottom: 22px; }
-            .field input   { font-size: 16px; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Back to Home -->
-    <a href="index.html" class="back-link">
-        <span class="arrow">←</span> Back to Home
-    </a>
-
-    <!-- Left Panel -->
-    <div class="panel-left">
-        <div class="deco d1"></div>
-        <div class="deco d2"></div>
-        <div class="deco d3"></div>
-
-        <div class="panel-inner">
-            <div class="logo-wrap">
-                <img src="barangay.jpg" alt="Barangay Sta. Lucia">
-            </div>
-            <p class="brand-name">Barangay Sta. Lucia</p>
-            <p class="brand-sub">Community Services Portal<br>Novaliches, Quezon City</p>
-
-            <div class="feat-list">
-                <div class="feat-item"><span class="feat-icon">🪑</span><span class="feat-text">Borrow Equipment</span></div>
-                <div class="feat-item"><span class="feat-icon">🏀</span><span class="feat-text">Book the Court</span></div>
-                <div class="feat-item"><span class="feat-icon">📋</span><span class="feat-text">Submit Concerns</span></div>
-                <div class="feat-item"><span class="feat-icon">📅</span><span class="feat-text">Community Events</span></div>
-            </div>
         </div>
 
     </div>
@@ -463,61 +278,254 @@
                     </div>
                 </div>
 
-                <div class="check-row" style="justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 9px;">
-                        <input type="checkbox" id="rememberMe">
-                        <label for="rememberMe">Remember me</label>
-                    </div>
-                </div>
-
-                <button type="submit" id="loginBtn" class="btn-main">Sign In</button>
-            </form>
-
-            <div class="form-footer">
-                <p style="color:#6b7280;font-size:13px;">Enter your <strong>Barangay ID</strong> to access resident services.<br>Your ID is provided by the Barangay Office.</p>
-                <div class="terms-lnk">
-                    <a href="terms.html" target="_blank">Terms &amp; Conditions</a>
-                </div>
-            </div>
-
-            <!-- TOTP Step 2 Panel (hidden by default) -->
-            <div id="totpPanel" class="totp-panel" style="display:none;">
-                <div class="totp-title">🔑 Two-Factor Authentication</div>
-                <p class="totp-sub">Enter the 6-digit code from your <strong>Google Authenticator</strong> app.</p>
-
-                <div class="totp-timer">
-                    <span class="totp-timer-text">Code refreshes every <strong id="totpCountdown">30</strong>s</span>
-                </div>
-
-                <div class="code-wrap">
-                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td0">
-                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td1">
-                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td2">
-                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td3">
-                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td4">
-                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td5">
-                </div>
-
-                <div id="totpError" class="alert alert-danger hidden">❌ Invalid code. Please try again.</div>
-
-                <button type="button" id="totpVerifyBtn" class="btn-main" onclick="submitTOTPCode()">Verify Code</button>
-                <button type="button" class="totp-back" onclick="cancelTOTP()">← Back to Login</button>
-            </div>
-
-
-        </div>
-    </div>
-
     <div id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/portal-config.js"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/crypto-utils.js"></script>
     <script src="js/incident-manager.js"></script>
     <script src="js/otpauth.js"></script>
     <script src="js/totp-handler.js"></script>
-    <script src="js/portal-config.js"></script>
-        <script src="js/app.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/portal-overrides.js"></script>
+    <script>
+        const SECURITY = { maxAttempts: 5, lockoutDuration: 15 * 60 * 1000 };
+
+
+        function generateCSRFToken() {
+            const token = crypto.randomUUID();
+            document.getElementById('csrfToken').value = token;
+            sessionStorage.setItem('csrfToken', token);
+        }
+
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        function validateUsername(username) {
+            return /^[a-zA-Z0-9_]{3,50}$/.test(username);
+        }
+
+        function getLoginAttempts() {
+            const a = localStorage.getItem('loginAttempts');
+            return a ? JSON.parse(a) : { count: 0, lockedUntil: null, username: '' };
+        }
+
+        function saveLoginAttempts(a) { localStorage.setItem('loginAttempts', JSON.stringify(a)); }
+
+        function updateAttemptsWarning() {
+            const a = getLoginAttempts();
+            const lock = document.getElementById('lockoutWarning');
+            const btn  = document.getElementById('loginBtn');
+            if (a.lockedUntil && Date.now() < a.lockedUntil) {
+                lock.classList.remove('hidden');
+                btn.disabled = true; btn.textContent = '🔒 Account Locked';
+                return true;
+            }
+            lock.classList.add('hidden');
+            btn.disabled = false; btn.textContent = 'Sign In';
+            return false;
+        }
+
+        function resetLoginAttempts() { saveLoginAttempts({ count: 0, lockedUntil: null, username: '' }); updateAttemptsWarning(); }
+
+        function recordFailedAttempt(username) {
+            const a = getLoginAttempts();
+            if (a.username !== username) { a.count = 0; a.username = username; }
+            a.count++;
+            if (a.count >= SECURITY.maxAttempts) a.lockedUntil = Date.now() + SECURITY.lockoutDuration;
+            saveLoginAttempts(a); updateAttemptsWarning();
+            // ISO A.16 - track failed logins for incident detection
+            if (typeof trackFailedLogin === 'function') trackFailedLogin(username);
+        }
+
+        function showToast(message, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = type; t.textContent = message;
+            t.style.transform = 'translateY(0)';
+            setTimeout(() => { t.style.transform = 'translateY(80px)'; }, 3000);
+        }
+
+
+
+        // OTP digit auto-focus
+        document.addEventListener('DOMContentLoaded', function () {
+            generateCSRFToken();
+            updateAttemptsWarning();
+
+            document.getElementById('username').addEventListener('input', function (e) {
+                // allow alphanumeric and dash for barangay ID
+                e.target.value = e.target.value.replace(/[^a-zA-Z0-9_\-]/g, '');
+            });
+            // Check if redirected due to suspension
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('suspended') === '1') {
+                const until = params.get('until') || 'a future date';
+                showToast(`🔒 Your account is suspended until ${until}.`, 'error');
+            }
+
+            // Check if already logged in
+            const user = getCurrentUser();
+            if (user) redirectToDashboard();
+        });
+
+        // ── TOTP State ────────────────────────────────────────────
+        let totpPendingUser  = null;
+        let totpRememberMe   = false;
+        let totpTimerInterval = null;
+
+        function startTOTPTimer() {
+            clearInterval(totpTimerInterval);
+            totpTimerInterval = setInterval(() => {
+                const remaining = 30 - (Math.floor(Date.now() / 1000) % 30);
+                const el = document.getElementById('totpCountdown');
+                if (el) el.textContent = remaining;
+            }, 1000);
+        }
+
+        function showTOTPPanel(user, rememberMe) {
+            totpPendingUser = user;
+            totpRememberMe  = rememberMe;
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('totpPanel').style.display = 'block';
+            clearTOTPDigits();
+            startTOTPTimer();
+            document.getElementById('td0').focus();
+        }
+
+        function cancelTOTP() {
+            clearInterval(totpTimerInterval);
+            totpPendingUser = null;
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('totpPanel').style.display = 'none';
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('loginBtn').textContent = 'Sign In';
+        }
+
+        function getTOTPDigits() {
+            return [0,1,2,3,4,5].map(i => document.getElementById('td' + i).value).join('');
+        }
+        function clearTOTPDigits() {
+            for (let i = 0; i < 6; i++) {
+                document.getElementById('td' + i).value = '';
+                document.getElementById('td' + i).classList.remove('filled');
+            }
+            document.getElementById('totpError').classList.add('hidden');
+        }
+
+        // Wire up digit inputs in TOTP panel
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 0; i < 6; i++) {
+                const el = document.getElementById('td' + i);
+                el.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '').slice(-1);
+                    this.classList.toggle('filled', !!this.value);
+                    if (this.value && i < 5) document.getElementById('td' + (i + 1)).focus();
+                    if (getTOTPDigits().length === 6) submitTOTPCode();
+                });
+                el.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && i > 0)
+                        document.getElementById('td' + (i - 1)).focus();
+                });
+                el.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                    for (let j = 0; j < 6; j++) {
+                        const d = document.getElementById('td' + j);
+                        d.value = text[j] || '';
+                        d.classList.toggle('filled', !!d.value);
+                    }
+                    if (text.length === 6) submitTOTPCode();
+                });
+            }
+        });
+
+        async function submitTOTPCode() {
+            if (!totpPendingUser) return;
+            const code = getTOTPDigits();
+            if (code.length !== 6) return;
+
+            const btn = document.getElementById('totpVerifyBtn');
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+            document.getElementById('totpError').classList.add('hidden');
+
+            // Use the secret already stored in the pending user object (set during TOTP check).
+            // Fall back to DB fetch only if it's somehow absent.
+            let totpSecret = totpPendingUser.totp_secret;
+            if (!totpSecret) {
+                const info = await fetchUserTOTPInfo(totpPendingUser.id);
+                totpSecret = info.totp_secret;
+            }
+            const valid = totpSecret ? await verifyTOTPCode(totpSecret, code) : false;
+
+            if (valid) {
+                clearInterval(totpTimerInterval);
+                showToast('✅ Login successful! Redirecting...', 'success');
+                resetLoginAttempts();
+                if (totpRememberMe) {
+                    localStorage.setItem('currentUser', JSON.stringify(totpPendingUser));
+                } else {
+                    sessionStorage.setItem('currentUser', JSON.stringify(totpPendingUser));
+                }
+                logActivity('Login', `User logged in with 2FA: ${totpPendingUser.username}`);
+                if (typeof window.logSecurity === 'function') {
+                    const authM = totpPendingUser.role === 'admin' ? 'Password' : 'Google Auth';
+                    window.logSecurity('Login Success', authM, 'info', 'Login successful.', totpPendingUser.username);
+                }
+
+                try {
+                    const _logKey = 'barangay_local_security_log';
+                    const _localLogs = JSON.parse(localStorage.getItem(_logKey)) || [];
+                    const _cleaned = _localLogs.filter(l => {
+                        const et = l.event_type || '';
+                        const isFailedEvent = et === 'Login Failed' || et === 'Account Locked';
+                        const isSameUser = (l.target_username || '').toLowerCase() === (totpPendingUser.username || '').toLowerCase();
+                        return !(isFailedEvent && isSameUser);
+                    });
+                    localStorage.setItem(_logKey, JSON.stringify(_cleaned));
+                    if (window.supabase && totpPendingUser.username) {
+                        await window.supabase.from('security_log').delete()
+                            .in('event_type', ['Login Failed', 'Account Locked'])
+                            .eq('target_username', totpPendingUser.username);
+                        if (totpPendingUser.id) {
+                            await window.supabase.from('security_log').delete()
+                                .in('event_type', ['Login Failed', 'Account Locked'])
+                                .eq('user_id', totpPendingUser.id);
+                        }
+                    }
+                } catch(e) { console.warn('Cleanup error:', e); }
+
+                setTimeout(() => redirectToDashboard(), 1000);
+            } else {
+                document.getElementById('totpError').classList.remove('hidden');
+                clearTOTPDigits();
+                btn.disabled = false;
+                btn.textContent = 'Verify Code';
+                document.getElementById('td0').focus();
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            try {
+                if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
+                const username   = sanitizeInput(document.getElementById('username').value.trim());
+                const password   = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                
+                // User portal: reject admin usernames
+                const isAdminAttempt = username.toLowerCase().startsWith('admin');
+                if (isAdminAttempt) { showToast('Please use the Admin Portal for admin access.', 'error'); btn.disabled = false; btn.textContent = 'Sign In'; return; }
+
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = true; btn.textContent = 'Signing in...';
+
+                // Call loginUser to authenticate
+                const result = await loginUser(username, password, rememberMe, { deferSession: true });
 
                 if (result.success) {
                     resetLoginAttempts();
