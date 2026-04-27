@@ -278,6 +278,47 @@
                     </div>
                 </div>
 
+    
+                <div class="check-row" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 9px;">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn-main">Sign In</button>
+            </form>
+
+            <div class="form-footer">
+                <p style="color:#6b7280;font-size:13px;">Enter your <strong>Barangay ID</strong> to access resident services.<br>Your ID is provided by the Barangay Office.</p>
+                <div class="terms-lnk">
+                    <a href="terms.html" target="_blank">Terms &amp; Conditions</a>
+                </div>
+            </div>
+
+            <!-- TOTP Step 2 Panel (hidden by default) -->
+            <div id="totpPanel" class="totp-panel" style="display:none;">
+                <div class="totp-title">&#x1F511; Two-Factor Authentication</div>
+                <p class="totp-sub">Enter the 6-digit code from your <strong>Google Authenticator</strong> app.</p>
+                <div class="totp-timer">
+                    <span class="totp-timer-text">Code refreshes every <strong id="totpCountdown">30</strong>s</span>
+                </div>
+                <div class="code-wrap">
+                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td0">
+                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td1">
+                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td2">
+                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td3">
+                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td4">
+                    <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td5">
+                </div>
+                <div id="totpError" class="alert alert-danger hidden">&#x274C; Invalid code. Please try again.</div>
+                <button type="button" id="totpVerifyBtn" class="btn-main" onclick="submitTOTPCode()">Verify Code</button>
+                <button type="button" class="totp-back" onclick="cancelTOTP()">&#x2190; Back to Login</button>
+            </div>
+
+        </div>
+    </div>
+
     <div id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
