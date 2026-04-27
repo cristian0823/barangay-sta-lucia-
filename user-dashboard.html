@@ -4,6 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Dashboard - Barangay Sta. Lucia</title>
+    <!-- ── EARLY AUTH GUARD: hide body before paint, redirect instantly if not logged in ── -->
+    <style id="auth-guard-style">body { visibility: hidden !important; }</style>
+    <script>
+    (function() {
+        function _getUser() {
+            try {
+                var u = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
+                return u ? JSON.parse(u) : null;
+            } catch(e) { return null; }
+        }
+        var user = _getUser();
+        if (!user) {
+            window.location.replace('login.html');
+        } else if (user.role === 'admin') {
+            // Admins should not be here — send to admin dashboard
+            window.location.replace('admin.html');
+        } else {
+            // Valid user — reveal the page immediately
+            document.getElementById('auth-guard-style').textContent = '';
+        }
+    })();
+    </script>
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script><script>tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }</script>
