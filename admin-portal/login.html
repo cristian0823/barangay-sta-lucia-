@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,7 @@
 
         body { display: flex; min-height: 100vh; background: #047857; overflow: hidden; }
 
-        /* â”€â”€ LEFT PANEL â”€â”€ */
+        /* ── LEFT PANEL ── */
         .panel-left {
             width: 42%;
             min-height: 100vh;
@@ -87,7 +87,7 @@
         }
         .back-link .arrow { font-size: 15px; line-height: 1; }
 
-        /* â”€â”€ RIGHT PANEL â”€â”€ */
+        /* ── RIGHT PANEL ── */
         .panel-right {
             flex: 1;
             background: #f8fafc;
@@ -200,7 +200,7 @@
         #toast.success { background: #10b981; color: #fff; }
         #toast.error   { background: #ef4444; color: #fff; }
 
-        /* â”€â”€ RESPONSIVE â”€â”€ */
+        /* ── RESPONSIVE ── */
         @media (max-width: 820px) {
             .panel-left  { width: 38%; padding: 48px 28px; }
             .panel-right { padding: 36px 32px; }
@@ -231,7 +231,7 @@
 
     <!-- Back to Home -->
     <a href="index.html" class="back-link">
-        <span class="arrow">â†</span> Back to Home
+        <span class="arrow">←</span> Back to Home
     </a>
 
     <!-- Left Panel -->
@@ -248,10 +248,10 @@
             <p class="brand-sub">Community Services Portal<br>Novaliches, Quezon City</p>
 
             <div class="feat-list">
-                <div class="feat-item"><span class="feat-icon">ðŸª‘</span><span class="feat-text">Borrow Equipment</span></div>
-                <div class="feat-item"><span class="feat-icon">ðŸ€</span><span class="feat-text">Book the Court</span></div>
-                <div class="feat-item"><span class="feat-icon">ðŸ“‹</span><span class="feat-text">Submit Concerns</span></div>
-                <div class="feat-item"><span class="feat-icon">ðŸ“…</span><span class="feat-text">Community Events</span></div>
+                <div class="feat-item"><span class="feat-icon">🪑</span><span class="feat-text">Borrow Equipment</span></div>
+                <div class="feat-item"><span class="feat-icon">🏀</span><span class="feat-text">Book the Court</span></div>
+                <div class="feat-item"><span class="feat-icon">📋</span><span class="feat-text">Submit Concerns</span></div>
+                <div class="feat-item"><span class="feat-icon">📅</span><span class="feat-text">Community Events</span></div>
             </div>
         </div>
 
@@ -267,7 +267,7 @@
                 <input type="hidden" id="csrfToken" name="csrfToken">
 
                 <div id="lockoutWarning" class="alert alert-danger hidden">
-                    ðŸ”’ Too many failed attempts. Please try again later.
+                    🔒 Too many failed attempts. Please try again later.
                 </div>
 
                 <div class="field">
@@ -310,7 +310,7 @@
 
             <!-- TOTP Step 2 Panel (hidden by default) -->
             <div id="totpPanel" class="totp-panel" style="display:none;">
-                <div class="totp-title">ðŸ”‘ Two-Factor Authentication</div>
+                <div class="totp-title">🔑 Two-Factor Authentication</div>
                 <p class="totp-sub">Enter the 6-digit code from your <strong>Google Authenticator</strong> app.</p>
 
                 <div class="totp-timer">
@@ -326,10 +326,10 @@
                     <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="td5">
                 </div>
 
-                <div id="totpError" class="alert alert-danger hidden">âŒ Invalid code. Please try again.</div>
+                <div id="totpError" class="alert alert-danger hidden">❌ Invalid code. Please try again.</div>
 
                 <button type="button" id="totpVerifyBtn" class="btn-main" onclick="submitTOTPCode()">Verify Code</button>
-                <button type="button" class="totp-back" onclick="cancelTOTP()">â† Back to Login</button>
+                <button type="button" class="totp-back" onclick="cancelTOTP()">← Back to Login</button>
             </div>
 
 
@@ -380,7 +380,7 @@
             const btn  = document.getElementById('loginBtn');
             if (a.lockedUntil && Date.now() < a.lockedUntil) {
                 lock.classList.remove('hidden');
-                btn.disabled = true; btn.textContent = 'ðŸ”’ Account Locked';
+                btn.disabled = true; btn.textContent = '🔒 Account Locked';
                 return true;
             }
             lock.classList.add('hidden');
@@ -418,20 +418,19 @@
                 // allow alphanumeric and dash for barangay ID
                 e.target.value = e.target.value.replace(/[^a-zA-Z0-9_\-]/g, '');
             });
-
             // Check if redirected due to suspension
             const params = new URLSearchParams(window.location.search);
             if (params.get('suspended') === '1') {
                 const until = params.get('until') || 'a future date';
-                showToast(`ðŸ”’ Your account is suspended until ${until}.`, 'error');
+                showToast(`🔒 Your account is suspended until ${until}.`, 'error');
             }
 
-                        // Check if already logged in
+            // Check if already logged in
             const user = getCurrentUser();
             if (user) redirectToDashboard();
         });
 
-        // â”€â”€ TOTP State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── TOTP State ────────────────────────────────────────────
         let totpPendingUser  = null;
         let totpRememberMe   = false;
         let totpTimerInterval = null;
@@ -523,7 +522,7 @@
 
             if (valid) {
                 clearInterval(totpTimerInterval);
-                showToast('âœ… Login successful! Redirecting...', 'success');
+                showToast('✅ Login successful! Redirecting...', 'success');
                 resetLoginAttempts();
                 if (totpRememberMe) {
                     localStorage.setItem('currentUser', JSON.stringify(totpPendingUser));
@@ -576,6 +575,7 @@
                 const password   = document.getElementById('password').value;
                 const rememberMe = document.getElementById('rememberMe').checked;
                 
+                // Admin portal: reject non-admin usernames
                 const isAdminAttempt = !username.toLowerCase().startsWith('admin');
                 if (isAdminAttempt) { showToast('This portal is for admin use only.', 'error'); btn.disabled = false; btn.textContent = 'Sign In'; return; }
 
@@ -591,7 +591,7 @@
 
                     const isAdmin = result.user.role === 'admin';
 
-                    // â”€â”€ TOTP CHECK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                    // ── TOTP CHECK ───────────────────────────────────────────────
                     // Always fetch fresh from DB by username (guaranteed correct).
                     // Never rely on cached/mapped totp_enabled which can be stale or false.
                     let totpEnabled = false;
@@ -622,9 +622,9 @@
                         return;
                     }
 
-                    // â”€â”€ EVERYONE MUST set up Google Authenticator before accessing the dashboard
+                    // ── EVERYONE MUST set up Google Authenticator before accessing the dashboard
                     if (!totpEnabled) {
-                        // Store session as pending â€” setup-totp.html will finalize it
+                        // Store session as pending — setup-totp.html will finalize it
                         sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
                         sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
                         showToast('Please set up Google Authenticator to continue.', 'success');
@@ -655,8 +655,8 @@
                         window.logSecurity('Login Success', _authMethod, 'info', `Login successful.`, result.user.username);
                     }
 
-                    // â”€â”€ CLEANUP: Remove any Login Failed / Account Locked records for this
-                    //    user from the current session â€” if they got in, failed attempts don't matter
+                    // ── CLEANUP: Remove any Login Failed / Account Locked records for this
+                    //    user from the current session — if they got in, failed attempts don't matter
                     try {
                         const _logKey = 'barangay_local_security_log';
                         const _localLogs = JSON.parse(localStorage.getItem(_logKey)) || [];
