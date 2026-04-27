@@ -5388,6 +5388,74 @@
                 document.getElementById('adminSuspendUserModal').style.display = 'flex';
             }
 
+            async function verifyAdminPassword(password) {
+                const u = getCurrentUser();
+                if (!u) return false;
+                
+                if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
+                    const emailToUse = u.email || (u.user_metadata && u.user_metadata.email);
+                    if (!emailToUse) return false;
+                    
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: emailToUse,
+                        password: password
+                    });
+                    return !error;
+                } else {
+                    const users = JSON.parse(localStorage.getItem('barangay_local_users')) || [];
+                    const admin = users.find(x => x.username === u.username && x.password === password);
+                    return !!admin;
+                }
+            }
+
+            function requestAdminPassword(actionName) {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('adminPasswordConfirmModal');
+                    const input = document.getElementById('adminPasswordConfirmInput');
+                    const title = document.getElementById('adminPasswordConfirmTitle');
+                    const errorMsg = document.getElementById('adminPasswordConfirmError');
+                    
+                    title.textContent = `Confirm Action: ${actionName}`;
+                    input.value = '';
+                    errorMsg.style.display = 'none';
+                    modal.style.display = 'flex';
+                    input.focus();
+                    
+                    const closeAndResolve = (res) => {
+                        modal.style.display = 'none';
+                        resolve(res);
+                    };
+
+                    document.getElementById('adminPasswordConfirmCancel').onclick = () => closeAndResolve(false);
+                    
+                    document.getElementById('adminPasswordConfirmSubmit').onclick = async () => {
+                        const pwd = input.value;
+                        if (!pwd) {
+                            errorMsg.textContent = 'Password is required';
+                            errorMsg.style.display = 'block';
+                            return;
+                        }
+                        
+                        const btn = document.getElementById('adminPasswordConfirmSubmit');
+                        const originalText = btn.textContent;
+                        btn.textContent = 'Verifying...';
+                        btn.disabled = true;
+                        
+                        const isValid = await verifyAdminPassword(pwd);
+                        
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        
+                        if (isValid) {
+                            closeAndResolve(true);
+                        } else {
+                            errorMsg.textContent = 'Incorrect password. Action denied.';
+                            errorMsg.style.display = 'block';
+                        }
+                    };
+                });
+            }
+
             function closeSuspendModal() {
                 currentSuspendUserId = null;
                 document.getElementById('adminSuspendUserModal').style.display = 'none';
@@ -5407,6 +5475,14 @@
                 }
                 
                 document.getElementById('adminSuspendUserModal').style.display = 'none';
+
+                // Password Verification
+                const pwdConfirmed = await requestAdminPassword(`Suspend User`);
+                if (!pwdConfirmed) {
+                    showAlert('Suspension cancelled.', 'info');
+                    return;
+                }
+
                 const result = await suspendUser(currentSuspendUserId, days);
                 showAlert(result.message, result.success ? 'success' : 'error');
                 if (result.success) {
@@ -5432,6 +5508,14 @@
 
             async function adminDeleteUserConfirm(userId, username) {
                 if (!await showConfirmModal(`Delete user "${username}"? This cannot be undone.`, "Delete User", "Yes, Delete", "Cancel", "danger")) return;
+                
+                // Password Verification
+                const pwdConfirmed = await requestAdminPassword(`Delete User`);
+                if (!pwdConfirmed) {
+                    showAlert('Account deletion cancelled.', 'info');
+                    return;
+                }
+
                 const result = await deleteUser(userId);
                 showAlert(result.message, result.success ? 'success' : 'error');
                 if (result.success) { loadUsers(); loadStats(); }
@@ -8079,6 +8163,30 @@
                         style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Keep Reservations</button>
                     <button type="button" onclick="confirmAdminMassCancel()" id="amcConfirmBtn"
                         style="flex:1; padding:12px; background:#dc2626; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Cancel All</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ADMIN PASSWORD CONFIRM MODAL -->
+        <!-- ========================================== -->
+        <div id="adminPasswordConfirmModal"
+            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:95000;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:var(--surface,#fff);border-radius:24px;width:100%;max-width:400px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;animation:modalIn 0.3s ease;">
+                <div style="background:linear-gradient(135deg,#dc2626,#991b1b);padding:24px;position:relative;text-align:center;">
+                    <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0;" id="adminPasswordConfirmTitle">Confirm Action</h3>
+                    <p style="color:rgba(255,255,255,0.9);font-size:13px;margin:4px 0 0;">Please enter your password to proceed.</p>
+                </div>
+                <div style="padding:24px;">
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:13px;font-weight:700;color:var(--text,#374151);margin-bottom:8px;">Admin Password</label>
+                        <input type="password" id="adminPasswordConfirmInput" placeholder="••••••••" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border,#d1d5db);background:var(--bg,#f9fafb);font-size:14px;color:var(--text,#111827);outline:none;transition:all 0.2s;">
+                        <p id="adminPasswordConfirmError" style="display:none;color:#dc2626;font-size:12px;margin:8px 0 0;font-weight:600;">Incorrect password.</p>
+                    </div>
+                    <div style="display:flex;gap:12px;">
+                        <button id="adminPasswordConfirmCancel" style="flex:1;padding:12px;background:var(--bg,#f3f4f6);border:1px solid var(--border,#e5e7eb);border-radius:12px;color:var(--text,#4b5563);font-size:14px;font-weight:700;cursor:pointer;">Cancel</button>
+                        <button id="adminPasswordConfirmSubmit" style="flex:1;padding:12px;background:#dc2626;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Confirm</button>
+                    </div>
                 </div>
             </div>
         </div>

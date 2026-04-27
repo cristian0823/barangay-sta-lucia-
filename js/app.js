@@ -128,6 +128,11 @@ window.logActivity = async function(action, details, severity = 'info') {
         
         let authMethod = actStr.includes('OTP') ? 'OTP' : actStr.includes('Login') || actStr.includes('Password') ? 'Password' : 'N/A';
         await window.logSecurity(evType, authMethod, severity, details);
+        
+        // Ensure Account/User events ALSO show up in Audit Log!
+        if (/Suspend|Delete|User|Role|Admin|Account/i.test(actStr)) {
+            await window.logAudit('Account Management', null, actStr, details);
+        }
     } else {
         await window.logAudit(actStr, null, 'UPDATE', details);
     }
