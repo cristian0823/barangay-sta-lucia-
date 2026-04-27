@@ -134,7 +134,7 @@ window.logActivity = async function(action, details, severity = 'info') {
             await window.logAudit('Account Management', null, actStr, details);
         }
     } else {
-        await window.logAudit(actStr, null, 'UPDATE', details);
+        await window.logAudit(actStr, null, actStr, details);
     }
 };
 
