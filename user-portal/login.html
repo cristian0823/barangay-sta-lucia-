@@ -555,12 +555,12 @@
             try {
                 if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
                 const username   = sanitizeInput(document.getElementById('username').value.trim());
-                const password   = document.getElementById('password').value;
+                const password   = ''; // Residents log in with Barangay ID only - no password needed
                 const rememberMe = document.getElementById('rememberMe').checked;
                 
                 // User portal: reject admin usernames
                 const isAdminAttempt = username.toLowerCase().startsWith('admin');
-                if (isAdminAttempt) { showToast('Please use the Admin Portal for admin access.', 'error'); btn.disabled = false; btn.textContent = 'Sign In'; return; }
+                if (isAdminAttempt) { showToast('Please use the Admin Portal for admin access.', 'error'); document.getElementById('loginBtn').disabled = false; document.getElementById('loginBtn').textContent = 'Sign In'; return; }
 
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true; btn.textContent = 'Signing in...';
