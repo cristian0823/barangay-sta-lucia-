@@ -5,4 +5,4 @@
  */
 window.__PORTAL__          = 'user';
 window.__ADMIN_PORTAL_URL__ = 'https://barangay-sta-lucia-admin.vercel.app';
-window.__USER_PORTAL_URL__  = '';
+window.__USER_PORTAL_URL__  = 'https://barangay-sta-lucia-user.vercel.app';
