@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barangay Sta. Lucia — Admin</title>
+  <style>body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f172a;color:#94a3b8;}</style>
+</head>
+<body>
+  <p>Redirecting...</p>
+  <script>
+    (function(){
+      try {
+        var u = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
+        var user = u ? JSON.parse(u) : null;
+        if (user && user.role === 'admin') {
+          window.location.replace('admin.html');
+        } else {
+          window.location.replace('login.html');
+        }
+      } catch(e) {
+        window.location.replace('login.html');
+      }
+    })();
+  </script>
+</body>
+</html>
