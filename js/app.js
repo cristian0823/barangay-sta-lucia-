@@ -3745,6 +3745,7 @@ async function resetPasswordWithOTP(email, token, newPassword) {
 
         // Clean up session flags
         sessionStorage.removeItem('otp_user_id');
+        if (typeof logActivity === 'function') logActivity('Password Reset', `User reset their password via OTP: ${email}`);
         return { success: true, message: 'Password updated successfully. You can now login.' };
     } else {
         const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
@@ -3752,6 +3753,7 @@ async function resetPasswordWithOTP(email, token, newPassword) {
         if (idx === -1) return { success: false, message: 'User not found.' };
         users[idx].password = hashedNew;
         localStorage.setItem('barangay_users', JSON.stringify(users));
+        if (typeof logActivity === 'function') logActivity('Password Reset', `Local user reset their password via OTP: ${email}`);
         return { success: true, message: 'Password updated successfully. You can now login.' };
     }
 }
