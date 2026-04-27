@@ -5203,17 +5203,17 @@
                     const phone = u.phone || u.contact_number || u.contactNumber || '';
                     const address = u.address || '';
                     const actionHtml = isSuspended 
-                        ? `<button onclick="liftSuspension('${u.id}', '${displayName}')" style="background:var(--green-xl);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">Lift Ban</button>`
-                        : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:#f59e0b;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-right:6px;">Suspend</button>
-                           <button onclick="adminDeleteUserConfirm('${u.id}', '${displayName}')" style="background:#dc2626;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">Delete</button>`;
+                        ? `<button onclick="liftSuspension('${u.id}', '${displayName}')" style="background:var(--green-xl);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Lift Ban</button>`
+                        : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:#f59e0b;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Suspend</button>
+                           <button onclick="adminDeleteUserConfirm('${u.id}', '${displayName}')" style="background:#dc2626;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Delete</button>`;
 
                     return `<tr>
                         <td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">${u.barangay_id || ''}</td>
-                        <td style="white-space:nowrap;"><strong>${displayName}</strong></td>
-                        <td style="font-size:13px;">${phone}</td>
-                        <td style="font-size:13px;color:#6b7280;">${u.email || ''}</td>
-                        <td style="font-size:12px;">${address}</td>
-                        <td>${statusBadge}</td>
+                        <td style="font-size:13px;line-height:1.2;"><strong>${displayName}</strong></td>
+                        <td style="font-size:12px;white-space:nowrap;">${phone}</td>
+                        <td style="font-size:12px;color:#6b7280;max-width:160px;word-break:break-word;line-height:1.2;">${u.email || ''}</td>
+                        <td style="font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${address}">${address}</td>
+                        <td style="white-space:nowrap;">${statusBadge}</td>
                         <td style="text-align:center; white-space:nowrap;">${actionHtml}</td>
                     </tr>`;
                 }).join('');
