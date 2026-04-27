@@ -576,33 +576,122 @@
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true; btn.textContent = 'Signing in...';
 
-                // Call loginUser to authenticate (no deferSession for users since no 2FA)
-                const result = await loginUser(username, password, rememberMe, { deferSession: false });
+                // Call loginUser to authenticate
+                const result = await loginUser(username, password, rememberMe, { deferSession: true });
 
                 if (result.success) {
                     resetLoginAttempts();
                     btn.disabled = false; btn.textContent = 'Sign In';
 
-                    showToast('✅ Login successful! Redirecting...', 'success');
-                    setTimeout(() => window.location.href = 'user-dashboard.html', 1000);
+                    const isAdmin = result.user.role === 'admin';
+
+                    // ── TOTP CHECK ───────────────────────────────────────────────
+                    // Always fetch fresh from DB by username (guaranteed correct).
+                    // Never rely on cached/mapped totp_enabled which can be stale or false.
+                    let totpEnabled = false;
+                    let totpSecret  = null;
+                    try {
+                        if (window.supabase) {
+                            const { data: totpRow } = await window.supabase
+                                .from('users')
+                                .select('totp_secret, totp_enabled, id')
+                                .eq('username', result.user.username)
+                                .maybeSingle();
+                            if (totpRow) {
+                                totpEnabled = !!totpRow.totp_enabled;
+                                totpSecret  = totpRow.totp_secret || null;
+                            }
+                        }
+                    } catch(e) {
+                        console.warn('[TOTP] Fresh DB fetch failed, falling back to user object:', e);
+                        totpEnabled = !!result.user.totp_enabled;
+                        totpSecret  = result.user.totp_secret || null;
+                    }
+
+                    if (totpEnabled && totpSecret) {
+                        // Attach secret to user object so submitTOTPCode can use it
+                        result.user.totp_secret  = totpSecret;
+                        result.user.totp_enabled = true;
+                        showTOTPPanel(result.user, rememberMe);
+                        return;
+                    }
+
+                    // ── EVERYONE MUST set up Google Authenticator before accessing the dashboard
+                    if (!totpEnabled) {
+                        // Store session as pending — setup-totp.html will finalize it
+                        sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
+                        sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
+                        showToast('Please set up Google Authenticator to continue.', 'success');
+                        setTimeout(() => window.location.href = 'setup-totp.html', 1200);
+                        return;
+                    }
+
+                    // Commit session and redirect (admin path when no TOTP yet)
+                    if (rememberMe) {
+                        localStorage.setItem('currentUser', JSON.stringify(result.user));
+                    } else {
+                        sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+                    }
+                    // Log the successful login event (deferSession skips this inside loginUser)
+                    const _lType = (result.user.role === 'admin' || result.user.role === 'Admin') ? 'Admin Login' : 'User Login';
+                    const _authMethod = isAdmin ? 'Password' : 'Google Auth';
+                    const _knownIps = JSON.parse(localStorage.getItem('known_ips_' + result.user.username)) || [];
+                    const _curIP = typeof _cachedDeviceIP !== 'undefined' ? _cachedDeviceIP : 'Unavailable';
+                    if (_curIP !== 'Unavailable' && !_knownIps.includes(_curIP)) {
+                        _knownIps.push(_curIP);
+                        localStorage.setItem('known_ips_' + result.user.username, JSON.stringify(_knownIps));
+                        if (_knownIps.length === 1) {
+                            window.logSecurity('Login Success', _authMethod, 'info', `Login successful.`, result.user.username);
+                        } else {
+                            window.logSecurity('Suspicious Login Activity', _authMethod, 'warning', `Login from new IP (${_curIP}). Previous sessions used a different location.`, result.user.username);
+                        }
+                    } else {
+                        window.logSecurity('Login Success', _authMethod, 'info', `Login successful.`, result.user.username);
+                    }
+
+                    // ── CLEANUP: Remove any Login Failed / Account Locked records for this
+                    //    user from the current session — if they got in, failed attempts don't matter
+                    try {
+                        const _logKey = 'barangay_local_security_log';
+                        const _localLogs = JSON.parse(localStorage.getItem(_logKey)) || [];
+                        const _cleaned = _localLogs.filter(l => {
+                            const et = l.event_type || '';
+                            const isFailedEvent = et === 'Login Failed' || et === 'Account Locked';
+                            const isSameUser = (l.target_username || '').toLowerCase() === (result.user.username || '').toLowerCase();
+                            return !(isFailedEvent && isSameUser);
+                        });
+                        localStorage.setItem(_logKey, JSON.stringify(_cleaned));
+                        // Also delete from Supabase
+                        if (window.supabase && result.user.username) {
+                            await window.supabase.from('security_log')
+                                .delete()
+                                .in('event_type', ['Login Failed', 'Account Locked'])
+                                .eq('target_username', result.user.username);
+                                
+                            if (result.user.id) {
+                                await window.supabase.from('security_log')
+                                    .delete()
+                                    .in('event_type', ['Login Failed', 'Account Locked'])
+                                    .eq('user_id', result.user.id);
+                            }
+                        }
+                    } catch(e) { console.warn('Cleanup failed attempts log error:', e); }
+
+                    showToast('Login successful! Redirecting...', 'success');
+                    setTimeout(() => redirectToDashboard(), 1000);
                 } else {
                     btn.disabled = false; btn.textContent = 'Sign In';
                     recordFailedAttempt(username);
-                    if (result.message.includes('suspended')) {
-                        showToast(result.message, 'error');
-                    } else if (result.message.includes('locked')) {
-                        showToast(result.message, 'error');
-                    } else {
-                        showToast('Invalid Barangay ID. Please try again.', 'error');
-                        document.getElementById('username').value = '';
-                        document.getElementById('username').focus();
+                    if (typeof logActivity === 'function') {
+                        logActivity('Failed Login', `Failed login attempt for username: ${username}`, 'warning');
                     }
+                    showToast(result.message, 'error');
                 }
             } catch (err) {
-                console.error('Login error:', err);
+                alert("Login Error: " + err.message + "\n" + err.stack);
+                console.error(err);
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = false; btn.textContent = 'Sign In';
-                showToast('An unexpected error occurred. Please try again.', 'error');
             }
         });
 
