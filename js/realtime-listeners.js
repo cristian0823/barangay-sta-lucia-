@@ -84,14 +84,9 @@ function initRealtime() {
                 window.showToast(`New Event Added: ${payload.new.title}`, 'info');
             }
             
-            // Increment Notification Bell immediately if we have a badge
-            const bellBadge = document.getElementById('bellBadge');
-            if (bellBadge) {
-                bellBadge.style.display = 'flex';
-                bellBadge.innerText = parseInt(bellBadge.innerText || '0') + 1;
-                // Add bounce animation
-                bellBadge.classList.add('animate-bounce');
-                setTimeout(() => bellBadge.classList.remove('animate-bounce'), 1000);
+            // Fetch the new notification and update the bell immediately
+            if (typeof pollBellNotifications === 'function') {
+                pollBellNotifications();
             }
             
             // Refresh events view if on that page
