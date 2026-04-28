@@ -7320,13 +7320,26 @@
                 renderAdminCalendar();
             };
 
-            window.openAdsEventModal = function () {
+            window.openAdsEventModal = async function () {
                 // Capture current date/venue before opening the modal
                 const allDateEls = document.querySelectorAll('#adsDate');
                 const allVenueEls = document.querySelectorAll('#adsVenue');
                 window._adsCurrentDate = allDateEls[0] ? allDateEls[0].value : '';
                 window._adsCurrentVenue = allVenueEls[0] ? allVenueEls[0].value : '';
                 document.getElementById('adsEventModal').style.display = 'flex';
+                
+                // Repopulate time selects with past-time filtering applied
+                try {
+                    const dateStr = window._adsCurrentDate;
+                    const venue = window._adsCurrentVenue || 'basketball';
+                    if (dateStr) {
+                        const [allBookings, allEvents] = await Promise.all([
+                            typeof getCourtBookings === 'function' ? getCourtBookings() : [],
+                            typeof getEvents === 'function' ? getEvents() : []
+                        ]);
+                        await fillAdsTimeSelects(dateStr, venue, allBookings, allEvents);
+                    }
+                } catch(e) { console.warn('openAdsEventModal time fill error:', e); }
             };
 
             
