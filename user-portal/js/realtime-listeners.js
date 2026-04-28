@@ -36,7 +36,7 @@ function initRealtime() {
         });
 
         // 2. Listen for new Equipment Requests
-        channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'equipment_requests' }, payload => {
+        channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'borrowings' }, payload => {
             if (typeof window.showToast === 'function') window.showToast('New Equipment Borrowing Request!', 'info');
             if (typeof loadStats === 'function') loadStats();
             if (typeof loadRequests === 'function') loadRequests();
@@ -44,7 +44,7 @@ function initRealtime() {
         });
 
         // 3. Listen for new Court Bookings
-        channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, payload => {
+        channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'facility_reservations' }, payload => {
             if (typeof window.showToast === 'function') window.showToast('New Facility Booking Submitted!', 'info');
             if (typeof loadStats === 'function') loadStats();
             if (typeof loadCourtBookings === 'function') loadCourtBookings();
@@ -55,7 +55,7 @@ function initRealtime() {
         // Resident (User) Listeners
         
         // 1. Listen for status changes on THEIR equipment requests
-        channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'equipment_requests', filter: `user_id=eq.${user.id}` }, payload => {
+        channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'borrowings', filter: `user_id=eq.${user.id}` }, payload => {
             const newStatus = payload.new.status;
             if (newStatus !== 'pending') {
                 if (typeof window.showToast === 'function') {
@@ -67,7 +67,7 @@ function initRealtime() {
         });
 
         // 2. Listen for status changes on THEIR court bookings
-        channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bookings', filter: `user_id=eq.${user.id}` }, payload => {
+        channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'facility_reservations', filter: `user_id=eq.${user.id}` }, payload => {
             const newStatus = payload.new.status;
             if (newStatus !== 'pending') {
                 if (typeof window.showToast === 'function') {
