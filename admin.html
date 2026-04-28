@@ -7236,6 +7236,15 @@
                 endSel.innerHTML = '<option value=""></option>';
 
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+                const currentDay = String(now.getDate()).padStart(2, '0');
+                const todayStr = `${currentYear}-${currentMonth}-${currentDay}`;
+                const isToday = (todayStr === dateStr);
+                const currentMins = now.getHours() * 60 + now.getMinutes();
+
                 const slots = [];
                 for (let i = 6; i <= 22; i++) {
                     slots.push(`${String(i).padStart(2, '0')}:00`);
@@ -7245,6 +7254,10 @@
                 slots.forEach(slot => {
                     const sMin = timeToMinutes(slot);
                     const eMin = sMin + 30;
+                    
+                    // Skip past time slots if the selected date is today
+                    if (isToday && sMin < currentMins) return;
+                    
                     let taken = false;
                     for (const b of allBookings) {
                         if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' &&
