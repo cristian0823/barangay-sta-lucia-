@@ -301,14 +301,7 @@
                 <button type="submit" id="loginBtn" class="btn-main">Sign In</button>
             </form>
 
-            <div class="form-footer">
-                <p style="color:#6b7280;font-size:13px;">Enter your <strong>Barangay ID</strong> to access resident services.<br>Your ID is provided by the Barangay Office.</p>
-                <div class="terms-lnk">
-                    <a href="terms.html" target="_blank">Terms &amp; Conditions</a>
-                </div>
-            </div>
 
-            <!-- TOTP Step 2 Panel (hidden by default) -->
             <div id="totpPanel" class="totp-panel" style="display:none;">
                 <div class="totp-title">🔑 Two-Factor Authentication</div>
                 <p class="totp-sub">Enter the 6-digit code from your <strong>Google Authenticator</strong> app.</p>
@@ -332,6 +325,11 @@
                 <button type="button" class="totp-back" onclick="cancelTOTP()">← Back to Login</button>
             </div>
 
+            <!-- Bottom Notice (shown in both login and TOTP steps) -->
+            <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;">
+                <p style="font-size:12px;color:#9ca3af;margin-bottom:6px;">🔒 This portal is restricted to authorized personnel only.</p>
+                <a href="terms.html" target="_blank" style="font-size:12px;color:#10b981;font-weight:600;text-decoration:underline;">Terms &amp; Conditions</a>
+            </div>
 
         </div>
     </div>

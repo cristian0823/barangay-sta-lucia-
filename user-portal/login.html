@@ -289,13 +289,6 @@
                 <button type="submit" id="loginBtn" class="btn-main">Sign In</button>
             </form>
 
-            <div class="form-footer">
-                <p style="color:#6b7280;font-size:13px;">Enter your <strong>Barangay ID</strong> to access resident services.<br>Your ID is provided by the Barangay Office.</p>
-                <div class="terms-lnk">
-                    <a href="terms.html" target="_blank">Terms &amp; Conditions</a>
-                </div>
-            </div>
-
             <!-- TOTP Step 2 Panel (hidden by default) -->
             <div id="totpPanel" class="totp-panel" style="display:none;">
                 <div class="totp-title">&#x1F511; Two-Factor Authentication</div>
@@ -314,6 +307,12 @@
                 <div id="totpError" class="alert alert-danger hidden">&#x274C; Invalid code. Please try again.</div>
                 <button type="button" id="totpVerifyBtn" class="btn-main" onclick="submitTOTPCode()">Verify Code</button>
                 <button type="button" class="totp-back" onclick="cancelTOTP()">&#x2190; Back to Login</button>
+            </div>
+
+            <!-- Bottom Notice -->
+            <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;">
+                <p style="font-size:12px;color:#9ca3af;margin-bottom:6px;">🔒 Access is limited to registered Barangay Sta. Lucia residents only.</p>
+                <a href="terms.html" target="_blank" style="font-size:12px;color:#10b981;font-weight:600;text-decoration:underline;">Terms &amp; Conditions</a>
             </div>
 
         </div>
