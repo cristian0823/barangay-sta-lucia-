@@ -1891,7 +1891,7 @@ async function getCourtBookings() {
 // Time Slot Validation Helper
 function timeToMinutes(t) {
     if (!t) return 0;
-    const match = t.match(/(Userd+):(Userd+)Users*(AM|PM)?/i);
+    const match = t.match(/(\d+):(\d+)\s*(AM|PM)?/i);
     if (!match) return 0;
     let [ , h, m, ampm ] = match;
     h = parseInt(h);

@@ -7196,31 +7196,46 @@
                 const [allBookings, allEvents] = await Promise.all([getCourtBookings(), getEvents()]);
 
                 const adminNow = new Date();
-                const adminTodayStr = adminNow.toISOString().slice(0, 10);
+                const adminTodayStr = new Date(adminNow.getTime() - (adminNow.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
+                const nowMins = adminNow.getHours() * 60 + adminNow.getMinutes();
+
                 const dayBookings = allBookings.filter(b => {
                     if (b.date !== dateStr) return false;
                     if (b.status === 'cancelled' || b.status === 'cancelled_by_admin' || b.status === 'rejected') return false;
                     if (!(b.venue === venue || b.venueName === venueLabel)) return false;
                     // Hide past end-time bookings for today from schedule list
-                    if (b.date === adminTodayStr && b.end_time) {
-                        const [h, m] = b.end_time.split(':').map(Number);
-                        const endDt = new Date(); endDt.setHours(h, m, 0, 0);
-                        if (endDt < adminNow) return false;
+                    if (b.date === adminTodayStr) {
+                        let tRange = b.timeRange || b.time;
+                        if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                        const parts = tRange.split(' - ').map(s => s.trim());
+                        const etStr = b.end_time || parts[1] || parts[0];
+                        if (timeToMinutes(etStr) <= nowMins) return false;
                     }
                     return true;
                 });
-                const dayEvents = allEvents.filter(e => e.date === dateStr && e.status === 'approved');
+
+                const dayEvents = allEvents.filter(e => {
+                    if (e.date !== dateStr || e.status !== 'approved') return false;
+                    if (e.date === adminTodayStr) {
+                        let tRange = e.timeRange || e.time;
+                        if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
+                        const parts = tRange.split(' - ').map(s => s.trim());
+                        const etStr = e.end_time || parts[1] || parts[0];
+                        if (timeToMinutes(etStr) <= nowMins) return false;
+                    }
+                    return true;
+                });
 
                 const list = document.getElementById('adsScheduleList');
                 const empty = document.getElementById('adsEmptyState');
 
                 const entries = [];
                 dayBookings.forEach(b => {
-                    const timeStr = adminFmt12(b.time) + (b.end_time ? '  ' + adminFmt12(b.end_time) : '');
+                    const timeStr = adminFmt12(b.time) + (b.end_time ? ' - ' + adminFmt12(b.end_time) : '');
                     entries.push({ type: 'booking', id: b.id, timeStr, label: b.userName || b.username || 'Resident', sub: b.purpose || '' });
                 });
                 dayEvents.forEach(e => {
-                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  ' + adminFmt12(e.end_time) : '');
+                    const timeStr = adminFmt12(e.time) + (e.end_time ? ' - ' + adminFmt12(e.end_time) : '');
                     entries.push({ type: 'event', id: e.id, timeStr, label: e.title, sub: e.organizer ? 'By ' + e.organizer : '' });
                 });
 
@@ -7269,6 +7284,12 @@
                 endSel.innerHTML = '<option value=""></option>';
 
                 const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
+                
+                const adminNow = new Date();
+                const adminTodayStr = new Date(adminNow.getTime() - (adminNow.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
+                const nowMins = adminNow.getHours() * 60 + adminNow.getMinutes();
+                const isToday = (dateStr === adminTodayStr);
+
                 const slots = [];
                 for (let i = 6; i <= 22; i++) {
                     slots.push(`${String(i).padStart(2, '0')}:00`);
@@ -7279,13 +7300,17 @@
                     const sMin = timeToMinutes(slot);
                     const eMin = sMin + 30;
                     let taken = false;
+                    
+                    if (isToday && sMin <= nowMins) {
+                        taken = true;
+                    }
+
                     for (const b of allBookings) {
                         if (b.date === dateStr && b.status !== 'rejected' && b.status !== 'cancelled' &&
                             b.status !== 'cancelled_by_admin' && b.status !== 'completed' &&
                             (b.venue === venue || b.venueName === venueLabel)) {
                             let tRange = b.timeRange || b.time;
                             if (tRange.includes(' | ')) tRange = tRange.split(' | ')[1];
-                            // Split on ' - ' separator (e.g. "10:00 AM - 12:00 PM")
                             const rangeParts = tRange.split(' - ').map(s => s.trim());
                             const st = rangeParts[0], et = rangeParts[1] || rangeParts[0];
                             if (sMin < timeToMinutes(et) && eMin > timeToMinutes(st)) taken = true;
