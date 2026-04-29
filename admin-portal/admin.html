@@ -2476,6 +2476,7 @@
                                     <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setReqTab('rejected', this)">Rejected</button>
                                 </div>
                                 <div style="position:relative; max-width:250px; width:100%;">
+                                    <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
                                     <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
                                 </div>
                             </div>
@@ -2528,7 +2529,7 @@
                                         <option value="multipurpose">Multi-Purpose Hall</option>
                                     </select>
                                     <div style="position:relative; flex:1;">
-                                        <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></span>
+                                        <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
                                         <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
                                     </div>
                                 </div>
@@ -2585,7 +2586,22 @@
                             <h3>Citizen Concerns</h3>
                         </div>
                         <div class="section-content" style="padding: 0;">
-                            <div class="filter-bar"><span class="filter-label">Filter:</span><select id="concernStatusFilter" onchange="applyConcernFilter()"><option value="all">All Status</option><option value="open">Open</option><option value="in-progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div>
+                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--border); gap:12px; background:var(--panel-bg);">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span class="filter-label" style="font-weight:600; font-size:13px; color:var(--muted);">Filter:</span>
+                                    <select id="concernStatusFilter" onchange="applyConcernFilter()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text); font-weight:600;">
+                                        <option value="all">All Status</option>
+                                        <option value="open">Open</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="closed">Closed</option>
+                                    </select>
+                                </div>
+                                <div style="position:relative; max-width:250px; width:100%;">
+                                    <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
+                                    <input type="text" id="concernSearch" placeholder="Search concerns..." oninput="applyConcernFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                                </div>
+                            </div>
                                 <div class="admin-tables">
                                 <table class="data-table">
                                     <thead>
@@ -4964,6 +4980,10 @@
                 if (!tbody) return;
                 const sc = { open:{bg:'#fef9c3',c:'#854d0e'}, 'in-progress':{bg:'#dbeafe',c:'#1e40af'}, 'in_progress':{bg:'#dbeafe',c:'#1e40af'}, resolved:{bg:'#dcfce7',c:'#166534'}, closed:{bg:'#f1f5f9',c:'#475569'} };
                 let list = _pgConcernFilter==='all' ? [..._pgConcernsList] : _pgConcernsList.filter(c=>c.status===_pgConcernFilter);
+                const searchTxt = (document.getElementById('concernSearch')?.value||'').toLowerCase();
+                if (searchTxt) {
+                    list = list.filter(c => (c.userName||'').toLowerCase().includes(searchTxt) || (c.title||'').toLowerCase().includes(searchTxt) || (c.category||'').toLowerCase().includes(searchTxt) || (c.address||'').toLowerCase().includes(searchTxt));
+                }
                 if (!list.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">No concerns found</td></tr>'; const pg=document.getElementById('concernsPg'); if(pg) pg.style.display='none'; return; }
                 const slice = list.slice((_pgConcernsPage-1)*PG_SIZE, _pgConcernsPage*PG_SIZE);
                 tbody.innerHTML = slice.map(c => {
