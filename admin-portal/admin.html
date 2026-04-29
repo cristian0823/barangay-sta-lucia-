@@ -2417,7 +2417,7 @@
                             <!-- Pending Actions Card -->
                             <div style="background:var(--surface);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-                                    <div style="width:36px;height:36px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚡</div>
+                                    <div style="width:36px;height:36px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-lightning-charge-fill" style="color:#ca8a04;"></i></div>
                                     <div>
                                         <div style="font-size:14px;font-weight:700;color:var(--text,#1e293b);">Pending Actions</div>
                                         <div style="font-size:11px;color:#94a3b8;">Requires your attention</div>
@@ -2446,7 +2446,7 @@
                             <div style="background:var(--surface);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                                     <div style="display:flex;align-items:center;gap:10px;">
-                                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
+                                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-clock-history" style="color:#16a34a;"></i></div>
                                         <div style="text-align:left;">
                                             <div style="font-size:14px;font-weight:700;color:var(--text,#1e293b);">Recent Activity</div>
                                             <div style="font-size:11px;color:#94a3b8;">Latest system events</div>
@@ -7046,16 +7046,16 @@
                         }
 
                         const evtIcon = ev => {
-                            if (!ev) return '📝';
-                            if (ev.includes('Login') || ev.includes('Logout')) return '🔐';
-                            if (ev.includes('Borrow') || ev.includes('Equipment')) return '🪑';
-                            if (ev.includes('Reservation') || ev.includes('Court') || ev.includes('Booking')) return '🏀';
-                            if (ev.includes('Concern')) return '📣';
-                            if (ev.includes('Event')) return '📅';
-                            if (ev.includes('User') || ev.includes('Resident')) return '👤';
-                            if (ev.includes('Delete') || ev.includes('Remove')) return '🗑️';
-                            if (ev.includes('Update') || ev.includes('Edit')) return '✏️';
-                            return '📋';
+                            if (!ev) return '<i class="bi bi-pencil-square" style="color:#64748b;"></i>';
+                            if (ev.includes('Login') || ev.includes('Logout')) return '<i class="bi bi-shield-lock-fill" style="color:#6366f1;"></i>';
+                            if (ev.includes('Borrow') || ev.includes('Equipment')) return '<i class="bi bi-box-seam-fill" style="color:#eab308;"></i>';
+                            if (ev.includes('Reservation') || ev.includes('Court') || ev.includes('Booking')) return '<i class="bi bi-calendar2-check-fill" style="color:#f97316;"></i>';
+                            if (ev.includes('Concern')) return '<i class="bi bi-megaphone-fill" style="color:#ef4444;"></i>';
+                            if (ev.includes('Event')) return '<i class="bi bi-calendar-event-fill" style="color:#10b981;"></i>';
+                            if (ev.includes('User') || ev.includes('Resident')) return '<i class="bi bi-person-fill" style="color:#3b82f6;"></i>';
+                            if (ev.includes('Delete') || ev.includes('Remove')) return '<i class="bi bi-trash3-fill" style="color:#dc2626;"></i>';
+                            if (ev.includes('Update') || ev.includes('Edit')) return '<i class="bi bi-pencil-fill" style="color:#8b5cf6;"></i>';
+                            return '<i class="bi bi-clipboard2-fill" style="color:#64748b;"></i>';
                         };
 
                         if (recent.length === 0) {
