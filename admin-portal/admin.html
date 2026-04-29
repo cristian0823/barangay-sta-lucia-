@@ -2419,7 +2419,7 @@
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
                                     <div style="width:36px;height:36px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚡</div>
                                     <div>
-                                        <div style="font-size:14px;font-weight:700;color:#1e293b;">Pending Actions</div>
+                                        <div style="font-size:14px;font-weight:700;color:var(--text,#1e293b);">Pending Actions</div>
                                         <div style="font-size:11px;color:#94a3b8;">Requires your attention</div>
                                     </div>
                                 </div>
@@ -2454,7 +2454,7 @@
                                     </div>
                                     <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;white-space:nowrap;">LIVE</span>
                                 </div>
-                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;gap:0;max-height:220px;overflow-y:auto;">
+                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;gap:0;max-height:180px;overflow-y:auto;overflow-x:hidden;">
                                     <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;"></div>
                                 </div>
                             </div>
@@ -3786,7 +3786,11 @@
                 }
             });
 
-            async function renderAdminCalendar() {
+            // ── Calendar data cache (avoid re-fetching on tab/month switch) ──
+            let _adminCalCache = { events: null, bookings: null, ts: 0 };
+            const ADMIN_CAL_CACHE_TTL = 60000; // 1 minute TTL
+
+            async function renderAdminCalendar(forceRefresh) {
                 const grid = document.getElementById('adminCalendarGrid');
                 const monthTitle = document.getElementById('adminCalendarMonth');
                 if (!grid || !monthTitle) return;
@@ -3794,15 +3798,25 @@
                 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                 monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
 
-                grid.innerHTML = Array(35).fill('<div style="height:50px;border-radius:6px;background:#f1f5f9;animation:pulse 1.5s ease-in-out infinite;"></div>').join('');
+                // Only show skeleton on first-ever load, not on tab/month switch
+                const cacheValid = !forceRefresh && _adminCalCache.events !== null && (Date.now() - _adminCalCache.ts < ADMIN_CAL_CACHE_TTL);
+                if (!cacheValid) {
+                    grid.innerHTML = Array(35).fill('<div style="height:50px;border-radius:6px;background:#f1f5f9;animation:pulse 1.5s ease-in-out infinite;"></div>').join('');
+                }
 
                 // Fetch data safely
                 let eventDates = {}, bookingDates = {};
                 let allEvents = [], allBookings = [];
                 try {
-                    const [_e, _b] = await Promise.all([getEvents(), getCourtBookings()]);
-                    allEvents = _e;
-                    allBookings = _b;
+                    if (cacheValid) {
+                        allEvents  = _adminCalCache.events;
+                        allBookings = _adminCalCache.bookings;
+                    } else {
+                        const [_e, _b] = await Promise.all([getEvents(), getCourtBookings()]);
+                        allEvents  = _e;
+                        allBookings = _b;
+                        _adminCalCache = { events: allEvents, bookings: allBookings, ts: Date.now() };
+                    }
                     const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
                     
                     // Helper to check if time has passed
@@ -4226,23 +4240,31 @@
                 });
                 var targetSection = document.getElementById(section + '-section');
                 if (targetSection) targetSection.style.display = 'block';
-                // Auto-load section data on switch
-                if (section === 'audit-log') loadAuditLog();
-                if (section === 'security-log') loadSecurityLog();
-                                if (section === 'users') loadUsers();
-                if (section === 'equipment') loadEquipment();
-                if (section === 'requests') loadRequests();
-                if (section === 'concerns') loadConcerns();
-                if (section === 'court-bookings') {
-                    loadAdminBookings();
-                    startBookingPolling();
-                } else if (section === 'multipurpose-bookings') {
-                    loadMultipurposeBookings();
-                    startBookingPolling();
+
+                // ── Smart section loading: only load data if not already loaded ──
+                if (!window._sectionLoaded) window._sectionLoaded = {};
+                const alreadyLoaded = window._sectionLoaded[section];
+
+                if (!alreadyLoaded) {
+                    window._sectionLoaded[section] = true;
+                    if (section === 'audit-log') loadAuditLog();
+                    if (section === 'security-log') loadSecurityLog();
+                    if (section === 'users') loadUsers();
+                    if (section === 'equipment') loadEquipment();
+                    if (section === 'requests') loadRequests();
+                    if (section === 'concerns') loadConcerns();
+                    if (section === 'court-bookings') { loadAdminBookings(); startBookingPolling(); }
+                    if (section === 'events') renderAdminCalendar(true); // force fetch first time
                 } else {
+                    // Already loaded — just show, no reload
+                    if (section === 'court-bookings') startBookingPolling();
+                    if (section === 'events') renderAdminCalendar(); // uses cache
+                }
+
+                if (section !== 'court-bookings' && section !== 'multipurpose-bookings') {
                     stopBookingPolling();
                 }
-                if (section === 'events') { renderAdminCalendar(); }
+
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -5014,7 +5036,7 @@
                         <td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">${u.barangay_id || ''}</td>
                         <td style="font-size:13px;line-height:1.2;"><strong>${displayName}</strong></td>
                         <td style="font-size:12px;white-space:nowrap;">${phone}</td>
-                        <td style="font-size:12px;color:#6b7280;max-width:160px;word-break:break-word;line-height:1.2;">${u.email || ''}</td>
+                        <td style="font-size:12px;color:var(--muted,#6b7280);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;" title="${u.email || ''}">${u.email || ''}</td>
                         <td style="font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${address}">${address}</td>
                         <td style="white-space:nowrap;">${statusBadge}</td>
                         <td style="text-align:center; white-space:nowrap;">${actionHtml}</td>
@@ -7198,16 +7220,10 @@
                 const hiddenVenue = document.getElementById('adminSelectedVenue');
                 if (hiddenVenue) hiddenVenue.value = venue;
 
-                // Update tab button styles
+                // Update tab button styles instantly
                 const courtBtn = document.getElementById('facilityTab-court');
                 const mphBtn   = document.getElementById('facilityTab-multipurpose');
                 if (courtBtn && mphBtn) {
-                    const activeStyle = 'border-bottom:3px solid #10b981;color:#10b981;';
-                    const inactiveStyle = 'border-bottom:3px solid transparent;color:var(--muted);';
-                    courtBtn.style.cssText   = courtBtn.style.cssText.replace(/border-bottom:[^;]+;color:[^;]+;/, venue === 'basketball' ? activeStyle : inactiveStyle);
-                    mphBtn.style.cssText     = mphBtn.style.cssText.replace(/border-bottom:[^;]+;color:[^;]+;/, venue === 'multipurpose' ? activeStyle : inactiveStyle);
-
-                    // Simple direct set
                     if (venue === 'basketball') {
                         courtBtn.style.borderBottom = '3px solid #10b981'; courtBtn.style.color = '#10b981';
                         mphBtn.style.borderBottom   = '3px solid transparent'; mphBtn.style.color = 'var(--muted)';
@@ -7217,7 +7233,7 @@
                     }
                 }
 
-                // Re-render the calendar for the selected venue
+                // Re-render calendar using CACHED data — no network call, instant switch
                 renderAdminCalendar();
                 if (typeof adminSelectedDate !== 'undefined' && adminSelectedDate) {
                     adminSelectDate(adminSelectedDate);
