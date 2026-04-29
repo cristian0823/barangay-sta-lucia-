@@ -2395,11 +2395,7 @@
             btn.disabled = false; btn.innerHTML = '✅ Submit Borrow Request';
         });
 
-        async function cancelEqRequest(id) {
-            if (!await showConfirmModal("Cancel this equipment request?", "Cancel Request", "Yes, Cancel", "No", "warning")) return;
-            const res = await cancelBorrowingRequest(id);
-            if (res.success) { showToast(res.message, 'success'); loadEquipmentView(); loadDashboardStats(); }
-            else { showToast(res.message, 'error'); }
+        /* cancelEqRequest moved down */
         }
 
         // ==========================================
@@ -3024,20 +3020,31 @@
             }
         }
 
+        function checkCancellationLimit() {
+            const cancelLog = JSON.parse(localStorage.getItem('cancel_timestamps') || '[]');
+            const now = Date.now();
+            return cancelLog.filter(t => now - t < 24 * 60 * 60 * 1000).length;
+        }
+
+        function recordCancellation() {
+            const cancelLog = JSON.parse(localStorage.getItem('cancel_timestamps') || '[]');
+            const now = Date.now();
+            const recentCancels = cancelLog.filter(t => now - t < 24 * 60 * 60 * 1000);
+            recentCancels.push(now);
+            localStorage.setItem('cancel_timestamps', JSON.stringify(recentCancels));
+        }
+
         async function cancelMyReservation(id) {
-            // Enforce 3-cancellation limit
-            const allBookings = await getCourtBookings();
-            const uid = String(user.id);
-            const myBookings = allBookings.filter(b => String(b.user_id) === uid || String(b.userId) === uid);
-            const cancelledCount = myBookings.filter(b => b.status === 'cancelled' && !b.admin_comment).length;
+            const cancelledCount = checkCancellationLimit();
             if (cancelledCount >= 3) {
-                showToast('You have reached the 3-cancellation limit. You can book again tomorrow.', 'error');
+                showToast('You have reached the 3-cancellation limit in 24 hours. You cannot cancel until tomorrow.', 'error');
                 return;
             }
-            if (!await showConfirmModal('Are you sure you want to cancel this reservation? This counts toward your 3-cancellation limit.', 'Cancel Reservation', 'Yes, Cancel', 'No', 'warning')) return;
+            if (!await showConfirmModal(`Are you sure you want to cancel this reservation? (${cancelledCount}/3 cancellations used in 24h)`, 'Cancel Reservation', 'Yes, Cancel', 'No', 'warning')) return;
             const res = await cancelCourtBooking(id);
             if (res.success) {
-                showToast('Reservation cancelled (' + (cancelledCount + 1) + '/3 cancellations used).', 'success');
+                recordCancellation();
+                showToast(`Reservation cancelled (${cancelledCount + 1}/3 cancellations used).`, 'success');
                 await loadBookingView();
                 await loadDashboardStats();
             } else {
@@ -3046,17 +3053,16 @@
         }
 
         async function cancelEqRequest(id) {
-            // Enforce 3-cancellation limit for equipment
-            const allBorrowings = await getMyBorrowings();
-            const cancelledEqCount = (allBorrowings || []).filter(b => b.status === 'cancelled').length;
-            if (cancelledEqCount >= 3) {
-                showToast('You have reached the 3-cancellation limit for equipment requests.', 'error');
+            const cancelledCount = checkCancellationLimit();
+            if (cancelledCount >= 3) {
+                showToast('You have reached the 3-cancellation limit in 24 hours. You cannot cancel until tomorrow.', 'error');
                 return;
             }
-            if (!await showConfirmModal('Cancel this equipment request? (' + cancelledEqCount + '/3 cancellations used)', 'Cancel Request', 'Yes, Cancel', 'No', 'warning')) return;
-            const res = await cancelCourtBooking(id); // borrowings cancel shares same pattern
+            if (!await showConfirmModal(`Cancel this equipment request? (${cancelledCount}/3 cancellations used in 24h)`, 'Cancel Request', 'Yes, Cancel', 'No', 'warning')) return;
+            const res = await cancelBorrowingRequest(id);
             if (res.success) {
-                showToast('Equipment request cancelled.', 'success');
+                recordCancellation();
+                showToast(`Equipment request cancelled (${cancelledCount + 1}/3 cancellations used).`, 'success');
                 await loadMyBorrowingsList();
                 await loadDashboardStats();
             } else {

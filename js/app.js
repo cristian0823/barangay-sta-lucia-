@@ -1373,7 +1373,7 @@ async function cancelBorrowingRequest(borrowingId) {
             const { data: eq } = await supabase.from('equipment').select('available').eq('id', borrowing.equipment_id).single();
             if (eq) await supabase.from('equipment').update({ available: eq.available + borrowing.quantity }).eq('id', borrowing.equipment_id);
         }
-        await supabase.from('borrowings').delete().eq('id', borrowingId);
+        await supabase.from('borrowings').update({status: 'cancelled'}).eq('id', borrowingId);
         await logActivity('Borrow Cancelled', `User cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
         return { success: true, message: 'Request cancelled successfully' };
     } else {
