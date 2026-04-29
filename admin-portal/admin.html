@@ -2234,7 +2234,7 @@
             <button onclick="mobileSwitchSection('court-bookings')"> Facility Reservations</button>
                  <button onclick="mobileSwitchSection('requests')"> Equipment Requests</button>
             <button onclick="mobileSwitchSection('concerns')"> Concerns</button>
-            <button onclick="mobileSwitchSection('events')"> Court Events</button>
+            <button onclick="mobileSwitchSection('events')"> Facility Events</button>
             <button onclick="mobileSwitchSection('equipment')"> Inventory</button>
                         <button onclick="mobileSwitchSection('audit-log')"> Audit Log</button>
             <button onclick="mobileSwitchSection('security-log')"> Security Log</button>
@@ -2296,7 +2296,7 @@
                         <span class="nav-icon-box"><i class="bi bi-people-fill"></i></span> Manage Users
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('events', this)">
-                        <span class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></span> Court Events
+                        <span class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></span> Facility Events
                     </button>
                     <button class="sidebar-btn" onclick="switchSection('equipment', this)">
                         <span class="nav-icon-box"><i class="bi bi-box-seam-fill"></i></span> Inventory
@@ -2406,7 +2406,7 @@
                             <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])"
                                 class="quick-action-card" style="--qa-color:#8b5cf6;">
                                 <div class="qa-icon" style="color:var(--qa-color)"><i class="bi bi-calendar-event-fill"></i></div>
-                                <div class="qa-label">Court Events</div>
+                                <div class="qa-label">Facility Events</div>
                                 <div class="qa-sub">Schedule &amp; manage</div>
                                 <i class="bi bi-arrow-right-short qa-arrow"></i>
                             </button>
@@ -2443,16 +2443,16 @@
                                 </div>
                             </div>
                             <!-- Recent Activity Card -->
-                            <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                            <div style="background:var(--card-bg,#fff);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                                     <div style="display:flex;align-items:center;gap:10px;">
                                         <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
-                                        <div>
-                                            <div style="font-size:14px;font-weight:700;color:#1e293b;">Recent Activity</div>
+                                        <div style="text-align:left;">
+                                            <div style="font-size:14px;font-weight:700;color:var(--text,#1e293b);">Recent Activity</div>
                                             <div style="font-size:11px;color:#94a3b8;">Latest system events</div>
                                         </div>
                                     </div>
-                                    <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;">LIVE</span>
+                                    <span style="font-size:10px;background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid #bbf7d0;white-space:nowrap;">LIVE</span>
                                 </div>
                                 <div id="overviewActivityFeed" style="display:flex;flex-direction:column;gap:0;max-height:220px;overflow-y:auto;">
                                     <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;"></div>
@@ -2623,6 +2623,17 @@
                     </div>
 
                     <div id="events-section" class="section-container" style="display: none;">
+                        <div class="section-header">
+                            <div>
+                                <h3>Facility Events</h3>
+                                <p style="font-size:13px;color:var(--muted);margin-top:5px;">Schedule and manage events for all barangay facilities.</p>
+                            </div>
+                        </div>
+                        <!-- Venue Tab Bar -->
+                        <div style="display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--border);background:var(--panel-bg,#f8fafc);">
+                            <button id="facilityTab-court" onclick="switchFacilityTab('basketball')" style="padding:14px 28px;font-size:13px;font-weight:700;border:none;background:transparent;cursor:pointer;border-bottom:3px solid #10b981;color:#10b981;transition:all 0.2s;">🏀 Court Calendar</button>
+                            <button id="facilityTab-multipurpose" onclick="switchFacilityTab('multipurpose')" style="padding:14px 28px;font-size:13px;font-weight:700;border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;color:var(--muted);transition:all 0.2s;">🏛️ Multi-Purpose Hall</button>
+                        </div>
                         <div class="section-content" style="padding: 24px;">
 
                             <input type="hidden" id="adminSelectedVenue" value="basketball">
@@ -7179,6 +7190,38 @@
 
                 renderAdminCalendar();
                 if (adminSelectedDate) adminSelectDate(adminSelectedDate); // Refresh slots
+            };
+
+            // ── Facility Events Tab Switcher ────────────────────────────────
+            window.switchFacilityTab = function(venue) {
+                // Update hidden venue input
+                const hiddenVenue = document.getElementById('adminSelectedVenue');
+                if (hiddenVenue) hiddenVenue.value = venue;
+
+                // Update tab button styles
+                const courtBtn = document.getElementById('facilityTab-court');
+                const mphBtn   = document.getElementById('facilityTab-multipurpose');
+                if (courtBtn && mphBtn) {
+                    const activeStyle = 'border-bottom:3px solid #10b981;color:#10b981;';
+                    const inactiveStyle = 'border-bottom:3px solid transparent;color:var(--muted);';
+                    courtBtn.style.cssText   = courtBtn.style.cssText.replace(/border-bottom:[^;]+;color:[^;]+;/, venue === 'basketball' ? activeStyle : inactiveStyle);
+                    mphBtn.style.cssText     = mphBtn.style.cssText.replace(/border-bottom:[^;]+;color:[^;]+;/, venue === 'multipurpose' ? activeStyle : inactiveStyle);
+
+                    // Simple direct set
+                    if (venue === 'basketball') {
+                        courtBtn.style.borderBottom = '3px solid #10b981'; courtBtn.style.color = '#10b981';
+                        mphBtn.style.borderBottom   = '3px solid transparent'; mphBtn.style.color = 'var(--muted)';
+                    } else {
+                        mphBtn.style.borderBottom   = '3px solid #10b981'; mphBtn.style.color = '#10b981';
+                        courtBtn.style.borderBottom = '3px solid transparent'; courtBtn.style.color = 'var(--muted)';
+                    }
+                }
+
+                // Re-render the calendar for the selected venue
+                renderAdminCalendar();
+                if (typeof adminSelectedDate !== 'undefined' && adminSelectedDate) {
+                    adminSelectDate(adminSelectedDate);
+                }
             };
 
             // =====================================================
