@@ -2415,7 +2415,7 @@
                         <!-- Recent Summary Row -->
                         <div class="recent-summary-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
                             <!-- Pending Actions Card -->
-                            <div style="background:var(--card-bg,#fff);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                            <div style="background:var(--surface);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
                                     <div style="width:36px;height:36px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚡</div>
                                     <div>
@@ -2443,7 +2443,7 @@
                                 </div>
                             </div>
                             <!-- Recent Activity Card -->
-                            <div style="background:var(--card-bg,#fff);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                            <div style="background:var(--surface);border:1.5px solid var(--border,#e2e8f0);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                                     <div style="display:flex;align-items:center;gap:10px;">
                                         <div style="width:36px;height:36px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
@@ -2814,10 +2814,10 @@
     </div>
 
     <!-- Filter Bar -->
-    <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
+    <div style="background: var(--surface); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">ACTION</label>
-            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
                 <option value="all">All Actions</option>
                 <option value="Borrow">Borrow Equipment</option>
                 <option value="Reserve">Facility Reservation</option>
@@ -2827,17 +2827,17 @@
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 2; min-width: 200px; position: relative;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
             <div style="position:relative; width:100%;">
                 <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
-                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
             </div>
         </div>
         <div>
@@ -2848,7 +2848,7 @@
     </div>
 
     <!-- Table -->
-    <div style="background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         <div class="table-responsive">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="auditLogTable">
                 <thead>
@@ -2888,19 +2888,19 @@
 
     <!-- Stats Cards -->
     <div class="stats-grid" style="gap: 16px; margin-bottom: 24px;">
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
             <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
         </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">FAILED ATTEMPTS TODAY</div>
             <div id="secStatFailed" style="font-size: 28px; font-weight: 800; color: #eab308;">0</div>
         </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="font-size: 11px; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="bi bi-exclamation-triangle-fill"></i> ANOMALIES TODAY</div>
             <div id="secStatAnomalies" style="font-size: 28px; font-weight: 800; color: #ef4444;">0</div>
         </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">TOTAL RECORDS</div>
             <div id="secStatTotal" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
         </div>
@@ -2915,10 +2915,10 @@
     </div>
 
     <!-- Filter Bar -->
-    <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
+    <div style="background: var(--surface); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">EVENT TYPE</label>
-            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
                 <option value="all">All Events</option>
                 <option value="logins" selected>Login Events Only</option>
                 <option value="success">Success Only</option>
@@ -2928,7 +2928,7 @@
         </div>
         <div style="flex: 1; min-width: 150px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">AUTH METHOD</label>
-            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
                 <option value="all">All Methods</option>
                 <option value="Password">Password</option>
                 <option value="Google">Google</option>
@@ -2941,17 +2941,17 @@
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 1; min-width: 130px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
         </div>
         <div style="flex: 2; min-width: 200px; position: relative;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
             <div style="position:relative; width:100%;">
                 <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
-                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
             </div>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: flex-end;">
@@ -2962,7 +2962,7 @@
     </div>
 
     <!-- Table -->
-    <div style="background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         <div class="table-responsive">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="securityLogTable">
                 <thead>
