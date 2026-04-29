@@ -961,21 +961,21 @@
             </button>
             <!-- Premium Image Header -->
             <div class="relative h-40 w-full bg-gray-200 overflow-hidden shrink-0">
-                <img id="borrowModalImage" src="../barangay.jpg" alt="Equipment" class="w-full h-full object-cover">
+                <img id="borrowModalImage" src="../barangay.jpg" alt="Equipment" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 <div class="absolute bottom-4 left-6 right-6 flex items-end justify-between">
                     <div>
                         <h3 class="text-3xl font-extrabold text-white drop-shadow-lg" id="borrowModalTitle">Borrow Item</h3>
                         <p class="text-sm text-emerald-100 mt-1 drop-shadow-md font-medium">Select your dates and provide details below.</p>
                     </div>
-                    <div class="hidden sm:block">
+                    <div>
                         <span id="borrowModalStockBadge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-emerald-500/90 text-white backdrop-blur-md">0 Available</span>
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto">
+            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto lg:overflow-hidden">
                 <!-- Left Column: Calendar -->
-                <div class="w-full lg:w-1/2 p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30" style="background: var(--dm-cal-bg, inherit);">
+                <div class="w-full lg:w-1/2 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30 lg:overflow-y-auto" style="background: var(--dm-cal-bg, inherit);">
                     <div class="flex justify-between items-center mb-4">
                         <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
                         <div class="flex space-x-2">
@@ -997,7 +997,7 @@
                     </div>
                 </div>
                 <!-- Right Column: Professional Form -->
-                <div class="w-full lg:w-1/2 p-6 flex flex-col">
+                <div class="w-full lg:w-1/2 p-4 lg:p-6 flex flex-col lg:overflow-y-auto">
                     <!-- Date Display -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -2081,7 +2081,7 @@
                 return `<div class="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
                     <!-- Image Header -->
                     <div class="relative h-48 w-full bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                        <img src="${imageName}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='../barangay.jpg'; this.onerror=null;">
+                        <img src="${imageName}" alt="${item.name}" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800 transition-transform duration-500 group-hover:scale-110" onerror="this.src='../barangay.jpg'; this.onerror=null;">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         <div class="absolute top-3 right-3">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-emerald-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${item.available} Available</span>
