@@ -2704,6 +2704,7 @@
                             <div style="display:flex;gap:8px;">
                                 <a href="data:text/csv;charset=utf-8,barangay_id%2Cfull_name%2Cemail%2Cphone%2Caddress%0ABGY-001%2CJuan%20dela%20Cruz%2Cjuan%40email.com%2C09171234567%2C123%20Rizal%20St." download="resident_template.csv" class="btn btn-small btn-light" style="text-decoration:none;"> Download Template</a>
                                 <button class="btn btn-small btn-primary" onclick="document.getElementById('batchUploadModal').classList.add('active')"> Upload Excel / CSV</button>
+                                <button class="btn btn-small" style="background:#7c3aed;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;" onclick="openEncryptMigrateModal()">&#128272; Encrypt Records</button>
                             </div>
                         </div>
                         <div class="section-content">
@@ -2730,6 +2731,35 @@
                             </div>
                         </div>
                     </div><!-- Users Section -->
+
+                    <!-- ENCRYPT RECORDS MIGRATION MODAL -->
+                    <div id="encryptMigrateModal" class="modal">
+                        <div class="modal-content" style="max-width:520px;">
+                            <div class="modal-header" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
+                                <h3 style="color:#fff;">&#128272; Encrypt Database Records</h3>
+                                <button class="modal-close" onclick="document.getElementById('encryptMigrateModal').classList.remove('active')" style="color:#fff;background:transparent;border:none;font-size:20px;cursor:pointer;">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+                                    <p style="margin:0;font-size:13px;color:#5b21b6;line-height:1.6;">
+                                        <strong>&#9888;&#65039; Important:</strong> This tool scans all resident records and encrypts any <strong>email</strong>, <strong>phone</strong>, and <strong>Barangay ID</strong> fields still stored as plain text. Already-encrypted records are skipped safely.
+                                    </p>
+                                </div>
+                                <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Run this once to protect all existing sensitive data in your database against unauthorized access.</p>
+                                <div id="encryptMigrateProgress" style="display:none;margin-top:12px;">
+                                    <div style="height:8px;background:#e9d5ff;border-radius:99px;overflow:hidden;">
+                                        <div id="encryptMigrateBar" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:99px;transition:width 0.3s ease;"></div>
+                                    </div>
+                                    <p id="encryptMigrateStatus" style="font-size:12px;color:#6d28d9;margin-top:8px;text-align:center;">Scanning records...</p>
+                                </div>
+                                <div id="encryptMigrateResult" style="display:none;margin-top:12px;font-size:13px;padding:12px 14px;border-radius:10px;"></div>
+                            </div>
+                            <div style="display:flex;gap:10px;justify-content:flex-end;padding:16px 20px;border-top:1px solid var(--border);">
+                                <button class="btn btn-light" onclick="document.getElementById('encryptMigrateModal').classList.remove('active')">Close</button>
+                                <button id="encryptMigrateBtn" onclick="encryptExistingRecords()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-weight:700;cursor:pointer;">&#128272; Start Encryption</button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- BATCH UPLOAD MODAL -->
                     <div id="batchUploadModal" class="modal">
@@ -5343,6 +5373,85 @@
 
             // Keep legacy name working (used by ondrop)
             function previewBatchCSV(file) { previewBatchFile(file); }
+
+            function openEncryptMigrateModal() {
+                document.getElementById('encryptMigrateProgress').style.display = 'none';
+                document.getElementById('encryptMigrateResult').style.display = 'none';
+                document.getElementById('encryptMigrateBar').style.width = '0%';
+                document.getElementById('encryptMigrateStatus').textContent = 'Scanning records...';
+                document.getElementById('encryptMigrateBtn').disabled = false;
+                document.getElementById('encryptMigrateBtn').textContent = '🔐 Start Encryption';
+                document.getElementById('encryptMigrateModal').classList.add('active');
+            }
+
+            async function encryptExistingRecords() {
+                const btn = document.getElementById('encryptMigrateBtn');
+                const progressDiv = document.getElementById('encryptMigrateProgress');
+                const bar = document.getElementById('encryptMigrateBar');
+                const statusEl = document.getElementById('encryptMigrateStatus');
+                const resultBox = document.getElementById('encryptMigrateResult');
+
+                btn.disabled = true;
+                btn.textContent = 'Encrypting...';
+                progressDiv.style.display = 'block';
+                resultBox.style.display = 'none';
+
+                const supabaseAvail = await isSupabaseAvailable();
+                if (!supabaseAvail) {
+                    resultBox.style.display = 'block';
+                    resultBox.style.cssText = 'display:block;margin-top:12px;font-size:13px;padding:12px 14px;border-radius:10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;';
+                    resultBox.textContent = '❌ Cannot connect to database. Please check your connection and try again.';
+                    btn.disabled = false;
+                    btn.textContent = '🔐 Start Encryption';
+                    return;
+                }
+
+                try {
+                    // Fetch all users
+                    const { data: users, error } = await supabase.from('users').select('id, email, phone, barangay_id, contact_number');
+                    if (error) throw error;
+
+                    let encrypted = 0, skipped = 0, failed = 0;
+                    const total = users.length;
+
+                    for (let i = 0; i < users.length; i++) {
+                        const u = users[i];
+                        const pct = Math.round(((i + 1) / total) * 100);
+                        bar.style.width = pct + '%';
+                        statusEl.textContent = `Processing ${i + 1} of ${total} records...`;
+
+                        const updates = {};
+                        // Only encrypt fields that are plaintext (don't start with 'ENC:')
+                        if (u.email && !u.email.startsWith('ENC:'))        updates.email        = await encryptData(u.email);
+                        if (u.phone && !u.phone.startsWith('ENC:'))        updates.phone        = await encryptData(u.phone);
+                        if (u.barangay_id && !u.barangay_id.startsWith('ENC:')) updates.barangay_id = await encryptData(u.barangay_id);
+                        if (u.contact_number && !u.contact_number.startsWith('ENC:')) updates.contact_number = await encryptData(u.contact_number);
+
+                        if (Object.keys(updates).length > 0) {
+                            const { error: updateErr } = await supabase.from('users').update(updates).eq('id', u.id);
+                            if (updateErr) { failed++; console.error('Failed to encrypt user', u.id, updateErr); }
+                            else encrypted++;
+                        } else {
+                            skipped++; // Already encrypted
+                        }
+                    }
+
+                    bar.style.width = '100%';
+                    statusEl.textContent = 'Done!';
+                    resultBox.style.cssText = 'display:block;margin-top:12px;font-size:13px;padding:12px 14px;border-radius:10px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;';
+                    resultBox.textContent = `✅ Done! ${encrypted} record(s) encrypted. ${skipped} already encrypted (skipped). ${failed > 0 ? failed + ' failed.' : ''}`;
+
+                    if (encrypted > 0) await logActivity('Data Encryption Migration', `Admin encrypted ${encrypted} plaintext user records in the database.`);
+
+                    btn.textContent = '✅ Encryption Complete';
+                } catch (err) {
+                    console.error('Encryption migration error:', err);
+                    resultBox.style.cssText = 'display:block;margin-top:12px;font-size:13px;padding:12px 14px;border-radius:10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;';
+                    resultBox.textContent = '❌ Error: ' + err.message;
+                    btn.disabled = false;
+                    btn.textContent = '🔐 Start Encryption';
+                }
+            }
 
             async function submitBatchUpload() {
                 if (_batchRows.length === 0) return;
