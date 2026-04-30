@@ -7148,10 +7148,10 @@
                 if (el('totalUsers')) el('totalUsers').textContent = users.filter(u => u.role !== 'admin').length;
 
                 // Glance row
-                if (el('glancePendingReqs')) el('glancePendingReqs').textContent = pendingReqs + ' pending';
-                if (el('glancePendingCons')) el('glancePendingCons').textContent = pendingCons + ' open';
-                if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks + ' active';
-                if (el('glanceUsers')) el('glanceUsers').textContent = users.filter(u => u.role !== 'admin').length + ' total';
+                if (el('glancePendingReqs')) el('glancePendingReqs').textContent = pendingReqs;
+                if (el('glancePendingCons')) el('glancePendingCons').textContent = pendingCons;
+                if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks;
+                if (el('glanceUsers')) el('glanceUsers').textContent = users.filter(u => u.role !== 'admin').length;
 
                 // Recent Activity Feed — reads from audit_log
                 const feed = document.getElementById('overviewActivityFeed');
