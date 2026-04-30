@@ -1178,7 +1178,15 @@ async function approveEquipmentRequest(borrowingId) {
         targetUserId = rec?.user_id;
         equipmentName = rec?.equipment;
 
-        // Stock already deducted on request submit — just update status
+        // Deduct equipment inventory on approval
+        const { data: rec2 } = await supabase.from('borrowings').select('equipment, quantity').eq('id', borrowingId).maybeSingle();
+        if (rec2 && rec2.equipment && rec2.quantity) {
+            const { data: eqItem } = await supabase.from('equipment').select('id, available, quantity').eq('name', rec2.equipment).maybeSingle();
+            if (eqItem) {
+                const newAvail = Math.max(0, eqItem.available - rec2.quantity);
+                await supabase.from('equipment').update({ available: newAvail }).eq('id', eqItem.id);
+            }
+        }
         const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
 
