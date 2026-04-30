@@ -7698,6 +7698,7 @@
                 if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
                     supabase.channel('admin-realtime')
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'borrowings' }, payload => {
+                            console.log('[Admin Realtime] borrowings:', payload.eventType);
                             if (typeof loadOverview === 'function') loadOverview();
                             if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
@@ -7707,6 +7708,7 @@
                             if (typeof loadActivityLog === 'function') loadActivityLog();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'facility_reservations' }, payload => {
+                            console.log('[Admin Realtime] facility_reservations:', payload.eventType);
                             if (typeof loadOverview === 'function') loadOverview();
                             if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
@@ -7716,6 +7718,7 @@
                             if (typeof loadActivityLog === 'function') loadActivityLog();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'concerns' }, payload => {
+                            console.log('[Admin Realtime] concerns:', payload.eventType);
                             if (typeof loadOverview === 'function') loadOverview();
                             if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
@@ -7729,13 +7732,23 @@
                             }
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, payload => {
+                            console.log('[Admin Realtime] events:', payload.eventType);
                             if (typeof loadOverview === 'function') loadOverview();
                             if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
                             if (typeof loadEvents === 'function') loadEvents();
                             if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
                         })
-                        .subscribe();
+                        .subscribe((status) => {
+                            console.log('[Admin Realtime] Status:', status);
+                        });
+
+                    // Polling fallback: refresh overview every 8 seconds so stats
+                    // stay accurate even if a realtime event is missed.
+                    setInterval(async () => {
+                        if (typeof loadOverview === 'function') await loadOverview();
+                        if (typeof refreshAdminBell === 'function') refreshAdminBell();
+                    }, 8000);
                 }
             }
 
