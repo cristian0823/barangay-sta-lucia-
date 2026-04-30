@@ -2268,29 +2268,31 @@
                 <!-- Admin Notification Bell -->
                 <div style="position:relative;display:flex;align-items:center;" id="adminBellWrapper">
                     <button onclick="toggleAdminBell(event)" id="adminBellBtn" title="Notifications"
-                        style="position:relative;width:38px;height:38px;border-radius:12px;border:2px solid #e5e7eb;background:#f9fafb;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:#4b5563;transition:all 0.2s;flex-shrink:0;">
+                        class="admin-bell-btn-style" style="position:relative;width:38px;height:38px;border-radius:12px;border:2px solid #e5e7eb;background:var(--bg-card,#f9fafb);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text-main,#4b5563);transition:all 0.2s;flex-shrink:0;">
                         <i class="bi bi-bell-fill"></i>
                         <span id="adminBellBadge"
                             style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1;border:2px solid #fff;">0</span>
                     </button>
-                    <div id="adminBellDropdown" onclick="event.stopPropagation()" style="display:none;position:absolute;top:calc(100% + 14px);right:0;width:350px;max-height:480px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);z-index:99999;flex-direction:column;overflow:visible;" class="admin-bell-panel">
-                        <div style="position:absolute;top:-8px;right:11px;width:16px;height:16px;background:#fff;border-left:1px solid #e5e7eb;border-top:1px solid #e5e7eb;transform:rotate(45deg);z-index:1;" class="admin-bell-pointer"></div>
-                        <div style="position:relative;z-index:2;background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:100%;">
-                        <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;background:#f9fafb;border-top-left-radius:12px;border-top-right-radius:12px;">
-                            <h3 style="font-weight:700;font-size:15px;color:#1f2937;margin:0;">Notifications</h3>
-                            <button onclick="markAllAdminBellRead(); event.stopPropagation();" style="font-size:12px;color:#059669;font-weight:600;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;">
-                                <i class="bi bi-check-all"></i> Mark all read
-                            </button>
-                        </div>
-                        <div id="adminBellList" onclick="event.stopPropagation()" style="max-height:380px;overflow-y:auto;display:flex;flex-direction:column;">
-                            <div style="padding:40px 20px;text-align:center;color:#9ca3af;font-size:13px;"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>
-                        </div>
-                        <div onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';" style="padding:10px 16px;background:#f9fafb;border-top:1px solid #f3f4f6;text-align:center;font-size:12px;font-weight:600;color:#6b7280;cursor:pointer;">
-                            See all activity in Audit Log
-                        </div>
+                    <div class="admin-bell-dropdown" id="adminBellDropdown" onclick="event.stopPropagation()">
+                        <div class="admin-bell-pointer"></div>
+                        <div class="admin-bell-inner">
+                            <div class="admin-bell-header">
+                                <h3>Notifications</h3>
+                                <button class="admin-bell-markall" onclick="markAllAdminBellRead(); event.stopPropagation();">
+                                    <i class="bi bi-check-all"></i> Mark all read
+                                </button>
+                            </div>
+                            <div class="admin-bell-list" id="adminBellList">
+                                <div class="admin-bell-empty">
+                                    <i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>
+                                    No new notifications
+                                </div>
+                            </div>
+                            <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">
+                                See all activity in Audit Log
+                            </div>
                         </div>
                     </div>
-                </div>
                 <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn"></button>
                 <a href="admin-settings.html" class="logout-btn" style="text-decoration:none; display:flex; align-items:center; gap:6px;">Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
