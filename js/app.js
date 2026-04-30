@@ -1031,6 +1031,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
+        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -1494,6 +1495,7 @@ async function submitConcern(category, title, description, address, imageFile = 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User submitted a concern: ${title}`);
         await addNotification('admin', 'concern', `User submitted a concern: ${title}`);
+        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
