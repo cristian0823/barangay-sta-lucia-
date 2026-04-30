@@ -3179,15 +3179,30 @@ async function addNotification(userId, type, message, referenceId = null) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         try {
-            const { error } = await supabase.from('notifications').insert([{
-                user_id: String(userId),
-                type,
-                message,
-                reference_id: referenceId,
-                is_read: false,
-                created_at: timestamp
-            }]);
-            if (!error) return true;
+            if (userId === 'admin') {
+                const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin');
+                if (admins && admins.length > 0) {
+                    const payloads = admins.map(a => ({
+                        user_id: a.id,
+                        type,
+                        message,
+                        meta: referenceId ? { reference_id: referenceId } : {},
+                        is_read: false,
+                        created_at: timestamp
+                    }));
+                    await supabase.from('user_notifications').insert(payloads);
+                }
+            } else {
+                await supabase.from('user_notifications').insert([{
+                    user_id: parseInt(userId) || null,
+                    type,
+                    message,
+                    meta: referenceId ? { reference_id: referenceId } : {},
+                    is_read: false,
+                    created_at: timestamp
+                }]);
+            }
+            return true;
         } catch (e) {
             console.warn('Notifications Supabase error:', e);
         }

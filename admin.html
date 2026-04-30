@@ -8782,14 +8782,17 @@
                     const ADMIN_NOTIF_TYPES = ['borrow', 'booking', 'concern', 'cancel_borrow', 'cancel_booking'];
 
                     if (supabaseAvailable) {
-                        const { data, error } = await supabase
-                            .from('notifications')
-                            .select('*')
-                            .eq('user_id', 'admin')
-                            .in('type', ADMIN_NOTIF_TYPES)
-                            .order('created_at', { ascending: false })
-                            .limit(25);
-                        if (!error && data) notifData = data;
+                        const currentUser = getCurrentUser();
+                        if (currentUser && currentUser.id) {
+                            const { data, error } = await supabase
+                                .from('user_notifications')
+                                .select('*')
+                                .eq('user_id', currentUser.id)
+                                .in('type', ADMIN_NOTIF_TYPES)
+                                .order('created_at', { ascending: false })
+                                .limit(25);
+                            if (!error && data) notifData = data;
+                        }
                     } else {
                         const localNotifs = JSON.parse(localStorage.getItem('barangay_notifications') || '[]');
                         notifData = localNotifs
@@ -8852,15 +8855,25 @@
             }
 
             async function markAllAdminBellRead() {
-                localStorage.setItem('last_admin_bell_view', Date.now().toString());
-                refreshAdminBell();
-            }
-
-            async function markAllAdminBellRead() {
-                if (typeof markAllNotificationsRead === 'function') {
-                    await markAllNotificationsRead('admin');
-                }
-                refreshAdminBell();
+                try {
+                    const supabaseAvailable = typeof isSupabaseAvailable === 'function' ? await isSupabaseAvailable() : false;
+                    if (supabaseAvailable) {
+                        const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+                        if (currentUser && currentUser.id) {
+                            const ADMIN_NOTIF_TYPES = ['borrow', 'booking', 'concern', 'cancel_borrow', 'cancel_booking'];
+                            await supabase
+                                .from('user_notifications')
+                                .update({ is_read: true })
+                                .eq('user_id', currentUser.id)
+                                .in('type', ADMIN_NOTIF_TYPES)
+                                .eq('is_read', false);
+                        }
+                    }
+                    localStorage.setItem('last_admin_bell_view', Date.now().toString());
+                    refreshAdminBell();
+                    const drop = document.getElementById('adminBellDropdown');
+                    if (drop) drop.style.display = 'none';
+                } catch(e) { console.warn('markAllAdminBellRead error:', e); }
             }
 
             // Refresh bell every 30 seconds
