@@ -2752,7 +2752,7 @@
             _dsCurrentDate = dateStr;
             _dsCurrentVenue = selectedVenue;
 
-            const venueLabel = selectedVenue === 'basketball' ? '<i class="bi bi-dribbble mr-2"></i>Basketball Court' : '<i class="bi bi-building mr-2"></i>Multi-Purpose Hall';
+            const venueLabel = selectedVenue === 'basketball' ? '🏀 Basketball Court' : '🏢 Multi-Purpose Hall';
             const d = new Date(dateStr + 'T00:00:00');
             const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -2843,7 +2843,7 @@
 
             const dayBookings = allBookings.filter(b =>
                 b.date === dateStr &&
-                b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' &&
+                b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' && b.status !== 'admin_cancelled' && b.status !== 'completed' &&
                 (b.venue === venue || b.venueName === venueLabel)
             );
             const isToday2 = dateStr === new Date().toISOString().slice(0, 10);
@@ -2873,7 +2873,7 @@
             });
             dayEvents.forEach(e => {
                 const timeStr = fmt12(e.time) + (e.end_time ? ' – ' + fmt12(e.end_time) : '');
-                const venueEvLabel = (e.venue === 'multipurpose' || (e.location && e.location.includes('Multi-Purpose'))) ? '<i class="bi bi-building mr-2"></i>Multi-Purpose Hall' : '<i class="bi bi-dribbble mr-2"></i>Basketball Court';
+                const venueEvLabel = (e.venue === 'multipurpose' || (e.location && e.location.includes('Multi-Purpose'))) ? '🏢 Multi-Purpose Hall' : '🏀 Basketball Court';
                 entries.push({ type: 'event', timeStr, label: e.title, purpose: (e.organizer ? 'By ' + e.organizer + ' · ' : '') + venueEvLabel });
             });
 
