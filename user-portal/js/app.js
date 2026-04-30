@@ -1027,6 +1027,12 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
+        await supabase.from('user_notifications').insert([{
+            user_id: resolvedUserIdB,
+            type: 'equipment_requested',
+            message: `You successfully requested to borrow ${quantity}x ${item.name}.`,
+            is_read: false
+        }]);
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -1490,6 +1496,12 @@ async function submitConcern(category, title, description, address, imageFile = 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User submitted a concern: ${title}`);
         await addNotification('admin', 'concern', `User submitted a concern: ${title}`);
+        await supabase.from('user_notifications').insert([{
+            user_id: resolvedUserIdC,
+            type: 'concern_submitted',
+            message: `You successfully submitted a concern: ${title}.`,
+            is_read: false
+        }]);
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
@@ -1967,6 +1979,12 @@ async function bookCourt(bookingData) {
             if (error) throw error;
             await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
             await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
+            await supabase.from('user_notifications').insert([{
+                user_id: resolvedUserId,
+                type: 'booking_submitted',
+                message: `You successfully reserved the ${venueLabel} for ${combinedTime}.`,
+                is_read: false
+            }]);
             broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
