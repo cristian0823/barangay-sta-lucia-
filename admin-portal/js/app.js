@@ -851,7 +851,7 @@ async function getEquipment() {
         icon: item.icon || '📦',
         description: item.description || '',
         quantity: item.quantity || 0,
-        available: Math.max(0, (item.quantity || 0) - (item.broken || 0)), // Date-based logic requires available to reflect total physical stock
+        available: item.available !== undefined ? item.available : Math.max(0, (item.quantity || 0) - (item.broken || 0)),
         broken: item.broken || 0,
         pending: pendingQtyMap[item.name] || 0,
         isLocked: lockedNames.has(item.name || 'Unknown')
