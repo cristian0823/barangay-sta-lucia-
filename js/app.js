@@ -2501,11 +2501,11 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
         const { data: concern } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
         
-        if (!error && concern && concern.user_id && status === 'resolved') {
+        if (!error && concern && concern.user_id && (status === 'resolved' || status === 'in_progress')) {
              await supabase.from('user_notifications').insert([{
                 user_id: concern.user_id,
-                type: 'concern_resolved',
-                message: `Your concern "${concern.title}" has been resolved.`,
+                type: status === 'resolved' ? 'concern_resolved' : 'concern_in_progress',
+                message: status === 'resolved' ? `Your concern "${concern.title}" has been resolved.` : `Your concern "${concern.title}" is now in progress.`,
                 meta: { concern_id: concernId, response },
                 is_read: false
             }]);

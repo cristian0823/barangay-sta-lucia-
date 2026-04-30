@@ -14,8 +14,9 @@ alter publication supabase_realtime add table concerns;
 alter publication supabase_realtime add table borrowings;
 alter publication supabase_realtime add table facility_reservations;
 alter publication supabase_realtime add table events;
-alter publication supabase_realtime add table notifications;
+alter publication supabase_realtime add table user_notifications;
 alter publication supabase_realtime add table audit_log;
 alter publication supabase_realtime add table security_log;
+alter publication supabase_realtime add table users;
 
 commit;

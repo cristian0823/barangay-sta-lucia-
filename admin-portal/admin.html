@@ -3766,6 +3766,9 @@
                             if (typeof loadEquipment === 'function') await loadEquipment();
                             if (typeof loadConcerns === 'function') await loadConcerns();
                             if (typeof loadAdminNotifications === 'function') await loadAdminNotifications();
+                            if (typeof loadUsers === 'function') await loadUsers();
+                            if (typeof loadAuditLog === 'function') await loadAuditLog();
+                            if (typeof refreshAdminBell === 'function') await refreshAdminBell();
                             await renderAdminCalendar();
                             const dayModal = document.getElementById('adminDayScheduleModal');
                             if (dayModal && dayModal.style.display !== 'none') {
@@ -5698,6 +5701,7 @@
                     resultBox.textContent = ` Done! ${inserted} resident(s) uploaded. ${skipped > 0 ? skipped + ' skipped (duplicate or missing data).' : ''}`;
                     btn.textContent = 'Upload Residents';
                     logActivity('Batch Upload', `Admin uploaded ${inserted} residents via CSV.`);
+                    if (typeof broadcastSync === 'function') broadcastSync();
                     setTimeout(() => { 
                         loadUsers(); 
                         document.getElementById('batchUploadModal').classList.remove('active');
