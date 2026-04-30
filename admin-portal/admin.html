@@ -2265,6 +2265,23 @@
                     <span class="user-role">Official</span>
                 </div>
                 <div class="user-avatar" id="userAvatar">A</div>
+                
+            <!-- Admin Notification Bell -->
+            <div style="position:relative;" id="adminBellWrapper">
+                <button class="admin-bell-btn" onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="admin-bell-badge" id="adminBellBadge">0</span>
+                </button>
+                <div class="admin-bell-dropdown" id="adminBellDropdown">
+                    <div class="admin-bell-dropdown-header">
+                        <span><i class="bi bi-bell-fill" style="color:#10b981;margin-right:6px;"></i>Notifications</span>
+                        <button class="admin-bell-mark-all" onclick="markAllAdminBellRead()">Mark all read</button>
+                    </div>
+                    <div class="admin-bell-list" id="adminBellList">
+                        <div class="admin-bell-empty">No new notifications</div>
+                    </div>
+                </div>
+            </div>
                 <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn"></button>
                 <a href="admin-settings.html" class="logout-btn"
                     style="text-decoration:none; display:flex; align-items:center; gap:6px;">Settings</a>
