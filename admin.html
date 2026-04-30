@@ -7474,24 +7474,33 @@
                     supabase.channel('admin-realtime')
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'borrowings' }, payload => {
                             if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
                             if (document.getElementById('requests-section')?.style.display !== 'none' && typeof loadRequests === 'function') loadRequests();
                             if (typeof loadActivityLog === 'function') loadActivityLog();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'facility_reservations' }, payload => {
                             if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
                             if (document.getElementById('court-bookings-section')?.style.display !== 'none' && typeof loadCourtBookings === 'function') loadCourtBookings();
                                                         if (typeof loadActivityLog === 'function') loadActivityLog();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'concerns' }, payload => {
                             if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
                             if (document.getElementById('concerns-section')?.style.display !== 'none' && typeof loadConcerns === 'function') loadConcerns();
                             if (typeof loadActivityLog === 'function') loadActivityLog();
                         })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
+                            if (payload.new && payload.new.user_id === 'admin') {
+                                if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
+                            }
+                        })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, payload => {
                             if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadAdminNotifications === 'function') loadAdminNotifications();
                             if (typeof loadStats === 'function') loadStats();
                             if (typeof loadEvents === 'function') loadEvents();
                             if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
