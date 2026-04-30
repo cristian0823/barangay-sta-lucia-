@@ -1362,7 +1362,9 @@ async function cancelBorrowingRequest(borrowingId) {
 
         // Removed restore reserved stock
         await supabase.from('borrowings').update({status: 'cancelled'}).eq('id', borrowingId);
+        await addNotification('admin', 'cancel_borrow', `User cancelled borrowing request for ${borrowing.quantity}x ${borrowing.equipment}`);
         await logActivity('Borrow Cancelled', `User cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
+        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Request cancelled successfully' };
     } else {
         // Local fallback
@@ -2020,8 +2022,12 @@ async function cancelCourtBooking(bookingId) {
         let query = supabase.from('facility_reservations').update({ status: 'cancelled' }).eq('id', bookingId);
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
+        const { data: bk } = await supabase.from('facility_reservations').select('date, time').eq('id', bookingId).maybeSingle();
         const { error } = await query;
-        if (!error) broadcastSync();
+        if (!error) {
+            await addNotification('admin', 'cancel_booking', `User cancelled facility reservation on ${bk?.date || ''} at ${bk?.time || ''}`);
+            broadcastSync();
+        }
         return { success: !error, message: error ? error.message : 'Booking cancelled' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];

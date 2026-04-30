@@ -2806,7 +2806,20 @@
                             <h3>Citizen Concerns</h3>
                         </div>
                         <div class="section-content" style="padding: 0;">
-                            <div class="filter-bar"><span class="filter-label">Filter:</span><select id="concernStatusFilter" onchange="applyConcernFilter()"><option value="all">All Status</option><option value="open">Open</option><option value="in-progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div>
+                            <div class="filter-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                <span class="filter-label">Filter:</span>
+                                <select id="concernStatusFilter" onchange="applyConcernFilter()">
+                                    <option value="all">All Status</option>
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                                <div style="position:relative;flex:1;min-width:180px;">
+                                    <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;"></i>
+                                    <input type="text" id="concernSearch" placeholder="Search citizen or concern..." oninput="applyConcernFilter()" style="width:100%;padding:7px 12px 7px 32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;">
+                                </div>
+                            </div>
                                 <div class="admin-tables">
                                 <table class="data-table">
                                     <thead>
@@ -2928,6 +2941,7 @@
                             </div>
                         </div>
                         <div class="section-content">
+                            <div style="padding:12px 16px 4px;"><div style="position:relative;max-width:380px;"><i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;"></i><input type="text" id="usersSearch" placeholder="Search name, Barangay ID, email..." oninput="loadUsers()" style="width:100%;padding:8px 12px 8px 32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;"></div></div>
                             <div class="admin-tables">
                                 <table class="data-table">
                                 <thead>
@@ -5182,7 +5196,11 @@
                 const tbody = document.getElementById('concernsTable');
                 if (!tbody) return;
                 const sc = { open:{bg:'#fef9c3',c:'#854d0e'}, 'in-progress':{bg:'#dbeafe',c:'#1e40af'}, 'in_progress':{bg:'#dbeafe',c:'#1e40af'}, resolved:{bg:'#dcfce7',c:'#166534'}, closed:{bg:'#f1f5f9',c:'#475569'} };
+                let q = (document.getElementById('concernSearch')?.value || '').toLowerCase();
+                const _q = (document.getElementById('concernSearch')?.value || '').toLowerCase();
                 let list = _pgConcernFilter==='all' ? [..._pgConcernsList] : _pgConcernsList.filter(c=>c.status===_pgConcernFilter);
+                if (_q) list = list.filter(c => (c.full_name||c.userName||c.username||'').toLowerCase().includes(_q) || (c.title||c.description||'').toLowerCase().includes(_q));
+                if (q) list = list.filter(c => (c.full_name||c.userName||c.username||c.user_id||'').toLowerCase().includes(q) || (c.title||c.description||'').toLowerCase().includes(q));
                 if (!list.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">No concerns found</td></tr>'; const pg=document.getElementById('concernsPg'); if(pg) pg.style.display='none'; return; }
                 const slice = list.slice((_pgConcernsPage-1)*PG_SIZE, _pgConcernsPage*PG_SIZE);
                 tbody.innerHTML = slice.map(c => {
@@ -5432,6 +5450,18 @@
                 tbody.innerHTML = '';
                 let users = await getAllUsers();
                 users = users.filter(u => u.role !== 'admin');
+
+                // Search filter
+                const _usersQ = (document.getElementById('usersSearch')?.value || '').toLowerCase();
+                if (_usersQ) {
+                    users = users.filter(u => {
+                        const n = (u.fullName||u.full_name||u.username||'').toLowerCase();
+                        const b = (u.barangay_id||'').toLowerCase();
+                        const e = (u.email||'').toLowerCase();
+                        const p = (u.phone||u.contact_number||'').toLowerCase();
+                        return n.includes(_usersQ)||b.includes(_usersQ)||e.includes(_usersQ)||p.includes(_usersQ);
+                    });
+                }
 
                 if (users.length === 0) {
                     tbody.innerHTML = '';
@@ -8747,26 +8777,29 @@
 
                 try {
                     const supabaseAvailable = await isSupabaseAvailable();
-                    let auditLogs = [];
-                    
+                    let notifData = [];
+
+                    const ADMIN_NOTIF_TYPES = ['borrow', 'booking', 'concern', 'cancel_borrow', 'cancel_booking'];
+
                     if (supabaseAvailable) {
                         const { data, error } = await supabase
-                            .from('audit_log')
+                            .from('notifications')
                             .select('*')
-                            .in('action', ['Concern Submitted', 'Borrow Request', 'Court Reservation Submitted'])
+                            .eq('user_id', 'admin')
+                            .in('type', ADMIN_NOTIF_TYPES)
                             .order('created_at', { ascending: false })
-                            .limit(20);
-                        if (!error && data) auditLogs = data;
+                            .limit(25);
+                        if (!error && data) notifData = data;
                     } else {
-                        const localLogs = JSON.parse(localStorage.getItem('barangay_audit_log')) || [];
-                        auditLogs = localLogs
-                            .filter(l => ['Concern Submitted', 'Borrow Request', 'Court Reservation Submitted'].includes(l.action))
-                            .sort((a, b) => new Date(b.timestamp || b.created_at) - new Date(a.timestamp || a.created_at))
-                            .slice(0, 20);
+                        const localNotifs = JSON.parse(localStorage.getItem('barangay_notifications') || '[]');
+                        notifData = localNotifs
+                            .filter(n => n.userId === 'admin' && ADMIN_NOTIF_TYPES.includes(n.type))
+                            .sort((a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp))
+                            .slice(0, 25);
                     }
 
-                    const lastViewed = localStorage.getItem('last_admin_bell_view') || 0;
-                    const unread = auditLogs.filter(n => new Date(n.created_at || n.timestamp).getTime() > parseInt(lastViewed));
+                    const lastViewed = parseInt(localStorage.getItem('last_admin_bell_view') || '0');
+                    const unread = notifData.filter(n => new Date(n.created_at).getTime() > lastViewed);
 
                     if (unread.length > 0) {
                         badge.style.display = 'flex';
@@ -8775,33 +8808,31 @@
                         badge.style.display = 'none';
                     }
 
-                    if (!auditLogs || auditLogs.length === 0) {
+                    if (!notifData || notifData.length === 0) {
                         list.innerHTML = '<div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new activities</div>';
                         return;
                     }
 
-                    const iconMap = {
-                        'Borrow Request':  { icon: '📦', label: 'Equipment Request' },
-                        'Court Reservation Submitted': { icon: '🗓️', label: 'Facility Reservation' },
-                        'Concern Submitted': { icon: '⚠️', label: 'Concern Submitted' },
+                    const typeConfig = {
+                        'borrow':         { icon: '📦', label: 'Equipment Request',      nav: 'requests'       },
+                        'booking':        { icon: '📅', label: 'Facility Reservation',   nav: 'court-bookings' },
+                        'concern':        { icon: '📢', label: 'Concern Submitted',       nav: 'concerns'       },
+                        'cancel_borrow':  { icon: '❌', label: 'Borrowing Cancelled',     nav: 'requests'       },
+                        'cancel_booking': { icon: '🚫', label: 'Reservation Cancelled',   nav: 'court-bookings' },
                     };
 
-                    list.innerHTML = auditLogs.map(n => {
-                        const map = iconMap[n.action] || { icon: '🔔', label: 'Activity' };
-                        const isUnread = new Date(n.created_at || n.timestamp).getTime() > parseInt(lastViewed);
-                        const timeStr = (n.created_at || n.timestamp)
-                            ? new Date(n.created_at || n.timestamp).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    list.innerHTML = notifData.map(n => {
+                        const cfg = typeConfig[n.type] || { icon: '🔔', label: 'Activity', nav: null };
+                        const isUnread = new Date(n.created_at).getTime() > lastViewed;
+                        const timeStr = n.created_at
+                            ? new Date(n.created_at).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
                             : 'Just now';
-                            
-                        let typeStr = 'borrow';
-                        if (n.action === 'Court Reservation Submitted') typeStr = 'booking';
-                        if (n.action === 'Concern Submitted') typeStr = 'concern';
 
-                        return '<div class="admin-bell-item ' + (isUnread ? 'is-unread' : '') + '" onclick="handleAdminBellClick(\'' + typeStr + '\')"><' +
-                            (isUnread ? 'div class="admin-bell-unread-dot"></div><' : '') +
-                            'div class="admin-bell-icon-circle">' + map.icon + '</div>' +
+                        return '<div class="admin-bell-item ' + (isUnread ? 'is-unread' : '') + '" onclick="handleAdminBellClick(\'' + (cfg.nav || '') + '\')">' +
+                            (isUnread ? '<div class="admin-bell-unread-dot"></div>' : '') +
+                            '<div class="admin-bell-icon-circle">' + cfg.icon + '</div>' +
                             '<div style="flex:1;min-width:0;padding-right:12px;">' +
-                            '<p class="admin-bell-msg">' + (n.details || map.label) + '</p>' +
+                            '<p class="admin-bell-msg">' + (n.message || cfg.label) + '</p>' +
                             '<div class="admin-bell-time">' + timeStr + '</div>' +
                             '</div></div>';
                     }).join('');

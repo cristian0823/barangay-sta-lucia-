@@ -134,7 +134,7 @@ window.logActivity = async function(action, details, severity = 'info') {
             await window.logAudit('Account Management', null, actStr, details);
         }
     } else {
-        await window.logAudit(actStr, null, 'UPDATE', details);
+        await window.logAudit(actStr, null, actStr, details);
     }
 };
 
@@ -709,22 +709,26 @@ async function broadcastEmailToAllResidents(title, message, details) {
 
 async function logoutUser() {
     const _curr = getCurrentUser();
-    // Clear session immediately for instant redirect (no delay)
+    // Clear session
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
-    // Redirect right away — logs happen in background
-    window.location.href = 'index.html';
-    // Fire-and-forget background logging
+    
+    // Attempt to log securely before redirecting so the browser doesn't cancel the request
     try {
         if (_curr) {
             const logType = 'Logout';
             const logDetails = `${_curr.username || _curr.fullName || 'System'} logged out`;
-            window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
+            await window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
         }
         if (window.supabase) {
-            window.supabase.auth.signOut().catch(() => {});
+            await window.supabase.auth.signOut().catch(() => {});
         }
-    } catch(err) {}
+    } catch(err) {
+        console.error('Logout logging error:', err);
+    }
+    
+    // Redirect after logs are securely saved
+    window.location.href = 'index.html';
 }
 
 function redirectToDashboard() {
@@ -1027,12 +1031,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
-        await supabase.from('user_notifications').insert([{
-            user_id: resolvedUserIdB,
-            type: 'equipment_requested',
-            message: `You successfully requested to borrow ${quantity}x ${item.name}.`,
-            is_read: false
-        }]);
+        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -1179,7 +1178,15 @@ async function approveEquipmentRequest(borrowingId) {
         targetUserId = rec?.user_id;
         equipmentName = rec?.equipment;
 
-        // Stock already deducted on request submit — just update status
+        // Deduct equipment inventory on approval
+        const { data: rec2 } = await supabase.from('borrowings').select('equipment, quantity').eq('id', borrowingId).maybeSingle();
+        if (rec2 && rec2.equipment && rec2.quantity) {
+            const { data: eqItem } = await supabase.from('equipment').select('id, available, quantity').eq('name', rec2.equipment).maybeSingle();
+            if (eqItem) {
+                const newAvail = Math.max(0, eqItem.available - rec2.quantity);
+                await supabase.from('equipment').update({ available: newAvail }).eq('id', eqItem.id);
+            }
+        }
         const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
 
@@ -1354,8 +1361,10 @@ async function cancelBorrowingRequest(borrowingId) {
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
         // Removed restore reserved stock
-        await supabase.from('borrowings').delete().eq('id', borrowingId);
+        await supabase.from('borrowings').update({status: 'cancelled'}).eq('id', borrowingId);
+        await addNotification('admin', 'cancel_borrow', `User cancelled borrowing request for ${borrowing.quantity}x ${borrowing.equipment}`);
         await logActivity('Borrow Cancelled', `User cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
+        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Request cancelled successfully' };
     } else {
         // Local fallback
@@ -1496,12 +1505,7 @@ async function submitConcern(category, title, description, address, imageFile = 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User submitted a concern: ${title}`);
         await addNotification('admin', 'concern', `User submitted a concern: ${title}`);
-        await supabase.from('user_notifications').insert([{
-            user_id: resolvedUserIdC,
-            type: 'concern_submitted',
-            message: `You successfully submitted a concern: ${title}.`,
-            is_read: false
-        }]);
+        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
@@ -1979,12 +1983,6 @@ async function bookCourt(bookingData) {
             if (error) throw error;
             await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
             await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
-            await supabase.from('user_notifications').insert([{
-                user_id: resolvedUserId,
-                type: 'booking_submitted',
-                message: `You successfully reserved the ${venueLabel} for ${combinedTime}.`,
-                is_read: false
-            }]);
             broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {
@@ -2024,8 +2022,12 @@ async function cancelCourtBooking(bookingId) {
         let query = supabase.from('facility_reservations').update({ status: 'cancelled' }).eq('id', bookingId);
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
+        const { data: bk } = await supabase.from('facility_reservations').select('date, time').eq('id', bookingId).maybeSingle();
         const { error } = await query;
-        if (!error) broadcastSync();
+        if (!error) {
+            await addNotification('admin', 'cancel_booking', `User cancelled facility reservation on ${bk?.date || ''} at ${bk?.time || ''}`);
+            broadcastSync();
+        }
         return { success: !error, message: error ? error.message : 'Booking cancelled' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -2515,11 +2517,11 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
         const { data: concern } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
         
-        if (!error && concern && concern.user_id && status === 'resolved') {
+        if (!error && concern && concern.user_id && (status === 'resolved' || status === 'in_progress')) {
              await supabase.from('user_notifications').insert([{
                 user_id: concern.user_id,
-                type: 'concern_resolved',
-                message: `Your concern "${concern.title}" has been resolved.`,
+                type: status === 'resolved' ? 'concern_resolved' : 'concern_in_progress',
+                message: status === 'resolved' ? `Your concern "${concern.title}" has been resolved.` : `Your concern "${concern.title}" is now in progress.`,
                 meta: { concern_id: concernId, response },
                 is_read: false
             }]);
@@ -3736,6 +3738,7 @@ async function resetPasswordWithOTP(email, token, newPassword) {
 
         // Clean up session flags
         sessionStorage.removeItem('otp_user_id');
+        if (typeof logActivity === 'function') logActivity('Password Reset', `User reset their password via OTP: ${email}`);
         return { success: true, message: 'Password updated successfully. You can now login.' };
     } else {
         const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
@@ -3743,6 +3746,7 @@ async function resetPasswordWithOTP(email, token, newPassword) {
         if (idx === -1) return { success: false, message: 'User not found.' };
         users[idx].password = hashedNew;
         localStorage.setItem('barangay_users', JSON.stringify(users));
+        if (typeof logActivity === 'function') logActivity('Password Reset', `Local user reset their password via OTP: ${email}`);
         return { success: true, message: 'Password updated successfully. You can now login.' };
     }
 }
