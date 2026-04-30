@@ -1169,11 +1169,20 @@ async function approveEquipmentRequest(borrowingId) {
     let equipmentName = null;
 
     if (supabaseAvailable) {
-        const { data: rec } = await supabase.from('borrowings').select('user_id, equipment').eq('id', borrowingId).maybeSingle();
+        const { data: rec } = await supabase.from('borrowings').select('user_id, equipment, quantity').eq('id', borrowingId).maybeSingle();
         targetUserId = rec?.user_id;
         equipmentName = rec?.equipment;
 
-        // Stock already deducted on request submit — just update status
+        // Deduct equipment inventory on approval
+        if (rec && rec.equipment && rec.quantity) {
+            const { data: eqItem } = await supabase.from('equipment').select('id, available, quantity').eq('name', rec.equipment).maybeSingle();
+            if (eqItem) {
+                const newAvail = Math.max(0, eqItem.available - rec.quantity);
+                const { error: eqErr } = await supabase.from('equipment').update({ available: newAvail }).eq('id', eqItem.id);
+                if (eqErr) console.warn('[approveEquipmentRequest] equipment update error:', eqErr);
+            }
+        }
+
         const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
 
@@ -3159,15 +3168,31 @@ async function addNotification(userId, type, message, referenceId = null) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         try {
-            const { error } = await supabase.from('notifications').insert([{
-                user_id: String(userId),
-                type,
-                message,
-                reference_id: referenceId,
-                is_read: false,
-                created_at: timestamp
-            }]);
-            if (!error) return true;
+            if (userId === 'admin') {
+                // Fan-out to all admin users
+                const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin');
+                if (admins && admins.length > 0) {
+                    const payloads = admins.map(a => ({
+                        user_id: a.id,
+                        type,
+                        message,
+                        meta: referenceId ? { reference_id: referenceId } : {},
+                        is_read: false,
+                        created_at: timestamp
+                    }));
+                    await supabase.from('user_notifications').insert(payloads);
+                }
+            } else {
+                await supabase.from('user_notifications').insert([{
+                    user_id: parseInt(userId) || userId,
+                    type,
+                    message,
+                    meta: referenceId ? { reference_id: referenceId } : {},
+                    is_read: false,
+                    created_at: timestamp
+                }]);
+            }
+            return true;
         } catch (e) {
             console.warn('Notifications Supabase error:', e);
         }
