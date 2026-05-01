@@ -7727,7 +7727,18 @@
                         return;
                     }
 
-                    const res = await updateEvent(id, { ...ev, date: newDate });
+                    // Only pass known DB column fields — avoid camelCase-mapped props like createdAt
+                    const res = await updateEvent(id, {
+                        title:       ev.title,
+                        date:        newDate,
+                        time:        ev.time,
+                        end_time:    ev.end_time,
+                        organizer:   ev.organizer   || '',
+                        location:    ev.location    || '',
+                        description: ev.description || '',
+                        capacity:    ev.capacity    || 0,
+                        status:      'approved'
+                    });
                     if (res.success) {
                         picker.remove();
                         showAlert(`✅ Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
