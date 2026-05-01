@@ -358,6 +358,12 @@
         }
         init();
 
+        // Real-time refresh: re-render calendar every 60 seconds
+        // so expired timeslots (completed reservations) clear automatically
+        setInterval(async () => {
+            await renderCalendar();
+        }, 60000);
+
         // Venue selection
         function selectVenue(venue) {
             document.getElementById('selectedVenue').value = venue;
@@ -432,10 +438,17 @@
                 // Check if date has an event
                 const hasEvent = eventDates[dateStr];
 
-                // Check if date is in the past
+                // Check if date is in the past OR today but past 10 PM (facility closed)
                 const dateObj = new Date(currentYear, currentMonth, day);
-                if (dateObj < today) {
+                const nowForCheck = new Date();
+                const isTodayClosed = dateObj.getTime() === today.getTime() && nowForCheck.getHours() >= 22;
+                if (dateObj < today || isTodayClosed) {
                     dayElement.classList.add('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+                    if (isTodayClosed) {
+                        dayElement.innerHTML += '<div class="text-xs" style="font-size:9px;color:#9ca3af;">Closed</div>';
+                        dayElement.title = 'Facility is closed for today (after 10 PM)';
+                        dayElement.onclick = () => showToast('Facility is closed for today. Opens again at 6 AM tomorrow.', 'error');
+                    }
                 } else if (hasEvent) {
                     // Date has an event - solid violet
                     dayElement.classList.add('bg-purple-600', 'text-white', 'cursor-pointer', 'hover:bg-purple-700');
