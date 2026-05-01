@@ -3917,7 +3917,7 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
             .from('borrowings')
             .select('quantity')
             .eq('equipment_id', equipmentId)
-            .in('status', ['approved', 'pending'])
+            .eq('status', 'approved')
             .lte('borrow_date', returnDate)
             .gte('return_date', borrowDate);
         
@@ -3943,7 +3943,7 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
         const reqEnd = new Date(returnDate).getTime();
 
         borrowings.forEach(b => {
-            if (b.equipment === equipmentName && (b.status === 'approved' || b.status === 'pending')) {
+            if (b.equipment === equipmentName && (b.status === 'approved')) {
                 const bStart = new Date(b.borrowDate || b.borrow_date).getTime();
                 const bEnd = new Date(b.returnDate || b.return_date).getTime();
                 

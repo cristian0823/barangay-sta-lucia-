@@ -2480,7 +2480,7 @@
             document.getElementById('borrowQty').value = 1;
             
             const helpEl = document.getElementById('borrowMaxHelp');
-            if(helpEl) helpEl.innerHTML = '📦 Max: ' + item.available + ' units available';
+            if(helpEl) helpEl.innerHTML = '📦 Max: ' + item.available + (item.available === 1 ? ' unit available' : ' units available');
             
             // Show pending notice if applicable
             if (item.pending && item.pending > 0 && helpEl) {
