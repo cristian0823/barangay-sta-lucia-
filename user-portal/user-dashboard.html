@@ -482,53 +482,53 @@
 
                 <!-- Stats Grid (admin-style colored border cards) -->
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;" class="user-stats-grid">
-                    <div class="user-stat-card" onclick="showPanel('equipment')" style="border-left:4px solid #3b82f6;">
-                        <div class="user-stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe; color:#3b82f6; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-check-fill"></i></div>
+                    <div class="user-stat-card" onclick="showPanel('equipment')" style="border-left:4px solid var(--green-xl);">
+                        <div class="user-stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-check-fill"></i></div>
                         <div>
                             <div class="user-stat-label">Active Borrowings</div>
-                            <div class="user-stat-value" id="stat-equipment" style="color:#2563eb;">0</div>
+                            <div class="user-stat-value" id="stat-equipment" style="color:var(--green-xl);">0</div>
                         </div>
                     </div>
-                    <div class="user-stat-card" onclick="showPanel('concerns')" style="border-left:4px solid #f59e0b;">
-                        <div class="user-stat-icon" style="background:#fffbeb;border:1px solid #fde68a; color:#f59e0b; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-box-fill"></i></div>
+                    <div class="user-stat-card" onclick="showPanel('concerns')" style="border-left:4px solid var(--green-xl);">
+                        <div class="user-stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-box-fill"></i></div>
                         <div>
                             <div class="user-stat-label">Pending Concerns</div>
-                            <div class="user-stat-value" id="stat-concerns" style="color:#d97706;">0</div>
+                            <div class="user-stat-value" id="stat-concerns" style="color:var(--green-xl);">0</div>
                         </div>
                     </div>
-                    <div class="user-stat-card" onclick="showPanel('booking')" style="border-left:4px solid #8b5cf6;">
-                        <div class="user-stat-icon" style="background:#f5f3ff;border:1px solid #ddd6fe; color:#8b5cf6; display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-event-fill"></i></div>
+                    <div class="user-stat-card" onclick="showPanel('booking')" style="border-left:4px solid var(--green-xl);">
+                        <div class="user-stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-event-fill"></i></div>
                         <div>
                             <div class="user-stat-label">Upcoming Reservations</div>
-                            <div class="user-stat-value" id="stat-bookings" style="color:#7c3aed;">0</div>
+                            <div class="user-stat-value" id="stat-bookings" style="color:var(--green-xl);">0</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;">
-                    <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:var(--muted);">
+                    <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
                         <span class="uqa-icon"><i class="bi bi-box-seam"></i></span>
-                        <div class="uqa-label">Borrow Equipment</div>
-                        <div class="uqa-sub">Request barangay items</div>
+                        <div class="uqa-label" style="color:var(--green-xl);">Borrow Equipment</div>
+                        <div class="uqa-sub" style="color:var(--green-xl);">Request barangay items</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
-                    <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:var(--muted);">
+                    <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
                         <span class="uqa-icon"><i class="bi bi-chat-left-text-fill"></i></span>
-                        <div class="uqa-label">Report a Concern</div>
-                        <div class="uqa-sub">Submit issues or feedback</div>
+                        <div class="uqa-label" style="color:var(--green-xl);">Report a Concern</div>
+                        <div class="uqa-sub" style="color:var(--green-xl);">Submit issues or feedback</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
-                    <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:var(--muted);">
+                    <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
                         <span class="uqa-icon"><i class="bi bi-calendar-check-fill"></i></span>
-                        <div class="uqa-label">Reserve the Court</div>
-                        <div class="uqa-sub">Reserve a time slot</div>
+                        <div class="uqa-label" style="color:var(--green-xl);">Reserve the Court</div>
+                        <div class="uqa-sub" style="color:var(--green-xl);">Reserve a time slot</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
-                    <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:var(--muted);">
+                    <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
                         <span class="uqa-icon"><i class="bi bi-calendar-event-fill"></i></span>
-                        <div class="uqa-label">Upcoming Events</div>
-                        <div class="uqa-sub">Barangay activities</div>
+                        <div class="uqa-label" style="color:var(--green-xl);">Upcoming Events</div>
+                        <div class="uqa-sub" style="color:var(--green-xl);">Barangay activities</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                 </div>
@@ -545,21 +545,21 @@
                             </div>
                         </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('equipment')">
-                                <div class="px-4 py-3 flex justify-between items-center bg-blue-50/50 dark:bg-blue-900/10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-box-seam" style="color:#3b82f6;"></i></span>Active Borrowings</span>
-                                    <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:#3b82f6;">—</span>
+                                <div class="px-4 py-3 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-box-seam" style="color:var(--green-xl);"></i></span>Active Borrowings</span>
+                                    <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:var(--green-xl);">—</span>
                                 </div>
                             </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('concerns')">
-                                <div class="px-4 py-3 flex justify-between items-center bg-amber-50/50 dark:bg-amber-900/10 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-megaphone-fill" style="color:#f59e0b;"></i></span>Open Concerns</span>
-                                    <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:#f59e0b;">—</span>
+                                <div class="px-4 py-3 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-megaphone-fill" style="color:var(--green-xl);"></i></span>Open Concerns</span>
+                                    <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:var(--green-xl);">—</span>
                                 </div>
                             </div>
                             <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('booking')">
-                                <div class="px-4 py-3 flex justify-between items-center bg-purple-50/50 dark:bg-purple-900/10 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-calendar-check-fill" style="color:#8b5cf6;"></i></span>Upcoming Reservations</span>
-                                    <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#8b5cf6;">—</span>
+                                <div class="px-4 py-3 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-calendar-check-fill" style="color:var(--green-xl);"></i></span>Upcoming Reservations</span>
+                                    <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:var(--green-xl);">—</span>
                                 </div>
                             </div>
                     </div>
