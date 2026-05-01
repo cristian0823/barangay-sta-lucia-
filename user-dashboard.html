@@ -3504,6 +3504,11 @@ async function loadSettingsView() {
             if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
                 supabase
                     .channel('live-notifications')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'borrowings' }, () => {
+                        console.log('Borrowing changed! Reloading equipment...');
+                        if (typeof loadEquipmentView === 'function') loadEquipmentView();
+                        if (typeof loadMyBorrowingsList === 'function') loadMyBorrowingsList();
+                    })
                     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_notifications' }, payload => {
                         const newR = payload.new;
                         if (!window.user || !newR) return;
