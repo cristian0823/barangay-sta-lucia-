@@ -2271,26 +2271,92 @@ async function deleteBooking(bookingId) {
 // ─────────────────────────────────────────────────────────────
 async function autoCompleteExpiredBookings() {
     const supabaseAvailable = await isSupabaseAvailable();
-    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`; // YYYY-MM-DD local
 
     if (supabaseAvailable) {
         try {
-            const { error } = await supabase
+            // Fetch all active bookings on or before today
+            const { data: activeBookings, error: fetchErr } = await supabase
                 .from('facility_reservations')
-                .update({ status: 'completed' })
+                .select('id, date, time')
                 .in('status', ['approved', 'pending'])
-                .lt('date', todayStr);
-            if (error) console.warn('autoCompleteExpiredBookings error:', error.message);
-            else broadcastSync();
+                .lte('date', todayStr);
+
+            if (fetchErr || !activeBookings || activeBookings.length === 0) return;
+
+            const toCompleteIds = [];
+
+            activeBookings.forEach(b => {
+                if (b.date < todayStr) {
+                    toCompleteIds.push(b.id);
+                } else if (b.date === todayStr && b.time) {
+                    // It's today, check the time
+                    // e.g. "Basketball Court | 08:00 AM - 10:00 AM" or "08:00 AM - 10:00 AM"
+                    let timeStr = String(b.time);
+                    if (timeStr.includes('|')) timeStr = timeStr.split('|')[1].trim();
+                    const parts = timeStr.split('-');
+                    if (parts.length >= 2) {
+                        const endPart = parts[1].trim(); // "10:00 AM"
+                        const timeMatch = endPart.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+                        if (timeMatch) {
+                            let hours = parseInt(timeMatch[1]);
+                            const mins = parseInt(timeMatch[2]);
+                            const period = timeMatch[3] ? timeMatch[3].toUpperCase() : null;
+                            if (period === 'PM' && hours < 12) hours += 12;
+                            if (period === 'AM' && hours === 12) hours = 0;
+                            
+                            const endDateTime = new Date(year, today.getMonth(), today.getDate(), hours, mins, 0);
+                            if (today > endDateTime) {
+                                toCompleteIds.push(b.id);
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (toCompleteIds.length > 0) {
+                const { error: updErr } = await supabase
+                    .from('facility_reservations')
+                    .update({ status: 'completed' })
+                    .in('id', toCompleteIds);
+                if (updErr) console.warn('autoCompleteExpiredBookings updErr:', updErr.message);
+                else broadcastSync();
+            }
         } catch(e) { console.warn('autoCompleteExpiredBookings exception:', e); }
     } else {
         // LocalStorage fallback
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
         let changed = false;
         bookings.forEach(b => {
-            if ((b.status === 'approved' || b.status === 'pending') && b.date < todayStr) {
-                b.status = 'completed';
-                changed = true;
+            if ((b.status === 'approved' || b.status === 'pending') && b.date <= todayStr) {
+                if (b.date < todayStr) {
+                    b.status = 'completed';
+                    changed = true;
+                } else if (b.date === todayStr && b.time) {
+                    let timeStr = String(b.time);
+                    if (timeStr.includes('|')) timeStr = timeStr.split('|')[1].trim();
+                    const parts = timeStr.split('-');
+                    if (parts.length >= 2) {
+                        const endPart = parts[1].trim();
+                        const timeMatch = endPart.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+                        if (timeMatch) {
+                            let hours = parseInt(timeMatch[1]);
+                            const mins = parseInt(timeMatch[2]);
+                            const period = timeMatch[3] ? timeMatch[3].toUpperCase() : null;
+                            if (period === 'PM' && hours < 12) hours += 12;
+                            if (period === 'AM' && hours === 12) hours = 0;
+                            const endDateTime = new Date(year, today.getMonth(), today.getDate(), hours, mins, 0);
+                            if (today > endDateTime) {
+                                b.status = 'completed';
+                                changed = true;
+                            }
+                        }
+                    }
+                }
             }
         });
         if (changed) localStorage.setItem(LOCAL_BOOKINGS_KEY, JSON.stringify(bookings));
@@ -3225,14 +3291,20 @@ async function addNotification(userId, type, message, referenceId = null) {
 
 async function getNotifications(userId) {
     const supabaseAvailable = await isSupabaseAvailable();
+    let targetUserId = userId;
+    if (userId === 'admin') {
+        const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+        if (user && user.id) targetUserId = user.id;
+    }
+    
     if (supabaseAvailable) {
         try {
             const { data, error } = await supabase
-                .from('notifications')
+                .from('user_notifications')
                 .select('*')
-                .eq('user_id', String(userId))
+                .eq('user_id', targetUserId)
                 .order('created_at', { ascending: false })
-                .limit(50);
+                .limit(200);
             if (!error && data) {
                 return data.map(n => ({
                     id: n.id,
@@ -3240,7 +3312,7 @@ async function getNotifications(userId) {
                     type: n.type,
                     message: n.message,
                     isRead: n.is_read,
-                    referenceId: n.reference_id,
+                    referenceId: n.meta ? n.meta.reference_id : null,
                     createdAt: n.created_at
                 }));
             }
@@ -3250,7 +3322,7 @@ async function getNotifications(userId) {
     }
     // Fallback
     const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-    return notifs.filter(n => n.userId === String(userId));
+    return notifs.filter(n => n.userId === String(userId) || (userId !== 'admin' && String(n.userId) === String(targetUserId)));
 }
 
 async function markNotificationAsRead(notifId) {
@@ -3258,7 +3330,7 @@ async function markNotificationAsRead(notifId) {
     if (supabaseAvailable) {
         try {
             const { error } = await supabase
-                .from('notifications')
+                .from('user_notifications')
                 .update({ is_read: true })
                 .eq('id', notifId);
             if (!error) return true;
@@ -3266,9 +3338,42 @@ async function markNotificationAsRead(notifId) {
     }
     // Fallback
     const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-    const index = notifs.findIndex(n => n.id === notifId);
+    const index = notifs.findIndex(n => String(n.id) === String(notifId));
     if (index !== -1) {
         notifs[index].isRead = true;
+        localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+    }
+    return true;
+}
+
+async function markAllNotificationsRead(userId) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    let targetUserId = userId;
+    if (userId === 'admin') {
+        const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+        if (user && user.id) targetUserId = user.id;
+    }
+
+    if (supabaseAvailable) {
+        try {
+            const { error } = await supabase
+                .from('user_notifications')
+                .update({ is_read: true })
+                .eq('user_id', targetUserId)
+                .eq('is_read', false);
+            if (!error) return true;
+        } catch (e) {}
+    }
+    // Fallback
+    const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
+    let updated = false;
+    for (let n of notifs) {
+        if ((n.userId === String(userId) || (userId !== 'admin' && String(n.userId) === String(targetUserId))) && !n.isRead) {
+            n.isRead = true;
+            updated = true;
+        }
+    }
+    if (updated) {
         localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
     }
     return true;
