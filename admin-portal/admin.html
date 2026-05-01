@@ -7460,8 +7460,16 @@
                     entries.push({ type: 'booking', id: b.id, timeStr, label: b.userName || b.username || 'Resident', sub: b.purpose || '' });
                 });
                 dayEvents.forEach(e => {
-                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  ' + adminFmt12(e.end_time) : '');
-                    entries.push({ type: 'event', id: e.id, timeStr, label: e.title, sub: e.organizer ? 'By ' + e.organizer : '' });
+                    const startM = timeToMinutes(e.time || '07:00');
+                    const endM   = timeToMinutes(e.end_time || e.time || '22:00');
+                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  –  ' + adminFmt12(e.end_time) : '');
+                    entries.push({
+                        type: 'event', id: e.id, timeStr,
+                        label: e.title,
+                        sub: e.organizer ? 'By ' + e.organizer : '',
+                        rawStart: e.time, rawEnd: e.end_time || e.time, rawTime: true,
+                        _durationMins: endM - startM
+                    });
                 });
 
                 if (entries.length === 0) {
@@ -7474,18 +7482,40 @@
                         const bg = isBk ? 'var(--panel-bg, #fef2f2)' : 'var(--panel-bg, #f5f3ff)';
                         const border = isBk ? '#fca5a5' : '#c4b5fd';
                         const clr = isBk ? '#ef4444' : '#8b5cf6';
-                        const removeFn = isBk ? `adminRemoveBooking('${en.id}')` : `adminRemoveEvent('${en.id}')`;
-                        const reschedBtn = !isBk ? `<button onclick="adminRescheduleEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#3b82f6;cursor:pointer;margin-right:4px;"> Reschedule</button>` : '';
+
+                        // Detect full-day block (10+ hours duration)
+                        const isFullDayBlock = !isBk && (() => {
+                            const startM = en.rawTime ? timeToMinutes(en.rawStart) : 0;
+                            const endM   = en.rawTime ? timeToMinutes(en.rawEnd)   : 0;
+                            return (endM - startM) >= 600;
+                        })();
+
+                        let actionBtns = '';
+                        if (isFullDayBlock) {
+                            // Full-day admin block: show Cancel + Reschedule
+                            actionBtns = `
+                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">🗑 Cancel Event</button>
+                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">📅 Reschedule</button>`;
+                        } else if (!isBk) {
+                            // Normal event: Reschedule + Remove
+                            actionBtns = `
+                                <button onclick="adminRescheduleEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#3b82f6;cursor:pointer;margin-right:4px;"> Reschedule</button>
+                                <button onclick="adminRemoveEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;"> Remove</button>`;
+                        } else {
+                            // Booking: just remove
+                            actionBtns = `<button onclick="adminRemoveBooking('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;"> Remove</button>`;
+                        }
+
+                        const blockBadge = isFullDayBlock ? `<span style="display:inline-block;background:#4f46e5;color:#fff;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;">FULL DAY BLOCK</span>` : '';
 
                         return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:12px;border:1.5px solid ${border};background:${bg};margin-bottom:8px;">
                             <div style="flex:1;min-width:0;">
-                                <p style="margin:0;font-size:13px;font-weight:800;color:${clr};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${en.timeStr}</p>
+                                <p style="margin:0;font-size:13px;font-weight:800;color:${clr};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${en.timeStr}${blockBadge}</p>
                                 <p style="margin:0;font-size:12px;font-weight:600;color:var(--text, #374151);">${en.label}</p>
                                 ${en.sub ? `<p style="margin:0;font-size:11px;color:var(--muted, #9ca3af);font-style:italic;">${en.sub}</p>` : ''}
                             </div>
-                            <div style="display:flex; gap:4px; align-items:center;">
-                                ${reschedBtn}
-                                <button onclick="${removeFn}" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;"> Remove</button>
+                            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+                                ${actionBtns}
                             </div>
                         </div>`;
                     }).join('');
@@ -7634,6 +7664,82 @@
                 if(title) title.textContent = 'Reschedule Event';
                 const btn = form.querySelector('button[type="submit"]');
                 if(btn) btn.textContent = 'Update Event';
+            };
+
+            // ── Cancel a full-day admin block event (frees the date for reservations)
+            window.adminCancelBlockedEvent = async function(id) {
+                if (!await showConfirmModal(
+                    'Cancel this full-day block? Users will be able to reserve this date again.',
+                    'Cancel Day Block', 'Yes, Cancel Block', 'Keep', 'danger'
+                )) return;
+                const res = await deleteEvent(id);
+                if (res.success) {
+                    showAlert('✅ Day block cancelled. The date is now open for reservations.', 'success');
+                    const dateStr = document.getElementById('adsDate').value;
+                    const venue   = document.getElementById('adsVenue').value;
+                    await refreshAdminDaySchedule(dateStr, venue);
+                    if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                } else { showAlert('Error: ' + res.message, 'error'); }
+            };
+
+            // ── Reschedule a full-day admin block to a new date
+            window.adminRescheduleBlockedEvent = async function(id) {
+                const allEvs = await getEvents();
+                const ev = allEvs.find(e => String(e.id) === String(id));
+                if (!ev) return;
+
+                // Show inline date-picker prompt inside the schedule list
+                const existingPicker = document.getElementById('_adminBlockReschedulePicker');
+                if (existingPicker) existingPicker.remove();
+
+                const today = new Date().toISOString().slice(0, 10);
+                const picker = document.createElement('div');
+                picker.id = '_adminBlockReschedulePicker';
+                picker.style.cssText = 'background:#eff6ff;border:2px solid #3b82f6;border-radius:14px;padding:16px;margin-bottom:12px;';
+                picker.innerHTML = `
+                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">📅 Reschedule "${ev.title}" to:</p>
+                    <input type="date" id="_adminBlockNewDate" min="${today}" value="" style="width:100%;padding:9px 12px;border:1.5px solid #93c5fd;border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:10px;">
+                    <div style="display:flex;gap:8px;">
+                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">✅ Confirm Reschedule</button>
+                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">✕</button>
+                    </div>`;
+
+                const list = document.getElementById('adsScheduleList');
+                list.insertBefore(picker, list.firstChild);
+
+                document.getElementById('_adminBlockReschedConfirm').addEventListener('click', async function() {
+                    const newDate = document.getElementById('_adminBlockNewDate').value;
+                    if (!newDate) { showAlert('Please select a date.', 'error'); return; }
+                    if (newDate === ev.date) { showAlert('Please choose a different date.', 'error'); return; }
+
+                    this.disabled = true; this.textContent = 'Rescheduling...';
+
+                    // Check new date isn't already fully blocked
+                    const existingEvs = (await getEvents()).filter(e => e.date === newDate && e.status === 'approved');
+                    const alreadyBlocked = existingEvs.some(e => {
+                        const sm = timeToMinutes(e.time || '07:00');
+                        const em = timeToMinutes(e.end_time || e.time || '22:00');
+                        return (em - sm) >= 600;
+                    });
+                    if (alreadyBlocked) {
+                        showAlert('That date is already fully blocked by another event. Choose a different date.', 'error');
+                        this.disabled = false; this.textContent = '✅ Confirm Reschedule';
+                        return;
+                    }
+
+                    const res = await updateEvent(id, { ...ev, date: newDate });
+                    if (res.success) {
+                        picker.remove();
+                        showAlert(`✅ Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
+                        const dateStr = document.getElementById('adsDate').value;
+                        const venue   = document.getElementById('adsVenue').value;
+                        await refreshAdminDaySchedule(dateStr, venue);
+                        if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                    } else {
+                        showAlert('Error rescheduling: ' + res.message, 'error');
+                        this.disabled = false; this.textContent = '✅ Confirm Reschedule';
+                    }
+                });
             };
 
             window.closeAdsEventModal = function () {

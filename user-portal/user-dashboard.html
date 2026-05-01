@@ -2835,10 +2835,49 @@
                 eventNoticeBanner.style.display = 'none';
             }
 
-            // Show 'Add Booking' button — admins set up exact time blocks, so users CAN book outside event hours.
-            // The time selects will show event slots as (Unavailable) so users pick only open slots.
+            // Show 'Add Booking' button — but HIDE it if the day is fully admin-blocked
             const toggleBtn = document.getElementById('dsToggleFormBtn');
-            if (toggleBtn) toggleBtn.style.display = '';
+
+            // Detect if any event blocks the entire day (admin mass-cancel creates a full-day event)
+            // A full-day block: event with end_time === '22:00' and time <= '07:00', or title contains admin keywords
+            const isFullyBlocked = evForDay.some(ev => {
+                const startM = timeToMinutes(ev.time || '07:00');
+                const endM = timeToMinutes(ev.end_time || ev.time || '22:00');
+                return (endM - startM) >= 600; // 10+ hours = full day block
+            });
+
+            // Also remove existing blocked notice if present
+            let blockedNotice = document.getElementById('dsFullDayBlockedNotice');
+            if (!blockedNotice) {
+                blockedNotice = document.createElement('div');
+                blockedNotice.id = 'dsFullDayBlockedNotice';
+                const formWrap = document.getElementById('dsFormWrap') || toggleBtn?.parentNode;
+                if (formWrap) formWrap.insertBefore(blockedNotice, formWrap.firstChild);
+                else if (toggleBtn) toggleBtn.parentNode.insertBefore(blockedNotice, toggleBtn);
+            }
+
+            if (isFullyBlocked && !window.pendingRescheduleData) {
+                // Hide the add reservation button
+                if (toggleBtn) toggleBtn.style.display = 'none';
+                // Hide form if it's open
+                const formWrap = document.getElementById('dsFormWrap');
+                if (formWrap) formWrap.style.display = 'none';
+                // Show blocked notice
+                const blockedEvent = evForDay.find(ev => {
+                    const endM = timeToMinutes(ev.end_time || ev.time || '22:00');
+                    const startM = timeToMinutes(ev.time || '07:00');
+                    return (endM - startM) >= 600;
+                });
+                blockedNotice.innerHTML = `<div style="background:linear-gradient(135deg,#1e1b4b,#3730a3);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:center;">
+                    <div style="font-size:16px;font-weight:800;margin-bottom:6px;">🚫 This Day is Fully Reserved by the Barangay</div>
+                    <div style="font-size:12px;opacity:0.85;">${blockedEvent ? '"' + blockedEvent.title + '"' : 'A Barangay event'} has been scheduled for this entire day.</div>
+                    <div style="font-size:11px;opacity:0.7;margin-top:4px;">No facility reservations can be made on this date. Please choose another date.</div>
+                </div>`;
+                blockedNotice.style.display = 'block';
+            } else {
+                blockedNotice.style.display = 'none';
+                if (toggleBtn) toggleBtn.style.display = '';
+            }
         }
 
         async function refreshDsSchedule(dateStr, venue) {
