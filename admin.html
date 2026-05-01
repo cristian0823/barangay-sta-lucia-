@@ -2410,6 +2410,26 @@
         border-color: #475569;
         color: #f1f5f9;
     }
+    .admin-bell-badge {
+        display: none;
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        line-height: 1;
+        border: 2px solid #fff;
+        pointer-events: none;
+        z-index: 10;
+    }
     /* ── End Admin Bell CSS ── */
     </style>
 
@@ -2465,8 +2485,8 @@
                 <div style="position:relative;display:flex;align-items:center;" id="adminBellWrapper">
                     <button class="admin-bell-btn" onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn">
                         <i class="bi bi-bell-fill"></i>
-                        <span class="admin-bell-badge" id="adminBellBadge">0</span>
                     </button>
+                    <span class="admin-bell-badge" id="adminBellBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;line-height:1;border:2px solid #fff;pointer-events:none;z-index:10;"></span>
                     <div class="admin-bell-dropdown" id="adminBellDropdown">
                         <div class="admin-bell-header">
                             <h3>Notifications</h3>
