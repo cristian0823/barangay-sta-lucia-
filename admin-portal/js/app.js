@@ -1003,7 +1003,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         const availCheck = await checkEquipmentAvailability(equipmentId, borrowDate, returnDate);
         if (!availCheck.success) return availCheck;
-        if (availCheck.available < quantity) return { success: false, message: `Only ${availCheck.available} ${item.name} are available for selected dates` };
+        if (availCheck.available < quantity) return { success: false, message: `Only ${availCheck.available} ${item.name} is available` };
 
         // Always resolve the real integer user ID from Supabase to prevent FK constraint failures
         const { data: userRowB } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
