@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Dashboard - Barangay Sta. Lucia</title>
     <!-- ── EARLY AUTH GUARD: hide body before paint, redirect instantly if not logged in ── -->
-    <style id="auth-guard-style">body { visibility: hidden !important; }</style>
+    <style id="auth-guard-style">body { visibility: hidden !important; }
+    /* Hide number input spinners globally */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+</style>
     <script>
     (function() {
         function _getUser() {
@@ -954,7 +959,7 @@
 
     <!-- BORROW MODAL -->
     <div id="borrowModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
-        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col mx-4 animate-[fadeIn_0.3s_ease]">
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl relative flex flex-col mx-4 animate-[fadeIn_0.3s_ease]" style="height:90vh;max-height:90vh;">
             <button onclick="closeBorrowModal()" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 transition text-gray-700">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
@@ -972,9 +977,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto lg:overflow-hidden">
+            <div class="flex flex-col lg:flex-row flex-1 lg:overflow-hidden" style="min-height:0;">
                 <!-- Left Column: Calendar -->
-                <div class="w-full lg:w-1/2 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30 lg:overflow-y-auto" style="background: var(--dm-cal-bg, inherit);">
+                <div class="w-full lg:w-1/2 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30 lg:overflow-y-hidden flex flex-col" style="background: var(--dm-cal-bg, inherit);">
                     <div class="flex justify-between items-center mb-4">
                         <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
                         <div class="flex space-x-2">
@@ -988,7 +993,7 @@
                         <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div><div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
                         <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
                     </div>
-                    <div id="borrowCalendarGrid" class="grid grid-cols-7 gap-1.5"></div>
+                    <div id="borrowCalendarGrid" class="grid grid-cols-7 gap-1.5" style="flex:1;"></div>
                     <div class="flex flex-wrap justify-between items-center mt-6 p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 shadow-sm text-xs font-medium text-gray-600 dark:text-gray-300">
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></div> Available</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-100 border border-red-300"></div> Unavailable</div>
@@ -996,7 +1001,7 @@
                     </div>
                 </div>
                 <!-- Right Column: Professional Form -->
-                <div class="w-full lg:w-1/2 p-4 lg:p-6 flex flex-col lg:overflow-y-auto">
+                <div class="w-full lg:w-1/2 p-4 lg:p-6 flex flex-col lg:overflow-y-auto" style="overflow-x:hidden;">
                     <!-- Date Display -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -1058,7 +1063,7 @@
                         </div>
                         <div class="form-field">
                             <label class="form-label">Quantity Needed</label>
-                            <input type="number" id="borrowQty" min="1" required class="form-input">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="borrowQty" min="1" required class="form-input" style="-moz-appearance:textfield;">
                             <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium"></p>
                         </div>
                         <div class="form-field flex-1">
