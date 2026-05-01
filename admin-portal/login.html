@@ -353,7 +353,16 @@
             const a = getLoginAttempts();
             const lock = document.getElementById('lockoutWarning');
             const btn  = document.getElementById('loginBtn');
+            // Auto-clear expired lockout
+            if (a.lockedUntil && Date.now() >= a.lockedUntil) {
+                saveLoginAttempts({ count: 0, lockedUntil: null, username: '' });
+                lock.classList.add('hidden');
+                btn.disabled = false; btn.textContent = 'Sign In';
+                return false;
+            }
             if (a.lockedUntil && Date.now() < a.lockedUntil) {
+                const minsLeft = Math.ceil((a.lockedUntil - Date.now()) / 60000);
+                lock.textContent = `🔒 Too many failed attempts. Please try again in ${minsLeft} minute(s).`;
                 lock.classList.remove('hidden');
                 btn.disabled = true; btn.textContent = '🔒 Account Locked';
                 return true;
@@ -369,8 +378,15 @@
             const a = getLoginAttempts();
             if (a.username !== username) { a.count = 0; a.username = username; }
             a.count++;
-            if (a.count >= SECURITY.maxAttempts) a.lockedUntil = Date.now() + SECURITY.lockoutDuration;
+            if (a.count >= SECURITY.maxAttempts) {
+                a.lockedUntil = Date.now() + SECURITY.lockoutDuration;
+            }
             saveLoginAttempts(a); updateAttemptsWarning();
+            // Show remaining attempts warning
+            if (!a.lockedUntil) {
+                const remaining = SECURITY.maxAttempts - a.count;
+                if (remaining > 0) showToast(`⚠️ ${remaining} attempt(s) remaining before lockout.`, 'error');
+            }
             // ISO A.16 - track failed logins for incident detection
             if (typeof trackFailedLogin === 'function') trackFailedLogin(username);
         }
@@ -555,17 +571,16 @@
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            const btn = document.getElementById('loginBtn');
             try {
                 if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
                 const username   = sanitizeInput(document.getElementById('username').value.trim());
                 const password   = document.getElementById('password').value;
                 const rememberMe = document.getElementById('rememberMe').checked;
-                
-                // Admin portal: reject non-admin usernames
-                const isAdminAttempt = !username.toLowerCase().startsWith('admin');
-                if (isAdminAttempt) { showToast('This portal is for admin use only.', 'error'); btn.disabled = false; btn.textContent = 'Sign In'; return; }
 
-                const btn = document.getElementById('loginBtn');
+                // Admin portal: reject non-admin usernames
+                if (!username.toLowerCase().startsWith('admin')) { showToast('This portal is for admin use only.', 'error'); btn.disabled = false; btn.textContent = 'Sign In'; return; }
+
                 btn.disabled = true; btn.textContent = 'Signing in...';
 
                 // Call loginUser to authenticate
@@ -680,10 +695,9 @@
                     showToast(result.message, 'error');
                 }
             } catch (err) {
-                alert("Login Error: " + err.message + "\n" + err.stack);
-                console.error(err);
-                const btn = document.getElementById('loginBtn');
+                console.error('Login Error:', err);
                 btn.disabled = false; btn.textContent = 'Sign In';
+                showToast('Login error. Please try again.', 'error');
             }
         });
 
