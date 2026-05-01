@@ -5680,14 +5680,14 @@
                 if (!u) return false;
                 
                 if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
-                    const emailToUse = u.email || (u.user_metadata && u.user_metadata.email);
-                    if (!emailToUse) return false;
+                    const { data: dbUser } = await supabase.from('users').select('password').eq('id', u.id).single();
+                    if (!dbUser) return false;
                     
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: emailToUse,
-                        password: password
-                    });
-                    return !error;
+                    const hashedPassword = await (typeof hashPassword === 'function' ? hashPassword(password) : Promise.resolve(password));
+                    if (dbUser.password === hashedPassword || dbUser.password === password) {
+                        return true;
+                    }
+                    return false;
                 } else {
                     const users = JSON.parse(localStorage.getItem('barangay_local_users')) || [];
                     const admin = users.find(x => x.username === u.username && x.password === password);
