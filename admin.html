@@ -4246,7 +4246,6 @@
                         title: eventName,
                         date: adminSelectedDate,
                         time: amcStartTime,
-                        start_time: amcStartTime,
                         end_time: amcEndTime,
                         organizer: organizer || 'Barangay Council',
                         location: 'Basketball Court',
@@ -4260,7 +4259,15 @@
                         // Clear local events cache so both user and admin calendars show the new event
                         if (typeof window._eventsCache !== 'undefined') window._eventsCache = null;
                         if (typeof window._eventsCacheTime !== 'undefined') window._eventsCacheTime = null;
-                        await supabase.from('events').insert([newEvent]);
+                        const { error: insertErr } = await supabase.from('events').insert([newEvent]);
+                        if (insertErr) {
+                            console.error('Failed to insert mass cancel event:', insertErr);
+                            // Fallback to local storage if supabase insert fails
+                            const evtList = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY)) || [];
+                            newEvent.id = Date.now();
+                            evtList.push(newEvent);
+                            localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(evtList));
+                        }
                         // Broadcast event notification to ALL registered residents
                         try {
                             const { data: allUsers } = await supabase.from('users').select('id').eq('role', 'user');
