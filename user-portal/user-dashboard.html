@@ -37,6 +37,7 @@
             --primary: #10b981; --primary-hover: #059669; --nav-hover-bg: #ecfdf5;
             --nav-active-bg: linear-gradient(135deg, #10b981, #059669); --nav-active-text: #ffffff;
             --input-bg: #f9fafb; --input-border: #d1fae5; --input-focus: #059669;
+            --green-xl: #047857;
         }
         [data-theme="dark"] {
             --bg-color: #0f172a; --sidebar-bg: #1e293b; --text-main: #f1f5f9;
@@ -44,6 +45,7 @@
             --primary: #10b981; --nav-hover-bg: #334155;
             --nav-active-bg: linear-gradient(135deg, #059669, #047857); --nav-active-text: #ffffff;
             --input-bg: #0f172a; --input-border: #334155; --input-focus: #10b981;
+            --green-xl: #34d399;
         }
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
@@ -184,12 +186,10 @@
         /* Dashboard header */
         [data-theme="dark"] .dashboard-header { background-color: #1e293b !important; border-color: #334155 !important; }
         /* User stat cards */
-        [data-theme="dark"] .user-stat-card { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+        [data-theme="dark"] .user-stat-card { background: #1e293b !important; }
         [data-theme="dark"] .user-stat-label { color: #94a3b8 !important; }
         /* Quick action cards */
         [data-theme="dark"] .user-quick-card { background: #1e293b !important; border-color: #334155 !important; }
-        [data-theme="dark"] .uqa-label { color: #e2e8f0 !important; }
-        [data-theme="dark"] .uqa-sub { color: #94a3b8 !important; }
         /* Glass cards */
         [data-theme="dark"] .glass-card { border-color: #334155 !important; }
         /* Text on glass cards */
@@ -332,7 +332,6 @@
         [data-theme="dark"] .eq-Default    { background: rgba(16,185,129,0.12) !important;  border-color: rgba(16,185,129,0.25) !important;  }
 
         /* ── EXTRA DARK MODE FIXES ── */
-        [data-theme="dark"] .user-stat-icon { background: #1e3a5f !important; border-color: #334155 !important; }
         [data-theme="dark"] div[style*="background:#d1fae5"],
         [data-theme="dark"] div[style*="background:#dbeafe"],
         [data-theme="dark"] div[style*="background:#fef3c7"] { background: #1e293b !important; }
@@ -508,25 +507,25 @@
                 <!-- Quick Actions -->
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;">
                     <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon"><i class="bi bi-box-seam"></i></span>
+                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-box-seam"></i></span>
                         <div class="uqa-label" style="color:var(--green-xl);">Borrow Equipment</div>
                         <div class="uqa-sub" style="color:var(--green-xl);">Request barangay items</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                     <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon"><i class="bi bi-chat-left-text-fill"></i></span>
+                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-chat-left-text-fill"></i></span>
                         <div class="uqa-label" style="color:var(--green-xl);">Report a Concern</div>
                         <div class="uqa-sub" style="color:var(--green-xl);">Submit issues or feedback</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                     <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon"><i class="bi bi-calendar-check-fill"></i></span>
+                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-calendar-check-fill"></i></span>
                         <div class="uqa-label" style="color:var(--green-xl);">Reserve the Court</div>
                         <div class="uqa-sub" style="color:var(--green-xl);">Reserve a time slot</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
                     </button>
                     <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon"><i class="bi bi-calendar-event-fill"></i></span>
+                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-calendar-event-fill"></i></span>
                         <div class="uqa-label" style="color:var(--green-xl);">Upcoming Events</div>
                         <div class="uqa-sub" style="color:var(--green-xl);">Barangay activities</div>
                         <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
