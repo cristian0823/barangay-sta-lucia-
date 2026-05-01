@@ -2005,8 +2005,15 @@ async function bookCourt(bookingData) {
             }]);
 
             if (error) throw error;
-            await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
-            await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
+
+            if (bookingData.isReschedule) {
+                await logActivity('Booking Rescheduled', `User rescheduled admin-cancelled booking from ${bookingData.originalDate || 'previous date'} to ${bookingData.date} at ${combinedTime}.`);
+                await addNotification('admin', 'booking_rescheduled', `User ${user.fullName || user.username} rescheduled their admin-cancelled booking to ${bookingData.date} at ${combinedTime}.`);
+            } else {
+                await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
+                await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
+            }
+            
             broadcastSync();
             return { success: true, message: 'Venue booked successfully!' };
         } catch (err) {

@@ -3055,7 +3055,9 @@
                     venue,
                     venueName: venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall',
                     purpose,
-                    status: 'pending'
+                    status: 'pending',
+                    isReschedule: true,
+                    originalDate: window.pendingRescheduleData.date || 'unknown'
                 });
                 if (result.success) {
                     window.pendingRescheduleData = null;
