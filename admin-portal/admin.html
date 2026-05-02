@@ -4934,7 +4934,7 @@
                     } else if (ev === 'Account Locked') {
                         rowBg = 'background:rgba(239,68,68,0.07);border-left:4px solid #ef4444;';
                         icon = '<i class="bi bi-shield-lock-fill" style="color:#ef4444;"></i>';
-                        bdg = 'background:#fee2e2;color:#dc2626;';
+                        bdg = 'background:#fee2e2;color:#10b981;';
                     } else if (ev === 'Login Failed') {
                         rowBg = 'background:rgba(249,115,22,0.06);border-left:4px solid #f97316;';
                         icon = '<i class="bi bi-x-circle-fill" style="color:#f97316;"></i>';
@@ -4942,7 +4942,7 @@
                     } else if (s.severity === 'critical' || ev.includes('Suspend')) {
                         rowBg = 'background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;';
                         icon = '<i class="bi bi-exclamation-triangle-fill" style="color:#ef4444;"></i>';
-                        bdg = 'background:#fee2e2;color:#dc2626;';
+                        bdg = 'background:#fee2e2;color:#10b981;';
                     }
 
                     const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
@@ -5470,14 +5470,14 @@
                 tbody.innerHTML = users.map(u => {
                     const isSuspended = u.suspended_until && new Date(u.suspended_until) > new Date();
                     const statusBadge = isSuspended
-                        ? '<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
+                        ? '<span style="background:#fee2e2;color:#10b981;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
                         : '<span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Active</span>';
                     const displayName = u.fullName || u.full_name || u.username;
                     const phone = u.phone || u.contact_number || u.contactNumber || '';
                     const address = u.address || '';
                     const actionHtml = isSuspended 
                         ? `<button onclick="liftSuspension('${u.id}', '${displayName}')" style="background:var(--green-xl);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Lift Ban</button>`
-                        : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:#f59e0b;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Suspend</button>
+                        : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:#10b981;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Suspend</button>
                            <button onclick="adminDeleteUserConfirm('${u.id}', '${displayName}')" style="background:#dc2626;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Delete</button>`;
 
                     return `<tr>
@@ -6422,11 +6422,11 @@
                 const EQUIP_ICON_MAP = {
                     'Chairs': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="6" y="2" width="12" height="10" rx="1.5"/><rect x="4" y="13" width="16" height="3" rx="1.5"/><rect x="6" y="17" width="3" height="5" rx="1"/><rect x="15" y="17" width="3" height="5" rx="1"/></svg>`, cls: 'eq-Chairs' },
                     'Tables': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`, cls: 'eq-Tables' },
-                    'Tents': { html: `<i class="bi bi-house-door-fill" style="font-size:20px;color:#d97706;"></i>`, cls: 'eq-Tents' },
-                    'Ladder': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#d97706"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`, cls: 'eq-Ladder' },
-                    'Microphone': { html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#dc2626;"></i>`, cls: 'eq-Microphone' },
-                    'Speaker': { html: `<i class="bi bi-speaker-fill" style="font-size:20px;color:#7c3aed;"></i>`, cls: 'eq-Speaker' },
-                    'Electric Fan': { html: `<i class="bi bi-fan" style="font-size:20px;color:#3b82f6;"></i>`, cls: 'eq-Fan' }
+                    'Tents': { html: `<i class="bi bi-house-door-fill" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Tents' },
+                    'Ladder': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#10b981"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`, cls: 'eq-Ladder' },
+                    'Microphone': { html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Microphone' },
+                    'Speaker': { html: `<i class="bi bi-speaker-fill" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Speaker' },
+                    'Electric Fan': { html: `<i class="bi bi-fan" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Fan' }
                 };
 
                 const equipment = await getEquipment();
@@ -7477,7 +7477,7 @@
                         } else if (!isBk) {
                             // Normal event: Reschedule + Remove
                             actionBtns = `
-                                <button onclick="adminRescheduleEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#3b82f6;cursor:pointer;margin-right:4px;"> Reschedule</button>
+                                <button onclick="adminRescheduleEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#10b981;cursor:pointer;margin-right:4px;"> Reschedule</button>
                                 <button onclick="adminRemoveEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel-bg);font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;"> Remove</button>`;
                         } else {
                             // Booking: just remove
@@ -8417,7 +8417,7 @@
             style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10500;align-items:center;justify-content:center;padding:16px;">
             <div style="background:var(--surface, #fff);border:1px solid var(--border, #fff);border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;max-height:90vh;animation:modalIn 0.3s ease;">
                 <!-- Header -->
-                <div style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);padding:24px;position:relative;flex-shrink:0;">
+                <div style="background:linear-gradient(135deg,#10b981,#059669);padding:24px;position:relative;flex-shrink:0;">
                     <button onclick="closeAdsEventModal()" type="button"
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
@@ -8527,7 +8527,7 @@
                 <!-- Add Event Section -->
                 <div style="padding:16px 24px 24px;flex-shrink:0;border-top:1px solid #f1f5f9;">
                     <button id="adsToggleFormBtn" onclick="openAdsEventModal()"
-                        style="width:100%;padding:14px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(59,130,246,0.3);">
+                        style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(59,130,246,0.3);">
                         <span> Add Court Event</span>
                     </button>
                     
@@ -8636,7 +8636,7 @@
                     <div style="margin-bottom:20px;">
                         <label style="display:block;font-size:13px;font-weight:700;color:var(--text,#374151);margin-bottom:8px;">Admin Password</label>
                         <input type="password" id="adminPasswordConfirmInput" placeholder="••••••••" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border,#d1d5db);background:var(--bg,#f9fafb);font-size:14px;color:var(--text,#111827);outline:none;transition:all 0.2s;">
-                        <p id="adminPasswordConfirmError" style="display:none;color:#dc2626;font-size:12px;margin:8px 0 0;font-weight:600;">Incorrect password.</p>
+                        <p id="adminPasswordConfirmError" style="display:none;color:#10b981;font-size:12px;margin:8px 0 0;font-weight:600;">Incorrect password.</p>
                     </div>
                     <div style="display:flex;gap:12px;">
                         <button id="adminPasswordConfirmCancel" style="flex:1;padding:12px;background:var(--bg,#f3f4f6);border:1px solid var(--border,#e5e7eb);border-radius:12px;color:var(--text,#4b5563);font-size:14px;font-weight:700;cursor:pointer;">Cancel</button>
@@ -8658,7 +8658,7 @@
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
                         onmouseout="this.style.background='rgba(255,255,255,0.2)'"></button>
-                    <div style="width:64px;height:64px;border-radius:50%;background:#fff;color:#d97706;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);"> </div>
+                    <div style="width:64px;height:64px;border-radius:50%;background:#fff;color:#10b981;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);"> </div>
                     <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0;">Suspend Resident</h3>
                     <p style="color:rgba(255,255,255,0.9);font-size:13px;margin:4px 0 0;" id="suspendModalUsername"></p>
                 </div>
@@ -8680,7 +8680,7 @@
                             <option value="1">1st Offense: 1 Week Suspension</option>
                             <option value="2">2nd Offense: 2 Weeks Suspension</option>
                             <option value="3">3rd Offense: 1 Month Suspension</option>
-                            <option value="4" style="color:#dc2626;font-weight:bold;">4th Offense: Ban & Delete Account</option>
+                            <option value="4" style="color:#10b981;font-weight:bold;">4th Offense: Ban & Delete Account</option>
                         </select>
                     </div>
 
