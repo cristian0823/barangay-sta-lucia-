@@ -4961,10 +4961,6 @@
             }
 
             // ── CLEAR LOG FUNCTIONS ──
-                _allSecurityLogs = [];
-                renderSecurityLog();
-                if (typeof showAlert === 'function') showAlert('Security log cleared and account lockouts reset.', 'success');
-            }
 
             async function clearAuditLogs() {
                 if (!confirm('Clear ALL audit log records? This cannot be undone.')) return;
