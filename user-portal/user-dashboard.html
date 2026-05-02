@@ -732,11 +732,11 @@
             <div id="panel-booking" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 id="bookingPanelTitle" class="panel-header text-blue-600"><i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation</h2>
+                        <h2 id="bookingPanelTitle" class="panel-header text-emerald-600"><i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation</h2>
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
                         <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
                     </div>
                 </div>
@@ -791,7 +791,7 @@
             <!-- PANEL: PROFILE -->
             <div id="panel-profile" class="content-panel container mt-6 max-w-5xl mx-auto px-4 lg:px-8">
                 <!-- Hero Banner -->
-                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#064e3b 0%,#047857 50%,#0f766e 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
                         <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-person-fill"></i></div>
                         <div>
@@ -920,7 +920,7 @@
             <div id="panel-history" class="content-panel">
                 <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:24px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📜</div>
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-journal-text" style="color:#10b981;"></i></div>
                         <div>
                             <div class="settings-hero-title" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:3px;">My Activity Tracker</div>
                             <div style="font-size:13px;color:#cbd5e1;">A complete timeline of your interactions, requests, and reservations.</div>
@@ -2570,7 +2570,7 @@
         function switchVenue(venue) {
             selectedVenue = venue;
             
-            const activeClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95';
+            const activeClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95';
             const inactiveClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800';
 
             document.getElementById('sel-basketball').className = venue === 'basketball' ? activeClass : inactiveClass;
@@ -2585,7 +2585,7 @@
                 if (titleEl) titleEl.innerHTML = '<i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation';
                 if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay basketball court.';
             } else {
-                if (titleEl) titleEl.innerHTML = '🏢 Hall Reservation';
+                if (titleEl) titleEl.innerHTML = '<i class="bi bi-building mr-2"></i>Hall Reservation';
                 if (subtitleEl) subtitleEl.textContent = 'Reserve the barangay multi-purpose hall.';
             }
             if (document.getElementById('bookingVenueInput')) document.getElementById('bookingVenueInput').value = venue;
@@ -3247,7 +3247,7 @@
         </div>
         <div class="flex items-center gap-3 mt-3 text-xs text-gray-500 dark:text-gray-400 font-semibold w-full">
             <span class="bg-gray-100 dark:bg-slate-700/80 px-2.5 py-1 rounded-md text-[11px] shadow-sm flex items-center gap-1">
-                📌 ${a.type}
+                <i class="bi bi-tag mr-1"></i> ${a.type}
             </span>
             <span class="flex items-center gap-1.5">
                 <i class="bi bi-clock"></i>
@@ -3307,9 +3307,9 @@
                 const boo = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
                 
                 let all = [];
-                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '📦', colorClass: 'bg-blue-100 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400' }));
-                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '💬', colorClass: 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-400' }));
-                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '📅', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
+                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '<i class="bi bi-box-seam"></i>', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
+                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '<i class="bi bi-chat-left-text"></i>', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
+                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '<i class="bi bi-calendar-event"></i>', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
                 all.sort((a,b) => b.date - a.date);
                 allHistoryData = all;
                 currentPageHistory = 1;
