@@ -2708,7 +2708,10 @@
                                     <button class="btn btn-small req-tab-btn" style="background:var(--bg); color:var(--text); border:1px solid var(--border);" onclick="setReqTab('rejected', this)">Rejected</button>
                                 </div>
                                 <div style="position:relative; max-width:250px; width:100%;">
-                                    <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                                    <div style="position:relative; width:220px; flex-shrink:0;">
+                        <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;"></i>
+                        <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                    </div>
                                 </div>
                             </div>
                             <div class="admin-tables">
@@ -2761,7 +2764,10 @@
                                     </select>
                                     <div style="position:relative; flex:1;">
                                         <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></span>
-                                        <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                                        <div style="position:relative; width:220px; flex-shrink:0;">
+                        <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;"></i>
+                        <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="width:100%; padding:8px 12px 8px 36px; border-radius:8px; border:1px solid var(--border); outline:none; background:var(--bg); color:var(--text);">
+                    </div>
                                     </div>
                                 </div>
                             </div>

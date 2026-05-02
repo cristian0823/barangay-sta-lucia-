@@ -761,7 +761,7 @@
                     <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
                     <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>Available</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-purple-100 border border-purple-300 rounded"></div>Brgy Event</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>Brgy Event</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>Booked</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
                     </div>
@@ -781,7 +781,7 @@
             <!-- PANEL 5: EVENTS -->
             <div id="panel-events" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="text-3xl font-extrabold text-purple-600 mb-2"><i class="bi bi-calendar-event-fill mr-2"></i>Upcoming Court Events</h2>
+                    <h2 class="text-3xl font-extrabold text-emerald-600 mb-2"><i class="bi bi-calendar-event-fill mr-2"></i>Upcoming Court Events</h2>
                     <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
                 </div>
                 <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"></div>
@@ -1176,7 +1176,7 @@
     <div id="conflictNotifModal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);">
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" style="animation:fadeInUp 0.3s ease;">
             <!-- Header -->
-            <div style="background:linear-gradient(135deg,#f59e0b,#ef4444);padding:32px 24px 24px;text-align:center;">
+            <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px 24px 24px;text-align:center;">
                 <div style="font-size:48px;margin-bottom:12px;line-height:1;">⚠️</div>
                 <h3 style="font-size:22px;font-weight:800;color:#fff;margin:0 0 12px;letter-spacing:-0.02em;">Reservation Cancelled</h3>
                 <p id="conflictNotifMsg" style="font-size:14px;color:rgba(255,255,255,0.95);margin:0 auto;line-height:1.6;max-width:90%;"></p>
@@ -1184,7 +1184,7 @@
             <!-- Actions -->
             <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
                 <button id="conflictRescheduleBtn" onclick="handleConflictReschedule()"
-                    style="width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-weight:700;font-size:14px;border-radius:14px;border:none;cursor:pointer;transition:all 0.2s;">
+                    style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;font-size:14px;border-radius:14px;border:none;cursor:pointer;transition:all 0.2s;">
                     📅 Reschedule My Reservation
                 </button>
                 <button id="conflictCancelBtn" onclick="handleConflictCancel()"
@@ -2666,7 +2666,7 @@
                 }
                 else if (hasEvent) { 
                     // Official Events — solid violet. User can still book outside event time slots.
-                    dayDiv.className += 'bg-purple-600 text-white border-2 border-purple-700 cursor-pointer hover:bg-purple-700 hover:scale-105'; 
+                    dayDiv.className += 'bg-emerald-600 text-white border-2 border-emerald-700 cursor-pointer hover:bg-emerald-700 hover:scale-105'; 
                     dayDiv.title = 'Brgy Event: ' + hasEvent.title + '. Click to view schedule & book available slots.'; 
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
@@ -2927,9 +2927,9 @@
                 empty.classList.add('hidden');
                 list.innerHTML = entries.map(en => {
                     const isBk = en.type === 'booking';
-                    const bg = isBk ? 'bg-red-50 border-red-200' : 'bg-purple-50 border-purple-200';
+                    const bg = isBk ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200';
                     const dot = isBk ? '🔴' : '🟣';
-                    const nameColor = isBk ? 'text-red-700' : 'text-purple-700';
+                    const nameColor = isBk ? 'text-red-700' : 'text-emerald-700';
                     return `<div class="flex items-start gap-3 p-3 rounded-xl border ${bg}">
                         <span class="text-lg leading-none mt-0.5">${dot}</span>
                         <div class="flex-1 min-w-0">
@@ -3177,15 +3177,15 @@
             upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
             container.innerHTML = upcoming.map(e => {
                 const timeStr = e.end_time ? fmt12(e.time) + ' - ' + fmt12(e.end_time) : fmt12(e.time);
-                return '<div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">' +
-                    '<div class="flex justify-between items-start mb-4"><span class="bg-white text-purple-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span></div>' +
+                return '<div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">' +
+                    '<div class="flex justify-between items-start mb-4"><span class="bg-white text-emerald-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span></div>' +
                     '<h3 class="text-2xl font-black mb-1 line-clamp-2">' + e.title + '</h3>' +
-                    '<p class="text-indigo-100 font-medium mb-4 text-sm flex items-center gap-1">📍 ' + e.location + '</p>' +
+                    '<p class="text-emerald-100 font-medium mb-4 text-sm flex items-center gap-1">📍 ' + e.location + '</p>' +
                     '<div class="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">' +
                     '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + formatDate(e.date) + '</span></div>' +
                     '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + timeStr + '</span></div>' +
                     '<div class="flex items-center gap-2' + (e.capacity || e.description ? ' mb-2' : '') + '"><span class="text-sm">By ' + e.organizer + '</span></div>' +
-                    (e.capacity ? '<div class="flex items-center gap-2 mb-2"><span class="text-sm font-bold text-indigo-100">👥 Capacity: ' + e.capacity + ' max</span></div>' : '') +
+                    (e.capacity ? '<div class="flex items-center gap-2 mb-2"><span class="text-sm font-bold text-emerald-100">👥 Capacity: ' + e.capacity + ' max</span></div>' : '') +
                     ''  +
                     '</div></div>';
             }).join('');
