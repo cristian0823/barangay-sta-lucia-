@@ -1879,6 +1879,7 @@
                 if (n.type === 'booking_rejected' || n.type === 'equipment_rejected') iconHtml = '❌';
                 if (n.type === 'concern_resolved') iconHtml = '✅';
                 if (n.type === 'concern_in_progress') iconHtml = '🔧';
+                if (n.type === 'concern_rejected') iconHtml = '❌';
                 if (n.type === 'equipment_approved') iconHtml = '📦';
                 if (n.type === 'booking_cancelled' || n.type === 'event_conflict') iconHtml = '⚠️';
                 if (n.type === 'event_added') iconHtml = '📅';
@@ -1912,6 +1913,8 @@
                     if (notif.type === 'booking_approved') { iconHtml = '📅'; titleText = 'Reservation Approved'; }
                     if (notif.type === 'booking_rejected') { iconHtml = '❌'; titleText = 'Reservation Rejected'; }
                     if (notif.type === 'concern_resolved') { iconHtml = '✅'; titleText = 'Concern Resolved'; }
+                    if (notif.type === 'concern_in_progress') { iconHtml = '🔧'; titleText = 'Concern In Progress'; }
+                    if (notif.type === 'concern_rejected') { iconHtml = '❌'; titleText = 'Concern Rejected'; }
                     if (notif.type === 'equipment_approved') { iconHtml = '📦'; titleText = 'Equipment Request'; }
                     if (notif.type === 'booking_cancelled' || notif.type === 'event_conflict') { iconHtml = '⚠️'; titleText = 'Reservation Cancelled'; }
                     if (notif.type === 'event_added' || notif.type === 'event_cancelled') { iconHtml = '🎉'; titleText = 'Barangay Event'; }
@@ -3648,6 +3651,10 @@ async function loadSettingsView() {
                             loadHistoryView && loadHistoryView();
                         } else if (type === 'concern_resolved') {
                             showNotifToast('✅ Concern Resolved', msg, 'success');
+                            loadConcernsView && loadConcernsView();
+                            loadHistoryView && loadHistoryView();
+                        } else if (type === 'concern_rejected') {
+                            showNotifToast('❌ Concern Rejected', msg, 'error');
                             loadConcernsView && loadConcernsView();
                             loadHistoryView && loadHistoryView();
                         } else if (type === 'event_added') {

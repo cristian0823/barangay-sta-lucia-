@@ -1667,6 +1667,10 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
         } else if (status === 'resolved') {
             notifMsg = `Your concern "${concernData.title || 'Ticket'}" has been Resolved.`;
             notifType = 'concern_resolved';
+        } else if (status === 'rejected') {
+            const reason = response ? ` Reason: ${response}` : '';
+            notifMsg = `Your concern "${concernData.title || 'Ticket'}" has been Rejected.${reason}`;
+            notifType = 'concern_rejected';
         }
         
         if (notifMsg) {
