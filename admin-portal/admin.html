@@ -8072,10 +8072,13 @@
                 const responseText = (document.getElementById('adminConcernResponseText') || {}).value || '';
                 if (!concernId) return;
                 try {
-                    const updateData = { status: newStatus };
-                    if (responseText.trim()) updateData.response = responseText.trim();
                     const supabaseAvail = await isSupabaseAvailable();
-                    if (supabaseAvail) {
+                    if (supabaseAvail && typeof updateConcernStatus === 'function') {
+                        // Calls app.js updateConcernStatus which also sends user notification bell
+                        await updateConcernStatus(concernId, newStatus, responseText.trim() || null, undefined);
+                    } else if (supabaseAvail) {
+                        const updateData = { status: newStatus };
+                        if (responseText.trim()) updateData.response = responseText.trim();
                         await supabase.from('concerns').update(updateData).eq('id', concernId);
                     }
                     const c = _allAdminConcerns.find(function(x){ return x.id === concernId; });

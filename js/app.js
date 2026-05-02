@@ -1652,7 +1652,7 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
     // 1. Get the concern first so we know who to notify
-    const { data: concernData } = await supabase.from('concerns').select('user_id, subject').eq('id', concernId).maybeSingle();
+    const { data: concernData } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
 
     // 2. Update the status
     const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
@@ -1660,16 +1660,19 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     // 3. Send notification to the user if successful
     if (!error && concernData && concernData.user_id) {
         let notifMsg = '';
-        if (status === 'in_progress') {
-            notifMsg = `Your concern "${concernData.subject || 'Ticket'}" is now In Progress.`;
+        let notifType = 'concern';
+        if (status === 'in-progress' || status === 'in_progress') {
+            notifMsg = `Your concern "${concernData.title || 'Ticket'}" is now In Progress.`;
+            notifType = 'concern_in_progress';
         } else if (status === 'resolved') {
-            notifMsg = `Your concern "${concernData.subject || 'Ticket'}" has been Resolved.`;
+            notifMsg = `Your concern "${concernData.title || 'Ticket'}" has been Resolved.`;
+            notifType = 'concern_resolved';
         }
         
         if (notifMsg) {
             await supabase.from('user_notifications').insert([{
                 user_id: String(concernData.user_id),
-                type: 'concern',
+                type: notifType,
                 message: notifMsg,
                 is_read: false
             }]);
