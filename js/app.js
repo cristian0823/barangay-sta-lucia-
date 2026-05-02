@@ -2607,22 +2607,39 @@ async function deleteBooking(bookingId) {
 
 async function updateConcernStatus(concernId, status, response, assignedTo) {
     const supabaseAvailable = await isSupabaseAvailable();
-    const payload = { status, response };
+    const payload = { status };
+    if (response !== null && response !== undefined) payload.response = response;
     if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
     if (supabaseAvailable) {
         const { data: concern } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
         
-        if (!error && concern && concern.user_id && (status === 'resolved' || status === 'in_progress')) {
-             await supabase.from('user_notifications').insert([{
-                user_id: concern.user_id,
-                type: status === 'resolved' ? 'concern_resolved' : 'concern_in_progress',
-                message: status === 'resolved' ? `Your concern "${concern.title}" has been resolved.` : `Your concern "${concern.title}" is now in progress.`,
-                meta: { concern_id: concernId, response },
-                is_read: false
-            }]);
-            broadcastSync();
+        if (!error && concern && concern.user_id) {
+            let notifType = null;
+            let notifMsg = null;
+
+            if (status === 'resolved' || status === 'completed') {
+                notifType = 'concern_resolved';
+                notifMsg = `Your concern "${concern.title || 'Ticket'}" has been Resolved.`;
+            } else if (status === 'in-progress' || status === 'in_progress') {
+                notifType = 'concern_in_progress';
+                notifMsg = `Your concern "${concern.title || 'Ticket'}" is now In Progress.`;
+            } else if (status === 'rejected') {
+                notifType = 'concern_rejected';
+                const reason = response ? ` Reason: ${response}` : '';
+                notifMsg = `Your concern "${concern.title || 'Ticket'}" has been Rejected.${reason}`;
+            }
+
+            if (notifType && notifMsg) {
+                await supabase.from('user_notifications').insert([{
+                    user_id: String(concern.user_id),
+                    type: notifType,
+                    message: notifMsg,
+                    is_read: false
+                }]);
+                broadcastSync();
+            }
         }
 
         if (!error) await logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status}`);
@@ -2633,23 +2650,36 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
         if (index === -1) return false;
         
         concerns[index].status = status;
-        concerns[index].response = response;
+        if (response !== null && response !== undefined) concerns[index].response = response;
         if (assignedTo !== undefined) concerns[index].assignedTo = assignedTo;
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
         
-        if (concerns[index].userId && status === 'resolved') {
+        if (concerns[index].userId) {
             const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-            notifs.push({
-                id: Date.now(),
-                userId: concerns[index].userId,
-                type: 'concern_resolved',
-                message: `Your concern "${concerns[index].title}" has been resolved.`,
-                meta: { concern_id: concernId, response },
-                isRead: false,
-                createdAt: new Date().toISOString()
-            });
-            localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
-            broadcastSync();
+            let notifType = null, notifMsg = null;
+            if (status === 'resolved') {
+                notifType = 'concern_resolved';
+                notifMsg = `Your concern "${concerns[index].title}" has been Resolved.`;
+            } else if (status === 'in-progress' || status === 'in_progress') {
+                notifType = 'concern_in_progress';
+                notifMsg = `Your concern "${concerns[index].title}" is now In Progress.`;
+            } else if (status === 'rejected') {
+                notifType = 'concern_rejected';
+                const reason = response ? ` Reason: ${response}` : '';
+                notifMsg = `Your concern "${concerns[index].title}" has been Rejected.${reason}`;
+            }
+            if (notifType && notifMsg) {
+                notifs.push({
+                    id: Date.now(),
+                    userId: concerns[index].userId,
+                    type: notifType,
+                    message: notifMsg,
+                    isRead: false,
+                    createdAt: new Date().toISOString()
+                });
+                localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+                broadcastSync();
+            }
         }
 
         logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status} (Local)`);
