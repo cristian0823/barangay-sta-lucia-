@@ -1725,6 +1725,7 @@
                     const { data: uRowN } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
                     if (uRowN) resolvedNotifId = String(uRowN.id);
                 } catch(_) {}
+                window._resolvedUserId = resolvedNotifId; // Cache for realtime matching
                 const notifs = await getUserNotifications(resolvedNotifId);
                 renderBellNotifications(notifs);
             } catch (e) { console.error('Error polling bell notifications:', e); }
@@ -3613,13 +3614,16 @@ async function loadSettingsView() {
                     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_notifications' }, payload => {
                         const newR = payload.new;
                         if (!window.user || !newR) return;
-                        // Match by user_id (handle int vs string)
-                        if (String(newR.user_id) !== String(window.user.id)) return;
+                        // Match by user_id — check both session id AND resolved Supabase integer id
+                        const matchesUser = String(newR.user_id) === String(window.user.id)
+                            || (window._resolvedUserId && String(newR.user_id) === String(window._resolvedUserId));
+                        if (!matchesUser) return;
 
                         // Route by type
                         const type = newR.type || '';
                         const msg  = newR.message || '';
 
+                        // Always refresh bell immediately
                         pollBellNotifications();
 
                         if (type === 'booking_cancelled') {
@@ -3638,6 +3642,14 @@ async function loadSettingsView() {
                         } else if (type === 'equipment_rejected') {
                             showNotifToast('❌ Equipment Request Rejected', msg, 'error');
                             loadDashboardStats && loadDashboardStats();
+                        } else if (type === 'concern_in_progress') {
+                            showNotifToast('🔧 Concern In Progress', msg, 'info');
+                            loadConcernsView && loadConcernsView();
+                            loadHistoryView && loadHistoryView();
+                        } else if (type === 'concern_resolved') {
+                            showNotifToast('✅ Concern Resolved', msg, 'success');
+                            loadConcernsView && loadConcernsView();
+                            loadHistoryView && loadHistoryView();
                         } else if (type === 'event_added') {
                             showNotifToast('📢 New Barangay Event', msg, 'info');
                             loadEventsView && loadEventsView();
@@ -3649,6 +3661,17 @@ async function loadSettingsView() {
                             loadBookingView && loadBookingView();
                             loadDashboardStats && loadDashboardStats();
                         }
+                    })
+                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'concerns' }, payload => {
+                        // Realtime concerns update — refresh report history for this user
+                        const updated = payload.new;
+                        if (!window.user || !updated) return;
+                        const matchesUser = String(updated.user_id) === String(window.user.id)
+                            || (window._resolvedUserId && String(updated.user_id) === String(window._resolvedUserId));
+                        if (!matchesUser) return;
+                        // Refresh history + concerns view silently
+                        if (typeof loadConcernsView === 'function') loadConcernsView();
+                        if (typeof loadHistoryView === 'function') loadHistoryView();
                     })
                     .subscribe();
             }
