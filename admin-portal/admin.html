@@ -3172,11 +3172,6 @@
                 <button onclick="renderSecurityLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
-        <div style="display: flex; flex-direction: column; justify-content: flex-end;">
-            <button onclick="clearSecurityLogs()" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;" title="Clear all local security log records">
-                <i class="bi bi-trash3"></i> Clear Logs
-            </button>
-        </div>
     </div>
 
     <!-- Table -->
@@ -4966,25 +4961,6 @@
             }
 
             // ── CLEAR LOG FUNCTIONS ──
-            async function clearSecurityLogs() {
-                if (!confirm('Clear ALL security log records? This cannot be undone.')) return;
-                // Clear localStorage logs + known IPs
-                localStorage.removeItem('barangay_local_security_log');
-                Object.keys(localStorage).filter(k => k.startsWith('known_ips_')).forEach(k => localStorage.removeItem(k));
-                if (window.supabase) {
-                    // Delete all security_log rows using timestamp (works with UUID ids)
-                    const { error: delErr } = await window.supabase
-                        .from('security_log')
-                        .delete()
-                        .lte('created_at', new Date().toISOString());
-                    if (delErr) console.warn('security_log delete error:', delErr);
-                    // Reset login_fail_count and lockout for ALL users
-                    const { error: resetErr } = await window.supabase
-                        .from('users')
-                        .update({ login_fail_count: 0, lockout_until: null })
-                        .lte('created_at', new Date().toISOString());
-                    if (resetErr) console.warn('users reset error:', resetErr);
-                }
                 _allSecurityLogs = [];
                 renderSecurityLog();
                 if (typeof showAlert === 'function') showAlert('Security log cleared and account lockouts reset.', 'success');
