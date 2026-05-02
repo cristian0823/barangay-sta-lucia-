@@ -8914,9 +8914,9 @@
                     if (supabaseOk) {
                         // Query all three tables for recent pending activity
                         const [bookingsRes, borrowingsRes, concernsRes] = await Promise.all([
-                            supabase.from('facility_reservations').select('id, user_id, date, time, venue_name, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
+                            supabase.from('facility_reservations').select('id, user_id, date, time, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
                             supabase.from('borrowings').select('id, user_id, equipment, quantity, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('concerns').select('id, user_id, subject, message, created_at').eq('is_read', false).order('created_at', { ascending: false }).limit(20)
+                            supabase.from('concerns').select('id, user_id, title, description, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20)
                         ]);
 
                         (bookingsRes.data || []).forEach(b => items.push({
@@ -8924,7 +8924,7 @@
                             refId: b.id,
                             type: 'booking',
                             icon: '📅',
-                            message: 'New facility reservation for ' + (b.venue_name || 'venue') + ' on ' + b.date,
+                            message: 'New facility reservation on ' + b.date,
                             createdAt: b.created_at
                         }));
                         (borrowingsRes.data || []).forEach(b => items.push({
@@ -8940,17 +8940,17 @@
                             refId: c.id,
                             type: 'concern',
                             icon: '📢',
-                            message: 'New concern: ' + (c.subject || c.message || 'Untitled'),
+                            message: 'New concern: ' + (c.title || 'Untitled'),
                             createdAt: c.created_at
                         }));
                     } else {
                         // LocalStorage fallback
                         const bookings = (JSON.parse(localStorage.getItem('courtBookings')) || []).filter(b => b.status === 'pending');
                         const borrowings = (JSON.parse(localStorage.getItem('courtBorrowings')) || []).filter(b => b.status === 'pending');
-                        const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => !c.isRead);
+                        const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => c.status === 'pending');
                         bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: '📅', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
                         borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: '📦', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
-                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: '📢', message: 'New concern: ' + (c.subject || 'Untitled'), createdAt: c.createdAt }));
+                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: '📢', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
                     }
                 } catch(e) { console.warn('Admin bell error:', e); }
 
