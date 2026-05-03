@@ -3924,7 +3924,7 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
             .from('borrowings')
             .select('quantity')
             .eq('equipment_id', equipmentId)
-            .eq('status', 'approved')
+            .in('status', ['approved', 'pending'])
             .lte('borrow_date', returnDate)
             .gte('return_date', borrowDate);
         
@@ -3950,7 +3950,7 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
         const reqEnd = new Date(returnDate).getTime();
 
         borrowings.forEach(b => {
-            if (b.equipment === equipmentName && (b.status === 'approved')) {
+            if (b.equipment === equipmentName && (b.status === 'approved' || b.status === 'pending')) {
                 const bStart = new Date(b.borrowDate || b.borrow_date).getTime();
                 const bEnd = new Date(b.returnDate || b.return_date).getTime();
                 
@@ -3964,3 +3964,88 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
         return { success: true, available: totalStock - reservedCount, total: totalStock };
     }
 }
+
+async function getNextAvailableDate(equipmentId, neededQty = 1) {
+    try {
+        const { data: item } = await supabase.from('equipment').select('quantity, broken').eq('id', equipmentId).single();
+        if (!item) return null;
+        const totalStock = item.quantity - (item.broken || 0);
+
+        const { data: activeBorrowings } = await supabase
+            .from('borrowings')
+            .select('quantity, return_date, borrow_date')
+            .eq('equipment_id', equipmentId)
+            .in('status', ['approved', 'pending'])
+            .order('return_date', { ascending: true });
+
+        if (!activeBorrowings || activeBorrowings.length === 0) return null; // all available now
+
+        const candidateDates = [...new Set(activeBorrowings.map(b => b.return_date))].sort();
+
+        for (const returnDate of candidateDates) {
+            const [y, m, d] = returnDate.split('T')[0].split('-');
+            const nextDay = new Date(y, m - 1, parseInt(d) + 1);
+            const nextDayStr = nextDay.getFullYear() + '-' +
+                String(nextDay.getMonth() + 1).padStart(2, '0') + '-' +
+                String(nextDay.getDate()).padStart(2, '0');
+
+            let stillBorrowed = 0;
+            activeBorrowings.forEach(b => {
+                const bStart = b.borrow_date.split('T')[0];
+                const bEnd   = b.return_date.split('T')[0];
+                if (nextDayStr >= bStart && nextDayStr <= bEnd) {
+                    stillBorrowed += b.quantity;
+                }
+            });
+
+            const available = totalStock - stillBorrowed;
+            if (available >= neededQty) {
+                const date = new Date(nextDay);
+                return {
+                    dateStr: nextDayStr,
+                    formatted: date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    unitsReturning: activeBorrowings.filter(b => b.return_date.split('T')[0] === returnDate).reduce((s, b) => s + b.quantity, 0)
+                };
+            }
+        }
+        return null;
+    } catch(e) {
+        console.error('[getNextAvailableDate] error:', e);
+        return null;
+    }
+}
+
+async function joinEquipmentWaitlist(equipmentId, equipmentName) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Please login first' };
+
+    try {
+        const { data: existing } = await supabase
+            .from('equipment_waitlist')
+            .select('id')
+            .eq('equipment_id', equipmentId)
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (existing) return { success: false, message: 'You are already on the waitlist for this item.' };
+
+        const { error } = await supabase.from('equipment_waitlist').insert([{
+            equipment_id: equipmentId,
+            equipment_name: equipmentName,
+            user_id: user.id,
+            user_name: user.name || user.username,
+            notified: false,
+            created_at: new Date().toISOString()
+        }]);
+
+        if (error) {
+            console.warn('[joinEquipmentWaitlist] table may not exist:', error.message);
+            return { success: false, message: 'Waitlist feature requires a database update. Please contact the admin.' };
+        }
+
+        return { success: true, message: '?? You\'re on the waitlist! We\'ll notify you when ' + equipmentName + ' becomes available.' };
+    } catch(e) {
+        return { success: false, message: 'Could not join waitlist: ' + e.message };
+    }
+}
+

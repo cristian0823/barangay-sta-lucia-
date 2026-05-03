@@ -2070,9 +2070,21 @@
         // ==========================================
         // 2. EQUIPMENT VIEW
         // ==========================================
-        function renderEquipmentGrid(list) {
+        async function renderEquipmentGrid(list) {
             const grid = document.getElementById('equipmentGrid');
             if (!list || list.length === 0) { grid.innerHTML = '<p class="text-gray-500 italic col-span-2">No equipment found.</p>'; return; }
+            
+            const nextAvailMap = {};
+            try {
+                await Promise.all(list.map(async item => {
+                    if (item.available <= 0) {
+                        nextAvailMap[item.id] = await getNextAvailableDate(item.id, 1);
+                    }
+                }));
+            } catch(e) {
+                console.warn('getNextAvailableDate failed:', e);
+            }
+
             grid.innerHTML = list.map(item => {
                 // Sanity check
                 item.available = Math.min(item.available || 0, item.quantity || 1);
@@ -2105,13 +2117,21 @@
                 if (disposal > 0) {
                     extraBadges += '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md bg-red-600/90 text-white"><i class="bi bi-trash-fill"></i> ' + disposal + ' Disposal</span>';
                 }
+                const nextAvail = nextAvailMap[item.id];
                 let actionBtn = '';
                 if (item.isLocked) {
                     actionBtn = '<button disabled class="w-full py-3 bg-gray-200 text-gray-500 text-sm font-bold rounded-xl shadow-inner cursor-not-allowed flex justify-center items-center gap-2"><i class="bi bi-lock-fill"></i> System Locked</button>';
                 } else if (ok) {
                     actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>';
                 } else {
-                    actionBtn = '<div class="w-full py-3 bg-red-50 text-red-600 text-sm font-bold rounded-xl border border-red-200 text-center flex justify-center items-center gap-2"><i class="bi bi-exclamation-circle-fill"></i> Out of stock</div>';
+                    const nextLabel = nextAvail ? ' · Available ' + nextAvail.formatted : '';
+                    actionBtn = '<div class="flex flex-col items-center gap-2 w-full">' +
+                        '<button onclick="openBorrowModalWithEquip(' + item.id + ')" ' +
+                        'class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-calendar-event"></i> Reserve Future Dates</button>' +
+                        (nextAvail ? '<div class="text-xs text-blue-600 font-semibold mt-1">Returns ' + nextAvail.formatted + '</div>' : '') +
+                        '<button onclick="handleJoinWaitlist(' + item.id + ',\'' + item.name.replace(/'/g, "\\'") + '\')" ' +
+                        'class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-bell-fill"></i> Notify me when available</button>' +
+                        '</div>';
                 }
 
                 const pendingBadge = (item.pending && item.pending > 0)
@@ -2163,11 +2183,16 @@
                 const list = await getEquipment();
                 console.log('[DEBUG] getEquipment returned:', list);
                 allEquipmentList = list;
-                renderEquipmentGrid(list);
+                await renderEquipmentGrid(list);
                 loadMyBorrowingsList();
             } catch(err) {
                 console.error('[DEBUG] loadEquipmentView error:', err);
             }
+        }
+        
+        async function handleJoinWaitlist(equipmentId, equipmentName) {
+            const result = await joinEquipmentWaitlist(equipmentId, equipmentName);
+            showToast(result.message, result.success ? 'success' : 'error');
         }
 
         // ¢â€â‚¬ Equipment Search Filter ¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬
