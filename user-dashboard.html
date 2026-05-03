@@ -2169,13 +2169,16 @@
                 if (b.status === 'rejected') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-700"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>Rejected</span>'; statusBorder = 'border-red-200'; }
                 if (b.status === 'returned') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>Returned</span>'; statusBorder = 'border-blue-200'; }
                 const rejectionMsg = (b.status === 'rejected' && b.rejection_reason) ? '<div class="mt-3 text-xs bg-red-50 p-3 rounded-lg border border-red-100"><strong class="text-red-700">Reason:</strong> <span class="text-red-600">' + b.rejection_reason + '</span></div>' : '';
-                // Fuzzy lookup: by ID → exact name → partial name → word root match
-                const bName = b.equipment.toLowerCase().replace(/s$/, '');
+                // Smart lookup: ID → exact → contains → any shared keyword (>3 chars, stripped plural)
+                const bWords = b.equipment.toLowerCase().split(/\s+/).map(w => w.replace(/s$/, '')).filter(w => w.length > 3);
                 const liveEquip = (b.equipmentId && allEquipmentList.find(e => e.id === b.equipmentId))
                                || allEquipmentList.find(e => e.name === b.equipment)
                                || allEquipmentList.find(e => e.name.toLowerCase().includes(b.equipment.toLowerCase()))
                                || allEquipmentList.find(e => b.equipment.toLowerCase().includes(e.name.toLowerCase()))
-                               || allEquipmentList.find(e => e.name.toLowerCase().replace(/s$/, '').includes(bName) || bName.includes(e.name.toLowerCase().replace(/s$/, '')));
+                               || allEquipmentList.find(e => {
+                                    const eWords = e.name.toLowerCase().split(/\s+/).map(w => w.replace(/s$/, ''));
+                                    return bWords.some(bw => eWords.includes(bw));
+                               });
                 const displayName = liveEquip ? liveEquip.name : b.equipment;
                 const liveImg    = (liveEquip && liveEquip.image_url) ? liveEquip.image_url : b.image_url;
                 const equipThumb = liveImg
