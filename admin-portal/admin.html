@@ -6536,9 +6536,11 @@
                     <td style="text-align: center; font-weight:700;color:#16a34a;">${e.available}</td>
                     <td style="text-align: center; color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
                     <td style="text-align: center;">${statusBadge}</td>
-                    <td style="text-align: right; display:flex; gap:8px; justify-content:flex-end;">
-                        <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
-                        <button class="btn btn-smaller btn-danger" onclick="handleDeleteEquipment(${e.id})">Delete</button>
+                    <td style="text-align: right;">
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
+                            <button class="btn btn-smaller btn-danger" onclick="handleDeleteEquipment(${e.id})">Delete</button>
+                        </div>
                     </td>
                 </tr>`;
                 }).join('');
