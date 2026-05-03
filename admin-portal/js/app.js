@@ -1012,7 +1012,6 @@ async function updateEquipment(id, updates) {
         if (diffBroken > 0) notifMessages.push(`${diffBroken} ${item.name} are now under repair.`);
         if (diffBroken < 0) notifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
         if (diffDisposal > 0) notifMessages.push(`${diffDisposal} ${item.name} are now marked for disposal.`);
-        if (diffDisposal < 0) notifMessages.push(`${Math.abs(diffDisposal)} ${item.name} were recovered from disposal.`);
         if (diffQty > 0) notifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
         if (diffQty < 0) notifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
 
@@ -1077,7 +1076,6 @@ async function updateEquipment(id, updates) {
         if (diffBroken > 0) localNotifMessages.push(`${diffBroken} ${item.name} are under repair.`);
         if (diffBroken < 0) localNotifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
         if (diffDisposalLocal > 0) localNotifMessages.push(`${diffDisposalLocal} ${item.name} are now marked for disposal.`);
-        if (diffDisposalLocal < 0) localNotifMessages.push(`${Math.abs(diffDisposalLocal)} ${item.name} were recovered from disposal.`);
         if (diffQty > 0) localNotifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
         if (diffQty < 0) localNotifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
         
