@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2770,7 +2770,7 @@
             const dateFmt = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
             document.getElementById('dsModalDate').textContent = dateFmt;
-            document.getElementById('dsModalVenue').textContent = venueLabel;
+            document.getElementById('dsModalVenue').innerHTML = venueLabel;
             document.getElementById('dsDate').value = dateStr;
             document.getElementById('dsVenue').value = selectedVenue;
             document.getElementById('dsName').value = user.name || '';
