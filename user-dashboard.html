@@ -2220,9 +2220,37 @@
         // ==========================================
         // BORROW MODAL LOGIC
         // ==========================================
+        let bookedQtyMap = {}; // stores 'YYYY-MM-DD' -> total quantity booked
+        let currentBorrowEquipId = null; // track which equipment the modal is for
+
+        // Toast
+        function openSuccessModal(title, msg) {
+            document.getElementById('successModalTitle').innerText = title;
+            document.getElementById('successModalMessage').innerText = msg;
+            const modal = document.getElementById('successModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        function showToast(message, type = 'success') {
+            let toast = document.getElementById('toast');
+            if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; document.body.appendChild(toast); }
+            const colors = { success: 'bg-emerald-500', error: 'bg-red-500' };
+            toast.className = 'fixed bottom-4 right-4 ' + (colors[type] || 'bg-gray-800') + ' text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 z-[9999] opacity-0 transform translate-y-10';
+            toast.textContent = message;
+            void toast.offsetWidth;
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); }, 3000);
+        }
+
         async function openBorrowModalWithEquip(equipId) {
             currentBorrowEquipId = equipId;
-            bookedDateSet = new Set(); // reset
+            bookedQtyMap = {}; // reset
 
             const list = await getEquipment();
             const item = list.find(e => e.id === equipId);
@@ -2230,12 +2258,12 @@
             document.getElementById('borrowModalTitle').innerHTML = 'Borrow ' + item.name + ' ' + item.icon;
             document.getElementById('borrowEquipmentId').value = equipId;
             document.getElementById('borrowEquipmentName').value = item.name;
-            document.getElementById('borrowQty').max = item.available;
+            document.getElementById('borrowQty').max = item.quantity;
             document.getElementById('borrowQty').value = 1;
             const pendingNote = (item.pending && item.pending > 0)
                 ? ' &nbsp;<span style="color:#b45309;font-size:11px;font-weight:600;">⚠️ ' + item.pending + ' unit' + (item.pending > 1 ? 's' : '') + ' pending from other users</span>'
                 : '';
-            document.getElementById('borrowMaxHelp').innerHTML = '📦 Max: ' + item.available + ' units available' + pendingNote;
+            document.getElementById('borrowMaxHelp').innerHTML = '📦 Total Inventory: ' + item.quantity + ' units' + pendingNote;
             document.getElementById('borrowPurpose').value = '';
             if (!user.phone) await fetchFullProfileData();
             document.getElementById('borrowerFullName').value = user.name || '';
@@ -2250,13 +2278,19 @@
                     .select('borrow_date, return_date, quantity')
                     .eq('equipment_id', equipId)
                     .in('status', ['approved', 'pending']);
+                
                 if (bookings && bookings.length > 0) {
                     bookings.forEach(bk => {
-                        const start = new Date(bk.borrow_date);
-                        const end   = new Date(bk.return_date);
+                        // Safe parsing to avoid timezone shifts
+                        const [y1, m1, d1] = bk.borrow_date.split('T')[0].split('-');
+                        const [y2, m2, d2] = bk.return_date.split('T')[0].split('-');
+                        const start = new Date(y1, m1 - 1, d1, 12, 0, 0);
+                        const end   = new Date(y2, m2 - 1, d2, 12, 0, 0);
+                        const qty = bk.quantity || 1;
+                        
                         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                             const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-                            bookedDateSet.add(ds);
+                            bookedQtyMap[ds] = (bookedQtyMap[ds] || 0) + qty;
                         }
                     });
                 }
@@ -2341,25 +2375,27 @@
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            const maxInv = parseInt(document.getElementById('borrowQty').max) || 1;
+
             for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')); }
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                 const dateObj = new Date(currentYear, currentMonth, day);
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'p-2.5 rounded-lg text-center font-bold text-sm transition transform ';
-                const isBooked = bookedDateSet.has(dateStr);
+                
+                const bookedQty = bookedQtyMap[dateStr] || 0;
+                const isBooked = bookedQty >= maxInv; // FULLY BOOKED if booked >= max
                 const isPast   = dateObj < today;
 
                 if (isPast) {
-                    // Past date — greyed out
                     dayDiv.style.cssText = isDark
                         ? 'background:#374151;color:#6b7280;cursor:not-allowed;'
                         : 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;';
                 } else if (isBooked) {
-                    // Booked/unavailable date — red blocked
                     dayDiv.style.cssText = 'background:#fee2e2;color:#b91c1c;cursor:not-allowed;border:1px solid #fca5a5;position:relative;';
-                    dayDiv.title = 'Already booked';
-                    // Add small X indicator
+                    dayDiv.title = 'Fully booked';
                     dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#ef4444;">✕</span>';
                 } else if (borrowStartDate === dateStr) {
                     dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;';
@@ -2381,7 +2417,6 @@
                         dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
                     }
                 } else {
-                    // Available future date
                     dayDiv.style.cssText = isDark
                         ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
                         : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
@@ -2389,15 +2424,20 @@
                     dayDiv.onmouseenter = () => { dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
                     dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
                 }
-                if (!isBooked && !isPast) {
-                    dayDiv.classList.add('hover:scale-105');
-                }
+                
+                if (!isBooked && !isPast) dayDiv.classList.add('hover:scale-105');
                 if (dateObj.getTime() === today.getTime() && !isBooked) {
                     dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px';
                 }
-                if (!isBooked && !isPast && !dayDiv.textContent) dayDiv.textContent = day;
-                else if (isPast || !isBooked) { if (!dayDiv.textContent) dayDiv.textContent = day; }
-                if (!dayDiv.textContent && !dayDiv.innerHTML) dayDiv.textContent = day;
+                
+                // If it's partially booked, show a tiny indicator
+                if (!isPast && !isBooked && bookedQty > 0) {
+                    dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#f59e0b;">' + bookedQty + ' booked</span>';
+                    dayDiv.title = (maxInv - bookedQty) + ' remaining';
+                } else if (!dayDiv.innerHTML && !dayDiv.textContent) {
+                    dayDiv.textContent = day;
+                }
+                
                 grid.appendChild(dayDiv);
             }
 
@@ -2411,15 +2451,22 @@
             }
             legend.innerHTML =
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#ecfdf5;border:1px solid #d1fae5;display:inline-block;"></span>Available</span>' +
-                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#fee2e2;border:1px solid #fca5a5;display:inline-block;"></span>Booked</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#fee2e2;border:1px solid #fca5a5;display:inline-block;"></span>Fully Booked</span>' +
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#10b981;display:inline-block;"></span>Selected</span>' +
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#f3f4f6;display:inline-block;"></span>Past</span>';
         }
 
         function selectBorrowDate(dateStr) {
             const today = new Date(); today.setHours(0,0,0,0);
+            const maxInv = parseInt(document.getElementById('borrowQty').max) || 1;
+            const targetQty = parseInt(document.getElementById('borrowQty').value) || 1;
+
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
-            if (bookedDateSet.has(dateStr)) return showToast('This date is already booked. Please choose another date.', 'error');
+            
+            const booked = bookedQtyMap[dateStr] || 0;
+            if (booked >= maxInv) return showToast('This date is fully booked. Please choose another date.', 'error');
+            if (booked + targetQty > maxInv) return showToast('Not enough inventory available on this date for your requested quantity.', 'error');
+
             if (borrowDateSelectingStart) {
                 borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
                 showToast('Now select the return date', 'success');
@@ -2428,12 +2475,15 @@
                 const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays > 7) return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
-                // Check if any date in range is booked
+                
+                // Check if any date in range doesn't have enough capacity
                 const start = new Date(borrowStartDate);
                 const end   = new Date(dateStr);
                 for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                     const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-                    if (bookedDateSet.has(ds)) return showToast('Your selected range includes a booked date. Please adjust your dates.', 'error');
+                    const dayBooked = bookedQtyMap[ds] || 0;
+                    if (dayBooked >= maxInv) return showToast('Your selected range includes a fully booked date. Please adjust your dates.', 'error');
+                    if (dayBooked + targetQty > maxInv) return showToast('Not enough inventory available on ' + ds + ' for your requested quantity.', 'error');
                 }
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
