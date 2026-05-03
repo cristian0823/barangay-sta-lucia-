@@ -2055,22 +2055,19 @@
 
                 let actionBtn = '';
                 if (item.isLocked) {
-                    actionBtn = '<button disabled class="px-3 py-2 bg-gray-200 text-gray-500 text-xs font-bold rounded-xl shadow-inner cursor-not-allowed" title="Temporarily locked due to unreturned items from other users">🔒 System Locked</button>';
-                } else if (ok) {
-                    actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg cursor-pointer border-none">📝 Borrow</button>';
-                } else {
-                    // Out of stock — still allow clicking to reserve future dates
-                    const nextDateLabel = nextAvail
-                        ? '<div class="text-xs text-blue-600 font-semibold mt-1">📅 Available: <span class="font-bold">' + nextAvail.formatted + '</span></div>'
-                        : '';
-                    actionBtn = '<div class="flex flex-col items-end gap-1">' +
-                        '<span class="text-xs font-bold text-red-500 mb-1">⛔ Currently out of stock</span>' +
-                        nextDateLabel +
+                    actionBtn = '<button disabled style="padding:8px 12px;background:#e5e7eb;color:#6b7280;font-size:11px;font-weight:700;border-radius:12px;cursor:not-allowed;border:none;" title="Temporarily locked due to unreturned items">🔒 System Locked</button>';
+                } else if (!ok) {
+                    // Out of stock — still clickable to reserve FUTURE dates
+                    const nextLabel = nextAvail ? ' · Available ' + nextAvail.formatted : '';
+                    actionBtn = '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">' +
                         '<button onclick="openBorrowModalWithEquip(' + item.id + ')" ' +
-                        'class="mt-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg cursor-pointer border-none">📅 Reserve Future Dates</button>' +
-                        '<button onclick="handleJoinWaitlist(' + item.id + ', \'' + item.name.replace(/'/g, "\\'") + '\')" ' +
-                        'class="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow cursor-pointer border-none">🔔 Notify me</button>' +
+                        'style="padding:8px 14px;background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;font-size:11px;font-weight:700;border-radius:12px;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(99,102,241,0.4);">📅 Reserve Future Dates</button>' +
+                        (nextAvail ? '<div style="font-size:10px;color:#2563eb;font-weight:600;">Returns ' + nextAvail.formatted + '</div>' : '') +
+                        '<button onclick="handleJoinWaitlist(' + item.id + ',\'' + item.name.replace(/'/g, "\\'") + '\')" ' +
+                        'style="padding:6px 10px;background:#f59e0b;color:#fff;font-size:10px;font-weight:700;border-radius:10px;border:none;cursor:pointer;">🔔 Notify me</button>' +
                         '</div>';
+                } else {
+                    actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" style="padding:8px 16px;background:linear-gradient(135deg,#10b981,#0d9488);color:#fff;font-size:11px;font-weight:700;border-radius:12px;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.35);">📝 Borrow</button>';
                 }
 
                 // Pending badge — show if other users have pending requests
