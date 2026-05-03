@@ -1064,20 +1064,22 @@ async function updateEquipment(id, updates) {
 
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
         
+        const manualDiffQtyLocal = (updates.quantity !== undefined ? parseInt(updates.quantity) : item.quantity) - item.quantity;
+        
         if (diffBroken !== 0) {
             const actionVerb = diffBroken > 0 ? 'marked as' : 'removed from';
             logActivity('Inventory Update', `Local Admin ${actionVerb} broken ${Math.abs(diffBroken)}x ${item.name}`);
-        } else if (diffQty !== 0) {
-            const actionVerb = diffQty > 0 ? 'added' : 'removed';
-            logActivity('Inventory Update', `Local Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
+        } else if (manualDiffQtyLocal !== 0) {
+            const actionVerb = manualDiffQtyLocal > 0 ? 'added' : 'removed';
+            logActivity('Inventory Update', `Local Admin ${actionVerb} ${Math.abs(manualDiffQtyLocal)}x ${item.name} to total stock`);
         }
         
         let localNotifMessages = [];
         if (diffBroken > 0) localNotifMessages.push(`${diffBroken} ${item.name} are under repair.`);
         if (diffBroken < 0) localNotifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
         if (diffDisposalLocal > 0) localNotifMessages.push(`${diffDisposalLocal} ${item.name} are now marked for disposal.`);
-        if (diffQty > 0) localNotifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
-        if (diffQty < 0) localNotifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
+        if (manualDiffQtyLocal > 0) localNotifMessages.push(`Added ${manualDiffQtyLocal} new ${item.name} to inventory.`);
+        if (manualDiffQtyLocal < 0) localNotifMessages.push(`Removed ${Math.abs(manualDiffQtyLocal)} ${item.name} from inventory.`);
         
         for (let msg of localNotifMessages) {
             await addNotification('all_users', 'inventory', msg);
