@@ -2055,9 +2055,22 @@
                       '<span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse flex-shrink-0"></span>' +
                       '<span class="text-xs font-semibold text-amber-700">⏳ ' + item.pending + ' unit' + (item.pending > 1 ? 's' : '') + ' with pending requests from other users</span></div>'
                     : '';
+                    
+                const disposalCount = parseInt(item.category) || 0;
+                const brokenCount = parseInt(item.broken) || 0;
+                let extraBadges = '';
+                if (brokenCount > 0) {
+                    extraBadges += '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis bg-orange-50 text-orange-600 mt-2"><span>🔧</span> ' + brokenCount + ' Repair</span>';
+                }
+                if (disposalCount > 0) {
+                    extraBadges += '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis bg-red-50 text-red-600 mt-2"><span>🗑️</span> ' + disposalCount + ' Disposal</span>';
+                }
 
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + (ok && !item.isLocked ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1' : 'border-gray-100 opacity-70') + '">' +
-                    '<div class="absolute top-4 right-4 z-10 max-w-[50%]"><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis ' + (ok ? statusBg + ' ' + statusColor : 'bg-gray-100 text-gray-500') + '"><span>' + statusIcon + '</span> ' + item.available + ' available</span></div>' +
+                    '<div class="absolute top-4 right-4 z-10 flex flex-col items-end max-w-[50%]">' +
+                    '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis ' + (ok ? statusBg + ' ' + statusColor : 'bg-gray-100 text-gray-500') + '"><span>' + statusIcon + '</span> ' + item.available + ' Available</span>' +
+                    extraBadges + 
+                    '</div>' +
                     '<div class="flex items-start gap-4 mb-4 mt-2 relative z-0">' + (item.image_url ? '<img src="' + item.image_url + '" alt="' + item.name + '" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid #e5e7eb;">' : getEquipmentIcon(item.name)) + 
                     '<div class="flex-1 pt-1 pr-[85px]"><h4 class="font-bold text-lg text-gray-800 dark:text-white leading-tight mb-1">' + item.name + '</h4><p class="text-xs text-gray-500 font-medium">' + (item.category || 'General') + '</p></div></div>' +
                     '<div class="mb-3"><div class="flex justify-between items-center mb-2"><span class="text-xs font-semibold text-gray-500">Availability</span><span class="text-xs font-bold ' + statusColor + '">' + pct + '%</span></div>' +
@@ -3373,7 +3386,7 @@ async function loadSettingsView() {
             });
         }
 
-        // Cross-tab synchronization — listen for admin changes from other tabs
+        // Cross-tab synchronization — listen for admin changes from other tabs (same browser)
         if (typeof appSyncChannel !== 'undefined') {
             const syncHandler = async (event) => {
                 if ((event.data && event.data.type === 'SYNC_NEEDED') || event.type === 'barangay_sync_needed') {
@@ -3389,6 +3402,21 @@ async function loadSettingsView() {
             appSyncChannel.addEventListener('message', syncHandler);
             window.addEventListener('barangay_sync_needed', syncHandler);
         }
+
+        // Cross-device synchronization — Supabase Realtime broadcast so admin on one device
+        // instantly triggers updates on the user's screen on a DIFFERENT device/browser.
+        (async () => {
+            try {
+                if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
+                    const equipChannel = window.supabase.channel('barangay_global_sync');
+                    equipChannel.on('broadcast', { event: 'SYNC_NEEDED' }, async () => {
+                        console.log('[Realtime] Equipment sync received — reloading equipment view');
+                        if (typeof loadEquipmentView === 'function') await loadEquipmentView();
+                        if (typeof pollBellNotifications === 'function') await pollBellNotifications();
+                    }).subscribe();
+                }
+            } catch(e) { console.warn('[Realtime] Could not subscribe to equipment channel:', e); }
+        })();
 
         // ==========================================
         // CANCELLATION NOTIFICATIONS

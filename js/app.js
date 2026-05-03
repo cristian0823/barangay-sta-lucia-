@@ -1035,6 +1035,7 @@ async function updateEquipment(id, updates) {
                 `${disposalClearedByStock} disposal units cleared because ${stockAdded} new items were added`);
         }
 
+        broadcastSync();
         return { success: true, message: 'Equipment updated successfully' };
     } else {
         // Local fallback
@@ -1085,6 +1086,7 @@ async function updateEquipment(id, updates) {
             await addNotification('all_users', 'inventory', msg);
         }
         
+        broadcastSync();
         return { success: true, message: 'Equipment updated successfully' };
     }
 }
