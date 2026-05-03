@@ -940,16 +940,27 @@ async function updateEquipment(id, updates) {
         const newBroken = updates.broken   !== undefined ? parseInt(updates.broken)    : oldBroken;
         const newDisposal = updates.disposal !== undefined ? parseInt(updates.disposal) : oldDisposal;
 
-        // Auto-clear disposal when new stock is added (new chairs replace disposed ones)
-        let adjustedDisposal = newDisposal;
-        const stockAdded = newQty - oldQty;
-        if (stockAdded > 0 && adjustedDisposal > 0) {
-            adjustedDisposal = Math.max(0, adjustedDisposal - stockAdded);
+        // --- Auto-sync Total Quantity and Disposal ---
+        let finalQty = newQty;
+        let finalDisposal = newDisposal;
+
+        // 1. If admin marked items for disposal (without manually fixing total), auto-deduct total
+        let diffDisposalInput = finalDisposal - oldDisposal;
+        if (diffDisposalInput !== 0 && newQty === oldQty) {
+            finalQty = Math.max(0, finalQty - diffDisposalInput);
+        }
+
+        // 2. Auto-clear disposal when new stock is added (new chairs replace disposed ones)
+        let stockAdded = finalQty - oldQty;
+        let disposalClearedByStock = 0;
+        if (stockAdded > 0 && finalDisposal > 0) {
+            disposalClearedByStock = Math.min(finalDisposal, stockAdded);
+            finalDisposal -= disposalClearedByStock;
         }
 
         // Cap values to prevent impossible states
-        const cappedBroken   = Math.min(newBroken,   newQty);
-        const cappedDisposal = Math.min(adjustedDisposal, Math.max(0, newQty - cappedBroken));
+        const cappedBroken   = Math.min(newBroken,   finalQty);
+        const cappedDisposal = Math.min(finalDisposal, Math.max(0, finalQty - cappedBroken));
 
         // How many are actively borrowed (approved requests)
         let activeBorrowed = 0;
@@ -961,7 +972,7 @@ async function updateEquipment(id, updates) {
             if (borrows) activeBorrowed = borrows.reduce((s, b) => s + (b.quantity || 1), 0);
         } catch(e) { /* ignore */ }
 
-        const newAvailable = Math.max(0, newQty - cappedBroken - cappedDisposal - activeBorrowed);
+        const newAvailable = Math.max(0, finalQty - cappedBroken - cappedDisposal - activeBorrowed);
 
         // The category column stores disposal count; equipCategory stores the equipment type label
         const newCategoryLabel = updates.equipCategory !== undefined ? updates.equipCategory : item.category;
@@ -970,10 +981,10 @@ async function updateEquipment(id, updates) {
 
         const diffBroken   = cappedBroken   - oldBroken;
         const diffDisposal = cappedDisposal - oldDisposal;
-        const diffQty      = newQty - oldQty;
+        const diffQty      = finalQty - oldQty;
 
         const payload = {
-            quantity:     newQty,
+            quantity:     finalQty,
             broken:       cappedBroken,
             available:    newAvailable,
             category:     categoryValue
@@ -1019,9 +1030,9 @@ async function updateEquipment(id, updates) {
             await logMaintenance(item.name, action, Math.abs(diffDisposal), oldDisposal, cappedDisposal,
                 diffDisposal > 0 ? `${cappedDisposal} units marked for disposal` : `${Math.abs(diffDisposal)} units recovered`);
         }
-        if (stockAdded > 0 && (newDisposal - adjustedDisposal) > 0) {
-            await logMaintenance(item.name, 'Disposal Cleared (New Stock)', newDisposal - adjustedDisposal, newDisposal, adjustedDisposal,
-                `${newDisposal - adjustedDisposal} disposal units cleared because ${stockAdded} new items were added`);
+        if (stockAdded > 0 && disposalClearedByStock > 0) {
+            await logMaintenance(item.name, 'Disposal Cleared (New Stock)', disposalClearedByStock, newDisposal, finalDisposal,
+                `${disposalClearedByStock} disposal units cleared because ${stockAdded} new items were added`);
         }
 
         return { success: true, message: 'Equipment updated successfully' };
