@@ -941,6 +941,7 @@ async function addEquipment(equipmentData) {
     if (supabaseAvailable) {
         const payload = {
             name: equipmentData.name,
+            icon: equipmentData.icon || '',
             category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
@@ -948,6 +949,7 @@ async function addEquipment(equipmentData) {
             broken: equipmentData.broken || 0,
             is_archived: equipmentData.is_archived || false
         };
+        if (equipmentData.image_url) payload.image_url = equipmentData.image_url;
         const { error } = await supabase.from('equipment').insert([payload]);
         if (error) return { success: false, message: error.message };
         return { success: true, message: 'Equipment added successfully' };
@@ -958,16 +960,35 @@ async function addEquipment(equipmentData) {
         const newEq = {
             id: newId,
             name: equipmentData.name,
+            icon: equipmentData.icon || '',
             category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
-            isArchived: equipmentData.is_archived || false
+            isArchived: equipmentData.is_archived || false,
+            image_url: equipmentData.image_url || null
         };
         equipment.push(newEq);
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
         return { success: true, message: 'Equipment added successfully' };
+    }
+}
+
+async function deleteEquipment(id) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { error } = await supabase.from('equipment').delete().eq('id', id);
+        if (error) return { success: false, message: error.message };
+        await logActivity('Inventory Update', `Admin deleted equipment item #${id}`);
+        return { success: true, message: 'Equipment deleted successfully' };
+    } else {
+        initializeLocalEquipment();
+        let equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
+        equipment = equipment.filter(e => e.id !== id);
+        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        logActivity('Inventory Update', `Local Admin deleted equipment item #${id}`);
+        return { success: true, message: 'Equipment deleted successfully' };
     }
 }
 

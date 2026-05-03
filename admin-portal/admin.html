@@ -3657,9 +3657,9 @@
                 <option value="Others">Others</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="display:none;">
             <label for="equipIcon">Icon (Emoji)</label>
-                        <input type="text" id="equipIcon" placeholder="e.g., " required>
+                        <input type="text" id="equipIcon" placeholder="e.g., ">
                     </div>
                     </div>
     <div class="form-group">
@@ -3707,9 +3707,9 @@
                 <option value="Others">Others</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="display:none;">
             <label for="editEquipIcon">Icon (Emoji)</label>
-                        <input type="text" id="editEquipIcon" required>
+                        <input type="text" id="editEquipIcon">
                     </div>
                     </div>
     <div class="form-group">
@@ -6504,8 +6504,9 @@
                     <td style="text-align: center; font-weight:700;color:#16a34a;">${e.available}</td>
                     <td style="text-align: center; color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
                     <td style="text-align: center;">${statusBadge}</td>
-                    <td style="text-align: right;">
+                    <td style="text-align: right; display:flex; gap:8px; justify-content:flex-end;">
                         <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
+                        <button class="btn btn-smaller btn-danger" onclick="handleDeleteEquipment(${e.id})">Delete</button>
                     </td>
                 </tr>`;
                 }).join('');
@@ -6661,6 +6662,18 @@
                     document.getElementById(window.location.hash.substring(1)).classList.add('active');
                 }
             });
+
+            async function handleDeleteEquipment(id) {
+                if (await showConfirmModal('Are you sure you want to permanently delete this equipment?', 'Delete Equipment', 'Yes, Delete', 'Cancel', 'danger')) {
+                    const result = await deleteEquipment(id);
+                    if (result.success) {
+                        showAlert('Equipment deleted', 'success');
+                        await loadEquipment();
+                    } else {
+                        showAlert(result.message || 'Failed to delete equipment', 'error');
+                    }
+                }
+            }
 
             // ==========================================
             // REPORT GENERATION & EXPORT
