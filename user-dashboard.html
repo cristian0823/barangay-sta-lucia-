@@ -2059,15 +2059,17 @@
                 } else if (ok) {
                     actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg cursor-pointer border-none">📝 Borrow</button>';
                 } else {
-                    // Out of stock — show next available date + waitlist button
+                    // Out of stock — still allow clicking to reserve future dates
                     const nextDateLabel = nextAvail
-                        ? '<div class="text-xs text-blue-600 font-semibold mt-0.5">📅 Available again: <span class="font-bold">' + nextAvail.formatted + '</span></div>'
-                        : '<div class="text-xs text-gray-400 font-semibold mt-0.5">No return date scheduled</div>';
-                    actionBtn = '<div class="flex flex-col items-end gap-1.5">' +
-                        '<span class="text-xs font-bold text-red-500">⛔ Out of stock</span>' +
+                        ? '<div class="text-xs text-blue-600 font-semibold mt-1">📅 Available: <span class="font-bold">' + nextAvail.formatted + '</span></div>'
+                        : '';
+                    actionBtn = '<div class="flex flex-col items-end gap-1">' +
+                        '<span class="text-xs font-bold text-red-500 mb-1">⛔ Currently out of stock</span>' +
                         nextDateLabel +
+                        '<button onclick="openBorrowModalWithEquip(' + item.id + ')" ' +
+                        'class="mt-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg cursor-pointer border-none">📅 Reserve Future Dates</button>' +
                         '<button onclick="handleJoinWaitlist(' + item.id + ', \'' + item.name.replace(/'/g, "\\'") + '\')" ' +
-                        'class="mt-1 px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow cursor-pointer border-none">🔔 Notify me</button>' +
+                        'class="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow cursor-pointer border-none">🔔 Notify me</button>' +
                         '</div>';
                 }
 
