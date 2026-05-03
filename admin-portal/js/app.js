@@ -982,7 +982,7 @@ async function updateEquipment(id, updates) {
 
         const diffBroken   = cappedBroken   - oldBroken;
         const diffDisposal = cappedDisposal - oldDisposal;
-        const diffQty      = finalQty - oldQty;
+        const manualDiffQty = newQty - oldQty;
 
         const payload = {
             quantity:     finalQty,
@@ -1003,17 +1003,17 @@ async function updateEquipment(id, updates) {
             const verb = diffBroken > 0 ? 'marked under repair' : 'restored from repair';
             await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(diffBroken)}x ${item.name}`);
         }
-        if (diffQty !== 0) {
-            const verb = diffQty > 0 ? 'added' : 'removed';
-            await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(diffQty)}x ${item.name}`);
+        if (manualDiffQty !== 0) {
+            const verb = manualDiffQty > 0 ? 'added' : 'removed';
+            await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(manualDiffQty)}x ${item.name}`);
         }
 
         let notifMessages = [];
         if (diffBroken > 0) notifMessages.push(`${diffBroken} ${item.name} are now under repair.`);
         if (diffBroken < 0) notifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
         if (diffDisposal > 0) notifMessages.push(`${diffDisposal} ${item.name} are now marked for disposal.`);
-        if (diffQty > 0) notifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
-        if (diffQty < 0) notifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
+        if (manualDiffQty > 0) notifMessages.push(`Added ${manualDiffQty} new ${item.name} to inventory.`);
+        if (manualDiffQty < 0) notifMessages.push(`Removed ${Math.abs(manualDiffQty)} ${item.name} from inventory.`);
 
         for (let msg of notifMessages) {
             await addNotification('all_users', 'inventory', msg);
