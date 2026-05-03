@@ -2037,11 +2037,15 @@
             
             // Pre-fetch next available dates for out-of-stock items
             const nextAvailMap = {};
-            await Promise.all(list.map(async item => {
-                if (item.available <= 0) {
-                    nextAvailMap[item.id] = await getNextAvailableDate(item.id, 1);
-                }
-            }));
+            try {
+                await Promise.all(list.map(async item => {
+                    if (item.available <= 0) {
+                        nextAvailMap[item.id] = await getNextAvailableDate(item.id, 1);
+                    }
+                }));
+            } catch(e) {
+                console.warn('[renderEquipmentGrid] getNextAvailableDate failed, continuing without it:', e);
+            }
 
             grid.innerHTML = list.map(item => {
                 // Sanity check: available should never exceed total quantity logically in the UI
@@ -2118,7 +2122,7 @@
                 const list = await getEquipment();
                 console.log('[DEBUG] getEquipment returned:', list);
                 allEquipmentList = list;
-                renderEquipmentGrid(list);
+                await renderEquipmentGrid(list);
                 loadMyBorrowingsList();
             } catch(err) {
                 console.error('[DEBUG] loadEquipmentView error:', err);
@@ -2256,31 +2260,6 @@
         // ==========================================
         let bookedQtyMap = {}; // stores 'YYYY-MM-DD' -> total quantity booked
         let currentBorrowEquipId = null; // track which equipment the modal is for
-
-        // Toast
-        function openSuccessModal(title, msg) {
-            document.getElementById('successModalTitle').innerText = title;
-            document.getElementById('successModalMessage').innerText = msg;
-            const modal = document.getElementById('successModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeSuccessModal() {
-            const modal = document.getElementById('successModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-        function showToast(message, type = 'success') {
-            let toast = document.getElementById('toast');
-            if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; document.body.appendChild(toast); }
-            const colors = { success: 'bg-emerald-500', error: 'bg-red-500' };
-            toast.className = 'fixed bottom-4 right-4 ' + (colors[type] || 'bg-gray-800') + ' text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 z-[9999] opacity-0 transform translate-y-10';
-            toast.textContent = message;
-            void toast.offsetWidth;
-            toast.classList.remove('translate-y-10', 'opacity-0');
-            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); }, 3000);
-        }
 
         async function openBorrowModalWithEquip(equipId) {
             currentBorrowEquipId = equipId;
