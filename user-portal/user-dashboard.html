@@ -1006,7 +1006,7 @@
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
                         <h5 class="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-6 flex items-center gap-2 relative z-10 w-full break-words">
-                            <span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">Ã°Å¸â€œâ€¦</span> Selected Borrowing Period
+                            <span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">&#128197;</span> Selected Borrowing Period
                         </h5>
                         <div class="flex items-center justify-between gap-4 relative z-10 mt-2">
                             <div class="flex-1 text-center">
@@ -1071,7 +1071,7 @@
                             <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..."></textarea>
                         </div>
                         <div class="mt-2 text-[11px] leading-relaxed text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2.5 rounded-lg border border-red-200 dark:border-red-700 shadow-sm flex items-start gap-2">
-                            <span class="text-base leading-none">Ã¢Å¡Â Ã¯Â¸Â</span>
+                            <span class="text-base leading-none">&#9888;&#65039;</span>
                             <div>
                                 <strong>Reminder:</strong> If you break the item or equipment, you will pay or replace it.
                             </div>
@@ -2484,11 +2484,11 @@
             document.getElementById('borrowQty').value = 1;
             
             const helpEl = document.getElementById('borrowMaxHelp');
-            if(helpEl) helpEl.innerHTML = 'Ã°Å¸â€œÂ¦ Max: ' + item.available + (item.available === 1 ? ' unit available' : ' units available');
+            if(helpEl) helpEl.innerHTML = '&#128230; Max: ' + item.available + (item.available === 1 ? ' unit available' : ' units available');
             
             // Show pending notice if applicable
             if (item.pending && item.pending > 0 && helpEl) {
-                helpEl.innerHTML += ' <br><span style="color:#b45309;font-size:11px;font-weight:600;">Ã¢Å¡Â Ã¯Â¸Â ' + item.pending + ' unit(s) pending from other users</span>';
+                helpEl.innerHTML += ' <br><span style="color:#b45309;font-size:11px;font-weight:600;">&#9888;&#65039; ' + item.pending + ' unit(s) pending from other users</span>';
             }
 
             document.getElementById('borrowPurpose').value = '';
