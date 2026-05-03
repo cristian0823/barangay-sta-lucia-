@@ -3646,12 +3646,29 @@
                         <label for="equipName">Equipment Name</label>
                         <input type="text" id="equipName" placeholder="e.g., Portable Tables" required>
                     </div>
-                    <div class="form-group">
-                        <label for="equipIcon">Icon (Emoji)</label>
+                    <div class="form-row">
+        <div class="form-group">
+            <label for="equipCategory">Category</label>
+            <select id="equipCategory" required>
+                <option value="General">General</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Tools">Tools</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="equipIcon">Icon (Emoji)</label>
                         <input type="text" id="equipIcon" placeholder="e.g., " required>
                     </div>
-                    <div class="form-group">
-                        <label for="equipDesc">Description</label>
+                    </div>
+    <div class="form-group">
+        <label for="equipImage">Item Photo</label>
+        <input type="file" id="equipImage" accept="image/*">
+        <small style="color:var(--muted);font-size:11px;">Max size 2MB. Optional.</small>
+    </div>
+    <div class="form-group">
+        <label for="equipDesc">Description</label>
                         <textarea id="equipDesc" placeholder="Brief description" rows="2"></textarea>
                     </div>
                     <div class="form-group">
@@ -3679,12 +3696,32 @@
                         <label for="editEquipName">Equipment Name</label>
                         <input type="text" id="editEquipName" required>
                     </div>
-                    <div class="form-group">
-                        <label for="editEquipIcon">Icon (Emoji)</label>
+                    <div class="form-row">
+        <div class="form-group">
+            <label for="editEquipCategory">Category</label>
+            <select id="editEquipCategory" required>
+                <option value="General">General</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Tools">Tools</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="editEquipIcon">Icon (Emoji)</label>
                         <input type="text" id="editEquipIcon" required>
                     </div>
-                    <div class="form-group">
-                        <label for="editEquipDesc">Description</label>
+                    </div>
+    <div class="form-group">
+        <label for="editEquipImage">Update Item Photo</label>
+        <input type="file" id="editEquipImage" accept="image/*">
+        <div id="editEquipImagePreview" style="margin-top:10px;display:none;">
+            <img src="" alt="Preview" style="max-width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
+        </div>
+        <small style="color:var(--muted);font-size:11px;">Leave empty to keep current photo.</small>
+    </div>
+    <div class="form-group">
+        <label for="editEquipDesc">Description</label>
                         <textarea id="editEquipDesc" rows="2"></textarea>
                     </div>
                     <div class="form-row">
@@ -6456,7 +6493,7 @@
                 <tr style="${e.isArchived ? 'opacity: 0.6;' : ''}">
                     <td>
                         <div style="display:flex;align-items:center;gap:12px;">
-                            <div class="eq-icon ${iconCls}">${iconHtml}</div>
+                            ${e.image_url ? `<img src="${e.image_url}" alt="${e.name}" style="width:40px;height:40px;border-radius:12px;object-fit:cover;border:1px solid var(--border);">` : `<div class="eq-icon ${iconCls}">${iconHtml}</div>`}
                             <div>
                                 <strong style="font-size:14px;color:var(--text);">${e.name}</strong>
                                 ${e.description ? `<br><span style="font-size:12px;color:#9ca3af;">${e.description}</span>` : ''}
@@ -6474,6 +6511,16 @@
                 }).join('');
             }
 
+            
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
+
             function openAddEquipmentModal() {
                 document.getElementById('addEquipmentForm').reset();
                 document.getElementById('addEquipmentModal').classList.add('active');
@@ -6487,14 +6534,26 @@
                 btn.disabled = true;
                 btn.innerHTML = 'Saving...';
 
+                let image_url = null;
+                const fileInput = document.getElementById('equipImage');
+                if (fileInput.files.length > 0) {
+                    try {
+                        image_url = await fileToBase64(fileInput.files[0]);
+                    } catch (err) {
+                        console.error('Image upload failed', err);
+                    }
+                }
+
                 const result = await addEquipment({
                     name: document.getElementById('equipName').value,
                     icon: document.getElementById('equipIcon').value,
+                    category: document.getElementById('equipCategory').value,
                     description: document.getElementById('equipDesc').value,
                     quantity: parseInt(document.getElementById('equipQuantity').value),
                     available: parseInt(document.getElementById('equipQuantity').value),
                     broken: 0,
-                    is_archived: false
+                    is_archived: false,
+                    image_url: image_url
                 });
 
                 btn.disabled = false;
@@ -6520,6 +6579,18 @@
                 document.getElementById('editEquipQuantity').value = equipment.quantity;
                 document.getElementById('editEquipBroken').value = equipment.broken || 0;
                 document.getElementById('editEquipArchived').checked = equipment.isArchived || false;
+                document.getElementById('editEquipCategory').value = equipment.category || 'General';
+                
+                const previewDiv = document.getElementById('editEquipImagePreview');
+                const previewImg = previewDiv.querySelector('img');
+                if (equipment.image_url) {
+                    previewImg.src = equipment.image_url;
+                    previewDiv.style.display = 'block';
+                } else {
+                    previewImg.src = '';
+                    previewDiv.style.display = 'none';
+                }
+                document.getElementById('editEquipImage').value = '';
 
                 document.getElementById('editEquipmentModal').classList.add('active');
                 history.pushState({ modal: 'editEquipmentModal' }, '', '#editEquipmentModal');
@@ -6533,14 +6604,28 @@
                 btn.innerHTML = 'Saving...';
 
                 const id = parseInt(document.getElementById('editEquipId').value);
+                let image_url = undefined;
+                const editFileInput = document.getElementById('editEquipImage');
+                if (editFileInput.files.length > 0) {
+                    try {
+                        image_url = await fileToBase64(editFileInput.files[0]);
+                    } catch (err) {
+                        console.error('Image upload failed', err);
+                    }
+                }
+
                 const updates = {
                     name: document.getElementById('editEquipName').value,
                     icon: document.getElementById('editEquipIcon').value,
+                    category: document.getElementById('editEquipCategory').value,
                     description: document.getElementById('editEquipDesc').value,
                     quantity: parseInt(document.getElementById('editEquipQuantity').value),
                     broken: parseInt(document.getElementById('editEquipBroken').value),
                     isArchived: document.getElementById('editEquipArchived').checked
                 };
+                if (image_url !== undefined) {
+                    updates.image_url = image_url;
+                }
 
                 const result = await updateEquipment(id, updates);
 
