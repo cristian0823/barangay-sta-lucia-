@@ -134,7 +134,7 @@ window.logActivity = async function(action, details, severity = 'info') {
             await window.logAudit('Account Management', null, actStr, details);
         }
     } else {
-        await window.logAudit(actStr, null, actStr, details);
+        await window.logAudit(actStr, null, 'UPDATE', details);
     }
 };
 
@@ -709,26 +709,22 @@ async function broadcastEmailToAllResidents(title, message, details) {
 
 async function logoutUser() {
     const _curr = getCurrentUser();
-    // Clear session
+    // Clear session immediately for instant redirect (no delay)
     localStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentUser');
-    
-    // Attempt to log securely before redirecting so the browser doesn't cancel the request
+    // Redirect right away — logs happen in background
+    window.location.href = 'index.html';
+    // Fire-and-forget background logging
     try {
         if (_curr) {
             const logType = 'Logout';
             const logDetails = `${_curr.username || _curr.fullName || 'System'} logged out`;
-            await window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
+            window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
         }
         if (window.supabase) {
-            await window.supabase.auth.signOut().catch(() => {});
+            window.supabase.auth.signOut().catch(() => {});
         }
-    } catch(err) {
-        console.error('Logout logging error:', err);
-    }
-    
-    // Redirect after logs are securely saved
-    window.location.href = 'index.html';
+    } catch(err) {}
 }
 
 function redirectToDashboard() {
@@ -780,9 +776,27 @@ async function getEquipment() {
         if (!error && data) {
             // One-time auto-fix for corrupted available quantities exceeding max quantity
             for (const item of data) {
+                let fixed = false;
+                
+                // If category is a legacy string like 'Under Repair' or 'For Disposal', fix it to '0'
+                if (['Under Repair', 'For Disposal', 'Available', 'In Use'].includes(item.category)) {
+                    item.category = '0';
+                    item.available = item.quantity - (item.broken || 0);
+                    fixed = true;
+                }
+                
                 if (item.available > item.quantity) {
-                    await supabase.from('equipment').update({ available: item.quantity }).eq('id', item.id);
                     item.available = item.quantity;
+                    fixed = true;
+                }
+                
+                if (item.available < 0) {
+                    item.available = 0;
+                    fixed = true;
+                }
+                
+                if (fixed) {
+                    await supabase.from('equipment').update({ category: item.category, available: item.available }).eq('id', item.id);
                 }
             }
         }
@@ -857,9 +871,57 @@ async function getEquipment() {
         quantity: item.quantity || 0,
         available: item.available !== undefined ? item.available : Math.max(0, (item.quantity || 0) - (item.broken || 0)),
         broken: item.broken || 0,
+        status: item.status || 'Available',
         pending: pendingQtyMap[item.name] || 0,
         isLocked: lockedNames.has(item.name || 'Unknown')
     }));
+}
+
+
+// ==========================================
+// MAINTENANCE LOG
+// ==========================================
+async function logMaintenance(itemName, action, qtyChanged, prevCount, newCount, notes = '') {
+    const timestamp = new Date().toISOString();
+    const supabaseAvailable = await isSupabaseAvailable();
+    const entry = {
+        item_name: itemName,
+        action,
+        qty_changed: qtyChanged,
+        prev_count: prevCount,
+        new_count: newCount,
+        notes,
+        created_at: timestamp
+    };
+    
+    if (supabaseAvailable) {
+        try {
+            await supabase.from('maintenance_log').insert([entry]);
+        } catch(e) {
+            // Fall back to local
+        }
+    }
+    
+    // Always store locally as backup
+    const LOCAL_MAINT_KEY = 'maintenance_log';
+    const logs = JSON.parse(localStorage.getItem(LOCAL_MAINT_KEY)) || [];
+    logs.unshift({ id: Date.now(), ...entry });
+    if (logs.length > 200) logs.splice(200);
+    localStorage.setItem(LOCAL_MAINT_KEY, JSON.stringify(logs));
+}
+
+async function getMaintenanceLogs() {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        try {
+            const { data } = await supabase.from('maintenance_log')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(100);
+            if (data && data.length > 0) return data;
+        } catch(e) {}
+    }
+    return JSON.parse(localStorage.getItem('maintenance_log')) || [];
 }
 
 async function updateEquipment(id, updates) {
@@ -869,40 +931,99 @@ async function updateEquipment(id, updates) {
         const { data: item } = await supabase.from('equipment').select('*').eq('id', id).single();
         if (!item) return { success: false, message: 'Equipment not found' };
 
-        // Logic from previous synchronous method
-        item.broken = item.broken || 0;
-        const diffQty = (updates.quantity !== undefined ? parseInt(updates.quantity) : item.quantity) - item.quantity;
-        const diffBroken = (updates.broken !== undefined ? parseInt(updates.broken) : item.broken) - item.broken;
+        // --- ABSOLUTE calculation (not diff-based, prevents double-deductions) ---
+        const oldBroken = item.broken || 0;
+        const oldDisposal = parseInt(item.category) || 0;
+        const oldQty = item.quantity || 0;
 
-        const newQuantity = item.quantity + diffQty;
-        const newBroken = item.broken + diffBroken;
-        const newAvailable = item.available + diffQty - diffBroken;
+        const newQty    = updates.quantity !== undefined ? parseInt(updates.quantity)  : oldQty;
+        const newBroken = updates.broken   !== undefined ? parseInt(updates.broken)    : oldBroken;
+        const newDisposal = updates.disposal !== undefined ? parseInt(updates.disposal) : oldDisposal;
+
+        // Auto-clear disposal when new stock is added (new chairs replace disposed ones)
+        let adjustedDisposal = newDisposal;
+        const stockAdded = newQty - oldQty;
+        if (stockAdded > 0 && adjustedDisposal > 0) {
+            adjustedDisposal = Math.max(0, adjustedDisposal - stockAdded);
+        }
+
+        // Cap values to prevent impossible states
+        const cappedBroken   = Math.min(newBroken,   newQty);
+        const cappedDisposal = Math.min(adjustedDisposal, Math.max(0, newQty - cappedBroken));
+
+        // How many are actively borrowed (approved requests)
+        let activeBorrowed = 0;
+        try {
+            const { data: borrows } = await supabase.from('borrowings')
+                .select('quantity, status')
+                .eq('equipment', item.name)
+                .in('status', ['approved']);
+            if (borrows) activeBorrowed = borrows.reduce((s, b) => s + (b.quantity || 1), 0);
+        } catch(e) { /* ignore */ }
+
+        const newAvailable = Math.max(0, newQty - cappedBroken - cappedDisposal - activeBorrowed);
+
+        // The category column stores disposal count; equipCategory stores the equipment type label
+        const newCategoryLabel = updates.equipCategory !== undefined ? updates.equipCategory : item.category;
+        // If it was a legacy string, treat disposal as new value
+        const categoryValue = String(cappedDisposal);
+
+        const diffBroken   = cappedBroken   - oldBroken;
+        const diffDisposal = cappedDisposal - oldDisposal;
+        const diffQty      = newQty - oldQty;
 
         const payload = {
-            quantity: newQuantity,
-            broken: newBroken,
-            available: newAvailable
+            quantity:     newQty,
+            broken:       cappedBroken,
+            available:    newAvailable,
+            category:     categoryValue
         };
-        if (updates.name !== undefined) payload.name = updates.name;
-        if (updates.category !== undefined) payload.category = updates.category;
+        if (updates.name        !== undefined) payload.name        = updates.name;
         if (updates.description !== undefined) payload.description = updates.description;
-        if (updates.isArchived !== undefined) payload.is_archived = updates.isArchived;
-        if (updates.icon !== undefined) payload.icon = updates.icon;
-        if (updates.image_url !== undefined) payload.image_url = updates.image_url;
-        if (updates.icon !== undefined) payload.icon = updates.icon;
-        if (updates.image_url !== undefined) payload.image_url = updates.image_url;
+        if (updates.isArchived  !== undefined) payload.is_archived = updates.isArchived;
+        if (updates.icon        !== undefined) payload.icon        = updates.icon;
+        if (updates.image_url   !== undefined) payload.image_url   = updates.image_url;
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };
-        
+
         if (diffBroken !== 0) {
-            const actionVerb = diffBroken > 0 ? 'marked as' : 'removed from';
-            await logActivity('Inventory Update', `Admin ${actionVerb} broken ${Math.abs(diffBroken)}x ${item.name}`);
-        } else if (diffQty !== 0) {
-            const actionVerb = diffQty > 0 ? 'added' : 'removed';
-            await logActivity('Inventory Update', `Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
+            const verb = diffBroken > 0 ? 'marked under repair' : 'restored from repair';
+            await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(diffBroken)}x ${item.name}`);
         }
-        
+        if (diffQty !== 0) {
+            const verb = diffQty > 0 ? 'added' : 'removed';
+            await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(diffQty)}x ${item.name}`);
+        }
+
+        let notifMessages = [];
+        if (diffBroken > 0) notifMessages.push(`${diffBroken} ${item.name} are now under repair.`);
+        if (diffBroken < 0) notifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
+        if (diffDisposal > 0) notifMessages.push(`${diffDisposal} ${item.name} are now marked for disposal.`);
+        if (diffDisposal < 0) notifMessages.push(`${Math.abs(diffDisposal)} ${item.name} were recovered from disposal.`);
+        if (diffQty > 0) notifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
+        if (diffQty < 0) notifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
+
+        for (let msg of notifMessages) {
+            await addNotification('all_users', 'inventory', msg);
+        }
+
+        // Log to maintenance history
+        if (diffBroken !== 0) {
+            const action = diffBroken > 0 ? 'Under Repair' : 'Repaired';
+            await logMaintenance(item.name, action, Math.abs(diffBroken), oldBroken, cappedBroken,
+                diffBroken > 0 ? `${cappedBroken} units marked under repair` : `${Math.abs(diffBroken)} units restored`);
+        }
+        if (diffDisposal !== 0) {
+            const action = diffDisposal > 0 ? 'For Disposal' : 'Recovered from Disposal';
+            await logMaintenance(item.name, action, Math.abs(diffDisposal), oldDisposal, cappedDisposal,
+                diffDisposal > 0 ? `${cappedDisposal} units marked for disposal` : `${Math.abs(diffDisposal)} units recovered`);
+        }
+        if (stockAdded > 0 && (newDisposal - adjustedDisposal) > 0) {
+            await logMaintenance(item.name, 'Disposal Cleared (New Stock)', newDisposal - adjustedDisposal, newDisposal, adjustedDisposal,
+                `${newDisposal - adjustedDisposal} disposal units cleared because ${stockAdded} new items were added`);
+        }
+
         return { success: true, message: 'Equipment updated successfully' };
     } else {
         // Local fallback
@@ -915,10 +1036,11 @@ async function updateEquipment(id, updates) {
         item.broken = item.broken || 0;
         const diffQty = (updates.quantity !== undefined ? parseInt(updates.quantity) : item.quantity) - item.quantity;
         const diffBroken = (updates.broken !== undefined ? parseInt(updates.broken) : item.broken) - item.broken;
+        const diffDisposalLocal = (updates.category !== undefined ? parseInt(updates.category) : (parseInt(item.category)||0)) - (parseInt(item.category)||0);
 
         item.quantity = item.quantity + diffQty;
         item.broken = item.broken + diffBroken;
-        item.available = item.available + diffQty - diffBroken;
+        item.available = item.available + diffQty - diffBroken - diffDisposalLocal;
 
         if (updates.name !== undefined) item.name = updates.name;
         if (updates.category !== undefined) item.category = updates.category;
@@ -926,9 +1048,7 @@ async function updateEquipment(id, updates) {
         if (updates.isArchived !== undefined) item.isArchived = updates.isArchived;
         if (updates.icon !== undefined) item.icon = updates.icon;
         if (updates.image_url !== undefined) item.image_url = updates.image_url;
-        if (updates.category !== undefined) item.category = updates.category;
-        if (updates.icon !== undefined) item.icon = updates.icon;
-        if (updates.image_url !== undefined) item.image_url = updates.image_url;
+        if (updates.status !== undefined) item.category = updates.status;
         if (updates.category !== undefined) item.category = updates.category;
 
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
@@ -941,6 +1061,18 @@ async function updateEquipment(id, updates) {
             logActivity('Inventory Update', `Local Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
         }
         
+        let localNotifMessages = [];
+        if (diffBroken > 0) localNotifMessages.push(`${diffBroken} ${item.name} are under repair.`);
+        if (diffBroken < 0) localNotifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
+        if (diffDisposalLocal > 0) localNotifMessages.push(`${diffDisposalLocal} ${item.name} are now marked for disposal.`);
+        if (diffDisposalLocal < 0) localNotifMessages.push(`${Math.abs(diffDisposalLocal)} ${item.name} were recovered from disposal.`);
+        if (diffQty > 0) localNotifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
+        if (diffQty < 0) localNotifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
+        
+        for (let msg of localNotifMessages) {
+            await addNotification('all_users', 'inventory', msg);
+        }
+        
         return { success: true, message: 'Equipment updated successfully' };
     }
 }
@@ -950,15 +1082,20 @@ async function addEquipment(equipmentData) {
     if (supabaseAvailable) {
         const payload = {
             name: equipmentData.name,
+            icon: equipmentData.icon || '',
             category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
-            is_archived: equipmentData.is_archived || false
+            is_archived: equipmentData.is_archived || false,
+            category: equipmentData.disposal ? String(equipmentData.disposal) : '0'
         };
+        if (equipmentData.image_url) payload.image_url = equipmentData.image_url;
         const { error } = await supabase.from('equipment').insert([payload]);
         if (error) return { success: false, message: error.message };
+        await logActivity('Inventory Addition', `Admin added new equipment: ${equipmentData.name}`);
+        await addNotification('all_users', 'inventory', `New equipment added to inventory: ${equipmentData.name}`);
         return { success: true, message: 'Equipment added successfully' };
     } else {
         initializeLocalEquipment();
@@ -967,16 +1104,36 @@ async function addEquipment(equipmentData) {
         const newEq = {
             id: newId,
             name: equipmentData.name,
+            icon: equipmentData.icon || '',
             category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
-            isArchived: equipmentData.is_archived || false
+            isArchived: equipmentData.is_archived || false,
+            category: equipmentData.disposal ? String(equipmentData.disposal) : '0',
+            image_url: equipmentData.image_url || null
         };
         equipment.push(newEq);
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
         return { success: true, message: 'Equipment added successfully' };
+    }
+}
+
+async function deleteEquipment(id) {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        const { error } = await supabase.from('equipment').delete().eq('id', id);
+        if (error) return { success: false, message: error.message };
+        await logActivity('Inventory Update', `Admin deleted equipment item #${id}`);
+        return { success: true, message: 'Equipment deleted successfully' };
+    } else {
+        initializeLocalEquipment();
+        let equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
+        equipment = equipment.filter(e => e.id !== id);
+        localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
+        logActivity('Inventory Update', `Local Admin deleted equipment item #${id}`);
+        return { success: true, message: 'Equipment deleted successfully' };
     }
 }
 
@@ -1041,7 +1198,6 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
-        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Equipment request submitted' };
     } else {
         // Local fallback
@@ -1184,19 +1340,20 @@ async function approveEquipmentRequest(borrowingId) {
     let equipmentName = null;
 
     if (supabaseAvailable) {
-        const { data: rec } = await supabase.from('borrowings').select('user_id, equipment').eq('id', borrowingId).maybeSingle();
+        const { data: rec } = await supabase.from('borrowings').select('user_id, equipment, quantity').eq('id', borrowingId).maybeSingle();
         targetUserId = rec?.user_id;
         equipmentName = rec?.equipment;
 
         // Deduct equipment inventory on approval
-        const { data: rec2 } = await supabase.from('borrowings').select('equipment, quantity').eq('id', borrowingId).maybeSingle();
-        if (rec2 && rec2.equipment && rec2.quantity) {
-            const { data: eqItem } = await supabase.from('equipment').select('id, available, quantity').eq('name', rec2.equipment).maybeSingle();
+        if (rec && rec.equipment && rec.quantity) {
+            const { data: eqItem } = await supabase.from('equipment').select('id, available, quantity').eq('name', rec.equipment).maybeSingle();
             if (eqItem) {
-                const newAvail = Math.max(0, eqItem.available - rec2.quantity);
-                await supabase.from('equipment').update({ available: newAvail }).eq('id', eqItem.id);
+                const newAvail = Math.max(0, eqItem.available - rec.quantity);
+                const { error: eqErr } = await supabase.from('equipment').update({ available: newAvail }).eq('id', eqItem.id);
+                if (eqErr) console.warn('[approveEquipmentRequest] equipment update error:', eqErr);
             }
         }
+
         const { error } = await supabase.from('borrowings').update({ status: 'approved' }).eq('id', borrowingId);
         if (error) return { success: false, message: error.message };
 
@@ -1371,10 +1528,8 @@ async function cancelBorrowingRequest(borrowingId) {
         if (borrowing.status !== 'pending') return { success: false, message: 'Only pending requests can be cancelled' };
 
         // Removed restore reserved stock
-        await supabase.from('borrowings').update({status: 'cancelled'}).eq('id', borrowingId);
-        await addNotification('admin', 'cancel_borrow', `User cancelled borrowing request for ${borrowing.quantity}x ${borrowing.equipment}`);
+        await supabase.from('borrowings').delete().eq('id', borrowingId);
         await logActivity('Borrow Cancelled', `User cancelled their request for ${borrowing.quantity}x ${borrowing.equipment}`);
-        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Request cancelled successfully' };
     } else {
         // Local fallback
@@ -1515,7 +1670,6 @@ async function submitConcern(category, title, description, address, imageFile = 
         if (error) return { success: false, message: error.message };
         await logActivity('Concern Submitted', `User submitted a concern: ${title}`);
         await addNotification('admin', 'concern', `User submitted a concern: ${title}`);
-        if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Concern submitted successfully' };
     } else {
         // Local fallback
@@ -1662,7 +1816,7 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
     // 1. Get the concern first so we know who to notify
-    const { data: concernData } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
+    const { data: concernData } = await supabase.from('concerns').select('user_id, subject').eq('id', concernId).maybeSingle();
 
     // 2. Update the status
     const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
@@ -1670,23 +1824,16 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
     // 3. Send notification to the user if successful
     if (!error && concernData && concernData.user_id) {
         let notifMsg = '';
-        let notifType = 'concern';
-        if (status === 'in-progress' || status === 'in_progress') {
-            notifMsg = `Your concern "${concernData.title || 'Ticket'}" is now In Progress.`;
-            notifType = 'concern_in_progress';
+        if (status === 'in_progress') {
+            notifMsg = `Your concern "${concernData.subject || 'Ticket'}" is now In Progress.`;
         } else if (status === 'resolved') {
-            notifMsg = `Your concern "${concernData.title || 'Ticket'}" has been Resolved.`;
-            notifType = 'concern_resolved';
-        } else if (status === 'rejected') {
-            const reason = response ? ` Reason: ${response}` : '';
-            notifMsg = `Your concern "${concernData.title || 'Ticket'}" has been Rejected.${reason}`;
-            notifType = 'concern_rejected';
+            notifMsg = `Your concern "${concernData.subject || 'Ticket'}" has been Resolved.`;
         }
         
         if (notifMsg) {
             await supabase.from('user_notifications').insert([{
                 user_id: String(concernData.user_id),
-                type: notifType,
+                type: 'concern',
                 message: notifMsg,
                 is_read: false
             }]);
@@ -2063,12 +2210,8 @@ async function cancelCourtBooking(bookingId) {
         let query = supabase.from('facility_reservations').update({ status: 'cancelled' }).eq('id', bookingId);
         if (user.role !== 'admin') query = query.eq('user_id', user.id);
 
-        const { data: bk } = await supabase.from('facility_reservations').select('date, time').eq('id', bookingId).maybeSingle();
         const { error } = await query;
-        if (!error) {
-            await addNotification('admin', 'cancel_booking', `User cancelled facility reservation on ${bk?.date || ''} at ${bk?.time || ''}`);
-            broadcastSync();
-        }
+        if (!error) broadcastSync();
         return { success: !error, message: error ? error.message : 'Booking cancelled' };
     } else {
         const bookings = JSON.parse(localStorage.getItem(LOCAL_BOOKINGS_KEY)) || [];
@@ -2617,39 +2760,22 @@ async function deleteBooking(bookingId) {
 
 async function updateConcernStatus(concernId, status, response, assignedTo) {
     const supabaseAvailable = await isSupabaseAvailable();
-    const payload = { status };
-    if (response !== null && response !== undefined) payload.response = response;
+    const payload = { status, response };
     if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
     if (supabaseAvailable) {
         const { data: concern } = await supabase.from('concerns').select('user_id, title').eq('id', concernId).maybeSingle();
         const { error } = await supabase.from('concerns').update(payload).eq('id', concernId);
         
-        if (!error && concern && concern.user_id) {
-            let notifType = null;
-            let notifMsg = null;
-
-            if (status === 'resolved' || status === 'completed') {
-                notifType = 'concern_resolved';
-                notifMsg = `Your concern "${concern.title || 'Ticket'}" has been Resolved.`;
-            } else if (status === 'in-progress' || status === 'in_progress') {
-                notifType = 'concern_in_progress';
-                notifMsg = `Your concern "${concern.title || 'Ticket'}" is now In Progress.`;
-            } else if (status === 'rejected') {
-                notifType = 'concern_rejected';
-                const reason = response ? ` Reason: ${response}` : '';
-                notifMsg = `Your concern "${concern.title || 'Ticket'}" has been Rejected.${reason}`;
-            }
-
-            if (notifType && notifMsg) {
-                await supabase.from('user_notifications').insert([{
-                    user_id: String(concern.user_id),
-                    type: notifType,
-                    message: notifMsg,
-                    is_read: false
-                }]);
-                broadcastSync();
-            }
+        if (!error && concern && concern.user_id && status === 'resolved') {
+             await supabase.from('user_notifications').insert([{
+                user_id: concern.user_id,
+                type: 'concern_resolved',
+                message: `Your concern "${concern.title}" has been resolved.`,
+                meta: { concern_id: concernId, response },
+                is_read: false
+            }]);
+            broadcastSync();
         }
 
         if (!error) await logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status}`);
@@ -2660,36 +2786,23 @@ async function updateConcernStatus(concernId, status, response, assignedTo) {
         if (index === -1) return false;
         
         concerns[index].status = status;
-        if (response !== null && response !== undefined) concerns[index].response = response;
+        concerns[index].response = response;
         if (assignedTo !== undefined) concerns[index].assignedTo = assignedTo;
         localStorage.setItem(LOCAL_CONCERNS_KEY, JSON.stringify(concerns));
         
-        if (concerns[index].userId) {
+        if (concerns[index].userId && status === 'resolved') {
             const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-            let notifType = null, notifMsg = null;
-            if (status === 'resolved') {
-                notifType = 'concern_resolved';
-                notifMsg = `Your concern "${concerns[index].title}" has been Resolved.`;
-            } else if (status === 'in-progress' || status === 'in_progress') {
-                notifType = 'concern_in_progress';
-                notifMsg = `Your concern "${concerns[index].title}" is now In Progress.`;
-            } else if (status === 'rejected') {
-                notifType = 'concern_rejected';
-                const reason = response ? ` Reason: ${response}` : '';
-                notifMsg = `Your concern "${concerns[index].title}" has been Rejected.${reason}`;
-            }
-            if (notifType && notifMsg) {
-                notifs.push({
-                    id: Date.now(),
-                    userId: concerns[index].userId,
-                    type: notifType,
-                    message: notifMsg,
-                    isRead: false,
-                    createdAt: new Date().toISOString()
-                });
-                localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
-                broadcastSync();
-            }
+            notifs.push({
+                id: Date.now(),
+                userId: concerns[index].userId,
+                type: 'concern_resolved',
+                message: `Your concern "${concerns[index].title}" has been resolved.`,
+                meta: { concern_id: concernId, response },
+                isRead: false,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
+            broadcastSync();
         }
 
         logActivity('Concern Updated', `Updated concern ID: ${concernId} to status: ${status} (Local)`);
@@ -3316,7 +3429,21 @@ async function addNotification(userId, type, message, referenceId = null) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         try {
-            if (userId === 'admin') {
+            if (userId === 'all_users') {
+                const { data: users } = await supabase.from('users').select('id').eq('role', 'user');
+                if (users && users.length > 0) {
+                    const payloads = users.map(u => ({
+                        user_id: u.id,
+                        type,
+                        message,
+                        meta: referenceId ? { reference_id: referenceId } : {},
+                        is_read: false,
+                        created_at: timestamp
+                    }));
+                    await supabase.from('user_notifications').insert(payloads);
+                }
+            } else if (userId === 'admin') {
+                // Fan-out to all admin users
                 const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin');
                 if (admins && admins.length > 0) {
                     const payloads = admins.map(a => ({
@@ -3331,7 +3458,7 @@ async function addNotification(userId, type, message, referenceId = null) {
                 }
             } else {
                 await supabase.from('user_notifications').insert([{
-                    user_id: parseInt(userId) || null,
+                    user_id: parseInt(userId) || userId,
                     type,
                     message,
                     meta: referenceId ? { reference_id: referenceId } : {},
@@ -3362,20 +3489,14 @@ async function addNotification(userId, type, message, referenceId = null) {
 
 async function getNotifications(userId) {
     const supabaseAvailable = await isSupabaseAvailable();
-    let targetUserId = userId;
-    if (userId === 'admin') {
-        const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-        if (user && user.id) targetUserId = user.id;
-    }
-    
     if (supabaseAvailable) {
         try {
             const { data, error } = await supabase
-                .from('user_notifications')
+                .from('notifications')
                 .select('*')
-                .eq('user_id', targetUserId)
+                .eq('user_id', String(userId))
                 .order('created_at', { ascending: false })
-                .limit(200);
+                .limit(50);
             if (!error && data) {
                 return data.map(n => ({
                     id: n.id,
@@ -3383,7 +3504,7 @@ async function getNotifications(userId) {
                     type: n.type,
                     message: n.message,
                     isRead: n.is_read,
-                    referenceId: n.meta ? n.meta.reference_id : null,
+                    referenceId: n.reference_id,
                     createdAt: n.created_at
                 }));
             }
@@ -3393,7 +3514,7 @@ async function getNotifications(userId) {
     }
     // Fallback
     const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-    return notifs.filter(n => n.userId === String(userId) || (userId !== 'admin' && String(n.userId) === String(targetUserId)));
+    return notifs.filter(n => n.userId === String(userId));
 }
 
 async function markNotificationAsRead(notifId) {
@@ -3401,7 +3522,7 @@ async function markNotificationAsRead(notifId) {
     if (supabaseAvailable) {
         try {
             const { error } = await supabase
-                .from('user_notifications')
+                .from('notifications')
                 .update({ is_read: true })
                 .eq('id', notifId);
             if (!error) return true;
@@ -3409,42 +3530,9 @@ async function markNotificationAsRead(notifId) {
     }
     // Fallback
     const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-    const index = notifs.findIndex(n => String(n.id) === String(notifId));
+    const index = notifs.findIndex(n => n.id === notifId);
     if (index !== -1) {
         notifs[index].isRead = true;
-        localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
-    }
-    return true;
-}
-
-async function markAllNotificationsRead(userId) {
-    const supabaseAvailable = await isSupabaseAvailable();
-    let targetUserId = userId;
-    if (userId === 'admin') {
-        const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-        if (user && user.id) targetUserId = user.id;
-    }
-
-    if (supabaseAvailable) {
-        try {
-            const { error } = await supabase
-                .from('user_notifications')
-                .update({ is_read: true })
-                .eq('user_id', targetUserId)
-                .eq('is_read', false);
-            if (!error) return true;
-        } catch (e) {}
-    }
-    // Fallback
-    const notifs = JSON.parse(localStorage.getItem(LOCAL_NOTIFICATIONS_KEY)) || [];
-    let updated = false;
-    for (let n of notifs) {
-        if ((n.userId === String(userId) || (userId !== 'admin' && String(n.userId) === String(targetUserId))) && !n.isRead) {
-            n.isRead = true;
-            updated = true;
-        }
-    }
-    if (updated) {
         localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(notifs));
     }
     return true;
@@ -3929,7 +4017,6 @@ async function resetPasswordWithOTP(email, token, newPassword) {
 
         // Clean up session flags
         sessionStorage.removeItem('otp_user_id');
-        if (typeof logActivity === 'function') logActivity('Password Reset', `User reset their password via OTP: ${email}`);
         return { success: true, message: 'Password updated successfully. You can now login.' };
     } else {
         const users = JSON.parse(localStorage.getItem('barangay_users') || '[]');
@@ -3937,7 +4024,6 @@ async function resetPasswordWithOTP(email, token, newPassword) {
         if (idx === -1) return { success: false, message: 'User not found.' };
         users[idx].password = hashedNew;
         localStorage.setItem('barangay_users', JSON.stringify(users));
-        if (typeof logActivity === 'function') logActivity('Password Reset', `Local user reset their password via OTP: ${email}`);
         return { success: true, message: 'Password updated successfully. You can now login.' };
     }
 }
