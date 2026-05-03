@@ -1918,6 +1918,15 @@
                     if (notif.type === 'equipment_approved') { iconHtml = '&#128230;'; titleText = 'Equipment Request'; }
                     if (notif.type === 'booking_cancelled' || notif.type === 'event_conflict') { iconHtml = '¸Â'; titleText = 'Reservation Cancelled'; }
                     if (notif.type === 'event_added' || notif.type === 'event_cancelled') { iconHtml = '&#127881;'; titleText = 'Barangay Event'; }
+                    if (notif.type === 'inventory') {
+                        const msg = (notif.message || '').toLowerCase();
+                        if (msg.includes('under repair')) { iconHtml = '&#128295;'; titleText = 'Items Under Repair'; }
+                        else if (msg.includes('repaired')) { iconHtml = '&#9989;'; titleText = 'Items Repaired'; }
+                        else if (msg.includes('disposal')) { iconHtml = '&#128465;'; titleText = 'Items For Disposal'; }
+                        else if (msg.includes('recovered')) { iconHtml = '&#9989;'; titleText = 'Items Recovered'; }
+                        else if (msg.includes('added') || msg.includes('new equipment')) { iconHtml = '&#128230;'; titleText = 'New Inventory'; }
+                        else { iconHtml = '&#128230;'; titleText = 'Inventory Update'; }
+                    }
                     
                     iconEl.innerHTML = iconHtml;
                     titleEl.textContent = titleText;
