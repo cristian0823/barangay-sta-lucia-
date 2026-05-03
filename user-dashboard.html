@@ -2031,9 +2031,18 @@
         // ==========================================
         // 2. EQUIPMENT VIEW
         // ==========================================
-        function renderEquipmentGrid(list) {
+        async function renderEquipmentGrid(list) {
             const grid = document.getElementById('equipmentGrid');
             if (!list || list.length === 0) { grid.innerHTML = '<p class="text-gray-500 italic col-span-2">No equipment found.</p>'; return; }
+            
+            // Pre-fetch next available dates for out-of-stock items
+            const nextAvailMap = {};
+            await Promise.all(list.map(async item => {
+                if (item.available <= 0) {
+                    nextAvailMap[item.id] = await getNextAvailableDate(item.id, 1);
+                }
+            }));
+
             grid.innerHTML = list.map(item => {
                 // Sanity check: available should never exceed total quantity logically in the UI
                 item.available = Math.min(item.available || 0, item.quantity || 1);
@@ -2042,13 +2051,24 @@
                 if (pct < 50) { color = 'bg-amber-500'; statusColor = 'text-amber-600'; statusBg = 'bg-amber-50'; statusIcon = '⚠'; }
                 if (pct < 25) { color = 'bg-red-500'; statusColor = 'text-red-600'; statusBg = 'bg-red-50'; statusIcon = '✕'; }
                 const ok = item.available > 0;
+                const nextAvail = nextAvailMap[item.id];
+
                 let actionBtn = '';
                 if (item.isLocked) {
                     actionBtn = '<button disabled class="px-3 py-2 bg-gray-200 text-gray-500 text-xs font-bold rounded-xl shadow-inner cursor-not-allowed" title="Temporarily locked due to unreturned items from other users">🔒 System Locked</button>';
                 } else if (ok) {
                     actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow-lg cursor-pointer border-none">📝 Borrow</button>';
                 } else {
-                    actionBtn = '<span class="text-xs font-bold text-red-500">Out of stock</span>';
+                    // Out of stock — show next available date + waitlist button
+                    const nextDateLabel = nextAvail
+                        ? '<div class="text-xs text-blue-600 font-semibold mt-0.5">📅 Available again: <span class="font-bold">' + nextAvail.formatted + '</span></div>'
+                        : '<div class="text-xs text-gray-400 font-semibold mt-0.5">No return date scheduled</div>';
+                    actionBtn = '<div class="flex flex-col items-end gap-1.5">' +
+                        '<span class="text-xs font-bold text-red-500">⛔ Out of stock</span>' +
+                        nextDateLabel +
+                        '<button onclick="handleJoinWaitlist(' + item.id + ', \'' + item.name.replace(/'/g, "\\'") + '\')" ' +
+                        'class="mt-1 px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-white text-xs font-bold rounded-xl transition transform hover:scale-105 shadow cursor-pointer border-none">🔔 Notify me</button>' +
+                        '</div>';
                 }
 
                 // Pending badge — show if other users have pending requests
@@ -2056,6 +2076,14 @@
                     ? '<div class="mt-2 flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">' +
                       '<span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse flex-shrink-0"></span>' +
                       '<span class="text-xs font-semibold text-amber-700">⏳ ' + item.pending + ' unit' + (item.pending > 1 ? 's' : '') + ' with pending requests from other users</span></div>'
+                    : '';
+
+                // "Available again" banner when out of stock    
+                const availAgainBanner = (!ok && nextAvail)
+                    ? '<div class="mt-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl text-xs">' +
+                      '<span class="font-bold text-blue-700">ℹ️ Available again on </span>' +
+                      '<span class="font-bold text-blue-900">' + nextAvail.formatted + '</span>' +
+                      '<span class="text-blue-600"> · ' + nextAvail.unitsReturning + ' units returning · Select ' + nextAvail.dateStr.slice(5).replace('-', '/') + '+ to reserve</span></div>'
                     : '';
                     
                 const disposalCount = parseInt(item.category) || 0;
@@ -2068,9 +2096,9 @@
                     extraBadges += '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis bg-red-50 text-red-600 mt-2"><span>🗑️</span> ' + disposalCount + ' Disposal</span>';
                 }
 
-                return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + (ok && !item.isLocked ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1' : 'border-gray-100 opacity-70') + '">' +
+                return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + (ok && !item.isLocked ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1' : 'border-gray-100') + '">' +
                     '<div class="absolute top-4 right-4 z-10 flex flex-col items-end max-w-[50%]">' +
-                    '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis ' + (ok ? statusBg + ' ' + statusColor : 'bg-gray-100 text-gray-500') + '"><span>' + statusIcon + '</span> ' + item.available + ' Available</span>' +
+                    '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap overflow-hidden text-ellipsis ' + (ok ? statusBg + ' ' + statusColor : 'bg-red-100 text-red-600') + '"><span>' + statusIcon + '</span> ' + item.available + ' Available</span>' +
                     extraBadges + 
                     '</div>' +
                     '<div class="flex items-start gap-4 mb-4 mt-2 relative z-0">' + (item.image_url ? '<img src="' + item.image_url + '" alt="' + item.name + '" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid #e5e7eb;">' : getEquipmentIcon(item.name)) + 
@@ -2078,6 +2106,7 @@
                     '<div class="mb-3"><div class="flex justify-between items-center mb-2"><span class="text-xs font-semibold text-gray-500">Availability</span><span class="text-xs font-bold ' + statusColor + '">' + pct + '%</span></div>' +
                     '<div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div class="' + color + ' h-full rounded-full transition-all duration-500 shadow-inner" style="width: ' + pct + '%"></div></div></div>' +
                     pendingBadge +
+                    availAgainBanner +
                     '<div class="flex items-center justify-between pt-2 mt-2 border-t border-gray-100"><div class="flex items-center gap-2"><span class="text-xs font-medium text-gray-500">' + item.quantity + ' total</span></div>' +
                     actionBtn +
                     '</div></div>';
@@ -2095,6 +2124,12 @@
             } catch(err) {
                 console.error('[DEBUG] loadEquipmentView error:', err);
             }
+        }
+
+        // ── Waitlist Handler ─────────────────────────────────────────
+        async function handleJoinWaitlist(equipmentId, equipmentName) {
+            const result = await joinEquipmentWaitlist(equipmentId, equipmentName);
+            showToast(result.message, result.success ? 'success' : 'error');
         }
 
         // ── Equipment Search Filter ──────────────────────────────
@@ -2295,6 +2330,40 @@
                     });
                 }
             } catch(e) { /* proceed without booked dates */ }
+
+            // "Available again on" logic — show panel inside modal if fully booked today
+            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
+            const bookedTodayQty = bookedQtyMap[todayStr] || 0;
+            let availAgainPanel = document.getElementById('borrowModalAvailAgain');
+            if (!availAgainPanel) {
+                availAgainPanel = document.createElement('div');
+                availAgainPanel.id = 'borrowModalAvailAgain';
+                const form = document.getElementById('borrowForm');
+                if (form) form.parentElement.insertBefore(availAgainPanel, form);
+            }
+            if (bookedTodayQty >= item.quantity) {
+                // Fully booked right now — show next available date
+                const nextAvail = await getNextAvailableDate(equipId, 1);
+                availAgainPanel.innerHTML = '<div style="background:#fffbeb;border:1.5px solid #f59e0b;border-radius:14px;padding:14px 16px;margin-bottom:14px;">' +
+                    '<div style="display:flex;align-items:flex-start;gap:10px;">' +
+                    '<span style="font-size:18px;flex-shrink:0;">⚠️</span>' +
+                    '<div><div style="font-weight:700;color:#92400e;font-size:13px;">All ' + item.quantity + ' ' + item.name + ' are currently borrowed</div>' +
+                    (nextAvail ? '<div style="color:#78350f;font-size:12px;margin-top:2px;">' + nextAvail.unitsReturning + ' units returning · <strong>Returns ' + nextAvail.formatted + '</strong> · You can still reserve future dates or join the waitlist</div>' : '') +
+                    '</div></div></div>' +
+                    (nextAvail ? '<div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:14px;padding:14px 16px;margin-bottom:14px;">' +
+                    '<div style="font-size:10px;font-weight:700;color:#1e40af;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">Available Again On</div>' +
+                    '<div style="font-size:22px;font-weight:800;color:#1d4ed8;">' + nextAvail.formatted + '</div>' +
+                    '<div style="font-size:11px;color:#3b82f6;margin-top:2px;">' + nextAvail.unitsReturning + ' units returning · Select ' + nextAvail.dateStr.slice(5).replace('-', '/') + '+ to reserve</div>' +
+                    '</div>' : '') +
+                    '<div style="background:#fffde7;border:1.5px solid #fbbf24;border-radius:14px;padding:14px 16px;margin-bottom:14px;">' +
+                    '<div style="font-weight:700;color:#92400e;font-size:13px;margin-bottom:6px;">Don\'t want to pick dates now?</div>' +
+                    '<div style="font-size:12px;color:#78350f;margin-bottom:10px;">Join the waitlist and get notified when items are returned.</div>' +
+                    '<button onclick="handleJoinWaitlist(' + equipId + ', \'' + item.name.replace(/'/g, "\\'") + '\')" ' +
+                    'style="width:100%;padding:10px;background:#f59e0b;color:#fff;font-weight:700;font-size:13px;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">🔔 Notify me when available</button>' +
+                    '</div>';
+            } else {
+                availAgainPanel.innerHTML = ''; // clear if available
+            }
 
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
             document.getElementById('borrowModal').classList.remove('hidden');

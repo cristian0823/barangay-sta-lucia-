@@ -4081,7 +4081,7 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
         // Find overlapping approved or pending reservations
         const { data: overlapping } = await supabase
             .from('borrowings')
-            .select('quantity')
+            .select('quantity, return_date')
             .eq('equipment_id', equipmentId)
             .eq('status', 'approved')
             .lte('borrow_date', returnDate)
@@ -4123,3 +4123,160 @@ async function checkEquipmentAvailability(equipmentId, borrowDate, returnDate) {
         return { success: true, available: totalStock - reservedCount, total: totalStock };
     }
 }
+
+// ==========================================
+// EQUIPMENT AVAILABILITY INTELLIGENCE
+// ==========================================
+
+/**
+ * Finds the next date when at least `neededQty` units of an equipment will be available.
+ * Scans all active approved/pending borrowings and finds the earliest return date
+ * that frees up enough stock.
+ */
+async function getNextAvailableDate(equipmentId, neededQty = 1) {
+    try {
+        const { data: item } = await supabase.from('equipment').select('quantity, broken').eq('id', equipmentId).single();
+        if (!item) return null;
+        const totalStock = item.quantity - (item.broken || 0);
+
+        const { data: activeBorrowings } = await supabase
+            .from('borrowings')
+            .select('quantity, return_date, borrow_date')
+            .eq('equipment_id', equipmentId)
+            .in('status', ['approved', 'pending'])
+            .order('return_date', { ascending: true });
+
+        if (!activeBorrowings || activeBorrowings.length === 0) return null; // all available now
+
+        // Collect all unique return dates (the day AFTER return = available)
+        const candidateDates = [...new Set(activeBorrowings.map(b => b.return_date))].sort();
+
+        // For each candidate "available from" date, calculate how much stock is free
+        for (const returnDate of candidateDates) {
+            // Day after the return date
+            const [y, m, d] = returnDate.split('T')[0].split('-');
+            const nextDay = new Date(y, m - 1, parseInt(d) + 1);
+            const nextDayStr = nextDay.getFullYear() + '-' +
+                String(nextDay.getMonth() + 1).padStart(2, '0') + '-' +
+                String(nextDay.getDate()).padStart(2, '0');
+
+            // Count how many are still borrowed on that day
+            let stillBorrowed = 0;
+            activeBorrowings.forEach(b => {
+                const bStart = b.borrow_date.split('T')[0];
+                const bEnd   = b.return_date.split('T')[0];
+                if (nextDayStr >= bStart && nextDayStr <= bEnd) {
+                    stillBorrowed += b.quantity;
+                }
+            });
+
+            const available = totalStock - stillBorrowed;
+            if (available >= neededQty) {
+                // Format nicely
+                const date = new Date(nextDay);
+                return {
+                    dateStr: nextDayStr,
+                    formatted: date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    unitsReturning: activeBorrowings.filter(b => b.return_date.split('T')[0] === returnDate).reduce((s, b) => s + b.quantity, 0)
+                };
+            }
+        }
+        return null;
+    } catch(e) {
+        console.error('[getNextAvailableDate] error:', e);
+        return null;
+    }
+}
+
+/**
+ * Add the current user to the waitlist for an equipment item.
+ * Waitlist is stored in `equipment_waitlist` table.
+ */
+async function joinEquipmentWaitlist(equipmentId, equipmentName) {
+    const user = getCurrentUser();
+    if (!user) return { success: false, message: 'Please login first' };
+
+    try {
+        // Check if already on waitlist
+        const { data: existing } = await supabase
+            .from('equipment_waitlist')
+            .select('id')
+            .eq('equipment_id', equipmentId)
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (existing) return { success: false, message: 'You are already on the waitlist for this item.' };
+
+        const { error } = await supabase.from('equipment_waitlist').insert([{
+            equipment_id: equipmentId,
+            equipment_name: equipmentName,
+            user_id: user.id,
+            user_name: user.name || user.username,
+            notified: false,
+            created_at: new Date().toISOString()
+        }]);
+
+        if (error) {
+            // Table may not exist yet — gracefully degrade
+            console.warn('[joinEquipmentWaitlist] table may not exist:', error.message);
+            return { success: false, message: 'Waitlist feature requires a database update. Please contact the admin.' };
+        }
+
+        return { success: true, message: '🔔 You\'re on the waitlist! We\'ll notify you when ' + equipmentName + ' becomes available.' };
+    } catch(e) {
+        return { success: false, message: 'Could not join waitlist: ' + e.message };
+    }
+}
+
+/**
+ * Check if current user is already on the waitlist for an equipment.
+ */
+async function isOnWaitlist(equipmentId) {
+    const user = getCurrentUser();
+    if (!user) return false;
+    try {
+        const { data } = await supabase
+            .from('equipment_waitlist')
+            .select('id')
+            .eq('equipment_id', equipmentId)
+            .eq('user_id', user.id)
+            .maybeSingle();
+        return !!data;
+    } catch(e) { return false; }
+}
+
+/**
+ * Remove user from waitlist (called by admin after notifying).
+ */
+async function notifyWaitlistUsers(equipmentId, equipmentName) {
+    try {
+        const { data: waiters } = await supabase
+            .from('equipment_waitlist')
+            .select('user_id, user_name')
+            .eq('equipment_id', equipmentId)
+            .eq('notified', false);
+
+        if (!waiters || waiters.length === 0) return;
+
+        // Send notification to each waiter
+        const notifications = waiters.map(w => ({
+            user_id: w.user_id,
+            type: 'equipment_available',
+            message: `Great news! ${equipmentName} is now available to borrow. Be the first to reserve it!`,
+            meta: { equipment_id: equipmentId, equipment: equipmentName },
+            is_read: false
+        }));
+
+        await supabase.from('user_notifications').insert(notifications);
+
+        // Mark them as notified
+        await supabase.from('equipment_waitlist').update({ notified: true })
+            .eq('equipment_id', equipmentId)
+            .eq('notified', false);
+
+        console.log(`[notifyWaitlistUsers] Notified ${waiters.length} waitlist users for ${equipmentName}`);
+    } catch(e) {
+        console.error('[notifyWaitlistUsers] error:', e);
+    }
+}
+
