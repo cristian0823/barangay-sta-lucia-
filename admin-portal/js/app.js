@@ -853,6 +853,7 @@ async function getEquipment() {
         quantity: item.quantity || 0,
         available: item.available !== undefined ? item.available : Math.max(0, (item.quantity || 0) - (item.broken || 0)),
         broken: item.broken || 0,
+        status: item.status || 'Available',
         pending: pendingQtyMap[item.name] || 0,
         isLocked: lockedNames.has(item.name || 'Unknown')
     }));
@@ -885,6 +886,7 @@ async function updateEquipment(id, updates) {
         if (updates.isArchived !== undefined) payload.is_archived = updates.isArchived;
         if (updates.icon !== undefined) payload.icon = updates.icon;
         if (updates.image_url !== undefined) payload.image_url = updates.image_url;
+        if (updates.status !== undefined) payload.category = updates.status;
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };
@@ -920,6 +922,7 @@ async function updateEquipment(id, updates) {
         if (updates.isArchived !== undefined) item.isArchived = updates.isArchived;
         if (updates.icon !== undefined) item.icon = updates.icon;
         if (updates.image_url !== undefined) item.image_url = updates.image_url;
+        if (updates.status !== undefined) item.category = updates.status;
         if (updates.category !== undefined) item.category = updates.category;
 
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
@@ -947,7 +950,8 @@ async function addEquipment(equipmentData) {
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
-            is_archived: equipmentData.is_archived || false
+            is_archived: equipmentData.is_archived || false,
+            category: equipmentData.status || 'Available'
         };
         if (equipmentData.image_url) payload.image_url = equipmentData.image_url;
         const { error } = await supabase.from('equipment').insert([payload]);
@@ -967,6 +971,7 @@ async function addEquipment(equipmentData) {
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
             isArchived: equipmentData.is_archived || false,
+            category: equipmentData.status || 'Available',
             image_url: equipmentData.image_url || null
         };
         equipment.push(newEq);

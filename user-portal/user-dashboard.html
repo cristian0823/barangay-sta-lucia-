@@ -2071,7 +2071,10 @@
                 let color = 'bg-emerald-500', statusColor = 'text-emerald-600', statusBg = 'bg-emerald-50', statusIcon = '&#10003;';
                 if (pct < 50) { color = 'bg-amber-500'; statusColor = 'text-amber-600'; statusBg = 'bg-amber-50'; statusIcon = '&#9888;'; }
                 if (pct < 25) { color = 'bg-red-500'; statusColor = 'text-red-600'; statusBg = 'bg-red-50'; statusIcon = '&#10005;'; }
-                const ok = item.available > 0;
+                const ok = item.available > 0 && item.category !== 'Under Repair' && item.category !== 'For Disposal';
+                let statusText = item.available + ' Available';
+                if (item.category === 'Under Repair') { statusText = 'Under Repair'; statusIcon = '<i class="bi bi-wrench"></i>'; }
+                else if (item.category === 'For Disposal') { statusText = 'For Disposal'; statusIcon = '<i class="bi bi-trash-fill"></i>'; }
                 let actionBtn = '';
                 if (item.isLocked) {
                     actionBtn = '<button disabled class="w-full py-3 bg-gray-200 text-gray-500 text-sm font-bold rounded-xl shadow-inner cursor-not-allowed flex justify-center items-center gap-2"><i class="bi bi-lock-fill"></i> System Locked</button>';
@@ -2093,7 +2096,7 @@
                         <img src="${imageSrc}" alt="${item.name}" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800 transition-transform duration-500 group-hover:scale-110" onerror="this.src='../barangay.jpg'; this.onerror=null;">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         <div class="absolute top-3 right-3">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-emerald-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${item.available} Available</span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-emerald-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${statusText}</span>
                         </div>
                         ${item.isLocked ? '<div class="absolute top-3 left-3 bg-gray-900/80 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-md flex items-center gap-1"><i class="bi bi-lock-fill"></i> Locked</div>' : ''}
                         <div class="absolute bottom-3 left-4 right-4">
