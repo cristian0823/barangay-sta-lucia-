@@ -1281,7 +1281,12 @@ async function getMyBorrowings() {
         // Resolve real Supabase ID to avoid type/ID mismatch in history queries
         const { data: userRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
         const resolvedId = userRow ? userRow.id : user.id;
-        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username)').eq('user_id', resolvedId).order('id', { ascending: false });
+        // Join equipment table to get CURRENT name and photo (not the stale stored name)
+        const { data, error } = await supabase
+            .from('borrowings')
+            .select('*, users(full_name, username), equipment_info:equipment_id(id, name, image_url)')
+            .eq('user_id', resolvedId)
+            .order('id', { ascending: false });
         if (error || !data) return [];
         return data.map(item => ({
             ...item,
@@ -1289,7 +1294,10 @@ async function getMyBorrowings() {
             userId: item.user_id,
             equipmentId: item.equipment_id || null,
             userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
-            equipment: item.equipment || 'Unknown Equipment',
+            // Use live name from equipment table; fall back to stored name
+            equipment: (item.equipment_info && item.equipment_info.name) || item.equipment || 'Unknown Equipment',
+            // Use live photo from equipment table
+            image_url: (item.equipment_info && item.equipment_info.image_url) || null,
             quantity: item.quantity,
             borrowDate: item.borrow_date || item.borrowDate || '',
             returnDate: item.return_date || item.returnDate || '',
