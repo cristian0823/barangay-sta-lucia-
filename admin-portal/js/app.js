@@ -877,6 +877,53 @@ async function getEquipment() {
     }));
 }
 
+
+// ==========================================
+// MAINTENANCE LOG
+// ==========================================
+async function logMaintenance(itemName, action, qtyChanged, prevCount, newCount, notes = '') {
+    const timestamp = new Date().toISOString();
+    const supabaseAvailable = await isSupabaseAvailable();
+    const entry = {
+        item_name: itemName,
+        action,
+        qty_changed: qtyChanged,
+        prev_count: prevCount,
+        new_count: newCount,
+        notes,
+        created_at: timestamp
+    };
+    
+    if (supabaseAvailable) {
+        try {
+            await supabase.from('maintenance_log').insert([entry]);
+        } catch(e) {
+            // Fall back to local
+        }
+    }
+    
+    // Always store locally as backup
+    const LOCAL_MAINT_KEY = 'maintenance_log';
+    const logs = JSON.parse(localStorage.getItem(LOCAL_MAINT_KEY)) || [];
+    logs.unshift({ id: Date.now(), ...entry });
+    if (logs.length > 200) logs.splice(200);
+    localStorage.setItem(LOCAL_MAINT_KEY, JSON.stringify(logs));
+}
+
+async function getMaintenanceLogs() {
+    const supabaseAvailable = await isSupabaseAvailable();
+    if (supabaseAvailable) {
+        try {
+            const { data } = await supabase.from('maintenance_log')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(100);
+            if (data && data.length > 0) return data;
+        } catch(e) {}
+    }
+    return JSON.parse(localStorage.getItem('maintenance_log')) || [];
+}
+
 async function updateEquipment(id, updates) {
     const supabaseAvailable = await isSupabaseAvailable();
 
