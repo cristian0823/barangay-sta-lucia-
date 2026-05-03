@@ -776,9 +776,27 @@ async function getEquipment() {
         if (!error && data) {
             // One-time auto-fix for corrupted available quantities exceeding max quantity
             for (const item of data) {
+                let fixed = false;
+                
+                // If category is a legacy string like 'Under Repair' or 'For Disposal', fix it to '0'
+                if (['Under Repair', 'For Disposal', 'Available', 'In Use'].includes(item.category)) {
+                    item.category = '0';
+                    item.available = item.quantity - (item.broken || 0);
+                    fixed = true;
+                }
+                
                 if (item.available > item.quantity) {
-                    await supabase.from('equipment').update({ available: item.quantity }).eq('id', item.id);
                     item.available = item.quantity;
+                    fixed = true;
+                }
+                
+                if (item.available < 0) {
+                    item.available = 0;
+                    fixed = true;
+                }
+                
+                if (fixed) {
+                    await supabase.from('equipment').update({ category: item.category, available: item.available }).eq('id', item.id);
                 }
             }
         }
@@ -866,54 +884,76 @@ async function updateEquipment(id, updates) {
         const { data: item } = await supabase.from('equipment').select('*').eq('id', id).single();
         if (!item) return { success: false, message: 'Equipment not found' };
 
-        // Logic from previous synchronous method
-        item.broken = item.broken || 0;
-        const disposal = parseInt(item.category) || 0;
-        const updatesDisposal = updates.category !== undefined ? parseInt(updates.category) : disposal;
-        const diffQty = (updates.quantity !== undefined ? parseInt(updates.quantity) : item.quantity) - item.quantity;
-        const diffBroken = (updates.broken !== undefined ? parseInt(updates.broken) : item.broken) - item.broken;
+        // --- ABSOLUTE calculation (not diff-based, prevents double-deductions) ---
+        const oldBroken = item.broken || 0;
+        const oldDisposal = parseInt(item.category) || 0;
+        const oldQty = item.quantity || 0;
 
-        const newQuantity = item.quantity + diffQty;
-        const newBroken = item.broken + diffBroken;
-        const diffDisposal = updatesDisposal - disposal;
-        const newAvailable = item.available + diffQty - diffBroken - diffDisposal;
+        const newQty    = updates.quantity !== undefined ? parseInt(updates.quantity)  : oldQty;
+        const newBroken = updates.broken   !== undefined ? parseInt(updates.broken)    : oldBroken;
+        const newDisposal = updates.disposal !== undefined ? parseInt(updates.disposal) : oldDisposal;
+
+        // Cap values to prevent impossible states
+        const cappedBroken   = Math.min(newBroken,   newQty);
+        const cappedDisposal = Math.min(newDisposal, Math.max(0, newQty - cappedBroken));
+
+        // How many are actively borrowed (approved requests)
+        let activeBorrowed = 0;
+        try {
+            const { data: borrows } = await supabase.from('borrowings')
+                .select('quantity, status')
+                .eq('equipment', item.name)
+                .in('status', ['approved']);
+            if (borrows) activeBorrowed = borrows.reduce((s, b) => s + (b.quantity || 1), 0);
+        } catch(e) { /* ignore */ }
+
+        const newAvailable = Math.max(0, newQty - cappedBroken - cappedDisposal - activeBorrowed);
+
+        // The category column stores disposal count; equipCategory stores the equipment type label
+        const newCategoryLabel = updates.equipCategory !== undefined ? updates.equipCategory : item.category;
+        // If it was a legacy string, treat disposal as new value
+        const categoryValue = String(cappedDisposal);
+
+        const diffBroken   = cappedBroken   - oldBroken;
+        const diffDisposal = cappedDisposal - oldDisposal;
+        const diffQty      = newQty - oldQty;
 
         const payload = {
-            quantity: newQuantity,
-            broken: newBroken,
-            available: newAvailable
+            quantity:     newQty,
+            broken:       cappedBroken,
+            available:    newAvailable,
+            category:     categoryValue
         };
-        if (updates.name !== undefined) payload.name = updates.name;
-        if (updates.category !== undefined) payload.category = updates.category;
+        if (updates.name        !== undefined) payload.name        = updates.name;
         if (updates.description !== undefined) payload.description = updates.description;
-        if (updates.isArchived !== undefined) payload.is_archived = updates.isArchived;
-        if (updates.icon !== undefined) payload.icon = updates.icon;
-        if (updates.image_url !== undefined) payload.image_url = updates.image_url;
-        if (updates.status !== undefined) payload.category = updates.status;
+        if (updates.isArchived  !== undefined) payload.is_archived = updates.isArchived;
+        if (updates.icon        !== undefined) payload.icon        = updates.icon;
+        if (updates.image_url   !== undefined) payload.image_url   = updates.image_url;
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };
-        
+
         if (diffBroken !== 0) {
-            const actionVerb = diffBroken > 0 ? 'marked as' : 'removed from';
-            await logActivity('Inventory Update', `Admin ${actionVerb} broken ${Math.abs(diffBroken)}x ${item.name}`);
-        } else if (diffQty !== 0) {
-            const actionVerb = diffQty > 0 ? 'added' : 'removed';
-            await logActivity('Inventory Update', `Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
+            const verb = diffBroken > 0 ? 'marked under repair' : 'restored from repair';
+            await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(diffBroken)}x ${item.name}`);
         }
-        
+        if (diffQty !== 0) {
+            const verb = diffQty > 0 ? 'added' : 'removed';
+            await logActivity('Inventory Update', `Admin ${verb} ${Math.abs(diffQty)}x ${item.name}`);
+        }
+
         let notifMessages = [];
-        if (diffBroken > 0) notifMessages.push(`${diffBroken} ${item.name} are under repair.`);
+        if (diffBroken > 0) notifMessages.push(`${diffBroken} ${item.name} are now under repair.`);
         if (diffBroken < 0) notifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
         if (diffDisposal > 0) notifMessages.push(`${diffDisposal} ${item.name} are now marked for disposal.`);
         if (diffDisposal < 0) notifMessages.push(`${Math.abs(diffDisposal)} ${item.name} were recovered from disposal.`);
         if (diffQty > 0) notifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
         if (diffQty < 0) notifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
-        
+
         for (let msg of notifMessages) {
             await addNotification('all_users', 'inventory', msg);
         }
-        
+
         return { success: true, message: 'Equipment updated successfully' };
     } else {
         // Local fallback

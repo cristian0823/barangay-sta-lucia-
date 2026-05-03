@@ -6671,13 +6671,26 @@
                     }
                 }
 
+                const newQty = parseInt(document.getElementById('editEquipQuantity').value) || 0;
+                const newBroken = parseInt(document.getElementById('editEquipBroken').value) || 0;
+                const newDisposal = parseInt(document.getElementById('editEquipDisposal').value) || 0;
+
+                // Validate: broken + disposal cannot exceed total quantity
+                if (newBroken + newDisposal > newQty) {
+                    showAlert(`Error: Under Repair (${newBroken}) + For Disposal (${newDisposal}) cannot exceed Total Quantity (${newQty}).`, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+
                 const updates = {
                     name: document.getElementById('editEquipName').value,
                     icon: document.getElementById('editEquipIcon').value,
-                    category: document.getElementById('editEquipCategory').value,
+                    equipCategory: document.getElementById('editEquipCategory').value,
                     description: document.getElementById('editEquipDesc').value,
-                    quantity: parseInt(document.getElementById('editEquipQuantity').value),
-                    broken: parseInt(document.getElementById('editEquipBroken').value),
+                    quantity: newQty,
+                    broken: newBroken,
+                    disposal: newDisposal,
                     isArchived: document.getElementById('editEquipArchived').checked
                 };
                 if (image_url !== undefined) {
