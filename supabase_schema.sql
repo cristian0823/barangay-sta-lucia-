@@ -49,7 +49,9 @@ CREATE TABLE IF NOT EXISTS equipment (
     broken INTEGER DEFAULT 0,
     icon VARCHAR(50),
     description TEXT,
-    is_archived BOOLEAN DEFAULT false
+    is_archived BOOLEAN DEFAULT false,
+    image_url TEXT,
+    category VARCHAR(100) DEFAULT 'General'
 );
 
 CREATE TABLE IF NOT EXISTS borrowings (
@@ -155,6 +157,8 @@ CREATE TABLE IF NOT EXISTS event_participants (
 
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS broken INTEGER DEFAULT 0;
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT false;
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'General';
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS is_read BOOLEAN DEFAULT false;
