@@ -2368,17 +2368,37 @@
             const totalStock = equip.quantity - (equip.broken || 0);
             
             const todayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
+            const checkStart = borrowStartDate ? borrowStartDate : todayStr;
+            const checkEnd = borrowReturnDate ? borrowReturnDate : checkStart;
             
-            let borrowedToday = 0;
-            bookings.forEach(b => {
-                const bStart = b.borrow_date.split('T')[0];
-                const bEnd   = b.return_date.split('T')[0];
-                if (todayStr >= bStart && todayStr <= bEnd) {
-                    borrowedToday += parseInt(b.quantity);
-                }
-            });
+            let minAvail = totalStock;
+            let startD = new Date(checkStart);
+            let endD = new Date(checkEnd);
             
-            if (borrowedToday >= totalStock) {
+            for (let d = new Date(startD); d <= endD; d.setDate(d.getDate() + 1)) {
+                const checkStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                let borrowedCount = 0;
+                bookings.forEach(b => {
+                    const bStart = b.borrow_date.split('T')[0];
+                    const bEnd   = b.return_date.split('T')[0];
+                    if (checkStr >= bStart && checkStr <= bEnd) {
+                        borrowedCount += parseInt(b.quantity);
+                    }
+                });
+                const avail = totalStock - borrowedCount;
+                if (avail < minAvail) minAvail = avail;
+            }
+            
+            // Dynamic Header Badge Update
+            const badge = document.getElementById('borrowModalStockBadge');
+            if (badge) {
+                badge.innerHTML = `${minAvail} Available`;
+                badge.className = minAvail > 0 
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-emerald-500/90 text-white backdrop-blur-md' 
+                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-red-500/90 text-white backdrop-blur-md';
+            }
+            
+            if (minAvail <= 0) {
                 let nextAvailableDate = null;
                 for (let i = 1; i <= 90; i++) {
                     const checkDate = new Date();
@@ -2606,7 +2626,7 @@
 
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
-            updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
+            updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
         }
 
         function changeBorrowMonth(delta) {
