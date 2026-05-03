@@ -1,38 +1,14 @@
 const fs = require('fs');
+let txt = fs.readFileSync('admin-portal/admin.html', 'utf8');
 
-let html = fs.readFileSync('admin.html', 'utf8');
+txt = txt.replace(/supabase.from\('facility_reservations'\)\.select\('id, user_id, date, time, venue_name, created_at, status'\)/g, "supabase.from('facility_reservations').select('id, user_id, date, time, created_at, status')");
+txt = txt.replace(/supabase.from\('concerns'\)\.select\('id, user_id, subject, message, created_at'\)\.eq\('is_read', false\)/g, "supabase.from('concerns').select('id, user_id, title, description, created_at, status').eq('status', 'pending')");
 
-// The new markAllAdminBellRead
-const newMarkAll = `async function markAllAdminBellRead() {
-                try {
-                    const supabaseAvailable = typeof isSupabaseAvailable === 'function' ? await isSupabaseAvailable() : false;
-                    if (supabaseAvailable) {
-                        const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-                        if (currentUser && currentUser.id) {
-                            const ADMIN_NOTIF_TYPES = ['borrow', 'booking', 'concern', 'cancel_borrow', 'cancel_booking'];
-                            await supabase
-                                .from('user_notifications')
-                                .update({ is_read: true })
-                                .eq('user_id', currentUser.id)
-                                .in('type', ADMIN_NOTIF_TYPES)
-                                .eq('is_read', false);
-                        }
-                    }
-                    localStorage.setItem('last_admin_bell_view', Date.now().toString());
-                    refreshAdminBell();
-                    const drop = document.getElementById('adminBellDropdown');
-                    if (drop) drop.style.display = 'none';
-                } catch(e) { console.warn('markAllAdminBellRead error:', e); }
-            }`;
+txt = txt.replace(/message: 'New facility reservation for ' \+ \(b.venue_name \|\| 'venue'\) \+ ' on ' \+ b.date/g, "message: 'New facility reservation on ' + b.date");
+txt = txt.replace(/message: 'New concern: ' \+ \(c.subject \|\| c.message \|\| 'Untitled'\)/g, "message: 'New concern: ' + (c.title || 'Untitled')");
 
-// Replace everything between `async function markAllAdminBellRead() {` and `// Refresh bell every 30 seconds`
-const regex = /async function markAllAdminBellRead\(\) \{[\s\S]*?\/\/\s*Refresh bell every 30 seconds/g;
+txt = txt.replace(/const concerns = \(JSON.parse\(localStorage.getItem\('barangayConcerns'\)\) \|\| \[\]\)\.filter\(c => !c.isRead\);/g, "const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => c.status === 'pending');");
+txt = txt.replace(/message: 'New concern: ' \+ \(c.subject \|\| 'Untitled'\)/g, "message: 'New concern: ' + (c.title || 'Untitled')");
 
-if (regex.test(html)) {
-    html = html.replace(regex, `${newMarkAll}\n\n            // Refresh bell every 30 seconds`);
-    fs.writeFileSync('admin.html', html, 'utf8');
-    fs.copyFileSync('admin.html', 'admin-portal/admin.html');
-    console.log('✅ Fixed markAllAdminBellRead');
-} else {
-    console.warn('⚠️ Could not find markAllAdminBellRead target text');
-}
+fs.writeFileSync('admin-portal/admin.html', txt);
+console.log('Done');

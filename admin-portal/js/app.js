@@ -902,6 +902,18 @@ async function updateEquipment(id, updates) {
             await logActivity('Inventory Update', `Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
         }
         
+        let notifMessages = [];
+        if (diffBroken > 0) notifMessages.push(`${diffBroken} ${item.name} are under repair.`);
+        if (diffBroken < 0) notifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
+        if (diffDisposal > 0) notifMessages.push(`${diffDisposal} ${item.name} are now marked for disposal.`);
+        if (diffDisposal < 0) notifMessages.push(`${Math.abs(diffDisposal)} ${item.name} were recovered from disposal.`);
+        if (diffQty > 0) notifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
+        if (diffQty < 0) notifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
+        
+        for (let msg of notifMessages) {
+            await addNotification('all_users', 'inventory', msg);
+        }
+        
         return { success: true, message: 'Equipment updated successfully' };
     } else {
         // Local fallback
@@ -914,10 +926,10 @@ async function updateEquipment(id, updates) {
         item.broken = item.broken || 0;
         const diffQty = (updates.quantity !== undefined ? parseInt(updates.quantity) : item.quantity) - item.quantity;
         const diffBroken = (updates.broken !== undefined ? parseInt(updates.broken) : item.broken) - item.broken;
+        const diffDisposalLocal = (updates.category !== undefined ? parseInt(updates.category) : (parseInt(item.category)||0)) - (parseInt(item.category)||0);
 
         item.quantity = item.quantity + diffQty;
         item.broken = item.broken + diffBroken;
-        const diffDisposalLocal = (updates.category !== undefined ? parseInt(updates.category) : (parseInt(item.category)||0)) - (parseInt(item.category)||0);
         item.available = item.available + diffQty - diffBroken - diffDisposalLocal;
 
         if (updates.name !== undefined) item.name = updates.name;
@@ -939,6 +951,18 @@ async function updateEquipment(id, updates) {
             logActivity('Inventory Update', `Local Admin ${actionVerb} ${Math.abs(diffQty)}x ${item.name} to total stock`);
         }
         
+        let localNotifMessages = [];
+        if (diffBroken > 0) localNotifMessages.push(`${diffBroken} ${item.name} are under repair.`);
+        if (diffBroken < 0) localNotifMessages.push(`${Math.abs(diffBroken)} ${item.name} are now repaired and available.`);
+        if (diffDisposalLocal > 0) localNotifMessages.push(`${diffDisposalLocal} ${item.name} are now marked for disposal.`);
+        if (diffDisposalLocal < 0) localNotifMessages.push(`${Math.abs(diffDisposalLocal)} ${item.name} were recovered from disposal.`);
+        if (diffQty > 0) localNotifMessages.push(`Added ${diffQty} new ${item.name} to inventory.`);
+        if (diffQty < 0) localNotifMessages.push(`Removed ${Math.abs(diffQty)} ${item.name} from inventory.`);
+        
+        for (let msg of localNotifMessages) {
+            await addNotification('all_users', 'inventory', msg);
+        }
+        
         return { success: true, message: 'Equipment updated successfully' };
     }
 }
@@ -955,11 +979,13 @@ async function addEquipment(equipmentData) {
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
             is_archived: equipmentData.is_archived || false,
-            category: equipmentData.status || 'Available'
+            category: equipmentData.disposal ? String(equipmentData.disposal) : '0'
         };
         if (equipmentData.image_url) payload.image_url = equipmentData.image_url;
         const { error } = await supabase.from('equipment').insert([payload]);
         if (error) return { success: false, message: error.message };
+        await logActivity('Inventory Addition', `Admin added new equipment: ${equipmentData.name}`);
+        await addNotification('all_users', 'inventory', `New equipment added to inventory: ${equipmentData.name}`);
         return { success: true, message: 'Equipment added successfully' };
     } else {
         initializeLocalEquipment();
@@ -3293,7 +3319,20 @@ async function addNotification(userId, type, message, referenceId = null) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
         try {
-            if (userId === 'admin') {
+            if (userId === 'all_users') {
+                const { data: users } = await supabase.from('users').select('id').eq('role', 'user');
+                if (users && users.length > 0) {
+                    const payloads = users.map(u => ({
+                        user_id: u.id,
+                        type,
+                        message,
+                        meta: referenceId ? { reference_id: referenceId } : {},
+                        is_read: false,
+                        created_at: timestamp
+                    }));
+                    await supabase.from('user_notifications').insert(payloads);
+                }
+            } else if (userId === 'admin') {
                 // Fan-out to all admin users
                 const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin');
                 if (admins && admins.length > 0) {

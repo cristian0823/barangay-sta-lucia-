@@ -889,6 +889,8 @@ async function updateEquipment(id, updates) {
         if (updates.isArchived !== undefined) payload.is_archived = updates.isArchived;
         if (updates.icon !== undefined) payload.icon = updates.icon;
         if (updates.image_url !== undefined) payload.image_url = updates.image_url;
+        if (updates.icon !== undefined) payload.icon = updates.icon;
+        if (updates.image_url !== undefined) payload.image_url = updates.image_url;
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };
@@ -922,6 +924,9 @@ async function updateEquipment(id, updates) {
         if (updates.category !== undefined) item.category = updates.category;
         if (updates.description !== undefined) item.description = updates.description;
         if (updates.isArchived !== undefined) item.isArchived = updates.isArchived;
+        if (updates.icon !== undefined) item.icon = updates.icon;
+        if (updates.image_url !== undefined) item.image_url = updates.image_url;
+        if (updates.category !== undefined) item.category = updates.category;
         if (updates.icon !== undefined) item.icon = updates.icon;
         if (updates.image_url !== undefined) item.image_url = updates.image_url;
         if (updates.category !== undefined) item.category = updates.category;
