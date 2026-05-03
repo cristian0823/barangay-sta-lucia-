@@ -1281,15 +1281,15 @@ async function getMyBorrowings() {
         // Resolve real Supabase ID to avoid type/ID mismatch in history queries
         const { data: userRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
         const resolvedId = userRow ? userRow.id : user.id;
-        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username), equipment_data:equipment_id(image_url, name)').eq('user_id', resolvedId).order('id', { ascending: false });
+        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username)').eq('user_id', resolvedId).order('id', { ascending: false });
         if (error || !data) return [];
         return data.map(item => ({
             ...item,
             id: item.id,
             userId: item.user_id,
+            equipmentId: item.equipment_id || null,
             userName: item.users ? (item.users.full_name || item.users.username) : 'Unknown',
-            equipment: item.equipment || (item.equipment_data && item.equipment_data.name) || 'Unknown Equipment',
-            image_url: (item.equipment_data && item.equipment_data.image_url) || null,
+            equipment: item.equipment || 'Unknown Equipment',
             quantity: item.quantity,
             borrowDate: item.borrow_date || item.borrowDate || '',
             returnDate: item.return_date || item.returnDate || '',
