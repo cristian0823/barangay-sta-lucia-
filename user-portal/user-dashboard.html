@@ -2068,9 +2068,9 @@
                 // Sanity check
                 item.available = Math.min(item.available || 0, item.quantity || 1);
                 const pct = Math.min(100, Math.round((item.available / item.quantity) * 100));
-                let color = 'bg-emerald-500', statusColor = 'text-emerald-600', statusBg = 'bg-emerald-50', statusIcon = 'Ã¢Å“â€œ';
-                if (pct < 50) { color = 'bg-amber-500'; statusColor = 'text-amber-600'; statusBg = 'bg-amber-50'; statusIcon = 'Ã¢Å¡Â '; }
-                if (pct < 25) { color = 'bg-red-500'; statusColor = 'text-red-600'; statusBg = 'bg-red-50'; statusIcon = 'Ã¢Å“â€¢'; }
+                let color = 'bg-emerald-500', statusColor = 'text-emerald-600', statusBg = 'bg-emerald-50', statusIcon = '&#10003;';
+                if (pct < 50) { color = 'bg-amber-500'; statusColor = 'text-amber-600'; statusBg = 'bg-amber-50'; statusIcon = '&#9888;'; }
+                if (pct < 25) { color = 'bg-red-500'; statusColor = 'text-red-600'; statusBg = 'bg-red-50'; statusIcon = '&#10005;'; }
                 const ok = item.available > 0;
                 let actionBtn = '';
                 if (item.isLocked) {
@@ -2492,8 +2492,8 @@
             }
 
             document.getElementById('borrowPurpose').value = '';
-            document.getElementById('borrowerFullName').value = user.name || '';
-            document.getElementById('borrowerContact').value = '';
+            document.getElementById('borrowerFullName').value = user.fullName || user.full_name || user.name || user.username || '';
+            document.getElementById('borrowerContact').value = user.contactNumber || user.contact_number || user.phone || '';
             document.getElementById('borrowerAddress').value = user.address || '';
             document.getElementById('borrowTime').value = '';
             document.getElementById('returnTime').value = '';
