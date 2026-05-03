@@ -2171,10 +2171,9 @@
                 if (b.status === 'rejected') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-700"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>Rejected</span>'; statusBorder = 'border-red-200'; }
                 if (b.status === 'returned') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>Returned</span>'; statusBorder = 'border-blue-200'; }
                 const rejectionMsg = (b.status === 'rejected' && b.rejection_reason) ? '<div class="mt-3 text-xs bg-red-50 p-3 rounded-lg border border-red-100"><strong class="text-red-700">Reason:</strong> <span class="text-red-600">' + b.rejection_reason + '</span></div>' : '';
-                // Look up photo from equipment list; fall back to icon
-                const eqRecord = allEquipmentList.find(e => e.name === b.equipment);
-                const equipThumb = eqRecord && eqRecord.image_url
-                    ? '<img src="' + eqRecord.image_url + '" alt="' + b.equipment + '" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid #e5e7eb;flex-shrink:0;">'
+                // Use photo directly from DB join (image_url); fall back to icon
+                const equipThumb = b.image_url
+                    ? '<img src="' + b.image_url + '" alt="' + b.equipment + '" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid #e5e7eb;flex-shrink:0;">'
                     : getEquipmentIcon(b.equipment);
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + statusBorder + ' shadow-sm hover:shadow-md transition-all duration-300">' +
                     '<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div class="flex items-start gap-4">' + equipThumb + 
