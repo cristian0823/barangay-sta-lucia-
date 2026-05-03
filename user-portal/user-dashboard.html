@@ -1003,6 +1003,7 @@
                 </div>
                 <!-- Right Column: Professional Form -->
                 <div class="w-full lg:w-1/2 p-4 lg:p-6 flex flex-col lg:overflow-y-auto" style="overflow-x:hidden; padding-bottom: 24px;">
+                    <div id="borrowModalAlerts" class="flex flex-col gap-3 mb-4 empty:hidden"></div>
                     <!-- Date Display -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -2360,6 +2361,89 @@
             }
         }
 
+        function renderBorrowAlerts() {
+            const container = document.getElementById('borrowModalAlerts');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const bookings = window.activeBorrowingsForModal || [];
+            const equip = window.currentEquipmentItem || { quantity: 1, broken: 0, name: 'items' };
+            const totalStock = equip.quantity - (equip.broken || 0);
+            
+            const todayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
+            
+            let borrowedToday = 0;
+            bookings.forEach(b => {
+                const bStart = b.borrow_date.split('T')[0];
+                const bEnd   = b.return_date.split('T')[0];
+                if (todayStr >= bStart && todayStr <= bEnd) {
+                    borrowedToday += parseInt(b.quantity);
+                }
+            });
+            
+            if (borrowedToday >= totalStock) {
+                let nextAvailableDate = null;
+                for (let i = 1; i <= 90; i++) {
+                    const checkDate = new Date();
+                    checkDate.setDate(checkDate.getDate() + i);
+                    const checkStr = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
+                    let bCount = 0;
+                    bookings.forEach(b => {
+                        const bStart = b.borrow_date.split('T')[0];
+                        const bEnd   = b.return_date.split('T')[0];
+                        if (checkStr >= bStart && checkStr <= bEnd) {
+                            bCount += parseInt(b.quantity);
+                        }
+                    });
+                    if (bCount < totalStock) {
+                        nextAvailableDate = checkDate;
+                        break;
+                    }
+                }
+                
+                const itemName = equip.name ? equip.name.toLowerCase() : 'items';
+                
+                let html = `
+                <div class="bg-orange-50 dark:bg-[#2a1a14] border border-orange-200 dark:border-orange-900/50 rounded-2xl p-4 flex gap-4 text-orange-900 dark:text-orange-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-orange-500"></div>
+                    <div class="mt-0.5 shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="font-bold text-sm mb-1">All ${totalStock} ${itemName} are currently borrowed</h6>
+                        <p class="text-xs leading-relaxed opacity-90">Don't worry — this doesn't mean you can't borrow them. Someone else is using all ${totalStock} ${itemName} right now, but <strong>they'll be returned soon.</strong> You can still request ${itemName} for a different date — just pick when you need them from the calendar below and we'll reserve them for you.</p>
+                    </div>
+                </div>
+                `;
+                
+                if (nextAvailableDate) {
+                    const nextDateFormatted = nextAvailableDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const nextMonth = nextAvailableDate.getMonth();
+                    const nextYear = nextAvailableDate.getFullYear();
+                    
+                    html += `
+                    <div class="bg-emerald-50 dark:bg-[#13251c] border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-3 flex items-center justify-between gap-3 text-emerald-900 dark:text-emerald-200 shadow-sm relative overflow-hidden mt-1">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="ml-1 shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <p class="text-xs font-medium"><strong>${totalStock} ${itemName}</strong> will be fully free starting <strong>${nextDateFormatted}</strong> — tap to jump there</p>
+                        </div>
+                        <button type="button" onclick="jumpToDate(${nextYear}, ${nextMonth})" class="shrink-0 px-4 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1a3326] hover:bg-emerald-50 dark:hover:bg-[#204030] text-emerald-700 dark:text-emerald-300 text-xs font-bold transition shadow-sm cursor-pointer">Show me</button>
+                    </div>
+                    `;
+                }
+                container.innerHTML = html;
+            }
+        }
+        
+        function jumpToDate(year, month) {
+            currentYear = year;
+            currentMonth = month;
+            renderBorrowCalendar();
+        }
+
         function renderExistingBookings() {
             const container = document.getElementById('existingBookingsContainer');
             if (!container) return;
@@ -2700,6 +2784,7 @@
                 console.error('Error fetching bookings:', e);
             }
             
+            renderBorrowAlerts();
             renderExistingBookings();
             renderBorrowCalendar();
             document.getElementById('borrowModal').classList.remove('hidden');
