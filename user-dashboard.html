@@ -1616,6 +1616,8 @@
         let borrowReturnDate = null;
         let borrowDateSelectingStart = true;
         let allEquipmentList = [];
+        let bookedDateSet = new Set(); // stores 'YYYY-MM-DD' strings that are fully booked
+        let currentBorrowEquipId = null; // track which equipment the modal is for
 
         // Toast
         function openSuccessModal(title, msg) {
@@ -2219,6 +2221,9 @@
         // BORROW MODAL LOGIC
         // ==========================================
         async function openBorrowModalWithEquip(equipId) {
+            currentBorrowEquipId = equipId;
+            bookedDateSet = new Set(); // reset
+
             const list = await getEquipment();
             const item = list.find(e => e.id === equipId);
             if (!item) return;
@@ -2227,18 +2232,36 @@
             document.getElementById('borrowEquipmentName').value = item.name;
             document.getElementById('borrowQty').max = item.available;
             document.getElementById('borrowQty').value = 1;
-            // Show pending notice if applicable
             const pendingNote = (item.pending && item.pending > 0)
                 ? ' &nbsp;<span style="color:#b45309;font-size:11px;font-weight:600;">⚠️ ' + item.pending + ' unit' + (item.pending > 1 ? 's' : '') + ' pending from other users</span>'
                 : '';
             document.getElementById('borrowMaxHelp').innerHTML = '📦 Max: ' + item.available + ' units available' + pendingNote;
             document.getElementById('borrowPurpose').value = '';
-                        // Ensure we have hydrated data
             if (!user.phone) await fetchFullProfileData();
             document.getElementById('borrowerFullName').value = user.name || '';
             document.getElementById('borrowerContact').value = '';
             if (document.getElementById('borrowerAddress')) document.getElementById('borrowerAddress').value = user.address || '';
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+
+            // Fetch booked date ranges for this equipment from Supabase
+            try {
+                const { data: bookings } = await supabase
+                    .from('borrowings')
+                    .select('borrow_date, return_date, quantity')
+                    .eq('equipment_id', equipId)
+                    .in('status', ['approved', 'pending']);
+                if (bookings && bookings.length > 0) {
+                    bookings.forEach(bk => {
+                        const start = new Date(bk.borrow_date);
+                        const end   = new Date(bk.return_date);
+                        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                            const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                            bookedDateSet.add(ds);
+                        }
+                    });
+                }
+            } catch(e) { /* proceed without booked dates */ }
+
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
             document.getElementById('borrowModal').classList.remove('hidden');
         }
@@ -2317,53 +2340,101 @@
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')); }
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                 const dateObj = new Date(currentYear, currentMonth, day);
                 const dayDiv = document.createElement('div');
-                dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm transition transform hover:scale-105 ';
-                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                if (dateObj < today) {
+                dayDiv.className = 'p-2.5 rounded-lg text-center font-bold text-sm transition transform ';
+                const isBooked = bookedDateSet.has(dateStr);
+                const isPast   = dateObj < today;
+
+                if (isPast) {
+                    // Past date — greyed out
                     dayDiv.style.cssText = isDark
                         ? 'background:#374151;color:#6b7280;cursor:not-allowed;'
                         : 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;';
+                } else if (isBooked) {
+                    // Booked/unavailable date — red blocked
+                    dayDiv.style.cssText = 'background:#fee2e2;color:#b91c1c;cursor:not-allowed;border:1px solid #fca5a5;position:relative;';
+                    dayDiv.title = 'Already booked';
+                    // Add small X indicator
+                    dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#ef4444;">✕</span>';
+                } else if (borrowStartDate === dateStr) {
+                    dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;';
+                    dayDiv.onclick = () => selectBorrowDate(dateStr);
+                } else if (borrowReturnDate === dateStr) {
+                    dayDiv.style.cssText = 'background:#0d9488;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;';
+                    dayDiv.onclick = () => selectBorrowDate(dateStr);
+                } else if (borrowStartDate && borrowReturnDate) {
+                    const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
+                    if (dateObj > start && dateObj < end) {
+                        dayDiv.style.cssText = isDark ? 'background:#064e3b;color:#6ee7b7;cursor:pointer;' : 'background:#d1fae5;color:#065f46;cursor:pointer;';
+                        dayDiv.onclick = () => selectBorrowDate(dateStr);
+                    } else {
+                        dayDiv.style.cssText = isDark
+                            ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
+                            : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
+                        dayDiv.onclick = () => selectBorrowDate(dateStr);
+                        dayDiv.onmouseenter = () => { dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
+                        dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
+                    }
                 } else {
+                    // Available future date
                     dayDiv.style.cssText = isDark
                         ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
                         : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
-                    dayDiv.onmouseenter = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
-                    dayDiv.onmouseleave = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
                     dayDiv.onclick = () => selectBorrowDate(dateStr);
+                    dayDiv.onmouseenter = () => { dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
+                    dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
                 }
-                if (dateObj.getTime() === today.getTime()) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
-                if (borrowStartDate === dateStr) { dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;'; }
-                if (borrowReturnDate === dateStr) { dayDiv.style.cssText = 'background:#0d9488;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;'; }
-                if (borrowStartDate && borrowReturnDate) {
-                    const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
-                    if (dateObj > start && dateObj < end) { dayDiv.style.background = isDark ? '#064e3b' : '#d1fae5'; dayDiv.style.color = isDark ? '#6ee7b7' : '#065f46'; }
+                if (!isBooked && !isPast) {
+                    dayDiv.classList.add('hover:scale-105');
                 }
-                dayDiv.textContent = day;
+                if (dateObj.getTime() === today.getTime() && !isBooked) {
+                    dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px';
+                }
+                if (!isBooked && !isPast && !dayDiv.textContent) dayDiv.textContent = day;
+                else if (isPast || !isBooked) { if (!dayDiv.textContent) dayDiv.textContent = day; }
+                if (!dayDiv.textContent && !dayDiv.innerHTML) dayDiv.textContent = day;
                 grid.appendChild(dayDiv);
-
             }
+
+            // Legend
+            let legend = document.getElementById('borrowCalLegend');
+            if (!legend) {
+                legend = document.createElement('div');
+                legend.id = 'borrowCalLegend';
+                legend.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11px;font-weight:600;color:#6b7280;';
+                grid.parentElement.appendChild(legend);
+            }
+            legend.innerHTML =
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#ecfdf5;border:1px solid #d1fae5;display:inline-block;"></span>Available</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#fee2e2;border:1px solid #fca5a5;display:inline-block;"></span>Booked</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#10b981;display:inline-block;"></span>Selected</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#f3f4f6;display:inline-block;"></span>Past</span>';
         }
 
         function selectBorrowDate(dateStr) {
             const today = new Date(); today.setHours(0,0,0,0);
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
+            if (bookedDateSet.has(dateStr)) return showToast('This date is already booked. Please choose another date.', 'error');
             if (borrowDateSelectingStart) {
                 borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
                 showToast('Now select the return date', 'success');
             } else {
                 if (new Date(dateStr) < new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
-                
                 const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays > 7) {
-                    return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
+                if (diffDays > 7) return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
+                // Check if any date in range is booked
+                const start = new Date(borrowStartDate);
+                const end   = new Date(dateStr);
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                    if (bookedDateSet.has(ds)) return showToast('Your selected range includes a booked date. Please adjust your dates.', 'error');
                 }
-                
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
