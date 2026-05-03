@@ -1012,16 +1012,16 @@ async function updateEquipment(id, updates) {
         if (diffBroken !== 0) {
             const action = diffBroken > 0 ? 'Under Repair' : 'Repaired';
             await logMaintenance(item.name, action, Math.abs(diffBroken), oldBroken, cappedBroken,
-                diffBroken > 0 ? \\ units marked under repair\ : \\ units restored\);
+                diffBroken > 0 ? `${cappedBroken} units marked under repair` : `${Math.abs(diffBroken)} units restored`);
         }
         if (diffDisposal !== 0) {
             const action = diffDisposal > 0 ? 'For Disposal' : 'Recovered from Disposal';
             await logMaintenance(item.name, action, Math.abs(diffDisposal), oldDisposal, cappedDisposal,
-                diffDisposal > 0 ? \\ units marked for disposal\ : \\ units recovered\);
+                diffDisposal > 0 ? `${cappedDisposal} units marked for disposal` : `${Math.abs(diffDisposal)} units recovered`);
         }
         if (stockAdded > 0 && (newDisposal - adjustedDisposal) > 0) {
             await logMaintenance(item.name, 'Disposal Cleared (New Stock)', newDisposal - adjustedDisposal, newDisposal, adjustedDisposal,
-                \\ disposal units cleared because \ new items were added\);
+                `${newDisposal - adjustedDisposal} disposal units cleared because ${stockAdded} new items were added`);
         }
 
         return { success: true, message: 'Equipment updated successfully' };
