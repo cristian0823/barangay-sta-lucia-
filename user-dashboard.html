@@ -1535,7 +1535,7 @@
         setTimeout(() => {
             const autofill = [
                 { id: 'borrowerFullName', val: user.fullName || user.name || user.username },
-                { id: 'borrowerContact', val: user.phone || user.contact_number || user.contactNumber || '' },
+                { id: 'borrowerContact', val: '' },
                 { id: 'borrowerAddress', val: user.address || '' },
                 { id: 'dsName', val: user.fullName || user.name || user.username }
             ];
@@ -1703,6 +1703,7 @@
         
         // Auto-poll every 15 seconds
         setInterval(pollBellNotifications, 15000);
+        setInterval(loadEquipmentView, 15000);
 
         
             function toggleProfileDropdown(e) {
@@ -2189,7 +2190,7 @@
                         // Ensure we have hydrated data
             if (!user.phone) await fetchFullProfileData();
             document.getElementById('borrowerFullName').value = user.name || '';
-            document.getElementById('borrowerContact').value = user.phone || '';
+            document.getElementById('borrowerContact').value = '';
             if (document.getElementById('borrowerAddress')) document.getElementById('borrowerAddress').value = user.address || '';
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
