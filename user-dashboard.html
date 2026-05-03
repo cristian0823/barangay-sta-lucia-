@@ -2061,14 +2061,9 @@
                 if (item.isLocked) {
                     actionBtn = '<button disabled style="padding:8px 12px;background:#e5e7eb;color:#6b7280;font-size:11px;font-weight:700;border-radius:12px;cursor:not-allowed;border:none;" title="Temporarily locked due to unreturned items">🔒 System Locked</button>';
                 } else if (!ok) {
-                    // Out of stock — still clickable to reserve FUTURE dates
-                    const nextLabel = nextAvail ? ' · Available ' + nextAvail.formatted : '';
-                    actionBtn = '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">' +
+                    actionBtn = '<div class="flex flex-col items-center gap-2 w-full">' +
                         '<button onclick="openBorrowModalWithEquip(' + item.id + ')" ' +
-                        'style="padding:8px 14px;background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;font-size:11px;font-weight:700;border-radius:12px;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(99,102,241,0.4);">📅 Reserve Future Dates</button>' +
-                        (nextAvail ? '<div style="font-size:10px;color:#2563eb;font-weight:600;">Returns ' + nextAvail.formatted + '</div>' : '') +
-                        '<button onclick="handleJoinWaitlist(' + item.id + ',\'' + item.name.replace(/'/g, "\\'") + '\')" ' +
-                        'style="padding:6px 10px;background:#f59e0b;color:#fff;font-size:10px;font-weight:700;border-radius:10px;border:none;cursor:pointer;">🔔 Notify me</button>' +
+                        'class="w-full py-3 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-calendar-range"></i> Request for other dates</button>' +
                         '</div>';
                 } else {
                     actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" style="padding:8px 16px;background:linear-gradient(135deg,#10b981,#0d9488);color:#fff;font-size:11px;font-weight:700;border-radius:12px;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.35);">📝 Borrow</button>';

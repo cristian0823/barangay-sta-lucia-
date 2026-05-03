@@ -995,9 +995,10 @@
                     </div>
                     <div id="borrowCalendarGrid" class="grid grid-cols-7 gap-1.5" style="flex:1;"></div>
                     <div class="flex flex-wrap justify-between items-center mt-6 p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 shadow-sm text-xs font-medium text-gray-600 dark:text-gray-300">
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></div> Available</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-100 border border-red-300"></div> Unavailable</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-indigo-500 border border-indigo-600"></div> Selected</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-500 border border-red-600"></div> Fully booked</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-orange-500 border border-orange-600"></div> Partially booked</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded border border-emerald-500"></div> Available to advance-book</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-emerald-500 border border-emerald-600"></div> Selected range</div>
                     </div>
                 </div>
                 <!-- Right Column: Professional Form -->
@@ -1005,9 +1006,16 @@
                     <!-- Date Display -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
-                        <h5 class="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-6 flex items-center gap-2 relative z-10 w-full break-words">
+                        <h5 class="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-2 flex items-center gap-2 relative z-10 w-full break-words">
                             <span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">&#128197;</span> Selected Borrowing Period
                         </h5>
+                        <!-- EXISTING BOOKINGS PANEL -->
+                        <div class="mb-4 bg-white/50 dark:bg-gray-800/50 rounded-xl p-3 border border-emerald-100 dark:border-emerald-800">
+                            <h6 class="text-[10px] font-extrabold uppercase tracking-widest text-gray-500 mb-2">Existing Bookings</h6>
+                            <div id="existingBookingsContainer" class="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                                <p class="text-xs text-gray-400 italic">No existing bookings.</p>
+                            </div>
+                        </div>
                         <div class="flex items-center justify-between gap-4 relative z-10 mt-2">
                             <div class="flex-1 text-center">
                                 <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Borrow Date</div>
@@ -2127,10 +2135,7 @@
                     const nextLabel = nextAvail ? ' · Available ' + nextAvail.formatted : '';
                     actionBtn = '<div class="flex flex-col items-center gap-2 w-full">' +
                         '<button onclick="openBorrowModalWithEquip(' + item.id + ')" ' +
-                        'class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-calendar-event"></i> Reserve Future Dates</button>' +
-                        (nextAvail ? '<div class="text-xs text-blue-600 font-semibold mt-1">Returns ' + nextAvail.formatted + '</div>' : '') +
-                        '<button onclick="handleJoinWaitlist(' + item.id + ',\'' + item.name.replace(/'/g, "\\'") + '\')" ' +
-                        'class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-bell-fill"></i> Notify me when available</button>' +
+                        'class="w-full py-3 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-calendar-range"></i> Request for other dates</button>' +
                         '</div>';
                 }
 
@@ -2355,6 +2360,37 @@
             }
         }
 
+        function renderExistingBookings() {
+            const container = document.getElementById('existingBookingsContainer');
+            if (!container) return;
+            const bookings = window.activeBorrowingsForModal || [];
+            if (bookings.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic">No existing bookings.</p>';
+                return;
+            }
+            const currentUserId = getCurrentUser().id;
+            let html = '';
+            bookings.forEach(b => {
+                const isYou = String(b.user_id) === String(currentUserId);
+                const name = isYou ? 'You' : (b.users ? b.users.full_name || b.users.username : 'User');
+                const [startM, startD] = b.borrow_date.split('T')[0].split('-').slice(1);
+                const [endM, endD] = b.return_date.split('T')[0].split('-').slice(1);
+                const dateRange = parseInt(startM) + '/' + parseInt(startD) + ' - ' + parseInt(endM) + '/' + parseInt(endD);
+                
+                html += `
+                <div class="flex items-center justify-between bg-white dark:bg-gray-700 p-2 rounded-lg border border-gray-100 dark:border-gray-600 shadow-sm">
+                    <div>
+                        <div class="text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                            ${name} ${isYou ? '<span class="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500 text-white font-bold">You</span>' : ''}
+                        </div>
+                        <div class="text-[10px] text-gray-500 dark:text-gray-400">${dateRange}</div>
+                    </div>
+                    <div class="text-xs font-extrabold text-orange-600 dark:text-orange-400">${b.quantity} items</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
         function renderBorrowCalendar() {
             const grid = document.getElementById('borrowCalendarGrid');
             const monthTitle = document.getElementById('borrowMonthTitle');
@@ -2364,26 +2400,65 @@
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
+            
+            const bookings = window.activeBorrowingsForModal || [];
+            const equip = window.currentEquipmentItem || { quantity: 1, broken: 0 };
+            const totalStock = equip.quantity - (equip.broken || 0);
+
             for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')); }
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                 const dateObj = new Date(currentYear, currentMonth, day);
                 const dayDiv = document.createElement('div');
-                dayDiv.className = 'p-2.5 rounded-lg text-center cursor-pointer font-bold text-sm transition transform hover:scale-105 ';
+                dayDiv.className = 'p-2.5 rounded-lg text-center font-bold text-sm transition transform ';
                 const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                
+                let borrowedCount = 0;
+                bookings.forEach(b => {
+                    const bStart = b.borrow_date.split('T')[0];
+                    const bEnd   = b.return_date.split('T')[0];
+                    if (dateStr >= bStart && dateStr <= bEnd) {
+                        borrowedCount += parseInt(b.quantity);
+                    }
+                });
+                
+                const isFullyBooked = borrowedCount >= totalStock;
+                const isPartiallyBooked = borrowedCount > 0 && borrowedCount < totalStock;
+
                 if (dateObj < today) {
                     dayDiv.style.cssText = isDark
                         ? 'background:#374151;color:#6b7280;cursor:not-allowed;'
                         : 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;';
-                } else {
+                } else if (isFullyBooked) {
                     dayDiv.style.cssText = isDark
-                        ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
-                        : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
-                    dayDiv.onmouseenter = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
-                    dayDiv.onmouseleave = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
-                    dayDiv.onclick = () => selectBorrowDate(dateStr);
+                        ? 'background:#ef4444;color:#fff;cursor:not-allowed;opacity:0.8;'
+                        : 'background:#ef4444;color:#fff;cursor:not-allowed;opacity:0.9;';
+                    dayDiv.title = "Fully Booked";
+                } else {
+                    let baseBg = isDark ? '#374151' : '#ecfdf5';
+                    let baseColor = isDark ? '#34d399' : '#047857';
+                    let baseBorder = isDark ? '1px solid #10b981' : '1px solid #10b981';
+                    let hoverBg = isDark ? '#4b5563' : '#a7f3d0';
+                    
+                    if (isPartiallyBooked) {
+                        baseBg = isDark ? '#ea580c' : '#f97316';
+                        baseColor = '#fff';
+                        baseBorder = 'none';
+                        hoverBg = isDark ? '#c2410c' : '#ea580c';
+                        dayDiv.title = `Partially booked (${totalStock - borrowedCount} left)`;
+                    } else {
+                        dayDiv.title = `${totalStock} available`;
+                    }
+                    
+                    dayDiv.style.cssText = `background:${baseBg};color:${baseColor};border:${baseBorder};cursor:pointer;`;
+                    dayDiv.className += 'hover:scale-105';
+                    
+                    dayDiv.onmouseenter = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = hoverBg; };
+                    dayDiv.onmouseleave = () => { if(!['borrowStartDate','borrowReturnDate'].some(k=>window[k]===dateStr)) dayDiv.style.background = baseBg; };
+                    dayDiv.onclick = () => selectBorrowDate(dateStr, totalStock - borrowedCount);
                 }
-                if (dateObj.getTime() === today.getTime()) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
+                
+                if (dateObj.getTime() === today.getTime() && !isFullyBooked) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
                 if (borrowStartDate === dateStr) { dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;'; }
                 if (borrowReturnDate === dateStr) { dayDiv.style.cssText = 'background:#0d9488;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;'; }
                 if (borrowStartDate && borrowReturnDate) {
@@ -2392,14 +2467,19 @@
                 }
                 dayDiv.textContent = day;
                 grid.appendChild(dayDiv);
-
             }
         }
 
-        function selectBorrowDate(dateStr) {
+        function selectBorrowDate(dateStr, currentAvailable = null) {
             const today = new Date(); today.setHours(0,0,0,0);
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
+            
+            const bookings = window.activeBorrowingsForModal || [];
+            const equip = window.currentEquipmentItem || { quantity: 1, broken: 0 };
+            const totalStock = equip.quantity - (equip.broken || 0);
+
             if (borrowDateSelectingStart) {
+                if (currentAvailable !== null && currentAvailable <= 0) return showToast('This date is fully booked.', 'error');
                 borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
                 showToast('Now select the return date', 'success');
             } else {
@@ -2411,6 +2491,38 @@
                     return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
                 }
                 
+                // Check all days in range for minimum availability
+                let minAvail = totalStock;
+                let startD = new Date(borrowStartDate);
+                let endD = new Date(dateStr);
+                
+                for (let d = new Date(startD); d <= endD; d.setDate(d.getDate() + 1)) {
+                    const checkStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                    let borrowedCount = 0;
+                    bookings.forEach(b => {
+                        const bStart = b.borrow_date.split('T')[0];
+                        const bEnd   = b.return_date.split('T')[0];
+                        if (checkStr >= bStart && checkStr <= bEnd) {
+                            borrowedCount += parseInt(b.quantity);
+                        }
+                    });
+                    const avail = totalStock - borrowedCount;
+                    if (avail < minAvail) minAvail = avail;
+                }
+                
+                if (minAvail <= 0) {
+                    return showToast('Your selected range includes fully booked dates. Please choose another range.', 'error');
+                }
+                
+                // Update Max Qty allowed
+                const qtyInput = document.getElementById('borrowQty');
+                if (qtyInput) {
+                    qtyInput.max = minAvail;
+                    if (parseInt(qtyInput.value) > minAvail) qtyInput.value = minAvail;
+                }
+                const helpEl = document.getElementById('borrowMaxHelp');
+                if (helpEl) helpEl.innerHTML = '&#128230; Max: ' + minAvail + (minAvail === 1 ? ' unit available' : ' units available on selected dates');
+
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
@@ -2560,6 +2672,35 @@
             document.getElementById('borrowTime').value = '';
             document.getElementById('returnTime').value = '';
             
+            // Store global context and fetch active bookings
+            window.currentEquipmentItem = item;
+            window.activeBorrowingsForModal = [];
+            
+            try {
+                const supabaseAvailable = await isSupabaseAvailable();
+                if (supabaseAvailable) {
+                    const { data: bookings } = await supabase
+                        .from('borrowings')
+                        .select('quantity, borrow_date, return_date, status, user_id, users(full_name, username)')
+                        .eq('equipment_id', equipId)
+                        .in('status', ['approved', 'pending']);
+                    window.activeBorrowingsForModal = bookings || [];
+                } else {
+                    const borrowings = JSON.parse(localStorage.getItem('barangay_local_borrowings')) || [];
+                    window.activeBorrowingsForModal = borrowings.filter(b => b.equipment_id == equipId && (b.status === 'approved' || b.status === 'pending')).map(b => ({
+                        quantity: b.quantity,
+                        borrow_date: b.borrowDate || b.borrow_date,
+                        return_date: b.returnDate || b.return_date,
+                        status: b.status,
+                        user_id: b.userId || b.user_id,
+                        users: { full_name: 'Local User' }
+                    }));
+                }
+            } catch(e) {
+                console.error('Error fetching bookings:', e);
+            }
+            
+            renderExistingBookings();
             renderBorrowCalendar();
             document.getElementById('borrowModal').classList.remove('hidden');
         }
