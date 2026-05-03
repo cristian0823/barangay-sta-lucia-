@@ -960,7 +960,7 @@ async function updateEquipment(id, updates) {
 
         // Cap values to prevent impossible states
         const cappedBroken   = Math.min(newBroken,   finalQty);
-        const cappedDisposal = Math.min(finalDisposal, Math.max(0, finalQty - cappedBroken));
+        const cappedDisposal = finalDisposal; // Disposed items are no longer part of finalQty
 
         // How many are actively borrowed (approved requests)
         let activeBorrowed = 0;
@@ -972,7 +972,8 @@ async function updateEquipment(id, updates) {
             if (borrows) activeBorrowed = borrows.reduce((s, b) => s + (b.quantity || 1), 0);
         } catch(e) { /* ignore */ }
 
-        const newAvailable = Math.max(0, finalQty - cappedBroken - cappedDisposal - activeBorrowed);
+        // Do not subtract cappedDisposal here because it was already deducted from finalQty!
+        const newAvailable = Math.max(0, finalQty - cappedBroken - activeBorrowed);
 
         // The category column stores disposal count; equipCategory stores the equipment type label
         const newCategoryLabel = updates.equipCategory !== undefined ? updates.equipCategory : item.category;
