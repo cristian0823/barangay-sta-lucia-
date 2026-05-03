@@ -2935,6 +2935,7 @@
                                             <th style="text-align: center;">Total</th>
                                             <th style="text-align: center;">Available</th>
                                             <th style="text-align: center;">Under Repair</th>
+                                            <th style="text-align: center;">For Disposal</th>
                                             <th style="text-align: center;">Status</th>
                                             <th style="text-align: right;">Actions</th>
                                         </tr>
@@ -3658,12 +3659,8 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="equipStatus">Status / Condition</label>
-            <select id="equipStatus" required>
-                <option value="Available">Available</option>
-                <option value="Under Repair">Under Repair</option>
-                <option value="For Disposal">For Disposal</option>
-            </select>
+            <label for="equipDisposal">For Disposal (Qty)</label>
+            <input type="number" id="equipDisposal" min="0" value="0" required>
         </div>
         <div class="form-group" style="display:none;">
             <label for="equipIcon">Icon (Emoji)</label>
@@ -3682,6 +3679,10 @@
                     <div class="form-group">
                         <label for="equipQuantity">Quantity</label>
                         <input type="number" id="equipQuantity" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipBroken">Under Repair (Qty)</label>
+                        <input type="number" id="equipBroken" min="0" value="0" required>
                     </div>
                     <div class="form-row" style="margin-top: 16px;">
                         <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
@@ -3716,12 +3717,8 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="editEquipStatus">Status / Condition</label>
-            <select id="editEquipStatus" required>
-                <option value="Available">Available</option>
-                <option value="Under Repair">Under Repair</option>
-                <option value="For Disposal">For Disposal</option>
-            </select>
+            <label for="editEquipDisposal">For Disposal (Qty)</label>
+            <input type="number" id="editEquipDisposal" min="0" value="0" required>
         </div>
         <div class="form-group" style="display:none;">
             <label for="editEquipIcon">Icon (Emoji)</label>
@@ -6490,12 +6487,8 @@
                     const inUse = Math.max(0, e.quantity - e.available - broken);
                     let statusBadge;
                     // Repurposed category as status override
-                    const dbStatus = e.category; 
-                    if (dbStatus === 'Under Repair') {
-                        statusBadge = '<span class="status-badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;"><i class="bi bi-wrench"></i> Under Repair</span>';
-                    } else if (dbStatus === 'For Disposal') {
-                        statusBadge = '<span class="status-badge" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;"><i class="bi bi-trash-fill"></i> For Disposal</span>';
-                    } else if (e.isArchived) {
+                    const disposal = parseInt(e.category) || 0; 
+                    if (e.isArchived) {
                         statusBadge = '<span class="status-badge" style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;"> Archived</span>';
                     } else if (broken > 0 && e.available === 0) {
                         statusBadge = '<span class="status-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;"> Under Repair</span>';
@@ -6535,6 +6528,7 @@
                     <td style="text-align: center;">${e.quantity}</td>
                     <td style="text-align: center; font-weight:700;color:#16a34a;">${e.available}</td>
                     <td style="text-align: center; color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
+                    <td style="text-align: center; color:${disposal > 0 ? '#991b1b' : '#9ca3af'};font-weight:${disposal > 0 ? '700' : '400'}">${disposal}</td>
                     <td style="text-align: center;">${statusBadge}</td>
                     <td style="text-align: right;">
                         <div style="display:flex; gap:8px; justify-content:flex-end;">
@@ -6642,7 +6636,7 @@
                 document.getElementById('editEquipBroken').value = equipment.broken || 0;
                 document.getElementById('editEquipArchived').checked = equipment.isArchived || false;
                 document.getElementById('editEquipCategory').value = equipment.category || 'General';
-                document.getElementById('editEquipStatus').value = equipment.category && ['Available', 'Under Repair', 'For Disposal'].includes(equipment.category) ? equipment.category : 'Available';
+                document.getElementById('editEquipDisposal').value = parseInt(equipment.category) || 0;
                 
                 const previewDiv = document.getElementById('editEquipImagePreview');
                 const previewImg = previewDiv.querySelector('img');

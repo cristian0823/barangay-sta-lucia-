@@ -868,12 +868,15 @@ async function updateEquipment(id, updates) {
 
         // Logic from previous synchronous method
         item.broken = item.broken || 0;
+        const disposal = parseInt(item.category) || 0;
+        const updatesDisposal = updates.category !== undefined ? parseInt(updates.category) : disposal;
         const diffQty = (updates.quantity !== undefined ? parseInt(updates.quantity) : item.quantity) - item.quantity;
         const diffBroken = (updates.broken !== undefined ? parseInt(updates.broken) : item.broken) - item.broken;
 
         const newQuantity = item.quantity + diffQty;
         const newBroken = item.broken + diffBroken;
-        const newAvailable = item.available + diffQty - diffBroken;
+        const diffDisposal = updatesDisposal - disposal;
+        const newAvailable = item.available + diffQty - diffBroken - diffDisposal;
 
         const payload = {
             quantity: newQuantity,
@@ -914,7 +917,8 @@ async function updateEquipment(id, updates) {
 
         item.quantity = item.quantity + diffQty;
         item.broken = item.broken + diffBroken;
-        item.available = item.available + diffQty - diffBroken;
+        const diffDisposalLocal = (updates.category !== undefined ? parseInt(updates.category) : (parseInt(item.category)||0)) - (parseInt(item.category)||0);
+        item.available = item.available + diffQty - diffBroken - diffDisposalLocal;
 
         if (updates.name !== undefined) item.name = updates.name;
         if (updates.category !== undefined) item.category = updates.category;
@@ -971,7 +975,7 @@ async function addEquipment(equipmentData) {
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
             isArchived: equipmentData.is_archived || false,
-            category: equipmentData.status || 'Available',
+            category: equipmentData.disposal ? String(equipmentData.disposal) : '0',
             image_url: equipmentData.image_url || null
         };
         equipment.push(newEq);
