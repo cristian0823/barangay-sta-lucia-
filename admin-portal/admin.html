@@ -6472,7 +6472,7 @@
         // ========== MAINTENANCE LOG UI ==========
         let allMaintenanceLogs = [];
 
-        async function toggleMaintenanceLog() {
+        window.toggleMaintenanceLog = async function() {
             const panel = document.getElementById('maintenanceLogPanel');
             const btn = document.getElementById('maintenanceLogToggle');
             if (!panel) return;
@@ -6481,9 +6481,9 @@
             btn.style.background = isHidden ? 'var(--primary, #16a34a)' : '';
             btn.style.color = isHidden ? '#fff' : '';
             if (isHidden) await loadMaintenanceLogs();
-        }
+        };
 
-        async function loadMaintenanceLogs() {
+        window.loadMaintenanceLogs = async function() {
             const tbody = document.getElementById('maintenanceLogTable');
             if (!tbody) return;
             tbody.innerHTML = '<tr><td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">Loading...</td></tr>';
@@ -6495,7 +6495,7 @@
             }
         }
 
-        function filterMaintenanceLogs() {
+        window.filterMaintenanceLogs = function() {
             const q = (document.getElementById('maintenanceSearch')?.value || '').toLowerCase();
             const filtered = allMaintenanceLogs.filter(l =>
                 (l.item_name || '').toLowerCase().includes(q) ||

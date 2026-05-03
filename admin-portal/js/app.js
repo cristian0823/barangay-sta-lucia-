@@ -940,9 +940,16 @@ async function updateEquipment(id, updates) {
         const newBroken = updates.broken   !== undefined ? parseInt(updates.broken)    : oldBroken;
         const newDisposal = updates.disposal !== undefined ? parseInt(updates.disposal) : oldDisposal;
 
+        // Auto-clear disposal when new stock is added (new chairs replace disposed ones)
+        let adjustedDisposal = newDisposal;
+        const stockAdded = newQty - oldQty;
+        if (stockAdded > 0 && adjustedDisposal > 0) {
+            adjustedDisposal = Math.max(0, adjustedDisposal - stockAdded);
+        }
+
         // Cap values to prevent impossible states
         const cappedBroken   = Math.min(newBroken,   newQty);
-        const cappedDisposal = Math.min(newDisposal, Math.max(0, newQty - cappedBroken));
+        const cappedDisposal = Math.min(adjustedDisposal, Math.max(0, newQty - cappedBroken));
 
         // How many are actively borrowed (approved requests)
         let activeBorrowed = 0;
@@ -999,6 +1006,22 @@ async function updateEquipment(id, updates) {
 
         for (let msg of notifMessages) {
             await addNotification('all_users', 'inventory', msg);
+        }
+
+        // Log to maintenance history
+        if (diffBroken !== 0) {
+            const action = diffBroken > 0 ? 'Under Repair' : 'Repaired';
+            await logMaintenance(item.name, action, Math.abs(diffBroken), oldBroken, cappedBroken,
+                diffBroken > 0 ? \\ units marked under repair\ : \\ units restored\);
+        }
+        if (diffDisposal !== 0) {
+            const action = diffDisposal > 0 ? 'For Disposal' : 'Recovered from Disposal';
+            await logMaintenance(item.name, action, Math.abs(diffDisposal), oldDisposal, cappedDisposal,
+                diffDisposal > 0 ? \\ units marked for disposal\ : \\ units recovered\);
+        }
+        if (stockAdded > 0 && (newDisposal - adjustedDisposal) > 0) {
+            await logMaintenance(item.name, 'Disposal Cleared (New Stock)', newDisposal - adjustedDisposal, newDisposal, adjustedDisposal,
+                \\ disposal units cleared because \ new items were added\);
         }
 
         return { success: true, message: 'Equipment updated successfully' };
