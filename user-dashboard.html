@@ -941,76 +941,100 @@
     </div> <!-- END dashboard-container -->
 
     <!-- BORROW MODAL -->
-    <div id="borrowModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
-        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl relative flex flex-col mx-4 animate-[fadeIn_0.3s_ease]" style="height:90vh;max-height:90vh;">
-            <button onclick="closeBorrowModal()" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 transition text-gray-700">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div class="p-6 border-b border-gray-100 bg-emerald-50/50">
-                <h3 class="text-2xl font-extrabold text-gray-800" id="borrowModalTitle">Borrow Item</h3>
-                <p class="text-sm text-gray-500 mt-1">Select your borrowing dates and provide details below.</p>
-            </div>
-            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto">
-                <!-- Left Column: Calendar -->
-                <div class="w-full lg:w-1/2 p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30" style="background: var(--dm-cal-bg, inherit);">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
-                        <div class="flex space-x-2">
-                            <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&larr;</button>
-                            <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&rarr;</button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1 mb-2">
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div><div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div><div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div><div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
-                    </div>
-                    <div id="borrowCalendarGrid" class="grid grid-cols-7 gap-1.5" style="min-height:290px;align-content:start;"></div>
-                    <div class="flex flex-wrap justify-between items-center mt-6 p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 shadow-sm text-xs font-medium text-gray-600 dark:text-gray-300">
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></div> Available</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-100 border border-red-300"></div> Unavailable</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-indigo-500 border border-indigo-600"></div> Selected</div>
-                    </div>
+    <div id="borrowModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/70 backdrop-blur-sm overflow-y-auto py-6">
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col mx-4 animate-[fadeIn_0.3s_ease]" style="max-height:92vh;">
+            <!-- Header -->
+            <div class="relative bg-gradient-to-br from-slate-800 to-slate-900 px-6 py-5 flex items-center gap-4 flex-shrink-0">
+                <button onclick="closeBorrowModal()" class="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition text-white text-xl z-10 border-0 cursor-pointer">✕</button>
+                <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img id="borrowModalEquipImage" src="" alt="" class="w-full h-full object-cover" style="display:none;">
+                    <span id="borrowModalEquipIcon" class="text-3xl">📦</span>
                 </div>
-                <!-- Right Column: Professional Form -->
-                <div class="w-full lg:w-1/2 p-6 flex flex-col">
-                    <!-- Date Display -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
-                        <h5 class="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-6 flex items-center gap-2 relative z-10 w-full break-words">
-                            <span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">📅</span> Selected Borrowing Period
-                        </h5>
-                        <div class="flex items-center justify-between gap-4 relative z-10 mt-2">
-                            <div class="flex-1 text-center">
-                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Borrow Date</div>
-                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-emerald-100 dark:border-gray-600">
-                                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="dispStartDateDay">--</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400" id="dispStartDateMonth">Select date</div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center"><span class="text-emerald-600 dark:text-emerald-300 text-xl"><i class="bi bi-arrow-right"></i></span></div>
-                                <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="borrowDuration">0 days</div>
-                            </div>
-                            <div class="flex-1 text-center">
-                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Return Date</div>
-                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-emerald-100 dark:border-gray-600">
-                                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="dispReturnDateDay">--</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400" id="dispReturnDateMonth">Select date</div>
-                                </div>
-                            </div>
+                <div class="flex-1 min-w-0 pr-10">
+                    <h3 class="text-xl font-extrabold text-white" id="borrowModalTitle">Borrow Item</h3>
+                    <p class="text-sm text-slate-400 mt-0.5">Select your dates and provide details below.</p>
+                    <span id="borrowModalAvailBadge" class="mt-1 inline-block text-xs font-bold px-2.5 py-0.5 bg-emerald-500 text-white rounded-full"></span>
+                </div>
+            </div>
+            <div class="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
+                <!-- Left: Calendar -->
+                <div class="w-full lg:w-[42%] flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 overflow-y-auto">
+                    <div class="px-5 pt-4 pb-2 space-y-2">
+                        <div id="calStepChip" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700">
+                            <span>1</span><span>Select Dates</span>
                         </div>
-                        <div id="dateRangeDisplay" class="mt-4 text-center text-sm font-medium text-emerald-700 dark:text-emerald-300 bg-white/60 dark:bg-gray-900/40 py-2 rounded-lg">Please select your borrowing dates from the calendar</div>
-                        <div class="mt-3 text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-300 bg-emerald-100/50 dark:bg-emerald-900/30 p-2.5 rounded-lg border border-emerald-200/50 dark:border-emerald-700">
-                            <strong>Important:</strong> You must return the item exactly at the time you specified in the form. You have a <strong>+1 day extension</strong> to bring the item back.
+                        <div id="calLockBanner" style="display:none;" class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl px-3 py-2">
+                            <span class="text-base flex-shrink-0">🔒</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs font-bold text-emerald-800 dark:text-emerald-200">Dates Locked</div>
+                                <div id="calLockRangeText" class="text-xs text-emerald-600 dark:text-emerald-400 truncate"></div>
+                            </div>
+                            <button type="button" onclick="clearBorrowDates()" class="flex-shrink-0 px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-lg border-0 cursor-pointer transition">Reset</button>
                         </div>
                     </div>
-                    <form id="borrowForm" class="flex-1 flex flex-col h-full space-y-4">
-                        <input type="hidden" id="borrowEquipmentId"><input type="hidden" id="borrowEquipmentName">
-                        <input type="hidden" id="borrowStartDate"><input type="hidden" id="borrowReturnDate">
-                        <!-- User Info Fields -->
-                        <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between px-5 mb-2">
+                        <h4 id="borrowMonthTitle" class="text-base font-bold text-gray-800 dark:text-gray-100">Month Year</h4>
+                        <div class="flex gap-1">
+                            <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-emerald-50 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold shadow-sm transition">&larr;</button>
+                            <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-emerald-50 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold shadow-sm transition">&rarr;</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 px-5 mb-1">
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Sun</div>
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Mon</div>
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Tue</div>
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Wed</div>
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Thu</div>
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Fri</div>
+                        <div class="text-center text-[10px] font-bold text-gray-400 uppercase py-1">Sat</div>
+                    </div>
+                    <div id="borrowCalendarGrid" class="grid grid-cols-7 gap-1 px-5" style="min-height:264px;align-content:start;"></div>
+                    <div id="borrowCalLegend" class="flex flex-wrap gap-x-3 gap-y-1 px-5 pt-3 pb-4 mt-2 text-[11px] font-semibold text-gray-500 dark:text-gray-400"></div>
+                </div>
+                <!-- Right: Form -->
+                <div class="w-full lg:flex-1 flex flex-col overflow-y-auto">
+                    <div id="borrowModalAvailAgain"></div>
+                    <!-- Date Summary -->
+                    <div class="px-5 pt-5 pb-0">
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-800 border border-emerald-100 dark:border-gray-700 rounded-2xl p-4 mb-3">
+                            <div class="flex items-stretch gap-3 mb-3">
+                                <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-emerald-100 dark:border-gray-700 shadow-sm">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1">Borrow Date</div>
+                                    <div class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 leading-none" id="dispStartDateDay">--</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dispStartDateMonth">Select date</div>
+                                </div>
+                                <div class="flex flex-col items-center justify-center gap-1 px-1">
+                                    <div class="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center shadow-md">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                    <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400" id="borrowDuration">0 days</div>
+                                </div>
+                                <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-teal-100 dark:border-gray-700 shadow-sm">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-teal-600 dark:text-teal-400 mb-1">Return Date</div>
+                                    <div class="text-3xl font-extrabold text-teal-600 dark:text-teal-400 leading-none" id="dispReturnDateDay">--</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dispReturnDateMonth">Select date</div>
+                                </div>
+                            </div>
+                            <div id="dateRangeDisplay" class="text-center text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-white/70 dark:bg-gray-900/50 py-2 px-3 rounded-lg">
+                                Please select your borrowing dates from the calendar
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/40 rounded-xl px-3 py-2 mb-3">
+                            <span>⏰</span>
+                            <span><strong>Important:</strong> Return the item at the specified time. A <strong>+1 day grace period</strong> is allowed.</span>
+                        </div>
+                        <div class="mb-1">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
+                                <span>2</span><span>Borrower Details</span>
+                            </span>
+                        </div>
+                    </div>
+                    <form id="borrowForm" class="px-5 pb-5 pt-3 flex flex-col gap-3">
+                        <input type="hidden" id="borrowEquipmentId">
+                        <input type="hidden" id="borrowEquipmentName">
+                        <input type="hidden" id="borrowStartDate">
+                        <input type="hidden" id="borrowReturnDate">
+                        <div class="grid grid-cols-2 gap-3">
                             <div class="form-field">
                                 <label class="form-label">Full Name</label>
                                 <input type="text" id="borrowerFullName" required class="form-input" placeholder="Your full name">
@@ -1024,7 +1048,7 @@
                             <label class="form-label">Address where item will be used</label>
                             <input type="text" id="borrowerAddress" required class="form-input" placeholder="e.g. Purok 3, Brgy. Sta. Lucia">
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-3">
                             <div class="form-field">
                                 <label class="form-label">Borrow Time</label>
                                 <input type="time" id="borrowTime" required class="form-input">
@@ -1037,19 +1061,17 @@
                         <div class="form-field">
                             <label class="form-label">Quantity Needed</label>
                             <input type="text" inputmode="numeric" pattern="[0-9]*" id="borrowQty" min="1" required class="form-input" style="-moz-appearance:textfield;">
-                            <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium"></p>
+                            <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium mt-0.5"></p>
                         </div>
-                        <div class="form-field flex-1">
-                            <label class="form-label">Purpose</label>
-                            <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..."></textarea>
+                        <div class="form-field">
+                            <label class="form-label">Purpose of Borrowing</label>
+                            <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..." rows="3"></textarea>
                         </div>
-                        <div class="mt-2 text-[11px] leading-relaxed text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2.5 rounded-lg border border-red-200 dark:border-red-700 shadow-sm flex items-start gap-2">
-                            <span class="text-base leading-none">⚠️</span>
-                            <div>
-                                <strong>Reminder:</strong> If you break the item or equipment, you will pay or replace it.
-                            </div>
+                        <div class="flex items-start gap-2 text-[11px] text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl px-3 py-2">
+                            <span>⚠️</span>
+                            <span><strong>Reminder:</strong> If you break or damage the item, you will be required to pay for or replace it.</span>
                         </div>
-                        <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-2 mb-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;">
+                        <button type="submit" id="submitBorrowBtn" disabled class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed border-0 cursor-pointer text-sm tracking-wide">
                             Submit Borrow Request
                         </button>
                     </form>
@@ -2267,6 +2289,7 @@
             const item = list.find(e => e.id === equipId);
             if (!item) return;
             document.getElementById('borrowModalTitle').innerHTML = 'Borrow ' + item.name + ' ' + item.icon;
+            (function(){ const _i=document.getElementById('borrowModalEquipImage'),_ic=document.getElementById('borrowModalEquipIcon'),_b=document.getElementById('borrowModalAvailBadge'); if(_i&&_ic){ if(item.image){_i.src=item.image;_i.style.display='block';_ic.style.display='none';}else{_i.style.display='none';_ic.style.display='';_ic.textContent=item.icon||'📦';} } if(_b)_b.textContent=(item.quantity||0)+' Available'; })();
             document.getElementById('borrowEquipmentId').value = equipId;
             document.getElementById('borrowEquipmentName').value = item.name;
             document.getElementById('borrowQty').max = item.quantity;
@@ -2429,85 +2452,83 @@
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            
             const maxInv = parseInt(document.getElementById('borrowQty').max) || 1;
+            const isLocked = !!(borrowStartDate && borrowReturnDate);
+
+            // Lock banner + step chip
+            const _lb = document.getElementById('calLockBanner');
+            const _lt = document.getElementById('calLockRangeText');
+            const _sc = document.getElementById('calStepChip');
+            if (_lb) {
+                if (isLocked) {
+                    _lb.style.display = 'flex';
+                    if (_lt) {
+                        const [,sm,sd] = borrowStartDate.split('-'); const [ey,em,ed] = borrowReturnDate.split('-');
+                        _lt.textContent = months[parseInt(sm)-1] + ' ' + parseInt(sd) + ' → ' + months[parseInt(em)-1] + ' ' + parseInt(ed) + ', ' + ey;
+                    }
+                    if (_sc) { _sc.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:2px 12px;border-radius:9999px;font-size:11px;font-weight:700;background:#10b981;color:#fff;border:1px solid #059669;'; _sc.innerHTML = '<span>✓</span><span>Dates Selected</span>'; }
+                } else {
+                    _lb.style.display = 'none';
+                    if (_sc) { _sc.style.cssText = ''; if (borrowStartDate) _sc.innerHTML = '<span>1</span><span>Select Return Date</span>'; else _sc.innerHTML = '<span>1</span><span>Select Dates</span>'; }
+                }
+            }
 
             for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')); }
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                 const dateObj = new Date(currentYear, currentMonth, day);
                 const dayDiv = document.createElement('div');
-                dayDiv.className = 'p-2.5 rounded-lg text-center font-bold text-sm transition transform ';
-                
+                dayDiv.className = 'p-2.5 rounded-lg text-center font-bold text-sm transition ';
+
                 const bookedQty = bookedQtyMap[dateStr] || 0;
-                const isBooked = bookedQty >= maxInv; // FULLY BOOKED if booked >= max
-                const isPast   = dateObj < today;
+                const isBooked  = bookedQty >= maxInv;
+                const isPast    = dateObj < today;
+                const isStart   = borrowStartDate === dateStr;
+                const isEnd     = borrowReturnDate === dateStr;
+                const isInRange = isLocked && dateObj > new Date(borrowStartDate) && dateObj < new Date(borrowReturnDate);
 
                 if (isPast) {
-                    dayDiv.style.cssText = isDark
-                        ? 'background:#374151;color:#6b7280;cursor:not-allowed;'
-                        : 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;';
+                    dayDiv.style.cssText = isDark ? 'background:#374151;color:#6b7280;cursor:not-allowed;' : 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;';
                 } else if (isBooked) {
-                    dayDiv.style.cssText = 'background:#fee2e2;color:#b91c1c;cursor:not-allowed;border:1px solid #fca5a5;position:relative;';
+                    dayDiv.style.cssText = 'background:#fee2e2;color:#b91c1c;cursor:not-allowed;border:1px solid #fca5a5;';
                     dayDiv.title = 'Fully booked';
                     dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#ef4444;">✕</span>';
-                } else if (borrowStartDate === dateStr) {
-                    dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;';
-                    dayDiv.onclick = () => selectBorrowDate(dateStr);
-                } else if (borrowReturnDate === dateStr) {
-                    dayDiv.style.cssText = 'background:#0d9488;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;';
-                    dayDiv.onclick = () => selectBorrowDate(dateStr);
-                } else if (borrowStartDate && borrowReturnDate) {
-                    const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
-                    if (dateObj > start && dateObj < end) {
-                        dayDiv.style.cssText = isDark ? 'background:#064e3b;color:#6ee7b7;cursor:pointer;' : 'background:#d1fae5;color:#065f46;cursor:pointer;';
-                        dayDiv.onclick = () => selectBorrowDate(dateStr);
-                    } else {
-                        dayDiv.style.cssText = isDark
-                            ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
-                            : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
-                        dayDiv.onclick = () => selectBorrowDate(dateStr);
-                        dayDiv.onmouseenter = () => { dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
-                        dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
-                    }
+                } else if (isStart) {
+                    dayDiv.style.cssText = 'background:#10b981;color:#fff;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;cursor:' + (isLocked ? 'default' : 'pointer') + ';';
+                    if (!isLocked) dayDiv.onclick = () => selectBorrowDate(dateStr);
+                } else if (isEnd) {
+                    dayDiv.style.cssText = 'background:#0d9488;color:#fff;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;cursor:default;';
+                } else if (isInRange) {
+                    dayDiv.style.cssText = isDark ? 'background:#064e3b;color:#6ee7b7;cursor:default;' : 'background:#d1fae5;color:#065f46;cursor:default;';
+                } else if (isLocked) {
+                    // Out-of-range while locked: muted, no click
+                    dayDiv.style.cssText = isDark ? 'background:#1f2937;color:#4b5563;cursor:not-allowed;opacity:0.55;' : 'background:#f9fafb;color:#d1d5db;cursor:not-allowed;';
                 } else {
-                    dayDiv.style.cssText = isDark
-                        ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;'
-                        : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
+                    dayDiv.style.cssText = isDark ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;' : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
                     dayDiv.onclick = () => selectBorrowDate(dateStr);
                     dayDiv.onmouseenter = () => { dayDiv.style.background = isDark ? '#4b5563' : '#a7f3d0'; };
                     dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#374151' : '#ecfdf5'; };
                 }
-                
-                if (!isBooked && !isPast) dayDiv.classList.add('hover:scale-105');
-                if (dateObj.getTime() === today.getTime() && !isBooked) {
-                    dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px';
-                }
-                
-                // If it's partially booked, show a tiny indicator
+
+                if (!isBooked && !isPast && !isLocked) dayDiv.classList.add('hover:scale-105');
+                if (dateObj.getTime() === today.getTime() && !isBooked) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
+
                 if (!isPast && !isBooked && bookedQty > 0) {
                     dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#f59e0b;">' + bookedQty + ' booked</span>';
                     dayDiv.title = (maxInv - bookedQty) + ' remaining';
                 } else if (!dayDiv.innerHTML && !dayDiv.textContent) {
                     dayDiv.textContent = day;
                 }
-                
                 grid.appendChild(dayDiv);
             }
 
             // Legend
-            let legend = document.getElementById('borrowCalLegend');
-            if (!legend) {
-                legend = document.createElement('div');
-                legend.id = 'borrowCalLegend';
-                legend.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11px;font-weight:600;color:#6b7280;';
-                grid.parentElement.appendChild(legend);
-            }
-            legend.innerHTML =
-                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#ecfdf5;border:1px solid #d1fae5;display:inline-block;"></span>Available</span>' +
-                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#fee2e2;border:1px solid #fca5a5;display:inline-block;"></span>Fully Booked</span>' +
-                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#10b981;display:inline-block;"></span>Selected</span>' +
-                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:4px;background:#f3f4f6;display:inline-block;"></span>Past</span>';
+            const legend = document.getElementById('borrowCalLegend');
+            if (legend) legend.innerHTML =
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#ecfdf5;border:1px solid #d1fae5;display:inline-block;"></span>Available</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#fee2e2;border:1px solid #fca5a5;display:inline-block;"></span>Fully Booked</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#10b981;display:inline-block;"></span>Selected</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#f3f4f6;display:inline-block;"></span>Past</span>';
         }
 
         function selectBorrowDate(dateStr) {
@@ -2666,6 +2687,7 @@
             const item = list.find(e => e.id === equipId);
             if (!item) return;
             document.getElementById('borrowModalTitle').innerHTML = 'Borrow ' + item.name + ' ' + item.icon;
+            (function(){ const _i=document.getElementById('borrowModalEquipImage'),_ic=document.getElementById('borrowModalEquipIcon'),_b=document.getElementById('borrowModalAvailBadge'); if(_i&&_ic){ if(item.image){_i.src=item.image;_i.style.display='block';_ic.style.display='none';}else{_i.style.display='none';_ic.style.display='';_ic.textContent=item.icon||'📦';} } if(_b)_b.textContent=(item.available||0)+' Available'; })();
             document.getElementById('borrowEquipmentId').value = equipId;
             document.getElementById('borrowEquipmentName').value = item.name;
             document.getElementById('borrowQty').max = item.available;
