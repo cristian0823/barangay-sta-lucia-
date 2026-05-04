@@ -353,14 +353,14 @@
         [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         [data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
-    <link rel="icon" type="image/jpeg" href="BARANGAY SUN LOGO.jpg">
+    <link rel="icon" type="image/jpeg" href="BARANGAY%20SUN%20LOGO.jpg">
 </head>
 <body class="flex flex-col h-screen w-full">
 
     <!-- HEADER -->
     <header class="dashboard-header bg-white border-b border-emerald-200 px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100] shadow-sm">
         <div class="header-left flex items-center gap-4">
-            <img src="BARANGAY SUN LOGO.jpg" alt="Logo" class="w-[46px] h-[46px] object-contain">
+            <img src="BARANGAY%20SUN%20LOGO.jpg" alt="Logo" class="w-[46px] h-[46px] object-contain">
             <!-- Mobile name shown next to logo -->
             <div class="flex flex-col md:hidden">
                 <span class="text-[13px] font-extrabold text-emerald-800 leading-tight" id="mobileUserName">Resident</span>
@@ -965,7 +965,7 @@
             </button>
             <!-- Premium Image Header -->
             <div class="relative h-40 w-full bg-gray-200 overflow-hidden shrink-0">
-                <img id="borrowModalImage" src="../BARANGAY SUN LOGO.jpg" alt="Equipment" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800">
+                <img id="borrowModalImage" src="../BARANGAY%20SUN%20LOGO.jpg" alt="Equipment" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 <div class="absolute bottom-4 left-6 right-6 flex items-end justify-between">
                     <div>
@@ -2149,12 +2149,12 @@
 
                 const pendingBadge = '';
 
-                const imageSrc = item.image_url ? item.image_url : '../BARANGAY SUN LOGO.jpg';
+                const imageSrc = item.image_url ? item.image_url : '../BARANGAY%20SUN%20LOGO.jpg';
 
                 return `<div class="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
                     <!-- Image Header -->
                     <div class="relative h-48 w-full bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                        <img src="${imageSrc}" alt="${item.name}" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800 transition-transform duration-500 group-hover:scale-110" onerror="this.src='../BARANGAY SUN LOGO.jpg'; this.onerror=null;">
+                        <img src="${imageSrc}" alt="${item.name}" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800 transition-transform duration-500 group-hover:scale-110" onerror="this.src='../BARANGAY%20SUN%20LOGO.jpg'; this.onerror=null;">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         <div class="absolute top-3 right-3 flex flex-col gap-2 items-end">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-emerald-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${statusText}</span>
@@ -2751,7 +2751,7 @@
             
             document.getElementById('borrowModalTitle').innerHTML = item.name;
             
-            const imageSrc = item.image_url ? item.image_url : '../BARANGAY SUN LOGO.jpg';
+            const imageSrc = item.image_url ? item.image_url : '../BARANGAY%20SUN%20LOGO.jpg';
             document.getElementById('borrowModalImage').src = imageSrc;
             
             const badge = document.getElementById('borrowModalStockBadge');

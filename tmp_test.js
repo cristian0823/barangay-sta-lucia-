@@ -756,12 +756,12 @@ tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }
                     ? '<div class="mt-2 flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 border border-amber-200 rounded-lg"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse flex-shrink-0"></span><span class="text-xs font-semibold text-amber-700">⏳ ' + item.pending + ' unit' + (item.pending > 1 ? 's' : '') + ' pending</span></div>'
                     : '';
 
-                const imageName = item.name ? item.name.toLowerCase().replace(/\s+/g, '-') + '.jpg' : 'BARANGAY SUN LOGO.jpg';
+                const imageName = item.name ? item.name.toLowerCase().replace(/\s+/g, '-') + '.jpg' : 'BARANGAY%20SUN%20LOGO.jpg';
 
                 return `<div class="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
                     <!-- Image Header -->
                     <div class="relative h-48 w-full bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                        <img src="${imageName}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='../BARANGAY SUN LOGO.jpg'; this.onerror=null;">
+                        <img src="${imageName}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='../BARANGAY%20SUN%20LOGO.jpg'; this.onerror=null;">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         <div class="absolute top-3 right-3">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-emerald-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${item.available} Available</span>
@@ -1140,7 +1140,7 @@ tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }
             
             document.getElementById('borrowModalTitle').innerHTML = item.name;
             
-            const imageName = item.name ? item.name.toLowerCase().replace(/\s+/g, '-') + '.jpg' : 'BARANGAY SUN LOGO.jpg';
+            const imageName = item.name ? item.name.toLowerCase().replace(/\s+/g, '-') + '.jpg' : 'BARANGAY%20SUN%20LOGO.jpg';
             document.getElementById('borrowModalImage').src = imageName;
             
             const badge = document.getElementById('borrowModalStockBadge');
