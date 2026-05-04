@@ -1038,6 +1038,7 @@
                             </div>
                         </div>
                         <div id="dateRangeDisplay" class="mt-4 text-center text-sm font-medium text-emerald-700 dark:text-emerald-300 bg-white/60 dark:bg-gray-900/40 py-2 rounded-lg">Please select your borrowing dates from the calendar</div>
+                        <button type="button" id="clearBorrowDatesBtn" onclick="clearBorrowDates()" style="display:none;width:100%;margin-top:8px;padding:8px 12px;border:1.5px solid #fca5a5;border-radius:9px;background:#fff5f5;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;align-items:center;justify-content:center;gap:5px;">🗑 Clear Dates</button>
                         <div class="mt-3 text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-300 bg-emerald-100/50 dark:bg-emerald-900/30 p-2.5 rounded-lg border border-emerald-200/50 dark:border-emerald-700">
                             <strong>Important:</strong> You must return the item exactly at the time you specified in the form. You have a <strong>+1 day extension</strong> to bring the item back.
                         </div>
@@ -2301,7 +2302,7 @@
         /* Duplicate openBorrowModalWithEquip removed */
 
         function openBorrowModal() { showToast('Please click Borrow on a specific equipment card', 'error'); }
-        function closeBorrowModal() { document.getElementById('borrowModal').classList.add('hidden'); borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true; }
+        function closeBorrowModal() { document.getElementById('borrowModal').classList.add('hidden'); borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true; updateBorrowLockState(); }
 
         // Submit button validation
         function updateBorrowSubmitButton() {
@@ -2579,6 +2580,9 @@
         }
 
         function selectBorrowDate(dateStr, currentAvailable = null) {
+            // 🔒 Lock: ignore all clicks once both dates are chosen
+            if (borrowStartDate && borrowReturnDate) return;
+
             const today = new Date(); today.setHours(0,0,0,0);
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
             
@@ -2634,6 +2638,40 @@
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
+            updateBorrowLockState();
+        }
+
+        function updateBorrowLockState() {
+            const btn = document.getElementById('clearBorrowDatesBtn');
+            const rangeDisplay = document.getElementById('dateRangeDisplay');
+            const isLocked = !!(borrowStartDate && borrowReturnDate);
+            if (btn) btn.style.display = isLocked ? 'flex' : 'none';
+            if (rangeDisplay && isLocked) {
+                rangeDisplay.style.fontWeight = '700';
+                rangeDisplay.style.background = 'rgba(16,185,129,0.12)';
+            } else if (rangeDisplay) {
+                rangeDisplay.style.fontWeight = '';
+                rangeDisplay.style.background = '';
+            }
+        }
+
+        async function clearBorrowDates() {
+            const confirmed = await showConfirmModal(
+                'Clear your selected dates? You will need to pick new borrow and return dates.',
+                'Clear Dates',
+                '🗑 Yes, Clear',
+                'Cancel',
+                'warning'
+            );
+            if (!confirmed) return;
+            borrowStartDate = null;
+            borrowReturnDate = null;
+            borrowDateSelectingStart = true;
+            updateBorrowDateDisplays();
+            renderBorrowCalendar();
+            updateBorrowSubmitButton();
+            renderBorrowAlerts();
+            updateBorrowLockState();
         }
 
         function changeBorrowMonth(delta) {
@@ -2811,6 +2849,7 @@
             renderBorrowAlerts();
             renderExistingBookings();
             renderBorrowCalendar();
+            updateBorrowLockState();
             document.getElementById('borrowModal').classList.remove('hidden');
         }
 
