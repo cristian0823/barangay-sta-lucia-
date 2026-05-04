@@ -10,7 +10,7 @@ const cleanHeader = `<header class="dashboard-header">
                     <span></span><span></span><span></span>
                 </button>
                 <div class="dashboard-logo">
-                    <img src="barangay.jpg" alt="Barangay Logo" class="logo-image">
+                    <img src="BARANGAY SUN LOGO.jpg" alt="Barangay Logo" class="logo-image">
                     <div style="display:flex;flex-direction:column;line-height:1.2;">
                         <span id="adminMobileName" style="font-size:14px;font-weight:800;color:inherit;">Admin</span>
                         <span style="font-size:10px;opacity:0.6;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Admin Portal</span>

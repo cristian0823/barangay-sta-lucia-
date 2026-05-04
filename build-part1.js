@@ -46,7 +46,7 @@ const html = `<!DOCTYPE html>
     <!-- HEADER -->
     <header class="dashboard-header bg-white border-b border-emerald-200 px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100] shadow-sm">
         <div class="header-left flex items-center gap-4">
-            <img src="barangay.jpg" alt="Logo" class="w-[46px] h-[46px] rounded-xl border-2 border-emerald-200 object-cover">
+            <img src="BARANGAY SUN LOGO.jpg" alt="Logo" class="w-[46px] h-[46px] rounded-xl border-2 border-emerald-200 object-cover">
             <div class="header-brand flex flex-col">
                 <span class="brand text-[18px] font-extrabold text-emerald-800">Barangay Sta. Lucia</span>
                 <span class="subtitle text-[11px] text-gray-500 uppercase tracking-widest font-semibold">Resident Portal</span>
