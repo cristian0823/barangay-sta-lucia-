@@ -3,8 +3,8 @@ let html = fs.readFileSync('user-portal/user-dashboard.html', 'utf8');
 
 // Fix 1: Equipment grid - replace local imageName with image_url
 html = html.replace(
-    "const imageName = item.name ? '../' + item.name.toLowerCase().replace(/s$/, '') + '.jpg' : '../BARANGAY%20SUN%20LOGO.jpg';",
-    "const imageSrc = item.image_url ? item.image_url : '../BARANGAY%20SUN%20LOGO.jpg';"
+    "const imageName = item.name ? '../' + item.name.toLowerCase().replace(/s$/, '') + '.jpg' : '../barangay-sun-logo.jpg';",
+    "const imageSrc = item.image_url ? item.image_url : '../barangay-sun-logo.jpg';"
 );
 
 // Fix 2: Update the img src tag to use imageSrc and object-cover
@@ -14,8 +14,8 @@ html = html.replace(
 );
 
 // Fix 3: Borrow modal - also use image_url
-const oldBorrow = "const imageName = item.name ? '../' + item.name.toLowerCase().replace(/s$/, '') + '.jpg' : '../BARANGAY%20SUN%20LOGO.jpg';\n            document.getElementById('borrowModalImage').src = imageName;";
-const newBorrow = "const imageSrc = item.image_url ? item.image_url : '../BARANGAY%20SUN%20LOGO.jpg';\n            document.getElementById('borrowModalImage').src = imageSrc;";
+const oldBorrow = "const imageName = item.name ? '../' + item.name.toLowerCase().replace(/s$/, '') + '.jpg' : '../barangay-sun-logo.jpg';\n            document.getElementById('borrowModalImage').src = imageName;";
+const newBorrow = "const imageSrc = item.image_url ? item.image_url : '../barangay-sun-logo.jpg';\n            document.getElementById('borrowModalImage').src = imageSrc;";
 html = html.replace(oldBorrow, newBorrow);
 
 fs.writeFileSync('user-portal/user-dashboard.html', html);

@@ -40,7 +40,7 @@ const USER_HTML = [
   'terms.html',
 ];
 
-const SHARED_ASSETS = ['brgy.png', 'BARANGAY%20SUN%20LOGO.jpg'];
+const SHARED_ASSETS = ['brgy.png', 'barangay-sun-logo.jpg'];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
