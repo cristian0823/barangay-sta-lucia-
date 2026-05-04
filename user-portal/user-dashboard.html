@@ -1778,18 +1778,25 @@
                         const origBtn = btn.innerHTML;
                         btn.innerHTML = 'Saving...'; btn.disabled = true;
                         try {
-                            const { data, error } = await _supabase.from('profiles').update({
-                                full_name: document.getElementById('p-fullName').value,
-                                contact_number: document.getElementById('p-phone').value,
+                            const payload = {
+                                fullName: document.getElementById('p-fullName').value,
+                                email: document.getElementById('p-email').value,
+                                phone: document.getElementById('p-phone').value,
                                 address: document.getElementById('p-address').value
-                            }).eq('id', getCurrentUser().id);
-
-                            if (error) throw error;
+                            };
+                            
+                            if (typeof updateUserProfile === 'function') {
+                                const result = await updateUserProfile(payload);
+                                if (!result.success) throw new Error(result.message);
+                            } else {
+                                throw new Error("Update function not found");
+                            }
                             
                             const user = getCurrentUser();
-                            user.fullName = document.getElementById('p-fullName').value;
-                            user.contactNumber = document.getElementById('p-phone').value;
-                            user.address = document.getElementById('p-address').value;
+                            user.fullName = payload.fullName;
+                            user.email = payload.email;
+                            user.contactNumber = payload.phone;
+                            user.address = payload.address;
                             localStorage.setItem('barangay_user', JSON.stringify(user));
                             
                             showAlert('Profile updated successfully!', 'success');
@@ -1798,7 +1805,7 @@
                             const mobileName = document.getElementById('mobileUserName');
                             if (mobileName) mobileName.textContent = user.fullName;
                         } catch(err) {
-                            showAlert(err.message, 'error');
+                            showAlert(err.message || "An error occurred", 'error');
                         } finally {
                             btn.innerHTML = origBtn; btn.disabled = false;
                         }
@@ -3658,10 +3665,10 @@
             try {
                 const { data, error } = await supabase.from('users').select('*').eq('username', user.username).maybeSingle();
                 if (data) {
-                    user.email = data.email || '';
-                    user.phone = data.phone || data.contact_number || '';
+                    user.email = typeof decryptData === 'function' ? await decryptData(data.email) : data.email || '';
+                    user.phone = typeof decryptData === 'function' ? await decryptData(data.phone || data.contact_number) : (data.phone || data.contact_number || '');
                     user.address = data.address || '';
-                    user.name = data.full_name || data.fullName || data.name || '';
+                    user.name = typeof decryptData === 'function' ? await decryptData(data.full_name || data.fullName || data.name) : (data.full_name || data.fullName || data.name || '');
                     window.user = user;
                 }
             } catch(e) { console.error('Error hydrating user details', e); }
