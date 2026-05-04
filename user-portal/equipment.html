@@ -620,6 +620,46 @@
             font-size: 11px; color: var(--muted); margin-top: 7px;
             padding: 5px 8px; background: var(--green-50); border-radius: 7px;
         }
+        .date-range-tip.locked {
+            color: var(--green-dark); background: #d1fae5; font-weight: 600;
+        }
+
+        /* Clear Dates button */
+        .btn-clear-dates {
+            display: none;
+            width: 100%; margin-top: 8px;
+            padding: 8px 12px;
+            border: 1.5px solid #fca5a5;
+            border-radius: 9px;
+            background: #fff5f5;
+            color: #dc2626;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            align-items: center; justify-content: center; gap: 5px;
+        }
+        .btn-clear-dates:hover {
+            background: #fef2f2; border-color: #ef4444;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(220,38,38,.15);
+        }
+        [data-theme="dark"] .btn-clear-dates {
+            background: #2d0a0a; border-color: #7f1d1d; color: #fca5a5;
+        }
+        [data-theme="dark"] .btn-clear-dates:hover { background: #3f0d0d; }
+
+        /* Lock cursor on calendar days when selection is complete */
+        .cal-locked .borrow-cal-day:not(.past):not(.empty):not(.start-day):not(.end-day):not(.in-range-day) {
+            cursor: default;
+        }
+        .cal-locked .borrow-cal-day:hover:not(.past):not(.in-range-day):not(.start-day):not(.end-day) {
+            background: white; color: var(--text); border-color: #e5e7eb;
+            transform: none;
+        }
+        [data-theme="dark"] .cal-locked .borrow-cal-day:hover:not(.past):not(.in-range-day):not(.start-day):not(.end-day) {
+            background: #064e3b; color: var(--text); border-color: #065f46;
+            transform: none;
+        }
 
         /* Calendar legend */
         .cal-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px; font-weight: 600; color: var(--muted); }
@@ -936,6 +976,7 @@
                             </div>
                         </div>
                         <div class="date-range-tip" id="drsTip">Click a date to set your borrow start date</div>
+                        <button type="button" class="btn-clear-dates" id="clearDatesBtn" onclick="clearDates()">🗑 Clear Dates</button>
                     </div>
 
                     <!-- Legend -->
@@ -1090,6 +1131,9 @@
         }
 
         function selectBorrowDate(dateStr) {
+            // Lock: ignore all clicks once both dates are chosen
+            if (borrowStartDate && borrowEndDate) return;
+
             const todayObj = new Date(); todayObj.setHours(0,0,0,0);
             if (new Date(dateStr) < todayObj) return;
 
@@ -1098,7 +1142,9 @@
                 borrowEndDate   = null;
                 selectingStart  = false;
                 updateDRSummary();
-                document.getElementById('drsTip').textContent = 'Now click a date to set the return date';
+                const tipEl = document.getElementById('drsTip');
+                tipEl.textContent = 'Now click a date to set the return date';
+                tipEl.classList.remove('locked');
             } else {
                 if (new Date(dateStr) < new Date(borrowStartDate)) {
                     showToast('Return date must be after borrow date', 'error');
@@ -1117,6 +1163,50 @@
             }
             renderBorrowCal();
             updateSubmitBtn();
+            updateCalLockState();
+        }
+
+        function updateCalLockState() {
+            const grid     = document.getElementById('borrowCalGrid');
+            const tipEl    = document.getElementById('drsTip');
+            const clearBtn = document.getElementById('clearDatesBtn');
+            const isLocked = !!(borrowStartDate && borrowEndDate);
+            if (isLocked) {
+                grid.classList.add('cal-locked');
+                tipEl.classList.add('locked');
+                clearBtn.style.display = 'flex';
+            } else {
+                grid.classList.remove('cal-locked');
+                tipEl.classList.remove('locked');
+                clearBtn.style.display = 'none';
+            }
+        }
+
+        async function clearDates() {
+            const confirmed = await showConfirmModal(
+                'Clear your selected dates? You will need to pick new borrow and return dates.',
+                'Clear Dates',
+                '🗑 Yes, Clear',
+                'Cancel',
+                'warning'
+            );
+            if (!confirmed) return;
+
+            borrowStartDate = null;
+            borrowEndDate   = null;
+            selectingStart  = true;
+            document.getElementById('drsStart').textContent     = '--';
+            document.getElementById('drsEnd').textContent       = '--';
+            document.getElementById('drsStartYear').textContent = 'Select';
+            document.getElementById('drsEndYear').textContent   = 'Select';
+            const tipEl = document.getElementById('drsTip');
+            tipEl.textContent = 'Click a date to set your borrow start date';
+            tipEl.classList.remove('locked');
+            document.getElementById('borrowStartHidden').value  = '';
+            document.getElementById('borrowEndHidden').value    = '';
+            updateSubmitBtn();
+            updateCalLockState();
+            renderBorrowCal();
         }
 
         function updateDRSummary() {
