@@ -1206,6 +1206,8 @@
             padding: 34px;
             width: 100%;
             max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             animation: modalIn 0.25s ease;
         }
@@ -3681,42 +3683,30 @@
                         <label for="equipName">Equipment Name</label>
                         <input type="text" id="equipName" placeholder="e.g., Portable Tables" required>
                     </div>
-                    <div class="form-row">
-        <div class="form-group" style="display:none;">
-            <label for="equipCategory">Category</label>
-            <select id="equipCategory">
-                <option value="General">General</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Tools">Tools</option>
-                <option value="Others">Others</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="equipDisposal">For Disposal (Qty)</label>
-            <input type="number" id="equipDisposal" min="0" value="0" required>
-        </div>
-        <div class="form-group" style="display:none;">
-            <label for="equipIcon">Icon (Emoji)</label>
-                        <input type="text" id="equipIcon" placeholder="e.g., ">
+                    <input type="hidden" id="equipCategory" value="General">
+                    <input type="hidden" id="equipIcon" value="">
+                    <div class="form-group">
+                        <label for="equipImage">Item Photo</label>
+                        <input type="file" id="equipImage" accept="image/*">
+                        <small style="color:var(--muted);font-size:11px;">Max size 2MB. Optional.</small>
                     </div>
-                    </div>
-    <div class="form-group">
-        <label for="equipImage">Item Photo</label>
-        <input type="file" id="equipImage" accept="image/*">
-        <small style="color:var(--muted);font-size:11px;">Max size 2MB. Optional.</small>
-    </div>
-    <div class="form-group">
-        <label for="equipDesc">Description</label>
+                    <div class="form-group">
+                        <label for="equipDesc">Description</label>
                         <textarea id="equipDesc" placeholder="Brief description" rows="2"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="equipQuantity">Quantity</label>
                         <input type="number" id="equipQuantity" min="1" value="1" required>
                     </div>
-                    <div class="form-group">
-                        <label for="equipBroken">Under Repair (Qty)</label>
-                        <input type="number" id="equipBroken" min="0" value="0" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipBroken">Under Repair (Qty)</label>
+                            <input type="number" id="equipBroken" min="0" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipDisposal">For Disposal (Qty)</label>
+                            <input type="number" id="equipDisposal" min="0" value="0" required>
+                        </div>
                     </div>
                     <div class="form-row" style="margin-top: 16px;">
                         <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
@@ -3739,46 +3729,32 @@
                         <label for="editEquipName">Equipment Name</label>
                         <input type="text" id="editEquipName" required>
                     </div>
-                    <div class="form-row">
-        <div class="form-group" style="display:none;">
-            <label for="editEquipCategory">Category</label>
-            <select id="editEquipCategory">
-                <option value="General">General</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Tools">Tools</option>
-                <option value="Others">Others</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="editEquipDisposal">For Disposal (Qty)</label>
-            <input type="number" id="editEquipDisposal" min="0" value="0" required>
-        </div>
-        <div class="form-group" style="display:none;">
-            <label for="editEquipIcon">Icon (Emoji)</label>
-                        <input type="text" id="editEquipIcon">
+                    <input type="hidden" id="editEquipCategory" value="General">
+                    <input type="hidden" id="editEquipIcon" value="">
+                    <div class="form-group">
+                        <label for="editEquipImage">Update Item Photo</label>
+                        <input type="file" id="editEquipImage" accept="image/*">
+                        <div id="editEquipImagePreview" style="margin-top:10px;display:none;">
+                            <img src="" alt="Preview" style="max-width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
+                        </div>
+                        <small style="color:var(--muted);font-size:11px;">Leave empty to keep current photo.</small>
                     </div>
-                    </div>
-    <div class="form-group">
-        <label for="editEquipImage">Update Item Photo</label>
-        <input type="file" id="editEquipImage" accept="image/*">
-        <div id="editEquipImagePreview" style="margin-top:10px;display:none;">
-            <img src="" alt="Preview" style="max-width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
-        </div>
-        <small style="color:var(--muted);font-size:11px;">Leave empty to keep current photo.</small>
-    </div>
-    <div class="form-group">
-        <label for="editEquipDesc">Description</label>
+                    <div class="form-group">
+                        <label for="editEquipDesc">Description</label>
                         <textarea id="editEquipDesc" rows="2"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="editEquipQuantity">Total Quantity</label>
+                        <input type="number" id="editEquipQuantity" min="1" required>
+                    </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editEquipQuantity">Total Quantity</label>
-                            <input type="number" id="editEquipQuantity" min="1" required>
+                            <label for="editEquipBroken">Under Repair (Qty)</label>
+                            <input type="number" id="editEquipBroken" min="0" required>
                         </div>
                         <div class="form-group">
-                            <label for="editEquipBroken">Under Repair</label>
-                            <input type="number" id="editEquipBroken" min="0" required>
+                            <label for="editEquipDisposal">For Disposal (Qty)</label>
+                            <input type="number" id="editEquipDisposal" min="0" required>
                         </div>
                     </div>
                     <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
