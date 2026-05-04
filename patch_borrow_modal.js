@@ -2,7 +2,7 @@ const fs = require('fs');
 let html = fs.readFileSync('user-portal/user-dashboard.html', 'utf8');
 
 // 1. Image styling from object-cover to object-contain
-html = html.replace('id="borrowModalImage" src="../barangay.jpg" alt="Equipment" class="w-full h-full object-cover', 'id="borrowModalImage" src="../barangay.jpg" alt="Equipment" class="w-full h-full object-contain');
+html = html.replace('id="borrowModalImage" src="../BARANGAY LOGO.jpg" alt="Equipment" class="w-full h-full object-cover', 'id="borrowModalImage" src="../BARANGAY LOGO.jpg" alt="Equipment" class="w-full h-full object-contain');
 
 // 2. Corrupted calendar emoji
 html = html.replace(/<span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">[^<]+<\/span> Selected Borrowing Period/g, '<span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">&#128197;</span> Selected Borrowing Period');
