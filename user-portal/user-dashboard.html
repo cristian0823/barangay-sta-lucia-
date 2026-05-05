@@ -2175,7 +2175,10 @@
                     actionBtn = `
                         <div class="equip-borrow-btn-container" data-id="${item.id}">
                             <button onclick="openBorrowModalWithEquip(${item.id})" class="equip-borrow-btn w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>
-                            <button disabled class="equip-closed-msg hidden w-full py-3 bg-gray-200 text-gray-500 text-sm font-bold rounded-xl shadow-inner cursor-not-allowed flex justify-center items-center gap-2"><i class="bi bi-clock-fill"></i> Borrowing closed — Opens <span class="eq-open-txt"></span> - <span class="eq-close-txt"></span></button>
+                            <button disabled class="equip-closed-msg hidden w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm cursor-not-allowed flex flex-col justify-center items-center gap-0.5">
+                                <div class="text-[13px] text-gray-700 dark:text-gray-200 flex items-center gap-1.5"><i class="bi bi-clock-fill"></i> Borrowing Closed</div>
+                                <div class="text-[11px] font-medium text-gray-500 dark:text-gray-400">Opens <span class="eq-open-txt"></span> to <span class="eq-close-txt"></span></div>
+                            </button>
                         </div>
                     `;
                 } else {
