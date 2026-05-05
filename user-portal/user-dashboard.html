@@ -2648,7 +2648,7 @@
             if (currentBorrowPurpose === 'event') {
                 el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Event borrowing:</strong> Pick up on your event day, return the next day at the same time.</div>';
             } else {
-                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Minimum 3 days, maximum 7 days. Select your start and end dates.</div>';
+                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Maximum 7 days. Select your start and end dates.</div>';
             }
         }
 
@@ -2789,14 +2789,13 @@
                     return;
                 }
                 borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
-                showToast('Now select the return date (min 3 days from start)', 'success');
+                showToast('Now select your return date (max 7 days)', 'success');
             } else {
                 if (new Date(dateStr) <= new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
 
                 const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (currentBorrowPurpose === 'burol') {
-                    if (diffDays < 2) return showToast('Minimum 3 days required for Funeral Viewing.', 'error');
                     if (diffDays > 6) return showToast('Maximum 7 days allowed for Funeral Viewing.', 'error');
                 } else if (diffDays > 7) {
                     return showToast('You can only borrow equipment for a maximum of 7 days.', 'error');
