@@ -623,9 +623,6 @@
                       <div id="equipStatusPill" class="px-3 py-1 rounded-full text-xs font-bold text-white bg-gray-500 whitespace-nowrap">Checking...</div>
                       <div class="font-bold text-gray-800 dark:text-white text-sm md:text-base text-center md:text-left">Equipment borrowing hours: <span id="equipHoursText">...</span></div>
                    </div>
-                   <div class="font-mono text-sm md:text-base font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg text-center w-full md:w-auto">
-                      <i class="bi bi-clock"></i> <span id="liveClockEq">--:--:--</span> PHT
-                   </div>
                 </div>
 
                 <div class="mb-6">
@@ -756,9 +753,6 @@
                    <div class="flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
                       <div id="facilityStatusPill" class="px-3 py-1 rounded-full text-xs font-bold text-white bg-gray-500 whitespace-nowrap">Checking...</div>
                       <div class="font-bold text-gray-800 dark:text-white text-sm md:text-base text-center md:text-left">Facility reservation hours: <span id="facilityHoursText">...</span></div>
-                   </div>
-                   <div class="font-mono text-sm md:text-base font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg text-center w-full md:w-auto">
-                      <i class="bi bi-clock"></i> <span id="liveClockFac">--:--:--</span> PHT
                    </div>
                 </div>
                 <div id="facilityClosedWarning" class="mb-6 rounded-xl p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-bold shadow-sm" style="display:none;">
@@ -4234,12 +4228,6 @@ async function loadSettingsView() {
                 const now = new Date();
                 const phtStr = now.toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: false, hour: 'numeric' });
                 const phtHour = parseInt(phtStr);
-                const phtDisp = now.toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' });
-
-                const liveEq = document.getElementById('liveClockEq');
-                if (liveEq) liveEq.textContent = phtDisp;
-                const liveFac = document.getElementById('liveClockFac');
-                if (liveFac) liveFac.textContent = phtDisp;
 
                 const isEqOpen = phtHour >= eqOpen && phtHour < eqClose;
                 const eqPill = document.getElementById('equipStatusPill');
