@@ -1641,6 +1641,38 @@
         let bookedDateSet = new Set(); // stores 'YYYY-MM-DD' strings that are fully booked
         let currentBorrowEquipId = null; // track which equipment the modal is for
 
+        // ── OPERATING HOURS ──────────────────────────────────────────
+        let OPERATING_HOURS = { equipOpen: 8, equipClose: 17, facilityOpen: 6, facilityClose: 21 };
+
+        async function loadOperatingHours() {
+            try {
+                const { data, error } = await supabase.from('site_settings').select('key,value');
+                if (!error && data) data.forEach(r => {
+                    if (r.key === 'equipment_open_hour')  OPERATING_HOURS.equipOpen     = parseInt(r.value);
+                    if (r.key === 'equipment_close_hour') OPERATING_HOURS.equipClose    = parseInt(r.value);
+                    if (r.key === 'facility_open_hour')   OPERATING_HOURS.facilityOpen  = parseInt(r.value);
+                    if (r.key === 'facility_close_hour')  OPERATING_HOURS.facilityClose = parseInt(r.value);
+                });
+            } catch(e) { /* use hardcoded defaults */ }
+        }
+
+        function getManilaHour() {
+            return parseInt(new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Manila', hour: 'numeric', hour12: false
+            }).format(new Date()));
+        }
+
+        function fmtOpHour(h) {
+            if (h === 0 || h === 24) return '12:00 AM';
+            if (h < 12) return h + ':00 AM';
+            if (h === 12) return '12:00 PM';
+            return (h - 12) + ':00 PM';
+        }
+
+        function isEquipOpen()    { const h = getManilaHour(); return h >= OPERATING_HOURS.equipOpen    && h < OPERATING_HOURS.equipClose; }
+        function isFacilityOpen() { const h = getManilaHour(); return h >= OPERATING_HOURS.facilityOpen && h < OPERATING_HOURS.facilityClose; }
+        // ─────────────────────────────────────────────────────────────
+
         // Toast
         function openSuccessModal(title, msg) {
             document.getElementById('successModalTitle').innerText = title;
@@ -2086,8 +2118,14 @@
                 const ok = item.available > 0;
                 const nextAvail = nextAvailMap[item.id];
 
+                const _equipClosed = !isEquipOpen();
                 let actionBtn = '';
-                if (item.isLocked) {
+                if (_equipClosed) {
+                    actionBtn = '<div style="width:100%;text-align:center;">' +
+                        '<button disabled style="width:100%;padding:9px 12px;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700;border-radius:12px;cursor:not-allowed;border:1px solid #e2e8f0;">🕐 Borrowing Currently Closed</button>' +
+                        '<div style="font-size:10px;color:#94a3b8;margin-top:3px;">Operating hours: ' + fmtOpHour(OPERATING_HOURS.equipOpen) + ' – ' + fmtOpHour(OPERATING_HOURS.equipClose) + '</div>' +
+                        '</div>';
+                } else if (item.isLocked) {
                     actionBtn = '<button disabled style="padding:8px 12px;background:#e5e7eb;color:#6b7280;font-size:11px;font-weight:700;border-radius:12px;cursor:not-allowed;border:none;" title="Temporarily locked due to unreturned items">🔒 System Locked</button>';
                 } else if (!ok) {
                     actionBtn = '<div class="flex flex-col items-center gap-2 w-full">' +
@@ -2282,6 +2320,10 @@
         let currentBorrowEquipId = null; // track which equipment the modal is for
 
         async function openBorrowModalWithEquip(equipId) {
+            if (!isEquipOpen()) {
+                showToast('Borrowing requests are currently closed. Operating hours: ' + fmtOpHour(OPERATING_HOURS.equipOpen) + ' – ' + fmtOpHour(OPERATING_HOURS.equipClose), 'error');
+                return;
+            }
             currentBorrowEquipId = equipId;
             bookedQtyMap = {}; // reset
 
@@ -2579,6 +2621,9 @@
         // Borrow Form Submission
         document.getElementById('borrowForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
+            if (!isEquipOpen()) {
+                return showToast('Borrowing requests are currently closed (' + fmtOpHour(OPERATING_HOURS.equipOpen) + ' – ' + fmtOpHour(OPERATING_HOURS.equipClose) + ').', 'error');
+            }
             const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
             const qty = parseInt(document.getElementById('borrowQty').value);
             const purposeStr = document.getElementById('borrowPurpose').value;
@@ -3196,6 +3241,10 @@
 
         async function submitDsBooking(e) {
             e.preventDefault();
+            if (!isFacilityOpen()) {
+                showToast('Facility reservations are currently closed. Operating hours: ' + fmtOpHour(OPERATING_HOURS.facilityOpen) + ' – ' + fmtOpHour(OPERATING_HOURS.facilityClose), 'error');
+                return;
+            }
             const btn = document.getElementById('dsSubmitBtn');
             btn.disabled = true; btn.innerHTML = 'Processing...';
 
@@ -3764,6 +3813,7 @@ async function loadSettingsView() {
 
         // Real-time live flow: Wait for new notifications immediately
         document.addEventListener('DOMContentLoaded', async () => {
+            loadOperatingHours(); // load admin-configured hours in background
             if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
                 supabase
                     .channel('live-notifications')

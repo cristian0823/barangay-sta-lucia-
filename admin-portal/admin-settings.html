@@ -936,6 +936,9 @@
         <button class="mobile-section-tab"
             onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">📊
             System</button>
+        <button class="mobile-section-tab"
+            onclick="showSection('operating-hours'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');">🕐
+            Hours</button>
     </div>
 
     <div class="layout">
@@ -953,6 +956,9 @@
                 </button>
                 <button class="nav-item" onclick="showSection('system')" id="systemBtn">
                     <i class="bi bi-bar-chart-fill"></i> System Info
+                </button>
+                <button class="nav-item" onclick="showSection('operating-hours')" id="operatingHoursBtn">
+                    <i class="bi bi-clock-fill"></i> Operating Hours
                 </button>
             </nav>
         </aside>
@@ -1182,6 +1188,77 @@
                 </div>
             </div>
 
+            <!-- ── OPERATING HOURS ── -->
+            <div id="operating-hours-section" class="hidden">
+                <div class="section-hero">
+                    <div class="section-hero-content">
+                        <div class="section-hero-icon">🕐</div>
+                        <div>
+                            <div class="section-hero-title">Operating Hours</div>
+                            <div class="section-hero-sub">Control when residents can submit borrow and facility requests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ohSetupNotice" class="hidden" style="background:#fffbeb;border:1.5px solid #f59e0b;border-radius:14px;padding:16px 20px;margin-bottom:20px;">
+                    <div style="font-weight:700;color:#92400e;margin-bottom:6px;">⚠️ Database Table Required</div>
+                    <div style="font-size:13px;color:#78350f;margin-bottom:10px;">Run this SQL once in your Supabase SQL editor to enable persistent settings:</div>
+                    <pre style="background:#1e1b4b;color:#a5f3fc;padding:12px 16px;border-radius:10px;font-size:12px;overflow-x:auto;white-space:pre-wrap;">CREATE TABLE IF NOT EXISTS site_settings (
+  key text PRIMARY KEY,
+  value text NOT NULL,
+  updated_at timestamptz DEFAULT now()
+);
+INSERT INTO site_settings (key,value) VALUES
+  ('equipment_open_hour','8'),('equipment_close_hour','17'),
+  ('facility_open_hour','6'),('facility_close_hour','21')
+ON CONFLICT (key) DO NOTHING;</pre>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title"><i class="bi bi-box-seam"></i> Equipment Borrowing Hours</div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Residents can only submit borrow requests within these hours (Asia/Manila).</p>
+                            <div class="form-group">
+                                <label class="form-label">Opening Time</label>
+                                <input type="time" id="equipOpenTime" class="form-input" value="08:00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Closing Time</label>
+                                <input type="time" id="equipCloseTime" class="form-input" value="17:00">
+                            </div>
+                            <div id="equipHoursStatus" style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--green-50);border-radius:8px;border:1px solid var(--green-100);"></div>
+                            <button onclick="saveEquipHours()" class="btn-submit">
+                                <i class="bi bi-check2-circle"></i> Save Equipment Hours
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title"><i class="bi bi-calendar-event"></i> Facility Reservation Hours</div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Residents can only submit facility reservation requests within these hours (Asia/Manila).</p>
+                            <div class="form-group">
+                                <label class="form-label">Opening Time</label>
+                                <input type="time" id="facilityOpenTime" class="form-input" value="06:00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Closing Time</label>
+                                <input type="time" id="facilityCloseTime" class="form-input" value="21:00">
+                            </div>
+                            <div id="facilityHoursStatus" style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--green-50);border-radius:8px;border:1px solid var(--green-100);"></div>
+                            <button onclick="saveFacilityHours()" class="btn-submit">
+                                <i class="bi bi-check2-circle"></i> Save Facility Hours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -1217,13 +1294,15 @@
         }
 
         function showSection(section) {
-            ['profile', 'security', 'system'].forEach(s => {
+            ['profile', 'security', 'system', 'operating-hours'].forEach(s => {
                 const el = document.getElementById(s + '-section');
                 if (el) el.classList.toggle('hidden', s !== section);
-                const btn = document.getElementById(s + 'Btn');
+                const btnId = s === 'operating-hours' ? 'operatingHoursBtn' : s + 'Btn';
+                const btn = document.getElementById(btnId);
                 if (btn) btn.classList.toggle('active', s === section);
             });
             if (section === 'security') loadAdminTOTPStatus();
+            if (section === 'operating-hours') loadOperatingHoursAdmin();
         }
 
         async function loadAdminTOTPStatus() {
@@ -1373,6 +1452,63 @@
             await loadSystemStats();
         }
         init();
+
+        // ── OPERATING HOURS ─────────────────────────────────────────
+        function fmtHourLabel(h) {
+            if (h === 0) return '12:00 AM'; if (h < 12) return h + ':00 AM';
+            if (h === 12) return '12:00 PM'; return (h-12) + ':00 PM';
+        }
+
+        async function loadOperatingHoursAdmin() {
+            try {
+                const { data, error } = await supabase.from('site_settings').select('key,value');
+                if (error) { document.getElementById('ohSetupNotice').classList.remove('hidden'); return; }
+                document.getElementById('ohSetupNotice').classList.add('hidden');
+                if (!data) return;
+                const get = k => { const r = data.find(x=>x.key===k); return r ? parseInt(r.value) : null; };
+                const eo = get('equipment_open_hour'), ec = get('equipment_close_hour');
+                const fo = get('facility_open_hour'), fc = get('facility_close_hour');
+                if (eo !== null) document.getElementById('equipOpenTime').value  = String(eo).padStart(2,'0') + ':00';
+                if (ec !== null) document.getElementById('equipCloseTime').value = String(ec).padStart(2,'0') + ':00';
+                if (fo !== null) document.getElementById('facilityOpenTime').value  = String(fo).padStart(2,'0') + ':00';
+                if (fc !== null) document.getElementById('facilityCloseTime').value = String(fc).padStart(2,'0') + ':00';
+                updateStatusLabels(eo||8, ec||17, fo||6, fc||21);
+            } catch(e) { document.getElementById('ohSetupNotice').classList.remove('hidden'); }
+        }
+
+        function updateStatusLabels(eo, ec, fo, fc) {
+            const now = parseInt(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Manila',hour:'numeric',hour12:false}).format(new Date()));
+            const equipOpen = now >= eo && now < ec;
+            const facOpen   = now >= fo && now < fc;
+            const el = document.getElementById('equipHoursStatus');
+            const fl = document.getElementById('facilityHoursStatus');
+            if (el) el.innerHTML = '🕐 Current schedule: <strong>' + fmtHourLabel(eo) + ' – ' + fmtHourLabel(ec) + '</strong> &nbsp;|&nbsp; Status: <strong style="color:' + (equipOpen?'#059669':'#dc2626') + '">' + (equipOpen?'🟢 Open':'🔴 Closed') + '</strong>';
+            if (fl) fl.innerHTML = '🕐 Current schedule: <strong>' + fmtHourLabel(fo) + ' – ' + fmtHourLabel(fc) + '</strong> &nbsp;|&nbsp; Status: <strong style="color:' + (facOpen?'#059669':'#dc2626') + '">' + (facOpen?'🟢 Open':'🔴 Closed') + '</strong>';
+        }
+
+        async function saveHours(openKey, closeKey, openInputId, closeInputId) {
+            const openVal  = parseInt(document.getElementById(openInputId).value.split(':')[0]);
+            const closeVal = parseInt(document.getElementById(closeInputId).value.split(':')[0]);
+            if (isNaN(openVal) || isNaN(closeVal) || openVal >= closeVal) {
+                showToast('Invalid hours: opening must be before closing.', 'error'); return;
+            }
+            try {
+                const { error } = await supabase.from('site_settings').upsert([
+                    { key: openKey,  value: String(openVal),  updated_at: new Date().toISOString() },
+                    { key: closeKey, value: String(closeVal), updated_at: new Date().toISOString() }
+                ], { onConflict: 'key' });
+                if (error) throw error;
+                showToast('Operating hours saved.', 'success');
+                loadOperatingHoursAdmin();
+            } catch(e) {
+                showToast('Failed to save. Make sure the site_settings table exists.', 'error');
+                document.getElementById('ohSetupNotice').classList.remove('hidden');
+            }
+        }
+
+        function saveEquipHours()    { saveHours('equipment_open_hour','equipment_close_hour','equipOpenTime','equipCloseTime'); }
+        function saveFacilityHours() { saveHours('facility_open_hour','facility_close_hour','facilityOpenTime','facilityCloseTime'); }
+        // ────────────────────────────────────────────────────────────
     </script>
 </body>
 
