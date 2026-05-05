@@ -973,7 +973,10 @@
                         </div>
                     </div>
                     <div class="flex items-center justify-between px-5 mb-2">
-                        <h4 id="borrowMonthTitle" class="text-base font-bold text-gray-800 dark:text-gray-100">Month Year</h4>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 id="borrowMonthTitle" class="text-base font-bold text-gray-800 dark:text-gray-100">Month Year</h4>
+                            <span id="calRuleBadge" style="display:none;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;"></span>
+                        </div>
                         <div class="flex gap-1">
                             <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-emerald-50 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold shadow-sm transition">&larr;</button>
                             <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-emerald-50 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold shadow-sm transition">&rarr;</button>
@@ -996,37 +999,34 @@
                     <div id="borrowModalAvailAgain"></div>
 
                     <!-- Step 1: Purpose Selector -->
-                    <div id="purposeSelectorPanel" class="px-5 pt-5 pb-4">
-                        <div class="mb-2">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700">
-                                <span>1</span><span>Select Borrowing Purpose</span>
-                            </span>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Choose how you will use this equipment. Different duration rules apply per purpose.</p>
-                        <div class="grid grid-cols-2 gap-3">
+                    <div id="purposeSelectorPanel" class="px-5 pt-5 pb-3">
+                        <div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">PURPOSE</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
                             <button type="button" onclick="selectBorrowPurpose('event')" id="purposeBtnEvent"
-                                style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;border:2px solid #e9d5ff;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;">
-                                <span style="font-size:24px;">🎉</span>
-                                <span style="font-weight:700;font-size:13px;color:#374151;">Event</span>
-                                <span style="font-size:10px;color:#9ca3af;font-weight:500;line-height:1.3;text-align:center;">1 day only<br>Community events</span>
+                                style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;font-family:inherit;width:100%;">
+                                <span style="font-size:22px;">🎉</span>
+                                <span style="font-weight:800;font-size:13px;color:#0f172a;">Event</span>
+                                <span style="font-size:10px;color:#94a3b8;font-weight:500;">Community gatherings</span>
                             </button>
                             <button type="button" onclick="selectBorrowPurpose('burol')" id="purposeBtnBurol"
-                                style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;border:2px solid #e9d5ff;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;">
-                                <span style="font-size:24px;">🕯️</span>
-                                <span style="font-weight:700;font-size:13px;color:#374151;">Burol / Funeral Viewing</span>
-                                <span style="font-size:10px;color:#9ca3af;font-weight:500;line-height:1.3;text-align:center;">3–7 days<br>Wake / viewing</span>
+                                style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;font-family:inherit;width:100%;">
+                                <span style="font-size:22px;">🕯️</span>
+                                <span style="font-weight:800;font-size:13px;color:#0f172a;">Burol / Funeral</span>
+                                <span style="font-size:10px;color:#94a3b8;font-weight:500;">Wake and viewing</span>
                             </button>
                         </div>
+                        <!-- Duration rule notice — revealed after purpose chosen -->
+                        <div id="borrowDurationRules"></div>
+                        <!-- Available items for selected purpose -->
+                        <div id="availableItemsForPurpose"></div>
                     </div>
 
                     <!-- Steps 2 & 3: Shown only after purpose is selected -->
                     <div id="borrowFormBody" style="display:none;">
                         <!-- Date Summary -->
-                        <div class="px-5 pt-0 pb-0">
+                        <div class="px-5 pt-2 pb-0">
                             <!-- Item specs (shown if description available) -->
                             <div id="borrowItemSpecsBox"></div>
-                            <!-- Duration rules info box -->
-                            <div id="borrowDurationRules" class="mb-3"></div>
                             <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-800 border border-emerald-100 dark:border-gray-700 rounded-2xl p-4 mb-3">
                                 <div class="flex items-stretch gap-3 mb-3">
                                     <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-emerald-100 dark:border-gray-700 shadow-sm">
@@ -2372,13 +2372,40 @@
             return !BUROL_EXCLUDED.some(kw => lower.includes(kw));
         }
 
-        const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;cursor:pointer;font-family:inherit;transition:border .15s,background .15s,box-shadow .15s;width:100%;border:none;';
-        const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #7c3aed !important;background:#f5f3ff;box-shadow:0 0 0 3px rgba(124,58,237,.2);';
-        const _BTN_INACTIVE = _BTN_BASE + 'border:2px solid #e9d5ff;background:#fff;box-shadow:none;';
+        const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;';
+        const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #059669;background:#10b981;box-shadow:0 4px 14px rgba(16,185,129,.35);';
+        const _BTN_INACTIVE = _BTN_BASE + 'border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;';
+
+        // All borrowable items in display order
+        const ALL_BORROW_ITEMS = ['Chair', 'Table', 'Tent', 'Microphone', 'Speaker', 'Electric Fan', 'Ladder'];
 
         function _setPurposeBtnStyle(btn, active) {
-            if (!btn) return;
+            if (!btn || btn.style.display === 'none') return;
             btn.style.cssText = active ? _BTN_ACTIVE : _BTN_INACTIVE;
+            // Flip text colors
+            const nameEl = btn.querySelector('span:nth-child(2)');
+            const subEl  = btn.querySelector('span:nth-child(3)');
+            if (nameEl) nameEl.style.color = active ? '#fff' : '#0f172a';
+            if (subEl)  subEl.style.color  = active ? 'rgba(255,255,255,.8)' : '#94a3b8';
+        }
+
+        function renderAvailableItemsForPurpose(purpose) {
+            const el = document.getElementById('availableItemsForPurpose');
+            if (!el || !purpose) { if (el) el.innerHTML = ''; return; }
+            const chips = ALL_BORROW_ITEMS.map(name => {
+                const lower = name.toLowerCase();
+                const excluded = !itemAllowsBurol(name); // true if mic/speaker/ladder/fan
+                const available = purpose === 'event' || !excluded;
+                if (available) {
+                    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;">' + name + '</span>';
+                } else {
+                    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;text-decoration:line-through;opacity:.8;">' + name + '</span>';
+                }
+            }).join('');
+            el.innerHTML = '<div style="margin-bottom:12px;">' +
+                '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:7px;">AVAILABLE ITEMS FOR ' + (purpose === 'event' ? 'EVENT' : 'BUROL') + '</div>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:5px;">' + chips + '</div>' +
+                '</div>';
         }
 
         function selectBorrowPurpose(purpose) {
@@ -2391,6 +2418,7 @@
             // Reset dates so user picks afresh under the new rules
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             updateBorrowDurationRules();
+            renderAvailableItemsForPurpose(purpose);
             updateBorrowDateDisplays();
             renderBorrowCalendar();
             updateBorrowSubmitButton();
@@ -2443,11 +2471,18 @@
             currentBorrowPurpose = null;
             const _evBtn = document.getElementById('purposeBtnEvent');
             const _buBtn = document.getElementById('purposeBtnBurol');
-            if (_evBtn) _evBtn.style.cssText = _BTN_INACTIVE;
-            if (_buBtn) {
-                _buBtn.style.cssText = _BTN_INACTIVE;
-                _buBtn.style.display = itemAllowsBurol(item.name) ? 'flex' : 'none';
-            }
+            [_evBtn, _buBtn].forEach(b => {
+                if (!b) return;
+                b.style.cssText = _BTN_INACTIVE;
+                const nameEl = b.querySelector('span:nth-child(2)');
+                const subEl  = b.querySelector('span:nth-child(3)');
+                if (nameEl) nameEl.style.color = '#0f172a';
+                if (subEl)  subEl.style.color  = '#94a3b8';
+            });
+            if (_buBtn) _buBtn.style.display = itemAllowsBurol(item.name) ? 'flex' : 'none';
+            // Clear items list and duration rules
+            const _aip = document.getElementById('availableItemsForPurpose');
+            if (_aip) _aip.innerHTML = '';
             // Hide form body until purpose chosen
             const _body = document.getElementById('borrowFormBody');
             if (_body) { _body.style.display = 'none'; _body.style.visibility = 'hidden'; }
@@ -2535,6 +2570,7 @@
             document.getElementById('borrowModal').classList.add('hidden');
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             currentBorrowPurpose = null;
+            renderAvailableItemsForPurpose(null);
         }
 
         // Submit button validation
@@ -2668,12 +2704,26 @@
                 }
             }
 
+            // Update calendar rule badge
+            const _crb = document.getElementById('calRuleBadge');
+            if (_crb) {
+                if (currentBorrowPurpose === 'event') {
+                    _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;';
+                    _crb.textContent = 'Single day only';
+                } else if (currentBorrowPurpose === 'burol') {
+                    _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
+                    _crb.textContent = '3–7 days only';
+                } else {
+                    _crb.style.display = 'none';
+                }
+            }
+
             // If no purpose selected yet, show a prompt overlay and return early
             if (!currentBorrowPurpose) {
                 grid.innerHTML = '<div style="grid-column:span 7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px;text-align:center;gap:8px;">' +
                     '<span style="font-size:28px;">👉</span>' +
                     '<div style="font-size:13px;font-weight:700;color:#374151;">Select your purpose first</div>' +
-                    '<div style="font-size:11px;color:#9ca3af;">Choose Event or Burol on the right panel to unlock the calendar</div>' +
+                    '<div style="font-size:11px;color:#9ca3af;">Choose Event or Burol on the right →</div>' +
                     '</div>';
                 return;
             }
