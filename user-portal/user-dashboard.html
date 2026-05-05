@@ -755,9 +755,7 @@
                       <div class="font-bold text-gray-800 dark:text-white text-sm md:text-base text-center md:text-left">Facility reservation hours: <span id="facilityHoursText">...</span></div>
                    </div>
                 </div>
-                <div id="facilityClosedWarning" class="mb-6 rounded-xl p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-bold shadow-sm" style="display:none;">
-                    Reservations currently closed. Available from <span id="facilityHoursText2"></span>.
-                </div>
+
 
                 <div class="glass-card p-6 mb-8">
                     <div class="flex justify-between items-center mb-6">
@@ -4270,10 +4268,7 @@ async function loadSettingsView() {
                         facPill.className = 'px-3 py-1 rounded-full text-xs font-bold text-white bg-red-500';
                     }
                 }
-                const facWarn = document.getElementById('facilityClosedWarning');
-                if (facWarn) {
-                    facWarn.style.display = isFacOpen ? 'none' : 'block';
-                }
+
 
                 const dsBtn = document.getElementById('dsToggleFormBtn');
                 if (dsBtn && !window.pendingRescheduleData) {
