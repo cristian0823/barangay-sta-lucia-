@@ -1113,7 +1113,7 @@
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Return Time</label>
-                                <input type="time" id="returnTime" required class="form-input" oninput="validateBorrowTime()">
+                                <input type="time" id="returnTime" required class="form-input" oninput="validateReturnTime()">
                                 <p id="returnTimeError" class="text-xs text-red-500 font-medium mt-1" style="display:none;"></p>
                             </div>
                         </div>
@@ -2390,19 +2390,43 @@
         function validateBorrowTime() {
             const eqOpen = 8, eqClose = 17;
             const errMsg = 'Must be between 8:00 AM and 5:00 PM (operating hours)';
+            const bInput = document.getElementById('borrowTime');
+            const rInput = document.getElementById('returnTime');
             const bEl = document.getElementById('borrowTimeError');
-            const rEl = document.getElementById('returnTimeError');
-            const bVal = document.getElementById('borrowTime').value;
-            const rVal = document.getElementById('returnTime').value;
-            if (bEl && bVal) {
-                const bH = parseInt(bVal.split(':')[0]);
-                const bInvalid = bH < eqOpen || bH >= eqClose;
-                bEl.textContent = errMsg; bEl.style.display = bInvalid ? 'block' : 'none';
+            const bVal = bInput ? bInput.value : '';
+            if (bEl) {
+                if (!bVal) {
+                    bEl.style.display = 'none';
+                } else {
+                    const bH = parseInt(bVal.split(':')[0]);
+                    const bInvalid = bH < eqOpen || bH >= eqClose;
+                    bEl.textContent = errMsg;
+                    bEl.style.display = bInvalid ? 'block' : 'none';
+                    // Auto-fill return time when borrow time is valid
+                    if (!bInvalid && rInput && !rInput.value) {
+                        rInput.value = bVal;
+                        validateReturnTime();
+                    }
+                }
             }
-            if (rEl && rVal) {
-                const rH = parseInt(rVal.split(':')[0]);
-                const rInvalid = rH < eqOpen || rH >= eqClose;
-                rEl.textContent = errMsg; rEl.style.display = rInvalid ? 'block' : 'none';
+            updateBorrowSubmitButton();
+        }
+
+        function validateReturnTime() {
+            const eqOpen = 8, eqClose = 17;
+            const errMsg = 'Must be between 8:00 AM and 5:00 PM (operating hours)';
+            const rInput = document.getElementById('returnTime');
+            const rEl = document.getElementById('returnTimeError');
+            const rVal = rInput ? rInput.value : '';
+            if (rEl) {
+                if (!rVal) {
+                    rEl.style.display = 'none';
+                } else {
+                    const rH = parseInt(rVal.split(':')[0]);
+                    const rInvalid = rH < eqOpen || rH >= eqClose;
+                    rEl.textContent = errMsg;
+                    rEl.style.display = rInvalid ? 'block' : 'none';
+                }
             }
             updateBorrowSubmitButton();
         }
@@ -3047,6 +3071,8 @@
             document.getElementById('borrowerAddress').value = user.address || '';
             document.getElementById('borrowTime').value = '';
             document.getElementById('returnTime').value = '';
+            const _bte = document.getElementById('borrowTimeError'); if (_bte) _bte.style.display = 'none';
+            const _rte = document.getElementById('returnTimeError'); if (_rte) _rte.style.display = 'none';
             
             // Store global context and fetch active bookings
             window.currentEquipmentItem = item;
