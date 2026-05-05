@@ -617,6 +617,17 @@
                         <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
                     </div>
                 </div>
+                
+                <div id="equipHoursBanner" class="mb-6 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center shadow-sm border" style="display:flex; transition: all 0.3s; background:var(--input-bg); border-color:var(--border-color);">
+                   <div class="flex items-center gap-3">
+                      <div id="equipStatusPill" class="px-3 py-1 rounded-full text-xs font-bold text-white bg-gray-500">Checking...</div>
+                      <div class="font-bold text-gray-800 dark:text-white">Equipment borrowing hours: <span id="equipHoursText">...</span></div>
+                   </div>
+                   <div class="font-mono text-sm font-bold mt-2 md:mt-0 text-gray-600 dark:text-gray-300">
+                      <i class="bi bi-clock"></i> <span id="liveClockEq">--:--:--</span> PHT
+                   </div>
+                </div>
+
                 <div class="mb-6">
                     <div style="position:relative;">
                         <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;"><i class="bi bi-search"></i></span>
@@ -740,6 +751,20 @@
                         <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
                     </div>
                 </div>
+
+                <div id="facilityHoursBanner" class="mb-4 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center shadow-sm border" style="display:flex; transition: all 0.3s; background:var(--input-bg); border-color:var(--border-color);">
+                   <div class="flex items-center gap-3">
+                      <div id="facilityStatusPill" class="px-3 py-1 rounded-full text-xs font-bold text-white bg-gray-500">Checking...</div>
+                      <div class="font-bold text-gray-800 dark:text-white">Facility reservation hours: <span id="facilityHoursText">...</span></div>
+                   </div>
+                   <div class="font-mono text-sm font-bold mt-2 md:mt-0 text-gray-600 dark:text-gray-300">
+                      <i class="bi bi-clock"></i> <span id="liveClockFac">--:--:--</span> PHT
+                   </div>
+                </div>
+                <div id="facilityClosedWarning" class="mb-6 rounded-xl p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-bold shadow-sm" style="display:none;">
+                    Reservations currently closed. Available from <span id="facilityHoursText2"></span> (Asia/Manila).
+                </div>
+
                 <div class="glass-card p-6 mb-8">
                     <div class="flex justify-between items-center mb-6">
                         <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
@@ -2147,7 +2172,12 @@
                 if (item.isLocked) {
                     actionBtn = '<button disabled class="w-full py-3 bg-gray-200 text-gray-500 text-sm font-bold rounded-xl shadow-inner cursor-not-allowed flex justify-center items-center gap-2"><i class="bi bi-lock-fill"></i> System Locked</button>';
                 } else if (ok) {
-                    actionBtn = '<button onclick="openBorrowModalWithEquip(' + item.id + ')" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>';
+                    actionBtn = `
+                        <div class="equip-borrow-btn-container" data-id="${item.id}">
+                            <button onclick="openBorrowModalWithEquip(${item.id})" class="equip-borrow-btn w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>
+                            <button disabled class="equip-closed-msg hidden w-full py-3 bg-gray-200 text-gray-500 text-sm font-bold rounded-xl shadow-inner cursor-not-allowed flex justify-center items-center gap-2"><i class="bi bi-clock-fill"></i> Borrowing closed — Opens <span class="eq-open-txt"></span> - <span class="eq-close-txt"></span></button>
+                        </div>
+                    `;
                 } else {
                     const nextLabel = nextAvail ? ' · Available ' + nextAvail.formatted : '';
                     actionBtn = '<div class="flex flex-col items-center gap-2 w-full">' +
@@ -2717,9 +2747,15 @@
                 if (ls.equipment_close_hour != null) eqClose = parseInt(ls.equipment_close_hour);
             } catch(e) {}
 
+            const fmtH = (h) => h % 12 === 0 ? 12 + (h >= 12 ? ' PM' : ' AM') : (h % 12) + (h >= 12 ? ' PM' : ' AM');
+
+            const phtHour = parseInt(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: false, hour: 'numeric' }));
+            if (phtHour < eqOpen || phtHour >= eqClose) {
+                return showToast(`Borrowing is currently closed. Available from ${fmtH(eqOpen)} to ${fmtH(eqClose)}.`, 'error');
+            }
+
             const bHour = parseInt(borrowTime.split(':')[0]);
             const rHour = parseInt(returnTime.split(':')[0]);
-            const fmtH = (h) => h % 12 === 0 ? 12 + (h >= 12 ? ' PM' : ' AM') : (h % 12) + (h >= 12 ? ' PM' : ' AM');
 
             if (bHour < eqOpen || bHour >= eqClose) return showToast(`Pickup time must be within operating hours (${fmtH(eqOpen)} - ${fmtH(eqClose)})`, 'error');
             if (rHour < eqOpen || rHour >= eqClose) return showToast(`Return time must be within operating hours (${fmtH(eqOpen)} - ${fmtH(eqClose)})`, 'error');
@@ -3425,6 +3461,20 @@
         async function submitDsBooking(e) {
             e.preventDefault();
             const btn = document.getElementById('dsSubmitBtn');
+
+            let facOpen = 6, facClose = 21;
+            try {
+                const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                if (ls.facility_open_hour != null) facOpen = parseInt(ls.facility_open_hour);
+                if (ls.facility_close_hour != null) facClose = parseInt(ls.facility_close_hour);
+            } catch(err) {}
+
+            const phtHour = parseInt(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: false, hour: 'numeric' }));
+            if (phtHour < facOpen || phtHour >= facClose) {
+                const fmtH = (h) => h % 12 === 0 ? 12 + (h >= 12 ? ' PM' : ' AM') : (h % 12) + (h >= 12 ? ' PM' : ' AM');
+                return showToast(`Reservations are currently closed. Available from ${fmtH(facOpen)} to ${fmtH(facClose)}.`, 'error');
+            }
+
             btn.disabled = true; btn.innerHTML = 'Processing...';
 
             const date = document.getElementById('dsDate').value;
@@ -3990,6 +4040,21 @@ async function loadSettingsView() {
         // Real-time live flow: Wait for new notifications immediately
         document.addEventListener('DOMContentLoaded', async () => {
             if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
+                // Sync operating hours globally for user
+                try {
+                    const { data, error } = await supabase.from('site_settings').select('key,value');
+                    if (!error && data) {
+                        const get = k => { const r = data.find(x=>x.key===k); return r ? parseInt(r.value) : null; };
+                        const patch = {};
+                        ['equipment_open_hour', 'equipment_close_hour', 'facility_open_hour', 'facility_close_hour'].forEach(k => {
+                            const v = get(k);
+                            if (v !== null) patch[k] = v;
+                        });
+                        const current = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                        localStorage.setItem('brgy_operating_hours', JSON.stringify(Object.assign(current, patch)));
+                    }
+                } catch(e) { console.warn('Failed to sync operating hours:', e); }
+
                 supabase
                     .channel('live-notifications')
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'borrowings' }, () => {
@@ -4112,6 +4177,100 @@ async function loadSettingsView() {
             document.body.appendChild(toast);
             setTimeout(() => { if (toast.isConnected) toast.remove(); }, 5200);
         }
+
+        function initOperatingHoursUI() {
+            setInterval(() => {
+                let eqOpen = 8, eqClose = 17;
+                let facOpen = 6, facClose = 21;
+                try {
+                    const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                    if (ls.equipment_open_hour != null) eqOpen = parseInt(ls.equipment_open_hour);
+                    if (ls.equipment_close_hour != null) eqClose = parseInt(ls.equipment_close_hour);
+                    if (ls.facility_open_hour != null) facOpen = parseInt(ls.facility_open_hour);
+                    if (ls.facility_close_hour != null) facClose = parseInt(ls.facility_close_hour);
+                } catch(e) {}
+
+                const fmtH = (h) => h % 12 === 0 ? 12 + (h >= 12 ? ' PM' : ' AM') : (h % 12) + (h >= 12 ? ' PM' : ' AM');
+
+                const eqTextEl = document.getElementById('equipHoursText');
+                if (eqTextEl) eqTextEl.textContent = `${fmtH(eqOpen)} - ${fmtH(eqClose)}`;
+                const facTextEl = document.getElementById('facilityHoursText');
+                if (facTextEl) facTextEl.textContent = `${fmtH(facOpen)} - ${fmtH(facClose)}`;
+                const facTextEl2 = document.getElementById('facilityHoursText2');
+                if (facTextEl2) facTextEl2.textContent = `${fmtH(facOpen)} - ${fmtH(facClose)}`;
+
+                const now = new Date();
+                const phtStr = now.toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: false, hour: 'numeric' });
+                const phtHour = parseInt(phtStr);
+                const phtDisp = now.toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' });
+
+                const liveEq = document.getElementById('liveClockEq');
+                if (liveEq) liveEq.textContent = phtDisp;
+                const liveFac = document.getElementById('liveClockFac');
+                if (liveFac) liveFac.textContent = phtDisp;
+
+                const isEqOpen = phtHour >= eqOpen && phtHour < eqClose;
+                const eqPill = document.getElementById('equipStatusPill');
+                if (eqPill) {
+                    if (isEqOpen) {
+                        eqPill.textContent = 'Open now';
+                        eqPill.className = 'px-3 py-1 rounded-full text-xs font-bold text-white bg-emerald-500';
+                    } else {
+                        eqPill.textContent = 'Closed';
+                        eqPill.className = 'px-3 py-1 rounded-full text-xs font-bold text-white bg-red-500';
+                    }
+                }
+                
+                document.querySelectorAll('.equip-borrow-btn-container').forEach(container => {
+                    const borrowBtn = container.querySelector('.equip-borrow-btn');
+                    const closedMsg = container.querySelector('.equip-closed-msg');
+                    if (borrowBtn && closedMsg) {
+                        if (isEqOpen) {
+                            borrowBtn.classList.remove('hidden');
+                            closedMsg.classList.add('hidden');
+                        } else {
+                            borrowBtn.classList.add('hidden');
+                            closedMsg.classList.remove('hidden');
+                            const spanOpen = closedMsg.querySelector('.eq-open-txt');
+                            const spanClose = closedMsg.querySelector('.eq-close-txt');
+                            if(spanOpen) spanOpen.textContent = fmtH(eqOpen);
+                            if(spanClose) spanClose.textContent = fmtH(eqClose);
+                        }
+                    }
+                });
+
+                const isFacOpen = phtHour >= facOpen && phtHour < facClose;
+                const facPill = document.getElementById('facilityStatusPill');
+                if (facPill) {
+                    if (isFacOpen) {
+                        facPill.textContent = 'Open now';
+                        facPill.className = 'px-3 py-1 rounded-full text-xs font-bold text-white bg-emerald-500';
+                    } else {
+                        facPill.textContent = 'Closed';
+                        facPill.className = 'px-3 py-1 rounded-full text-xs font-bold text-white bg-red-500';
+                    }
+                }
+                const facWarn = document.getElementById('facilityClosedWarning');
+                if (facWarn) {
+                    facWarn.style.display = isFacOpen ? 'none' : 'block';
+                }
+
+                const dsBtn = document.getElementById('dsToggleFormBtn');
+                if (dsBtn && !window.pendingRescheduleData) {
+                    if (isFacOpen) {
+                        dsBtn.disabled = false;
+                        dsBtn.className = "w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer";
+                        dsBtn.innerHTML = '<span> Add Facility Reservation</span>';
+                    } else {
+                        dsBtn.disabled = true;
+                        dsBtn.className = "w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-not-allowed";
+                        dsBtn.innerHTML = `<span> Add Facility Reservation — Currently Closed (opens at ${fmtH(facOpen)})</span>`;
+                    }
+                }
+
+            }, 1000);
+        }
+        initOperatingHoursUI();
 
     </script>
     
