@@ -2388,10 +2388,8 @@
 
         // Submit button validation
         function validateBorrowTime() {
-            let eqOpen = 8, eqClose = 17;
-            try { const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}'); if (ls.equipment_open_hour != null) eqOpen = parseInt(ls.equipment_open_hour); if (ls.equipment_close_hour != null) eqClose = parseInt(ls.equipment_close_hour); } catch(e) {}
-            const fmtH = (h) => { const ampm = h >= 12 ? 'PM' : 'AM'; const h12 = h % 12 || 12; return h12 + ':00 ' + ampm; };
-            const errMsg = `Must be between ${fmtH(eqOpen)} and ${fmtH(eqClose)} (operating hours)`;
+            const eqOpen = 8, eqClose = 17;
+            const errMsg = 'Must be between 8:00 AM and 5:00 PM (operating hours)';
             const bEl = document.getElementById('borrowTimeError');
             const rEl = document.getElementById('returnTimeError');
             const bVal = document.getElementById('borrowTime').value;
@@ -2903,26 +2901,13 @@
             if (!borrowDate || !returnDate) return showToast('Please select both dates', 'error');
             if (!borrowTime || !returnTime) return showToast('Please select the pickup and return times', 'error');
 
-            let eqOpen = 8;
-            let eqClose = 17;
-            try {
-                const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
-                if (ls.equipment_open_hour != null) eqOpen = parseInt(ls.equipment_open_hour);
-                if (ls.equipment_close_hour != null) eqClose = parseInt(ls.equipment_close_hour);
-            } catch(e) {}
-
-            const fmtH = (h) => h % 12 === 0 ? 12 + (h >= 12 ? ' PM' : ' AM') : (h % 12) + (h >= 12 ? ' PM' : ' AM');
-
-            const phtHour = parseInt(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila', hour12: false, hour: 'numeric' }));
-            if (phtHour < eqOpen || phtHour >= eqClose) {
-                return showToast(`Borrowing is currently closed. Available from ${fmtH(eqOpen)} to ${fmtH(eqClose)}.`, 'error');
-            }
+            const eqOpen = 8, eqClose = 17;
 
             const bHour = parseInt(borrowTime.split(':')[0]);
             const rHour = parseInt(returnTime.split(':')[0]);
 
-            if (bHour < eqOpen || bHour >= eqClose) return showToast(`Pickup time must be within operating hours (${fmtH(eqOpen)} - ${fmtH(eqClose)})`, 'error');
-            if (rHour < eqOpen || rHour >= eqClose) return showToast(`Return time must be within operating hours (${fmtH(eqOpen)} - ${fmtH(eqClose)})`, 'error');
+            if (bHour < eqOpen || bHour >= eqClose) return showToast('Pickup time must be between 8:00 AM and 5:00 PM.', 'error');
+            if (rHour < eqOpen || rHour >= eqClose) return showToast('Return time must be between 8:00 AM and 5:00 PM.', 'error');
 
 
             const diffTime = Math.abs(new Date(returnDate) - new Date(borrowDate));
