@@ -46,16 +46,16 @@
             --green-600: #16a34a;
             --text: #1a2e1f;
             --muted: #6b7280;
-            --border: #e5e7eb;
-            --surface: #fff;
-            --panel-bg: #f9fafb;
-            --bg: #f0fdf4;
-            --radius-md: 14px;
-            --radius-lg: 18px;
-            --radius-xl: 22px;
-            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
-            --transition: all 0.25s ease;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --panel-bg: #f8fafc;
+            --bg: #f1f5f9;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 30px;
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --danger: #ef4444;
             --danger-bg: #fef2f2;
             --danger-border: #fecaca;
@@ -64,9 +64,9 @@
             --warning-text: #92400e;
             --primary: #10b981;
             --primary-dark: #059669;
-            --white: #fff;
-            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
-            --dark: #1a2e1f;
+            --white: #ffffff;
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
+            --dark: #0f172a;
         }
 
         /* ══════════════════════════════════════════
@@ -80,31 +80,31 @@
             --green-100: rgba(16, 185, 129, 0.15);
             --green-200: rgba(16, 185, 129, 0.25);
             --green-600: #10b981;
-            --text: #e2e8f0;
+            --text: #f8fafc;
             --muted: #94a3b8;
-            --border: #334155;
-            --surface: #1e293b;
-            --panel-bg: #0f172a;
-            --bg: #0f172a;
+            --border: rgba(255, 255, 255, 0.06);
+            --surface: #121826;
+            --panel-bg: #0b0f19;
+            --bg: #0b0f19;
             --danger: #f87171;
             --danger-bg: rgba(239, 68, 68, 0.12);
-            --danger-border: rgba(239, 68, 68, 0.3);
+            --danger-border: rgba(239, 68, 68, 0.2);
             --warning-bg: rgba(245, 158, 11, 0.12);
-            --warning-border: rgba(245, 158, 11, 0.3);
+            --warning-border: rgba(245, 158, 11, 0.2);
             --warning-text: #fbbf24;
             --primary: #10b981;
             --primary-dark: #059669;
-            --white: #1e293b;
-            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
-            --dark: #e2e8f0;
+            --white: #121826;
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --dark: #f8fafc;
         }
 
         /* ── DARK MODE ELEMENT OVERRIDES ── */
         [data-theme="dark"] body {
-            background: #0f172a;
-            color: #e2e8f0;
+            background: #0b0f19;
+            color: #f8fafc;
         }
 
         /* Header */
@@ -667,10 +667,10 @@
 
         /* ── QUICK ACTION CARDS ── */
         .quick-action-card {
-            background: #fff;
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            padding: 18px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
             cursor: pointer;
             text-align: left;
             transition: var(--transition);
@@ -678,6 +678,9 @@
             overflow: hidden;
             font-family: inherit;
             box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .quick-action-card::before {
@@ -685,15 +688,17 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 3px;
+            bottom: 0;
+            width: 4px;
             background: var(--qa-color, #10b981);
+            opacity: 0.8;
         }
 
         .quick-action-card:hover {
-            border-color: var(--qa-color, #10b981);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--green-200);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(180deg, var(--surface) 0%, var(--panel-bg) 100%);
         }
 
         .qa-icon {
@@ -2562,46 +2567,54 @@
                         <div class="stats-grid">
                             <div class="stat-card"
                                 onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])"
-                                style="cursor:pointer;border-left:4px solid var(--green-xl);padding:22px;border-radius:14px;">
-                                <div class="stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-box-fill"></i></div>
+                                style="cursor:pointer;padding:24px;border-radius:var(--radius-xl);border:1px solid var(--border);position:relative;overflow:hidden;">
+                                <div style="position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--green-xl);"></div>
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                                    <div class="stat-icon" style="background:var(--green-50); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:20px; width:44px; height:44px; border-radius:12px; box-shadow:0 4px 12px rgba(16,185,129,0.15);"><i class="bi bi-box-fill"></i></div>
+                                </div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
-                                        Pending Requests</h3>
                                     <div class="stat-value" id="pendingRequests"
-                                        style="font-size:32px;font-weight:800;color:var(--text);line-height:1;">0</div>
+                                        style="font-size:36px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;">0</div>
+                                    <h3 style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Pending Requests</h3>
                                 </div>
                             </div>
                             <div class="stat-card"
                                 onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])"
-                                style="cursor:pointer;border-left:4px solid var(--green-xl);padding:22px;border-radius:14px;">
-                                <div class="stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-megaphone-fill"></i></div>
+                                style="cursor:pointer;padding:24px;border-radius:var(--radius-xl);border:1px solid var(--border);position:relative;overflow:hidden;">
+                                <div style="position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--green-xl);"></div>
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                                    <div class="stat-icon" style="background:var(--green-50); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:20px; width:44px; height:44px; border-radius:12px; box-shadow:0 4px 12px rgba(16,185,129,0.15);"><i class="bi bi-megaphone-fill"></i></div>
+                                </div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
-                                        Pending Concerns</h3>
                                     <div class="stat-value" id="pendingConcerns"
-                                        style="font-size:32px;font-weight:800;color:var(--text);line-height:1;">0</div>
+                                        style="font-size:36px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;">0</div>
+                                    <h3 style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Pending Concerns</h3>
                                 </div>
                             </div>
                             <div class="stat-card"
                                 onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])"
-                                style="cursor:pointer;border-left:4px solid var(--green-xl);padding:22px;border-radius:14px;">
-                                <div class="stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-check-fill"></i></div>
+                                style="cursor:pointer;padding:24px;border-radius:var(--radius-xl);border:1px solid var(--border);position:relative;overflow:hidden;">
+                                <div style="position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--green-xl);"></div>
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                                    <div class="stat-icon" style="background:var(--green-50); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:20px; width:44px; height:44px; border-radius:12px; box-shadow:0 4px 12px rgba(16,185,129,0.15);"><i class="bi bi-calendar-check-fill"></i></div>
+                                </div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
-                                        Active Bookings</h3>
                                     <div class="stat-value" id="upcomingEvents"
-                                        style="font-size:32px;font-weight:800;color:var(--text);line-height:1;">0</div>
+                                        style="font-size:36px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;">0</div>
+                                    <h3 style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Active Bookings</h3>
                                 </div>
                             </div>
                             <div class="stat-card"
                                 onclick="switchSection('users')"
-                                style="cursor:pointer;border-left:4px solid var(--green-xl);padding:22px;border-radius:14px;">
-                                <div class="stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-people-fill"></i></div>
+                                style="cursor:pointer;padding:24px;border-radius:var(--radius-xl);border:1px solid var(--border);position:relative;overflow:hidden;">
+                                <div style="position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--green-xl);"></div>
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                                    <div class="stat-icon" style="background:var(--green-50); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:20px; width:44px; height:44px; border-radius:12px; box-shadow:0 4px 12px rgba(16,185,129,0.15);"><i class="bi bi-people-fill"></i></div>
+                                </div>
                                 <div class="stat-content">
-                                    <h3 style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
-                                        Total Users</h3>
                                     <div class="stat-value" id="totalUsers"
-                                        style="font-size:32px;font-weight:800;color:var(--text);line-height:1;">0</div>
+                                        style="font-size:36px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;">0</div>
+                                    <h3 style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Total Users</h3>
                                 </div>
                             </div>
                         </div>
@@ -3778,7 +3791,13 @@
             document.addEventListener('DOMContentLoaded', async function () {
                 const user = getCurrentUser();
                 document.getElementById('userName').textContent = user.fullName;
-                document.getElementById('userAvatar').textContent = user.avatar;
+                const avatarEl = document.getElementById('userAvatar');
+                if (avatarEl) {
+                    const dispName = user.full_name || user.name || user.username || 'Admin';
+                    avatarEl.innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(dispName)}&background=10b981&color=fff&bold=true&rounded=true" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Avatar">`;
+                    avatarEl.style.padding = "0";
+                    avatarEl.style.border = "none";
+                }
                 
                 // Run clock immediately  before any awaits
                 initWelcomeClock();
@@ -3834,7 +3853,12 @@
                     showAlert(result.message, result.success ? 'success' : 'error');
                     if (result.success) {
                         document.getElementById('userName').textContent = fullName;
-                        document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+                        const avatarEl = document.getElementById('userAvatar');
+                        if (avatarEl) {
+                            avatarEl.innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=10b981&color=fff&bold=true&rounded=true" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Avatar">`;
+                            avatarEl.style.padding = "0";
+                            avatarEl.style.border = "none";
+                        }
                     }
                 });
 
@@ -7524,10 +7548,12 @@
                                 const actor   = log.users ? (log.users.full_name || log.users.username || 'System') : (log.target_username || 'System');
                                 const timeStr = new Date(log.created_at).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
                                 const icon    = evtIcon(action);
-                                return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f1f5f9);">
-                                    <div style="font-size:16px;min-width:22px;text-align:center;">${icon}</div>
-                                    <div style="flex:1;min-width:0;">
-                                        <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${action}</div>
+                                return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+                                    <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.1);border:1.5px solid var(--border);">
+                                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(actor)}&background=10b981&color=fff&bold=true&rounded=true" style="width:100%;height:100%;object-fit:cover;" alt="Avatar">
+                                    </div>
+                                    <div style="flex:1;min-width:0;padding-top:2px;">
+                                        <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${action}</div>
                                         <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;word-break:break-word;">${detail || actor}</div>
                                         <div style="font-size:10px;color:var(--muted);margin-top:2px;">${timeStr}</div>
                                     </div>
@@ -8211,7 +8237,12 @@
                         userNameEl.textContent = adminUser.fullName || adminUser.name || adminUser.username || 'Administrator';
                     }
                     const avatarEl = document.getElementById('userAvatar');
-                    if (avatarEl) avatarEl.textContent = (adminUser.fullName || adminUser.name || adminUser.username || 'A')[0].toUpperCase();
+                    if (avatarEl) {
+                        const dispName = adminUser.fullName || adminUser.name || adminUser.username || 'Admin';
+                        avatarEl.innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(dispName)}&background=10b981&color=fff&bold=true&rounded=true" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Avatar">`;
+                        avatarEl.style.padding = "0";
+                        avatarEl.style.border = "none";
+                    }
                 }
                 initWelcomeClock();
                 loadOverview();
@@ -8272,105 +8303,124 @@
             function openConcernRespond(concernId) {
                 _currentConcernId = concernId;
                 const concern = _allAdminConcerns.find(c => c.id === concernId);
-                // Auto mark as read when opened
                 if (concern && concern.is_read === false) {
                     if (typeof supabase !== "undefined") supabase.from("concerns").update({is_read: true}).eq("id", concernId).then();
                     concern.is_read = true;
                 }
-                
-                // Update header subtitle
-                const headerSub = document.getElementById('adminConcernHeaderSub');
-                if (headerSub && concern) {
-                    headerSub.textContent = `${concern.userName || 'Resident'}  ${concern.category || ''}  ${concern.status}`;
+                if (!concern) { document.getElementById('adminConcernModal').style.display = 'flex'; return; }
+
+                // Title + badge
+                const titleEl = document.getElementById('adminConcernTitle');
+                if (titleEl) titleEl.textContent = concern.title || 'Concern';
+                const badgeEl = document.getElementById('adminConcernStatusBadge');
+                if (badgeEl) {
+                    const label = _adminConcernStatusLabel(concern.status);
+                    const sc = {'Submitted':{bg:'#fef3c7',c:'#92400e'},'In Progress':{bg:'#dbeafe',c:'#1e40af'},'Resolved':{bg:'#d1fae5',c:'#065f46'},'Rejected':{bg:'#fee2e2',c:'#991b1b'}};
+                    const s = sc[label] || {bg:'#f1f5f9',c:'#374151'};
+                    badgeEl.innerHTML = '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:'+s.bg+';color:'+s.c+';">'+label+'</span>';
                 }
 
+                // Header subtitle
+                const submittedShort = concern.createdAt||concern.created_at ? new Date(concern.createdAt||concern.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+                const headerSub = document.getElementById('adminConcernHeaderSub');
+                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' · ' + (concern.address||'') + ' · ' + submittedShort;
+
+                // Status dropdown
+                const sel = document.getElementById('adminConcernStatusSelect');
+                if (sel) {
+                    const st = concern.status || 'open';
+                    sel.value = (st === 'pending' || st === 'open' || !concern.status) ? 'open' : (['in-progress','resolved','rejected'].includes(st) ? st : 'open');
+                    onConcernStatusSelectChange();
+                }
+
+                // Details div
                 const detailsDiv = document.getElementById('adminConcernDetailsDiv');
-                if (detailsDiv && concern) {
+                if (detailsDiv) {
                     let actualDesc = concern.description || 'No description provided.';
                     let imageUrl = concern.imageUrl || null;
-                    
                     if (actualDesc.includes('[ATTACHED_IMAGE_DATA]')) {
                         const parts = actualDesc.split('[ATTACHED_IMAGE_DATA]');
                         actualDesc = parts[0].replace(/Usern/g, '').trim();
                         imageUrl = parts[1].replace(/Usern/g, '').trim();
                     }
-
-                    const submittedAt = concern.createdAt || concern.created_at
-                        ? new Date(concern.createdAt || concern.created_at).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'})
-                        : '';
-
-                    let html = `
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-                            <div style="background:var(--panel-bg);border-radius:10px;padding:12px;border:1px solid var(--border);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Citizen</p>
-                                <p style="margin:0;font-size:14px;font-weight:700;color:var(--text);">${concern.userName || ''}</p>
-                            </div>
-                            <div style="background:var(--panel-bg);border-radius:10px;padding:12px;border:1px solid var(--border);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Address</p>
-                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${concern.address || ''}</p>
-                            </div>
-                            <div style="background:var(--panel-bg);border-radius:10px;padding:12px;border:1px solid var(--border);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Category</p>
-                                <p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">${concern.category || ''}</p>
-                            </div>
-                            <div style="background:var(--panel-bg);border-radius:10px;padding:12px;border:1px solid var(--border);">
-                                <p style="margin:0 0 2px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Date Submitted</p>
-                                <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">${submittedAt}</p>
-                            </div>
-                        </div>
-                        <div style="margin-bottom:16px;background:var(--panel-bg);border-radius:10px;padding:14px;border:1px solid var(--border);">
-                            <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Title</p>
-                            <p style="margin:0;font-size:15px;font-weight:700;color:var(--text);">${concern.title || ''}</p>
-                        </div>
-                        <div style="margin-bottom:16px;background:var(--panel-bg);border-radius:10px;padding:14px;border:1px solid var(--border);">
-                            <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Description / Reason</p>
-                            <p style="margin:0;font-size:14px;color:var(--text);line-height:1.6;">${actualDesc || 'No description provided.'}</p>
-                        </div>
-                    `;
+                    let html = '<div style="background:var(--panel-bg);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:14px;">'
+                        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Citizen</p><p style="margin:0;font-size:14px;font-weight:700;color:var(--text);">'+(concern.userName||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Address</p><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">'+(concern.address||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Category</p><p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">'+(concern.category||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Submitted</p><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">'+submittedShort+'</p></div>'
+                        + '</div>'
+                        + '<div style="margin-bottom:10px;"><p style="margin:0 0 3px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Title</p><p style="margin:0;font-size:15px;font-weight:700;color:var(--text);">'+(concern.title||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 3px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Description</p><p style="margin:0;font-size:13px;color:var(--text);line-height:1.6;">'+actualDesc+'</p></div>'
+                        + '</div>';
                     if (imageUrl) {
-                        html += `
-                            <div style="margin-bottom:16px;">
-                                <p style="margin:0 0 8px;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;"> Attached Photo</p>
-                                <div onclick="openAdminImageLightbox('${imageUrl}')" style="display:block;cursor:pointer;">
-                                    <img src="${imageUrl}" style="width:100%;max-height:260px;object-fit:cover;border-radius:12px;border:1.5px solid #e5e7eb;display:block;transition:opacity 0.2s;" alt="Concern attachment" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" />
-                                </div>
-                                <p style="margin:6px 0 0;font-size:11px;color:#9ca3af;text-align:center;">Click image to open full size</p>
-                            </div>
-                        `;
+                        html += '<div style="margin-bottom:14px;"><p style="margin:0 0 8px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Attached Photo</p>'
+                            + '<div onclick="openAdminImageLightbox(\''+imageUrl+'\')" style="cursor:pointer;"><img src="'+imageUrl+'" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1.5px solid var(--border);display:block;" alt="Concern photo" /></div></div>';
                     }
                     detailsDiv.innerHTML = html;
                 }
 
-                // Pre-populate response textarea with existing reply (parsed from JSON if needed)
+                // Response textarea
                 const _rt = document.getElementById('adminConcernResponseText');
-                if (_rt && concern) {
-                    const _parsed = _adminParseConcernResponse(concern.response);
-                    _rt.value = _parsed.reply || '';
-                }
+                if (_rt) { const _p = _adminParseConcernResponse(concern.response); _rt.value = _p.reply || ''; }
 
-                // Append activity timeline to detailsDiv
-                if (detailsDiv && concern) {
+                // Audit Log
+                const auditDiv = document.getElementById('adminConcernAuditLogDiv');
+                if (auditDiv) {
                     const _parsed = _adminParseConcernResponse(concern.response);
                     const fmtTs = ts => ts ? new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : '';
-                    const submittedTs = concern.createdAt || concern.created_at;
-                    const submittedEntry = '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-top:4px;flex-shrink:0;"></div><div><span style="font-size:12px;font-weight:700;color:#92400e;">Submitted</span><span style="font-size:11px;color:#94a3b8;margin-left:6px;">' + fmtTs(submittedTs) + '</span></div></div>';
-                    const logEntries = _parsed.log.map(entry => {
+                    const items = [{dot:'#10b981', title:'Submitted by citizen', by:'', ts: fmtTs(concern.createdAt||concern.created_at)}];
+                    _parsed.log.forEach(entry => {
                         const ts = fmtTs(entry.timestamp);
                         if (entry.action === 'status_changed') {
-                            const dot = entry.status === 'resolved' || entry.status === 'closed' ? '#10b981' : entry.status === 'rejected' ? '#ef4444' : '#3b82f6';
-                            return '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="width:8px;height:8px;border-radius:50%;background:' + dot + ';margin-top:4px;flex-shrink:0;"></div><div><span style="font-size:12px;font-weight:700;color:var(--text);">Status: ' + _adminConcernStatusLabel(entry.status) + '</span><span style="font-size:11px;color:#94a3b8;margin-left:6px;">' + ts + (entry.by ? ' · ' + entry.by : '') + '</span></div></div>';
+                            const lbl = _adminConcernStatusLabel(entry.status);
+                            const dot = lbl==='Resolved'?'#10b981':lbl==='Rejected'?'#ef4444':'#f59e0b';
+                            items.push({dot, title:'Status → '+lbl, by:entry.by||'', ts});
                         }
-                        if (entry.action === 'replied') {
-                            return '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;margin-top:4px;flex-shrink:0;"></div><div><span style="font-size:12px;font-weight:700;color:#065f46;">Admin replied</span><span style="font-size:11px;color:#94a3b8;margin-left:6px;">' + ts + (entry.by ? ' · ' + entry.by : '') + '</span></div></div>';
-                        }
-                        return '';
-                    }).filter(Boolean);
-                    if (_parsed.log.length > 0) {
-                        detailsDiv.innerHTML += '<div style="margin-top:16px;padding:12px 14px;background:var(--panel-bg);border-radius:10px;border:1px solid var(--border);display:flex;flex-direction:column;gap:7px;"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Activity Timeline</div>' + submittedEntry + logEntries.join('') + '</div>';
-                    }
+                        if (entry.action === 'replied') items.push({dot:'#3b82f6', title:'Reply sent to citizen', by:entry.by||'', ts});
+                    });
+                    const itemsHtml = items.map((item, idx) =>
+                        '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;'+(idx<items.length-1?'border-bottom:1px solid var(--border);':'')+'">'
+                        + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:2px;">'
+                        + '<div style="width:10px;height:10px;border-radius:50%;background:'+item.dot+';box-shadow:0 0 6px '+item.dot+'66;flex-shrink:0;"></div>'
+                        + (idx<items.length-1 ? '<div style="width:1px;flex:1;min-height:14px;background:var(--border);margin-top:4px;"></div>' : '')
+                        + '</div>'
+                        + '<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text);">'+item.title+'</div>'
+                        + (item.by ? '<div style="font-size:11px;color:var(--muted);margin-top:1px;">By '+item.by+'</div>' : '')
+                        + '<div style="font-size:11px;color:var(--muted);margin-top:1px;">'+item.ts+'</div></div>'
+                        + '</div>'
+                    ).join('');
+                    auditDiv.innerHTML = '<div style="border-top:1px solid var(--border);padding-top:16px;">'
+                        + '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Audit Log</div>'
+                        + itemsHtml + '</div>';
                 }
 
                 document.getElementById('adminConcernModal').style.display = 'flex';
+            }
+
+            function onConcernStatusSelectChange() {
+                const sel = document.getElementById('adminConcernStatusSelect');
+                const note = document.getElementById('adminConcernRejectNote');
+                const label = document.getElementById('adminConcernResponseLabel');
+                const btn = document.getElementById('adminConcernSendBtn');
+                const isRejected = sel && sel.value === 'rejected';
+                if (note) note.style.display = isRejected ? 'block' : 'none';
+                if (label) label.textContent = isRejected ? 'Rejection Reason *' : 'Write a Response';
+                if (btn) btn.textContent = isRejected ? 'Confirm Rejection' : 'Send response & update status';
+                if (sel) sel.style.borderColor = sel.value==='resolved'?'#10b981':sel.value==='rejected'?'#ef4444':sel.value==='in-progress'?'#3b82f6':'var(--border)';
+            }
+
+            function sendAdminConcernResponse() {
+                const sel = document.getElementById('adminConcernStatusSelect');
+                const newStatus = sel ? sel.value : 'in-progress';
+                const responseText = (document.getElementById('adminConcernResponseText') || {}).value || '';
+                if (newStatus === 'rejected' && !responseText.trim()) {
+                    showAlert('Please enter a rejection reason in the response field.', 'error');
+                    document.getElementById('adminConcernResponseText')?.focus();
+                    return;
+                }
+                submitAdminConcernResponse(newStatus);
+            }
             }
 
             function closeAdminConcernModal() {
@@ -8389,8 +8439,8 @@
                     const existing = _adminParseConcernResponse(concern ? concern.response : null);
                     const newLog = [...existing.log];
                     const now = new Date().toISOString();
-                    const adminName = (typeof currentUser !== 'undefined' && currentUser) ? (currentUser.full_name || currentUser.email || 'Admin') : 'Admin';
-                    newLog.push({ action: 'status_changed', status: newStatus, timestamp: now, by: adminName });
+                    const now = new Date().toISOString();
+                    const _cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null; const adminName = _cu ? (_cu.fullName || _cu.full_name || _cu.email || 'Admin') : 'Admin';
                     const newReply = responseText.trim() || existing.reply || null;
                     if (responseText.trim() && responseText.trim() !== existing.reply) {
                         newLog.push({ action: 'replied', timestamp: now, by: adminName });
@@ -8690,49 +8740,45 @@
         </script>
 
         <!-- Admin Concern Respond Modal -->
-        <!-- Citizen Concern Detail Modal -->
-        <div id="adminConcernModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:var(--surface); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:90vh; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column;">
+        <div id="adminConcernModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(8px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
+            <div style="background:var(--surface); border-radius:20px; width:100%; max-width:600px; box-shadow:0 32px 80px rgba(0,0,0,0.35); max-height:92vh; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; position:relative;">
 
                 <!-- Modal Header -->
-                <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:16px 20px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
-                    <div style="font-size:30px;margin-bottom:8px;"></div>
-                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Citizen Concern</h3>
-                    <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminConcernHeaderSub">Submitted concern details</p>
+                <div style="padding:20px 24px 16px; border-bottom:1px solid var(--border); flex-shrink:0; position:sticky; top:0; background:var(--surface); z-index:1; border-radius:20px 20px 0 0;">
+                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:16px;right:16px;background:var(--bg);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
+                    <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Admin &mdash; Respond &amp; Update Status</div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+                        <h3 id="adminConcernTitle" style="margin:0;font-size:17px;font-weight:800;color:var(--text);">Concern</h3>
+                        <span id="adminConcernStatusBadge"></span>
+                    </div>
+                    <p style="color:var(--muted);font-size:13px;margin:0;" id="adminConcernHeaderSub"></p>
                 </div>
 
-                <!-- Concern Info + Photo -->
-                <div style="padding:16px 20px 0;">
-                    <div id="adminConcernDetailsDiv"></div>
+                <!-- Concern Details -->
+                <div style="padding:16px 24px 0;" id="adminConcernDetailsDiv"></div>
+
+                <!-- Update Status + Response form -->
+                <div style="padding:16px 24px;">
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Update Status</label>
+                        <select id="adminConcernStatusSelect" onchange="onConcernStatusSelectChange()" style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;color:var(--text);background:var(--bg);outline:none;cursor:pointer;">
+                            <option value="open">Submitted</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label id="adminConcernResponseLabel" style="display:block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Write a Response</label>
+                        <textarea id="adminConcernResponseText" rows="4" placeholder="Type your response to the citizen (optional for status updates)..." style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;color:var(--text);background:var(--bg);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;line-height:1.5;transition:border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='var(--border)'"></textarea>
+                        <p id="adminConcernRejectNote" style="display:none;margin:6px 0 0;font-size:12px;color:#ef4444;font-weight:600;">* Rejection reason is required and will be shared with the citizen.</p>
+                    </div>
+                    <button onclick="sendAdminConcernResponse()" id="adminConcernSendBtn" style="width:100%;padding:13px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.3px;margin-bottom:8px;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">Send response &amp; update status</button>
+                    <button onclick="closeAdminConcernModal()" style="width:100%;padding:11px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);">Close</button>
                 </div>
 
-                <!-- Divider -->
-                
-
-                <!-- Respond Form -->
-                <div style="padding:12px 20px 20px;">
-                    <div style="margin-bottom:10px;">
-                        <label style="display:block;font-size:11px;font-weight:700;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Admin Response / Notes</label>
-                        <textarea id="adminConcernResponseText" rows="3" placeholder="Type your response or notes (optional for progress/resolve)..." style="width:100%;padding:12px;border:1.5px solid var(--border,#e5e7eb);border-radius:12px;font-size:14px;color:var(--text,#111);background:var(--panel-bg,#f9fafb);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor=''"></textarea>
-                    </div>
-                    <!-- Rejection reason panel (hidden by default) -->
-                    <div id="rejectReasonPanel" style="display:none;margin-bottom:12px;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:12px;padding:14px;">
-                        <label style="display:block;font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;"><i class="bi bi-x-circle-fill" style="margin-right:5px;"></i>Rejection Reason <span style="color:#dc2626;">*</span></label>
-                        <textarea id="adminConcernRejectReason" rows="3" placeholder="Enter reason for rejecting this concern (required)..." style="width:100%;padding:12px;border:1.5px solid #fca5a5;border-radius:10px;font-size:14px;color:#111;background:#fff;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#fca5a5'"></textarea>
-                        <div style="display:flex;gap:8px;margin-top:10px;">
-                            <button onclick="confirmRejectConcern()" style="flex:1;padding:10px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'"><i class="bi bi-x-lg" style="margin-right:5px;"></i>Confirm Rejection</button>
-                            <button onclick="cancelRejectPanel()" style="padding:10px 18px;border:1.5px solid #fca5a5;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:#dc2626;transition:background 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'">Cancel</button>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;" id="concernActionBtns">
-                        <button onclick="submitAdminConcernResponse('in-progress')" style="flex:1;min-width:120px;padding:11px 8px;background:#3b82f6;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'"><i class="bi bi-hourglass-split" style="margin-right:5px;"></i>Mark In Progress</button>
-                        <button onclick="submitAdminConcernResponse('resolved')" style="flex:1;min-width:120px;padding:11px 8px;background:#059669;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'"><i class="bi bi-check-circle-fill" style="margin-right:5px;"></i>Mark Resolved</button>
-                        <button onclick="showRejectPanel()" style="flex:1;min-width:110px;padding:11px 8px;background:#dc2626;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'"><i class="bi bi-x-circle" style="margin-right:5px;"></i>Reject</button>
-                        <button onclick="closeAdminConcernModal()" style="flex:1;min-width:90px;padding:11px 8px;border:1.5px solid var(--border,#e5e7eb);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--text,#374151);transition:background 0.2s;" onmouseover="this.style.background='var(--panel-bg)'" onmouseout="this.style.background='transparent'">Close</button>
-                    </div>
-                </div>
+                <!-- Audit Log -->
+                <div id="adminConcernAuditLogDiv" style="padding:0 24px 24px;"></div>
             </div>
         </div>
 
