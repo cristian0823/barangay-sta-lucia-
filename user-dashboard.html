@@ -961,7 +961,7 @@
                 <div class="w-full lg:w-[42%] flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 overflow-y-auto">
                     <div class="px-5 pt-4 pb-2 space-y-2">
                         <div id="calStepChip" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700">
-                            <span>1</span><span>Select Dates</span>
+                            <span>2</span><span>Select Dates</span>
                         </div>
                         <div id="calLockBanner" style="display:none;" class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl px-3 py-2">
                             <span class="text-base flex-shrink-0">🔒</span>
@@ -994,89 +994,121 @@
                 <!-- Right: Form -->
                 <div class="w-full lg:flex-1 flex flex-col overflow-y-auto">
                     <div id="borrowModalAvailAgain"></div>
-                    <!-- Date Summary -->
-                    <div class="px-5 pt-5 pb-0">
-                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-800 border border-emerald-100 dark:border-gray-700 rounded-2xl p-4 mb-3">
-                            <div class="flex items-stretch gap-3 mb-3">
-                                <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-emerald-100 dark:border-gray-700 shadow-sm">
-                                    <div class="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1">Borrow Date</div>
-                                    <div class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 leading-none" id="dispStartDateDay">--</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dispStartDateMonth">Select date</div>
-                                </div>
-                                <div class="flex flex-col items-center justify-center gap-1 px-1">
-                                    <div class="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center shadow-md">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                                    </div>
-                                    <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400" id="borrowDuration">0 days</div>
-                                </div>
-                                <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-teal-100 dark:border-gray-700 shadow-sm">
-                                    <div class="text-[10px] uppercase tracking-wider font-bold text-teal-600 dark:text-teal-400 mb-1">Return Date</div>
-                                    <div class="text-3xl font-extrabold text-teal-600 dark:text-teal-400 leading-none" id="dispReturnDateDay">--</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dispReturnDateMonth">Select date</div>
-                                </div>
-                            </div>
-                            <div id="dateRangeDisplay" class="text-center text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-white/70 dark:bg-gray-900/50 py-2 px-3 rounded-lg">
-                                Please select your borrowing dates from the calendar
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-2 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/40 rounded-xl px-3 py-2 mb-3">
-                            <span>⏰</span>
-                            <span><strong>Important:</strong> Return the item at the specified time. A <strong>+1 day grace period</strong> is allowed.</span>
-                        </div>
-                        <!-- Existing bookings panel — shown when dates are selected -->
-                        <div id="existingBookingsPanel"></div>
-                        <div class="mb-1">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
-                                <span>2</span><span>Borrower Details</span>
+
+                    <!-- Step 1: Purpose Selector -->
+                    <div id="purposeSelectorPanel" class="px-5 pt-5 pb-4">
+                        <div class="mb-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700">
+                                <span>1</span><span>Select Borrowing Purpose</span>
                             </span>
                         </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Choose how you will use this equipment. Different duration rules apply per purpose.</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="selectBorrowPurpose('event')" id="purposeBtnEvent"
+                                style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;border:2px solid #e9d5ff;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;">
+                                <span style="font-size:24px;">🎉</span>
+                                <span style="font-weight:700;font-size:13px;color:#374151;">Event</span>
+                                <span style="font-size:10px;color:#9ca3af;font-weight:500;line-height:1.3;text-align:center;">1 day only<br>Community events</span>
+                            </button>
+                            <button type="button" onclick="selectBorrowPurpose('burol')" id="purposeBtnBurol"
+                                style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;border:2px solid #e9d5ff;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;">
+                                <span style="font-size:24px;">🕯️</span>
+                                <span style="font-weight:700;font-size:13px;color:#374151;">Burol / Funeral Viewing</span>
+                                <span style="font-size:10px;color:#9ca3af;font-weight:500;line-height:1.3;text-align:center;">3–7 days<br>Wake / viewing</span>
+                            </button>
+                        </div>
                     </div>
-                    <form id="borrowForm" class="px-5 pb-5 pt-3 flex flex-col gap-3">
-                        <input type="hidden" id="borrowEquipmentId">
-                        <input type="hidden" id="borrowEquipmentName">
-                        <input type="hidden" id="borrowStartDate">
-                        <input type="hidden" id="borrowReturnDate">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="form-field">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" id="borrowerFullName" required class="form-input" placeholder="Your full name">
+
+                    <!-- Steps 2 & 3: Shown only after purpose is selected -->
+                    <div id="borrowFormBody" style="display:none;">
+                        <!-- Date Summary -->
+                        <div class="px-5 pt-0 pb-0">
+                            <!-- Item specs (shown if description available) -->
+                            <div id="borrowItemSpecsBox"></div>
+                            <!-- Duration rules info box -->
+                            <div id="borrowDurationRules" class="mb-3"></div>
+                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-800 border border-emerald-100 dark:border-gray-700 rounded-2xl p-4 mb-3">
+                                <div class="flex items-stretch gap-3 mb-3">
+                                    <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-emerald-100 dark:border-gray-700 shadow-sm">
+                                        <div class="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1">Borrow Date</div>
+                                        <div class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 leading-none" id="dispStartDateDay">--</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dispStartDateMonth">Select date</div>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center gap-1 px-1">
+                                        <div class="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center shadow-md">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                        <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400" id="borrowDuration">0 days</div>
+                                    </div>
+                                    <div class="flex-1 text-center bg-white dark:bg-gray-900 rounded-xl p-3 border border-teal-100 dark:border-gray-700 shadow-sm">
+                                        <div class="text-[10px] uppercase tracking-wider font-bold text-teal-600 dark:text-teal-400 mb-1">Return Date</div>
+                                        <div class="text-3xl font-extrabold text-teal-600 dark:text-teal-400 leading-none" id="dispReturnDateDay">--</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dispReturnDateMonth">Select date</div>
+                                    </div>
+                                </div>
+                                <div id="dateRangeDisplay" class="text-center text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-white/70 dark:bg-gray-900/50 py-2 px-3 rounded-lg">
+                                    Please select your borrowing dates from the calendar
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/40 rounded-xl px-3 py-2 mb-3">
+                                <span>⏰</span>
+                                <span><strong>Important:</strong> Return the item at the specified time. A <strong>+1 day grace period</strong> is allowed.</span>
+                            </div>
+                            <!-- Existing bookings panel — shown when dates are selected -->
+                            <div id="existingBookingsPanel"></div>
+                            <div class="mb-1">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
+                                    <span>3</span><span>Borrower Details</span>
+                                </span>
+                            </div>
+                        </div>
+                        <form id="borrowForm" class="px-5 pb-5 pt-3 flex flex-col gap-3">
+                            <input type="hidden" id="borrowEquipmentId">
+                            <input type="hidden" id="borrowEquipmentName">
+                            <input type="hidden" id="borrowStartDate">
+                            <input type="hidden" id="borrowReturnDate">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="form-field">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" id="borrowerFullName" required class="form-input" placeholder="Your full name">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Contact Number</label>
+                                    <input type="text" id="borrowerContact" required class="form-input" placeholder="09XX XXX XXXX">
+                                </div>
                             </div>
                             <div class="form-field">
-                                <label class="form-label">Contact Number</label>
-                                <input type="text" id="borrowerContact" required class="form-input" placeholder="09XX XXX XXXX">
+                                <label class="form-label">Address where item will be used</label>
+                                <input type="text" id="borrowerAddress" required class="form-input" placeholder="e.g. Purok 3, Brgy. Sta. Lucia">
                             </div>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Address where item will be used</label>
-                            <input type="text" id="borrowerAddress" required class="form-input" placeholder="e.g. Purok 3, Brgy. Sta. Lucia">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="form-field">
+                                    <label class="form-label">Borrow Time</label>
+                                    <input type="time" id="borrowTime" required class="form-input">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Return Time</label>
+                                    <input type="time" id="returnTime" required class="form-input">
+                                </div>
+                            </div>
                             <div class="form-field">
-                                <label class="form-label">Borrow Time</label>
-                                <input type="time" id="borrowTime" required class="form-input">
+                                <label class="form-label">Quantity Needed</label>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" id="borrowQty" min="1" required class="form-input" style="-moz-appearance:textfield;">
+                                <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium mt-0.5"></p>
                             </div>
                             <div class="form-field">
-                                <label class="form-label">Return Time</label>
-                                <input type="time" id="returnTime" required class="form-input">
+                                <label class="form-label" id="borrowPurposeLabel">Additional Details</label>
+                                <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe your event or provide additional context..." rows="3"></textarea>
                             </div>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Quantity Needed</label>
-                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="borrowQty" min="1" required class="form-input" style="-moz-appearance:textfield;">
-                            <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium mt-0.5"></p>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Purpose of Borrowing</label>
-                            <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..." rows="3"></textarea>
-                        </div>
-                        <div class="flex items-start gap-2 text-[11px] text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl px-3 py-2">
-                            <span>⚠️</span>
-                            <span><strong>Reminder:</strong> If you break or damage the item, you will be required to pay for or replace it.</span>
-                        </div>
-                        <button type="submit" id="submitBorrowBtn" disabled class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed border-0 cursor-pointer text-sm tracking-wide">
-                            Submit Borrow Request
-                        </button>
-                    </form>
+                            <div class="flex items-start gap-2 text-[11px] text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl px-3 py-2">
+                                <span>⚠️</span>
+                                <span><strong>Reminder:</strong> If you break or damage the item, you will be required to pay for or replace it.</span>
+                            </div>
+                            <button type="submit" id="submitBorrowBtn" disabled class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed border-0 cursor-pointer text-sm tracking-wide">
+                                Submit Borrow Request
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2330,6 +2362,49 @@
         let bookedQtyMap = {}; // 'YYYY-MM-DD' -> total qty booked across all confirmed/pending borrowings
         let currentEquipBookings = []; // raw bookings array for the open modal's equipment
         let currentEquipTotalQty = 1; // total inventory of the open modal's equipment
+        let currentBorrowPurpose = null; // 'event' | 'burol'
+
+        // Items NOT available for Burol (Funeral/Viewing) — matched against item name (case-insensitive)
+        const BUROL_EXCLUDED = ['microphone', 'speaker', 'ladder', 'electric fan', 'fan'];
+
+        function itemAllowsBurol(itemName) {
+            const lower = (itemName || '').toLowerCase();
+            return !BUROL_EXCLUDED.some(kw => lower.includes(kw));
+        }
+
+        function selectBorrowPurpose(purpose) {
+            currentBorrowPurpose = purpose;
+            const evBtn  = document.getElementById('purposeBtnEvent');
+            const buBtn  = document.getElementById('purposeBtnBurol');
+            const selectedStyle = 'border:2px solid #7c3aed;background:#f5f3ff;box-shadow:0 0 0 3px rgba(124,58,237,.18);';
+            const defaultStyle  = 'border:2px solid #e9d5ff;background:#fff;box-shadow:none;';
+            if (evBtn)  evBtn.style.cssText  = evBtn.style.cssText.replace(/border:[^;]+;background:[^;]+;box-shadow:[^;]+;?/, '') + (purpose === 'event'  ? selectedStyle : defaultStyle);
+            if (buBtn)  buBtn.style.cssText  = buBtn.style.cssText.replace(/border:[^;]+;background:[^;]+;box-shadow:[^;]+;?/, '') + (purpose === 'burol'  ? selectedStyle : defaultStyle);
+            // Show the rest of the form
+            const body = document.getElementById('borrowFormBody');
+            if (body) body.style.display = '';
+            // Reset dates so user re-picks under new rules
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            updateBorrowDurationRules();
+            updateBorrowDateDisplays();
+            renderBorrowCalendar();
+            updateBorrowSubmitButton();
+        }
+
+        function updateBorrowDurationRules() {
+            const el = document.getElementById('borrowDurationRules');
+            if (!el) return;
+            if (!currentBorrowPurpose) { el.innerHTML = ''; return; }
+            if (currentBorrowPurpose === 'event') {
+                el.innerHTML = '<div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:10px 12px;margin-bottom:12px;">' +
+                    '<span style="flex-shrink:0;font-size:13px;">📋</span>' +
+                    '<span><strong>Event borrowing:</strong> Single day only — borrow and return on the same date. Click any available date on the calendar.</span></div>';
+            } else {
+                el.innerHTML = '<div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:10px 12px;margin-bottom:12px;">' +
+                    '<span style="flex-shrink:0;font-size:13px;">📋</span>' +
+                    '<span><strong>Burol / Funeral Viewing:</strong> Minimum <strong>3 days</strong>, maximum <strong>7 days</strong>. Select your start date first, then select the return date on the calendar.</span></div>';
+            }
+        }
 
         async function openBorrowModalWithEquip(equipId) {
             if (!isEquipOpen()) {
@@ -2358,6 +2433,31 @@
             document.getElementById('borrowerContact').value = '';
             if (document.getElementById('borrowerAddress')) document.getElementById('borrowerAddress').value = user.address || '';
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+
+            // Reset purpose selector
+            currentBorrowPurpose = null;
+            const _evBtn = document.getElementById('purposeBtnEvent');
+            const _buBtn = document.getElementById('purposeBtnBurol');
+            const _defStyle = 'display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;border:2px solid #e9d5ff;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;';
+            if (_evBtn) _evBtn.style.cssText = _defStyle;
+            if (_buBtn) _buBtn.style.cssText = _defStyle;
+            // Show/hide Burol option based on item type
+            if (_buBtn) _buBtn.style.display = itemAllowsBurol(item.name) ? '' : 'none';
+            // Hide form body until purpose chosen
+            const _body = document.getElementById('borrowFormBody');
+            if (_body) _body.style.display = 'none';
+            updateBorrowDurationRules();
+
+            // Show item description/specs if available
+            const _specBox = document.getElementById('borrowItemSpecsBox');
+            if (_specBox) {
+                const specParts = [];
+                if (item.description) specParts.push('<span>' + item.description + '</span>');
+                if (item.condition) specParts.push('<span>Condition: <strong>' + item.condition + '</strong></span>');
+                _specBox.innerHTML = specParts.length
+                    ? '<div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#374151;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin-bottom:10px;">' + specParts.join('<span style="color:#cbd5e1;">·</span>') + '</div>'
+                    : '';
+            }
 
             // Fetch booked date ranges for this equipment from Supabase
             currentEquipBookings = [];
@@ -2426,16 +2526,21 @@
         }
 
         function openBorrowModal() { showToast('Please click Borrow on a specific equipment card', 'error'); }
-        function closeBorrowModal() { document.getElementById('borrowModal').classList.add('hidden'); borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true; }
+        function closeBorrowModal() {
+            document.getElementById('borrowModal').classList.add('hidden');
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            currentBorrowPurpose = null;
+        }
 
         // Submit button validation
         function updateBorrowSubmitButton() {
             const btn = document.getElementById('submitBorrowBtn');
+            if (!btn) return;
             const qty = parseInt(document.getElementById('borrowQty').value);
-            const purpose = document.getElementById('borrowPurpose').value;
+            const details = document.getElementById('borrowPurpose').value;
             const name = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
-            btn.disabled = !(borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '');
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && details.trim() !== '' && name.trim() !== '' && contact.trim() !== '');
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
@@ -2545,7 +2650,16 @@
                     if (_sc) { _sc.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:2px 12px;border-radius:9999px;font-size:11px;font-weight:700;background:#10b981;color:#fff;border:1px solid #059669;'; _sc.innerHTML = '<span>✓</span><span>Dates Selected</span>'; }
                 } else {
                     _lb.style.display = 'none';
-                    if (_sc) { _sc.style.cssText = ''; if (borrowStartDate) _sc.innerHTML = '<span>1</span><span>Select Return Date</span>'; else _sc.innerHTML = '<span>1</span><span>Select Dates</span>'; }
+                    if (_sc) {
+                        _sc.style.cssText = '';
+                        if (borrowStartDate) {
+                            const hint = currentBorrowPurpose === 'burol' ? 'Select Return Date (min 3 days)' : 'Confirm Date';
+                            _sc.innerHTML = '<span>2</span><span>' + hint + '</span>';
+                        } else {
+                            const hint = currentBorrowPurpose === 'event' ? 'Pick Your Event Date' : currentBorrowPurpose === 'burol' ? 'Pick Start Date' : 'Select Dates';
+                            _sc.innerHTML = '<span>2</span><span>' + hint + '</span>';
+                        }
+                    }
                 }
             }
 
@@ -2615,8 +2729,11 @@
         }
 
         function selectBorrowDate(dateStr) {
+            if (!currentBorrowPurpose) {
+                return showToast('Please select a purpose (Event or Burol) first.', 'info');
+            }
             const today = new Date(); today.setHours(0,0,0,0);
-            const maxInv = parseInt(document.getElementById('borrowQty').max) || 1;
+            const maxInv = currentEquipTotalQty || parseInt(document.getElementById('borrowQty').max) || 1;
             const targetQty = parseInt(document.getElementById('borrowQty').value) || 1;
 
             if (borrowStartDate && borrowReturnDate) {
@@ -2624,28 +2741,37 @@
             }
 
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
-            
+
             const booked = bookedQtyMap[dateStr] || 0;
             if (booked >= maxInv) return showToast('This date is fully booked. Please choose another date.', 'error');
             if (booked + targetQty > maxInv) return showToast('Not enough inventory available on this date for your requested quantity.', 'error');
 
-            if (borrowDateSelectingStart) {
+            if (currentBorrowPurpose === 'event') {
+                // Event: single day — set both start and end to the clicked date
+                borrowStartDate = dateStr; borrowReturnDate = dateStr; borrowDateSelectingStart = true;
+            } else if (borrowDateSelectingStart) {
                 borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
-                showToast('Now select the return date', 'success');
+                showToast('Now select the return date (min 3 days from start)', 'success');
             } else {
-                if (new Date(dateStr) < new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
+                if (new Date(dateStr) <= new Date(borrowStartDate)) return showToast('Return date must be after the borrow date', 'error');
                 const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays > 7) return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
-                
-                // Check if any date in range doesn't have enough capacity
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // days between (exclusive of start)
+
+                if (currentBorrowPurpose === 'burol') {
+                    if (diffDays < 2) return showToast('Burol / Funeral Viewing requires a minimum of 3 days. Please select a date at least 3 days from the start.', 'error');
+                    if (diffDays > 6) return showToast('Burol / Funeral Viewing allows a maximum of 7 days. Please select an earlier return date.', 'error');
+                } else {
+                    if (diffDays > 7) return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
+                }
+
+                // Check capacity across the entire range
                 const start = new Date(borrowStartDate);
                 const end   = new Date(dateStr);
                 for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                     const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
                     const dayBooked = bookedQtyMap[ds] || 0;
                     if (dayBooked >= maxInv) return showToast('Your selected range includes a fully booked date. Please adjust your dates.', 'error');
-                    if (dayBooked + targetQty > maxInv) return showToast('Not enough inventory available on ' + ds + ' for your requested quantity.', 'error');
+                    if (dayBooked + targetQty > maxInv) return showToast('Not enough inventory on ' + ds + ' for the requested quantity.', 'error');
                 }
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
             }
@@ -2756,7 +2882,8 @@
                 return `${h}:${m} ${ampm}`;
             };
             
-            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact} | Address: ${address}`;
+            const purposeTypeLabel = currentBorrowPurpose === 'burol' ? 'Burol / Funeral Viewing' : 'Event';
+            const fullPurpose = `[Type: ${purposeTypeLabel}] [Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact} | Address: ${address}`;
             const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
             
             if (result.success) { 
