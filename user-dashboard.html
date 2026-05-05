@@ -2372,18 +2372,23 @@
             return !BUROL_EXCLUDED.some(kw => lower.includes(kw));
         }
 
+        const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;cursor:pointer;font-family:inherit;transition:border .15s,background .15s,box-shadow .15s;width:100%;border:none;';
+        const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #7c3aed !important;background:#f5f3ff;box-shadow:0 0 0 3px rgba(124,58,237,.2);';
+        const _BTN_INACTIVE = _BTN_BASE + 'border:2px solid #e9d5ff;background:#fff;box-shadow:none;';
+
+        function _setPurposeBtnStyle(btn, active) {
+            if (!btn) return;
+            btn.style.cssText = active ? _BTN_ACTIVE : _BTN_INACTIVE;
+        }
+
         function selectBorrowPurpose(purpose) {
             currentBorrowPurpose = purpose;
-            const evBtn  = document.getElementById('purposeBtnEvent');
-            const buBtn  = document.getElementById('purposeBtnBurol');
-            const selectedStyle = 'border:2px solid #7c3aed;background:#f5f3ff;box-shadow:0 0 0 3px rgba(124,58,237,.18);';
-            const defaultStyle  = 'border:2px solid #e9d5ff;background:#fff;box-shadow:none;';
-            if (evBtn)  evBtn.style.cssText  = evBtn.style.cssText.replace(/border:[^;]+;background:[^;]+;box-shadow:[^;]+;?/, '') + (purpose === 'event'  ? selectedStyle : defaultStyle);
-            if (buBtn)  buBtn.style.cssText  = buBtn.style.cssText.replace(/border:[^;]+;background:[^;]+;box-shadow:[^;]+;?/, '') + (purpose === 'burol'  ? selectedStyle : defaultStyle);
-            // Show the rest of the form
+            _setPurposeBtnStyle(document.getElementById('purposeBtnEvent'), purpose === 'event');
+            _setPurposeBtnStyle(document.getElementById('purposeBtnBurol'), purpose === 'burol');
+            // Reveal steps 2 & 3
             const body = document.getElementById('borrowFormBody');
-            if (body) body.style.display = '';
-            // Reset dates so user re-picks under new rules
+            if (body) { body.style.display = 'block'; body.style.visibility = 'visible'; }
+            // Reset dates so user picks afresh under the new rules
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             updateBorrowDurationRules();
             updateBorrowDateDisplays();
@@ -2434,18 +2439,18 @@
             if (document.getElementById('borrowerAddress')) document.getElementById('borrowerAddress').value = user.address || '';
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
 
-            // Reset purpose selector
+            // Reset purpose selector to neutral state
             currentBorrowPurpose = null;
             const _evBtn = document.getElementById('purposeBtnEvent');
             const _buBtn = document.getElementById('purposeBtnBurol');
-            const _defStyle = 'display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:14px;border:2px solid #e9d5ff;background:#fff;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;';
-            if (_evBtn) _evBtn.style.cssText = _defStyle;
-            if (_buBtn) _buBtn.style.cssText = _defStyle;
-            // Show/hide Burol option based on item type
-            if (_buBtn) _buBtn.style.display = itemAllowsBurol(item.name) ? '' : 'none';
+            if (_evBtn) _evBtn.style.cssText = _BTN_INACTIVE;
+            if (_buBtn) {
+                _buBtn.style.cssText = _BTN_INACTIVE;
+                _buBtn.style.display = itemAllowsBurol(item.name) ? 'flex' : 'none';
+            }
             // Hide form body until purpose chosen
             const _body = document.getElementById('borrowFormBody');
-            if (_body) _body.style.display = 'none';
+            if (_body) { _body.style.display = 'none'; _body.style.visibility = 'hidden'; }
             updateBorrowDurationRules();
 
             // Show item description/specs if available
@@ -2661,6 +2666,16 @@
                         }
                     }
                 }
+            }
+
+            // If no purpose selected yet, show a prompt overlay and return early
+            if (!currentBorrowPurpose) {
+                grid.innerHTML = '<div style="grid-column:span 7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px;text-align:center;gap:8px;">' +
+                    '<span style="font-size:28px;">👉</span>' +
+                    '<div style="font-size:13px;font-weight:700;color:#374151;">Select your purpose first</div>' +
+                    '<div style="font-size:11px;color:#9ca3af;">Choose Event or Burol on the right panel to unlock the calendar</div>' +
+                    '</div>';
+                return;
             }
 
             for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')); }
