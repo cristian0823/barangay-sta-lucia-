@@ -1216,8 +1216,12 @@ INSERT INTO site_settings (key,value) VALUES
 ON CONFLICT (key) DO NOTHING;
 
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "auth read/write" ON site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "anon read" ON site_settings FOR SELECT TO anon USING (true);</pre>
+DROP POLICY IF EXISTS "auth read/write" ON site_settings;
+DROP POLICY IF EXISTS "anon read" ON site_settings;
+CREATE POLICY "anon all" ON site_settings FOR ALL TO anon USING (true) WITH CHECK (true);
+
+-- Enable realtime for this table
+ALTER PUBLICATION supabase_realtime ADD TABLE site_settings;</pre>
                             <button onclick="navigator.clipboard.writeText(document.getElementById('ohSqlBlock').textContent).then(()=>showToast('SQL copied!','success'))" style="position:absolute;top:8px;right:8px;padding:4px 10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Copy</button>
                         </div>
                     </details>
