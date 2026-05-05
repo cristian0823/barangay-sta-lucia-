@@ -1038,7 +1038,7 @@
                             </button>
                             <button type="button" onclick="selectBorrowPurpose('burol')" id="purposeBtnBurol" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
                                 <span style="font-size:22px;">&#128357;</span>
-                                <span style="font-size:14px;font-weight:700;color:#0f172a;">Burol / Funeral</span>
+                                <span style="font-size:14px;font-weight:700;color:#0f172a;">Funeral Viewing</span>
                                 <span style="font-size:11px;color:#94a3b8;">Wake and viewing</span>
                             </button>
                         </div>
@@ -2648,14 +2648,14 @@
             if (currentBorrowPurpose === 'event') {
                 el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Event borrowing:</strong> Pick up on your event day, return the next day at the same time.</div>';
             } else {
-                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Burol / Funeral Viewing:</strong> Minimum 3 days, maximum 7 days. Select your start and end dates.</div>';
+                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Minimum 3 days, maximum 7 days. Select your start and end dates.</div>';
             }
         }
 
         function renderAvailableItemsForPurpose(purpose) {
             const el = document.getElementById('availableItemsForPurpose');
             if (!el || !purpose) { if (el) el.innerHTML = ''; return; }
-            const label = purpose === 'event' ? 'EVENT' : 'BUROL / FUNERAL';
+            const label = purpose === 'event' ? 'EVENT' : 'FUNERAL VIEWING';
             const chips = ALL_BORROW_ITEMS.map(name => {
                 const excluded = !itemAllowsBurol(name);
                 const available = purpose === 'event' || !excluded;
@@ -2681,7 +2681,7 @@
                     _crb.textContent = 'Next-day return';
                 } else if (currentBorrowPurpose === 'burol') {
                     _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
-                    _crb.textContent = '3–7 days only';
+                    _crb.textContent = '7 days only';
                 } else {
                     _crb.style.display = 'none';
                 }
@@ -2796,8 +2796,8 @@
                 const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (currentBorrowPurpose === 'burol') {
-                    if (diffDays < 2) return showToast('Minimum 3 days required for Burol / Funeral Viewing.', 'error');
-                    if (diffDays > 6) return showToast('Maximum 7 days allowed for Burol / Funeral Viewing.', 'error');
+                    if (diffDays < 2) return showToast('Minimum 3 days required for Funeral Viewing.', 'error');
+                    if (diffDays > 6) return showToast('Maximum 7 days allowed for Funeral Viewing.', 'error');
                 } else if (diffDays > 7) {
                     return showToast('You can only borrow equipment for a maximum of 7 days.', 'error');
                 }
@@ -2885,7 +2885,7 @@
             e.preventDefault();
             const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
             const qty = parseInt(document.getElementById('borrowQty').value);
-            const purposeTypeLabel = currentBorrowPurpose === 'burol' ? 'Burol/Funeral Viewing' : 'Event';
+            const purposeTypeLabel = currentBorrowPurpose === 'burol' ? 'Funeral Viewing' : 'Event';
             const purposeStr = '[' + purposeTypeLabel + '] ' + document.getElementById('borrowPurpose').value;
             const fullName = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
