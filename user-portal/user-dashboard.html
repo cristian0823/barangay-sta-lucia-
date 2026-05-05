@@ -1087,7 +1087,7 @@
                             <strong>Important:</strong> You must return the item exactly at the time you specified in the form. You have a <strong>+1 day extension</strong> to bring the item back.
                         </div>
                     </div>
-                    <form id="borrowForm" class="flex-1 flex flex-col h-full space-y-4">
+                    <form id="borrowForm" class="flex flex-col space-y-4">
                         <input type="hidden" id="borrowEquipmentId"><input type="hidden" id="borrowEquipmentName">
                         <input type="hidden" id="borrowStartDate"><input type="hidden" id="borrowReturnDate">
                         <!-- User Info Fields -->
@@ -1108,11 +1108,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="form-field">
                                 <label class="form-label">Borrow Time</label>
-                                <input type="time" id="borrowTime" required class="form-input">
+                                <input type="time" id="borrowTime" required class="form-input" oninput="validateBorrowTime()">
+                                <p id="borrowTimeError" class="text-xs text-red-500 font-medium mt-1" style="display:none;"></p>
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Return Time</label>
-                                <input type="time" id="returnTime" required class="form-input">
+                                <input type="time" id="returnTime" required class="form-input" oninput="validateBorrowTime()">
+                                <p id="returnTimeError" class="text-xs text-red-500 font-medium mt-1" style="display:none;"></p>
                             </div>
                         </div>
                         <div class="form-field">
@@ -1120,9 +1122,9 @@
                             <input type="text" inputmode="numeric" pattern="[0-9]*" id="borrowQty" min="1" required class="form-input" style="-moz-appearance:textfield;">
                             <p id="borrowMaxHelp" class="text-xs text-orange-600 font-medium"></p>
                         </div>
-                        <div class="form-field flex-1">
+                        <div class="form-field">
                             <label class="form-label">Purpose</label>
-                            <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..."></textarea>
+                            <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..." rows="3"></textarea>
                         </div>
                         <div class="mt-2 text-[11px] leading-relaxed text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2.5 rounded-lg border border-red-200 dark:border-red-700 shadow-sm flex items-start gap-2">
                             <span class="text-base leading-none">&#9888;&#65039;</span>
@@ -2385,6 +2387,28 @@
         }
 
         // Submit button validation
+        function validateBorrowTime() {
+            let eqOpen = 8, eqClose = 17;
+            try { const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}'); if (ls.equipment_open_hour != null) eqOpen = parseInt(ls.equipment_open_hour); if (ls.equipment_close_hour != null) eqClose = parseInt(ls.equipment_close_hour); } catch(e) {}
+            const fmtH = (h) => { const ampm = h >= 12 ? 'PM' : 'AM'; const h12 = h % 12 || 12; return h12 + ':00 ' + ampm; };
+            const errMsg = `Must be between ${fmtH(eqOpen)} and ${fmtH(eqClose)} (operating hours)`;
+            const bEl = document.getElementById('borrowTimeError');
+            const rEl = document.getElementById('returnTimeError');
+            const bVal = document.getElementById('borrowTime').value;
+            const rVal = document.getElementById('returnTime').value;
+            if (bEl && bVal) {
+                const bH = parseInt(bVal.split(':')[0]);
+                const bInvalid = bH < eqOpen || bH >= eqClose;
+                bEl.textContent = errMsg; bEl.style.display = bInvalid ? 'block' : 'none';
+            }
+            if (rEl && rVal) {
+                const rH = parseInt(rVal.split(':')[0]);
+                const rInvalid = rH < eqOpen || rH >= eqClose;
+                rEl.textContent = errMsg; rEl.style.display = rInvalid ? 'block' : 'none';
+            }
+            updateBorrowSubmitButton();
+        }
+
         function updateBorrowSubmitButton() {
             const btn = document.getElementById('submitBorrowBtn');
             if (!btn) return;
@@ -2392,7 +2416,10 @@
             const purpose = document.getElementById('borrowPurpose').value;
             const name = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
-            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '');
+            const bTimeErr = document.getElementById('borrowTimeError');
+            const rTimeErr = document.getElementById('returnTimeError');
+            const timesValid = !(bTimeErr && bTimeErr.style.display === 'block') && !(rTimeErr && rTimeErr.style.display === 'block');
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid);
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
