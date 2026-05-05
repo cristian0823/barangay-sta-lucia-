@@ -54,6 +54,10 @@
         }
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
+        [data-theme="dark"] #purposeSelectorPanel { background: #0f172a; border-bottom: 1px solid #1e293b; }
+        [data-theme="dark"] #purposeSelectorPanel > div:first-child { color: #94a3b8 !important; }
+        [data-theme="dark"] #borrowDurationRules > div { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
+        [data-theme="dark"] #availableItemsForPurpose > div > div:first-child { color: #64748b !important; }
         [data-theme="dark"] .dashboard-header { background-color: #1e293b; border-color: #334155; box-shadow: none; }
         [data-theme="dark"] .sidebar { background-color: #1e293b; border-color: #334155; }
         [data-theme="dark"] .nav-item { color: #cbd5e1; }
@@ -2373,14 +2377,8 @@
             if (body) body.style.display = 'none';
             const evBtn = document.getElementById('purposeBtnEvent');
             const buBtn = document.getElementById('purposeBtnBurol');
-            if (evBtn) evBtn.style.cssText = _BTN_INACTIVE;
-            if (buBtn) buBtn.style.cssText = _BTN_INACTIVE;
-            const evName = evBtn && evBtn.querySelector('span:nth-child(2)');
-            const evSub  = evBtn && evBtn.querySelector('span:nth-child(3)');
-            const buName = buBtn && buBtn.querySelector('span:nth-child(2)');
-            const buSub  = buBtn && buBtn.querySelector('span:nth-child(3)');
-            if (evName) evName.style.color = '#0f172a'; if (evSub) evSub.style.color = '#94a3b8';
-            if (buName) buName.style.color = '#0f172a'; if (buSub) buSub.style.color = '#94a3b8';
+            _setPurposeBtnStyle(evBtn, false);
+            _setPurposeBtnStyle(buBtn, false);
             const dr = document.getElementById('borrowDurationRules'); if (dr) dr.innerHTML = '';
             const ai = document.getElementById('availableItemsForPurpose'); if (ai) ai.innerHTML = '';
             updateBorrowLockState();
@@ -2590,10 +2588,17 @@
 
         function _setPurposeBtnStyle(btn, active) {
             if (!btn || btn.style.display === 'none') return;
-            btn.style.cssText = active ? _BTN_ACTIVE : _BTN_INACTIVE;
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (active) {
+                btn.style.cssText = _BTN_ACTIVE;
+            } else {
+                btn.style.cssText = _BTN_BASE + (isDark
+                    ? 'border:2px solid #334155;background:#1e293b;box-shadow:none;'
+                    : 'border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;');
+            }
             const nameEl = btn.querySelector('span:nth-child(2)');
             const subEl  = btn.querySelector('span:nth-child(3)');
-            if (nameEl) nameEl.style.color = active ? '#fff' : '#0f172a';
+            if (nameEl) nameEl.style.color = active ? '#fff' : (isDark ? '#f1f5f9' : '#0f172a');
             if (subEl)  subEl.style.color  = active ? 'rgba(255,255,255,.8)' : '#94a3b8';
         }
 
@@ -2616,7 +2621,7 @@
             if (!el) return;
             if (!currentBorrowPurpose) { el.innerHTML = ''; return; }
             if (currentBorrowPurpose === 'event') {
-                el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Event borrowing:</strong> Single day only. Borrow and return on the same day.</div>';
+                el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Event borrowing:</strong> Pick up on your event day, return the next day at the same time.</div>';
             } else {
                 el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Burol / Funeral Viewing:</strong> Minimum 3 days, maximum 7 days. Select your start and end dates.</div>';
             }
@@ -2648,7 +2653,7 @@
             if (_crb) {
                 if (currentBorrowPurpose === 'event') {
                     _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;';
-                    _crb.textContent = 'Single day only';
+                    _crb.textContent = 'Next-day return';
                 } else if (currentBorrowPurpose === 'burol') {
                     _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
                     _crb.textContent = '3–7 days only';
@@ -2750,8 +2755,10 @@
             if (borrowDateSelectingStart) {
                 if (currentAvailable !== null && currentAvailable <= 0) return showToast('This date is fully booked.', 'error');
                 if (currentBorrowPurpose === 'event') {
-                    // Single day: start and end are the same
-                    borrowStartDate = dateStr; borrowReturnDate = dateStr; borrowDateSelectingStart = true;
+                    // Event: borrow day selected, return = next day
+                    const nd = new Date(dateStr); nd.setDate(nd.getDate() + 1);
+                    const nextDayStr = nd.getFullYear() + '-' + String(nd.getMonth()+1).padStart(2,'0') + '-' + String(nd.getDate()).padStart(2,'0');
+                    borrowStartDate = dateStr; borrowReturnDate = nextDayStr; borrowDateSelectingStart = true;
                     updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
                     updateBorrowLockState();
                     return;
@@ -2984,13 +2991,12 @@
             if (_body) _body.style.display = 'none';
             const _evBtn = document.getElementById('purposeBtnEvent');
             const _buBtn = document.getElementById('purposeBtnBurol');
-            if (_evBtn) { _evBtn.style.cssText = _BTN_INACTIVE; const s2=_evBtn.querySelector('span:nth-child(2)'); const s3=_evBtn.querySelector('span:nth-child(3)'); if(s2)s2.style.color='#0f172a'; if(s3)s3.style.color='#94a3b8'; }
+            _setPurposeBtnStyle(_evBtn, false);
             // Show/hide Burol button based on item
             if (_buBtn) {
                 if (itemAllowsBurol(item.name)) {
-                    _buBtn.style.cssText = _BTN_INACTIVE;
                     _buBtn.style.display = 'flex';
-                    const s2=_buBtn.querySelector('span:nth-child(2)'); const s3=_buBtn.querySelector('span:nth-child(3)'); if(s2)s2.style.color='#0f172a'; if(s3)s3.style.color='#94a3b8';
+                    _setPurposeBtnStyle(_buBtn, false);
                     document.getElementById('purposeBtnGrid').style.gridTemplateColumns = '1fr 1fr';
                 } else {
                     _buBtn.style.display = 'none';
