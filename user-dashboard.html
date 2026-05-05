@@ -1645,6 +1645,15 @@
         let OPERATING_HOURS = { equipOpen: 8, equipClose: 17, facilityOpen: 6, facilityClose: 21 };
 
         async function loadOperatingHours() {
+            // 1. Check localStorage first (set by admin on same browser/device)
+            try {
+                const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                if (ls.equipment_open_hour  != null) OPERATING_HOURS.equipOpen     = ls.equipment_open_hour;
+                if (ls.equipment_close_hour != null) OPERATING_HOURS.equipClose    = ls.equipment_close_hour;
+                if (ls.facility_open_hour   != null) OPERATING_HOURS.facilityOpen  = ls.facility_open_hour;
+                if (ls.facility_close_hour  != null) OPERATING_HOURS.facilityClose = ls.facility_close_hour;
+            } catch(e) {}
+            // 2. Supabase overrides localStorage when table exists (cross-device sync)
             try {
                 const { data, error } = await supabase.from('site_settings').select('key,value');
                 if (!error && data) data.forEach(r => {
@@ -1653,7 +1662,7 @@
                     if (r.key === 'facility_open_hour')   OPERATING_HOURS.facilityOpen  = parseInt(r.value);
                     if (r.key === 'facility_close_hour')  OPERATING_HOURS.facilityClose = parseInt(r.value);
                 });
-            } catch(e) { /* use hardcoded defaults */ }
+            } catch(e) { /* use defaults/localStorage */ }
         }
 
         function getManilaHour() {

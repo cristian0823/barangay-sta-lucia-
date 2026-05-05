@@ -1200,10 +1200,10 @@
                     </div>
                 </div>
 
-                <div id="ohSetupNotice" class="hidden" style="background:#fffbeb;border:1.5px solid #f59e0b;border-radius:14px;padding:16px 20px;margin-bottom:20px;">
-                    <div style="font-weight:700;color:#92400e;margin-bottom:6px;">⚠️ Database Table Required</div>
-                    <div style="font-size:13px;color:#78350f;margin-bottom:10px;">Run this SQL once in your Supabase SQL editor to enable persistent settings:</div>
-                    <pre style="background:#1e1b4b;color:#a5f3fc;padding:12px 16px;border-radius:10px;font-size:12px;overflow-x:auto;white-space:pre-wrap;">CREATE TABLE IF NOT EXISTS site_settings (
+                <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:14px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#1e40af;">
+                    <strong>ℹ️ Hours are saved in this browser.</strong> To sync across all devices, run this SQL once in your Supabase dashboard:
+                    <div style="position:relative;margin-top:8px;">
+                        <pre id="ohSqlBlock" style="background:#1e1b4b;color:#a5f3fc;padding:10px 14px;border-radius:10px;font-size:11.5px;overflow-x:auto;white-space:pre-wrap;margin:0;">CREATE TABLE IF NOT EXISTS site_settings (
   key text PRIMARY KEY,
   value text NOT NULL,
   updated_at timestamptz DEFAULT now()
@@ -1211,7 +1211,14 @@
 INSERT INTO site_settings (key,value) VALUES
   ('equipment_open_hour','8'),('equipment_close_hour','17'),
   ('facility_open_hour','6'),('facility_close_hour','21')
-ON CONFLICT (key) DO NOTHING;</pre>
+ON CONFLICT (key) DO NOTHING;
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "auth read/write" ON site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "anon read" ON site_settings FOR SELECT TO anon USING (true);</pre>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('ohSqlBlock').textContent).then(()=>showToast('SQL copied!','success'))" style="position:absolute;top:8px;right:8px;padding:4px 10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Copy</button>
+                    </div>
+                    <div id="ohSyncStatus" style="margin-top:8px;font-size:12px;color:#1d4ed8;"></div>
                 </div>
 
                 <div class="profile-grid">
@@ -1459,21 +1466,62 @@ ON CONFLICT (key) DO NOTHING;</pre>
             if (h === 12) return '12:00 PM'; return (h-12) + ':00 PM';
         }
 
+        const LS_HOURS_KEY = 'brgy_operating_hours';
+
+        function _getStoredHours() {
+            try { return JSON.parse(localStorage.getItem(LS_HOURS_KEY)) || {}; } catch(e) { return {}; }
+        }
+
+        function _setStoredHours(patch) {
+            const cur = _getStoredHours();
+            localStorage.setItem(LS_HOURS_KEY, JSON.stringify(Object.assign(cur, patch)));
+        }
+
         async function loadOperatingHoursAdmin() {
+            // 1. Load from localStorage first (always available)
+            const stored = _getStoredHours();
+            const eo = stored.equipment_open_hour  != null ? stored.equipment_open_hour  : 8;
+            const ec = stored.equipment_close_hour != null ? stored.equipment_close_hour : 17;
+            const fo = stored.facility_open_hour   != null ? stored.facility_open_hour   : 6;
+            const fc = stored.facility_close_hour  != null ? stored.facility_close_hour  : 21;
+            document.getElementById('equipOpenTime').value    = String(eo).padStart(2,'0') + ':00';
+            document.getElementById('equipCloseTime').value   = String(ec).padStart(2,'0') + ':00';
+            document.getElementById('facilityOpenTime').value = String(fo).padStart(2,'0') + ':00';
+            document.getElementById('facilityCloseTime').value= String(fc).padStart(2,'0') + ':00';
+            updateStatusLabels(eo, ec, fo, fc);
+
+            // 2. Try Supabase to get latest (optional — cross-device sync)
+            const syncEl = document.getElementById('ohSyncStatus');
             try {
                 const { data, error } = await supabase.from('site_settings').select('key,value');
-                if (error) { document.getElementById('ohSetupNotice').classList.remove('hidden'); return; }
-                document.getElementById('ohSetupNotice').classList.add('hidden');
-                if (!data) return;
-                const get = k => { const r = data.find(x=>x.key===k); return r ? parseInt(r.value) : null; };
-                const eo = get('equipment_open_hour'), ec = get('equipment_close_hour');
-                const fo = get('facility_open_hour'), fc = get('facility_close_hour');
-                if (eo !== null) document.getElementById('equipOpenTime').value  = String(eo).padStart(2,'0') + ':00';
-                if (ec !== null) document.getElementById('equipCloseTime').value = String(ec).padStart(2,'0') + ':00';
-                if (fo !== null) document.getElementById('facilityOpenTime').value  = String(fo).padStart(2,'0') + ':00';
-                if (fc !== null) document.getElementById('facilityCloseTime').value = String(fc).padStart(2,'0') + ':00';
-                updateStatusLabels(eo||8, ec||17, fo||6, fc||21);
-            } catch(e) { document.getElementById('ohSetupNotice').classList.remove('hidden'); }
+                if (!error && data && data.length) {
+                    const get = k => { const r = data.find(x=>x.key===k); return r ? parseInt(r.value) : null; };
+                    const seo = get('equipment_open_hour'), sec = get('equipment_close_hour');
+                    const sfo = get('facility_open_hour'),  sfc = get('facility_close_hour');
+                    const patch = {};
+                    if (seo !== null) patch.equipment_open_hour  = seo;
+                    if (sec !== null) patch.equipment_close_hour = sec;
+                    if (sfo !== null) patch.facility_open_hour   = sfo;
+                    if (sfc !== null) patch.facility_close_hour  = sfc;
+                    if (Object.keys(patch).length) {
+                        _setStoredHours(patch);
+                        const neo = patch.equipment_open_hour  ?? eo;
+                        const nec = patch.equipment_close_hour ?? ec;
+                        const nfo = patch.facility_open_hour   ?? fo;
+                        const nfc = patch.facility_close_hour  ?? fc;
+                        document.getElementById('equipOpenTime').value    = String(neo).padStart(2,'0') + ':00';
+                        document.getElementById('equipCloseTime').value   = String(nec).padStart(2,'0') + ':00';
+                        document.getElementById('facilityOpenTime').value = String(nfo).padStart(2,'0') + ':00';
+                        document.getElementById('facilityCloseTime').value= String(nfc).padStart(2,'0') + ':00';
+                        updateStatusLabels(neo, nec, nfo, nfc);
+                    }
+                    if (syncEl) syncEl.innerHTML = '<span style="color:#059669;">✔ Synced with Supabase</span>';
+                } else {
+                    if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Supabase table not set up — hours saved locally only.</span>';
+                }
+            } catch(e) {
+                if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Supabase unreachable — hours saved locally only.</span>';
+            }
         }
 
         function updateStatusLabels(eo, ec, fo, fc) {
@@ -1486,28 +1534,56 @@ ON CONFLICT (key) DO NOTHING;</pre>
             if (fl) fl.innerHTML = '🕐 Current schedule: <strong>' + fmtHourLabel(fo) + ' – ' + fmtHourLabel(fc) + '</strong> &nbsp;|&nbsp; Status: <strong style="color:' + (facOpen?'#059669':'#dc2626') + '">' + (facOpen?'🟢 Open':'🔴 Closed') + '</strong>';
         }
 
-        async function saveHours(openKey, closeKey, openInputId, closeInputId) {
+        async function saveHours(openKey, closeKey, openInputId, closeInputId, statusLabelRefresh) {
             const openVal  = parseInt(document.getElementById(openInputId).value.split(':')[0]);
             const closeVal = parseInt(document.getElementById(closeInputId).value.split(':')[0]);
             if (isNaN(openVal) || isNaN(closeVal) || openVal >= closeVal) {
                 showToast('Invalid hours: opening must be before closing.', 'error'); return;
             }
+
+            // Always save to localStorage immediately
+            _setStoredHours({ [openKey]: openVal, [closeKey]: closeVal });
+            statusLabelRefresh();
+            showToast('Hours saved.', 'success');
+
+            // Try Supabase as optional secondary sync
+            const syncEl = document.getElementById('ohSyncStatus');
             try {
                 const { error } = await supabase.from('site_settings').upsert([
                     { key: openKey,  value: String(openVal),  updated_at: new Date().toISOString() },
                     { key: closeKey, value: String(closeVal), updated_at: new Date().toISOString() }
                 ], { onConflict: 'key' });
-                if (error) throw error;
-                showToast('Operating hours saved.', 'success');
-                loadOperatingHoursAdmin();
+                if (!error) {
+                    if (syncEl) syncEl.innerHTML = '<span style="color:#059669;">✔ Synced with Supabase</span>';
+                } else {
+                    if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Saved locally. Supabase sync unavailable.</span>';
+                }
             } catch(e) {
-                showToast('Failed to save. Make sure the site_settings table exists.', 'error');
-                document.getElementById('ohSetupNotice').classList.remove('hidden');
+                if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Saved locally. Supabase sync unavailable.</span>';
             }
         }
 
-        function saveEquipHours()    { saveHours('equipment_open_hour','equipment_close_hour','equipOpenTime','equipCloseTime'); }
-        function saveFacilityHours() { saveHours('facility_open_hour','facility_close_hour','facilityOpenTime','facilityCloseTime'); }
+        function saveEquipHours() {
+            const s = _getStoredHours();
+            saveHours('equipment_open_hour','equipment_close_hour','equipOpenTime','equipCloseTime', () => {
+                const eo = parseInt(document.getElementById('equipOpenTime').value.split(':')[0]);
+                const ec = parseInt(document.getElementById('equipCloseTime').value.split(':')[0]);
+                const fo = s.facility_open_hour  ?? 6;
+                const fc = s.facility_close_hour ?? 21;
+                updateStatusLabels(eo, ec, fo, fc);
+            });
+        }
+
+        function saveFacilityHours() {
+            const s = _getStoredHours();
+            saveHours('facility_open_hour','facility_close_hour','facilityOpenTime','facilityCloseTime', () => {
+                const eo = s.equipment_open_hour  ?? 8;
+                const ec = s.equipment_close_hour ?? 17;
+                const fo = parseInt(document.getElementById('facilityOpenTime').value.split(':')[0]);
+                const fc = parseInt(document.getElementById('facilityCloseTime').value.split(':')[0]);
+                updateStatusLabels(eo, ec, fo, fc);
+            });
+        }
         // ────────────────────────────────────────────────────────────
     </script>
 </body>
