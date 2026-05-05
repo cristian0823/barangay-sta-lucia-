@@ -1474,14 +1474,22 @@
             const stSelect = document.getElementById('editCourtStartTime');
             const etSelect = document.getElementById('editCourtEndTime');
             stSelect.innerHTML = ''; etSelect.innerHTML = '';
-            for (let i = 8; i <= 21; i++) {
-                let h12 = i > 12 ? i - 12 : i;
+            let openHour = 6;
+            let closeHour = 21;
+            try {
+                const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                if (ls.facility_open_hour != null) openHour = parseInt(ls.facility_open_hour);
+                if (ls.facility_close_hour != null) closeHour = parseInt(ls.facility_close_hour);
+            } catch(e) {}
+
+            for (let i = openHour; i <= closeHour; i++) {
+                let h12 = i > 12 ? i - 12 : i === 0 ? 12 : i;
                 let ampm = i >= 12 ? 'PM' : 'AM';
                 let timeStr = `${h12}:00 ${ampm}`;
                 stSelect.add(new Option(timeStr, timeStr));
                 etSelect.add(new Option(timeStr, timeStr));
                 
-                if (i !== 21) {
+                if (i !== closeHour) {
                     timeStr = `${h12}:30 ${ampm}`;
                     stSelect.add(new Option(timeStr, timeStr));
                     etSelect.add(new Option(timeStr, timeStr));
@@ -2701,6 +2709,22 @@
             if (!borrowDate || !returnDate) return showToast('Please select both dates', 'error');
             if (!borrowTime || !returnTime) return showToast('Please select the pickup and return times', 'error');
 
+            let eqOpen = 8;
+            let eqClose = 17;
+            try {
+                const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                if (ls.equipment_open_hour != null) eqOpen = parseInt(ls.equipment_open_hour);
+                if (ls.equipment_close_hour != null) eqClose = parseInt(ls.equipment_close_hour);
+            } catch(e) {}
+
+            const bHour = parseInt(borrowTime.split(':')[0]);
+            const rHour = parseInt(returnTime.split(':')[0]);
+            const fmtH = (h) => h % 12 === 0 ? 12 + (h >= 12 ? ' PM' : ' AM') : (h % 12) + (h >= 12 ? ' PM' : ' AM');
+
+            if (bHour < eqOpen || bHour >= eqClose) return showToast(`Pickup time must be within operating hours (${fmtH(eqOpen)} - ${fmtH(eqClose)})`, 'error');
+            if (rHour < eqOpen || rHour >= eqClose) return showToast(`Return time must be within operating hours (${fmtH(eqOpen)} - ${fmtH(eqClose)})`, 'error');
+
+
             const diffTime = Math.abs(new Date(returnDate) - new Date(borrowDate));
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays > 7) {
@@ -3321,10 +3345,18 @@
             const isToday = (todayStr === dateStr);
             const currentMins = now.getHours() * 60 + now.getMinutes();
 
+            let openHour = 6;
+            let closeHour = 21;
+            try {
+                const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                if (ls.facility_open_hour != null) openHour = parseInt(ls.facility_open_hour);
+                if (ls.facility_close_hour != null) closeHour = parseInt(ls.facility_close_hour);
+            } catch(e) {}
+
             const slots = [];
-            for (let i = 6; i <= 22; i++) {
+            for (let i = openHour; i <= closeHour; i++) {
                 slots.push(`${String(i).padStart(2,'0')}:00`);
-                if (i !== 22) slots.push(`${String(i).padStart(2,'0')}:30`);
+                if (i !== closeHour) slots.push(`${String(i).padStart(2,'0')}:30`);
             }
 
             slots.forEach(slot => {
