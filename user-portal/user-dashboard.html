@@ -2402,8 +2402,8 @@
                     const bInvalid = bH < eqOpen || bH >= eqClose;
                     bEl.textContent = errMsg;
                     bEl.style.display = bInvalid ? 'block' : 'none';
-                    // Auto-fill return time when borrow time is valid
-                    if (!bInvalid && rInput && !rInput.value) {
+                    // Always sync return time to match borrow time
+                    if (!bInvalid && rInput) {
                         rInput.value = bVal;
                         validateReturnTime();
                     }
