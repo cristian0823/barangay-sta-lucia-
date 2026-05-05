@@ -1105,6 +1105,30 @@
                             <label class="form-label">Address where item will be used</label>
                             <input type="text" id="borrowerAddress" required class="form-input" placeholder="e.g. Purok 3, Brgy. Sta. Lucia">
                         </div>
+                        <!-- DELIVERY METHOD SELECTION -->
+                        <div class="form-field" id="deliveryMethodField">
+                            <label class="form-label" style="margin-bottom:8px;">Delivery Method <span style="color:#ef4444;font-size:11px;">*</span></label>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <label id="deliveryPickupLabel" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:border-color .2s;" onclick="selectDeliveryMethod('pickup')">
+                                    <input type="radio" name="deliveryMethod" value="pickup" id="deliveryPickup" style="accent-color:#10b981;width:16px;height:16px;flex-shrink:0;">
+                                    <div>
+                                        <div style="font-size:13px;font-weight:700;color:var(--text-main,#0f172a);">&#127963; Pickup at Barangay Hall</div>
+                                        <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Come to the hall to pick up and return the item</div>
+                                    </div>
+                                </label>
+                                <label id="deliveryToAddrLabel" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:border-color .2s;" onclick="selectDeliveryMethod('delivery')">
+                                    <input type="radio" name="deliveryMethod" value="delivery" id="deliveryDelivery" style="accent-color:#10b981;width:16px;height:16px;flex-shrink:0;">
+                                    <div>
+                                        <div style="font-size:13px;font-weight:700;color:var(--text-main,#0f172a);">&#128666; Delivery to my address</div>
+                                        <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Item delivered and collected from your location</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div id="deliveryAddressField" style="display:none;margin-top:8px;">
+                                <input type="text" id="deliveryAddress" class="form-input" placeholder="Enter complete delivery address" oninput="updateBorrowSubmitButton()">
+                            </div>
+                            <p id="deliveryPickupOnlyNotice" style="display:none;font-size:11px;color:#92400e;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;margin-top:6px;">&#9888;&#65039; This item is <strong>Pickup only</strong> — large/heavy items cannot be delivered.</p>
+                        </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="form-field">
                                 <label class="form-label">Borrow Time</label>
@@ -1713,6 +1737,13 @@
         let allEquipmentList = [];
         const BUROL_EXCLUDED = ['microphone', 'speaker', 'ladder', 'electric fan', 'fan'];
         const ALL_BORROW_ITEMS = ['Chair', 'Table', 'Tent', 'Microphone', 'Speaker', 'Electric Fan', 'Ladder'];
+        const PICKUP_ONLY_ITEMS = ['table', 'tent'];
+        const LS_DELIVERY_KEY = 'brgy_delivery_settings';
+        function _itemDeliveryAllowed(itemName) {
+            const lower = (itemName || '').toLowerCase();
+            if (PICKUP_ONLY_ITEMS.some(kw => lower.includes(kw))) return false;
+            try { const s = JSON.parse(localStorage.getItem(LS_DELIVERY_KEY) || '{}'); return s[lower] !== false; } catch(e) { return true; }
+        }
         const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;';
         const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #059669;background:#10b981;box-shadow:0 4px 14px rgba(16,185,129,.35);';
         const _BTN_INACTIVE = _BTN_BASE + 'border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;';
@@ -2351,13 +2382,23 @@
                 if (b.status === 'rejected') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-700"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>Rejected</span>'; statusBorder = 'border-red-200'; }
                 if (b.status === 'returned') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>Returned</span>'; statusBorder = 'border-blue-200'; }
                 const rejectionMsg = (b.status === 'rejected' && b.rejection_reason) ? '<div class="mt-3 text-xs bg-red-50 p-3 rounded-lg border border-red-100"><strong class="text-red-700">Reason:</strong> <span class="text-red-600">' + b.rejection_reason + '</span></div>' : '';
+                let deliveryBadge = '';
+                if (b.purpose) {
+                    const dm = b.purpose.match(/\| Delivery:\s*([^|]+)/);
+                    if (dm) {
+                        const isDelivery = dm[1].trim().toLowerCase().startsWith('delivery');
+                        deliveryBadge = isDelivery
+                            ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;margin-top:4px;">&#128666; Delivery</span>'
+                            : '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;margin-top:4px;">&#127963; Pickup</span>';
+                    }
+                }
                 const equipItem = (typeof allEquipmentList !== 'undefined' && allEquipmentList) ? allEquipmentList.find(e => e.name === b.equipment) : null;
                 const equipIcon = (equipItem && equipItem.image_url) 
                     ? `<img src="${equipItem.image_url}" alt="${b.equipment}" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid var(--border-color);flex-shrink:0;background:var(--panel-bg);">` 
                     : getEquipmentIcon(b.equipment);
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + statusBorder + ' shadow-sm hover:shadow-md transition-all duration-300">' +
                     '<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div class="flex items-start gap-4">' + equipIcon + 
-                    '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-emerald-600 font-bold">x' + b.quantity + '</span></p></div></div>' +
+                    '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-emerald-600 font-bold">x' + b.quantity + '</span></p>' + deliveryBadge + '</div></div>' +
                     '<div class="flex flex-col items-end gap-2">' + statusBadge + '<div class="text-xs text-gray-400 flex items-center gap-1">&#128197; ' + formatDate(b.borrowDate) + ' <i class="bi bi-arrow-right"></i> ' + formatDate(b.returnDate) + '</div></div></div>' +
                     rejectionMsg +
                     (b.status === 'pending' ? '<div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between"><p class="text-xs text-amber-600 font-medium flex items-center gap-1"> Waiting for approval</p><div class="flex gap-2"><button onclick="cancelEqRequest(' + b.id + ')" class="px-4 py-2 rounded-lg text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Cancel</button></div></div>' : '') +
@@ -2383,6 +2424,14 @@
             _setPurposeBtnStyle(buBtn, false);
             const dr = document.getElementById('borrowDurationRules'); if (dr) dr.innerHTML = '';
             const ai = document.getElementById('availableItemsForPurpose'); if (ai) ai.innerHTML = '';
+            // Reset delivery method
+            const _dp = document.getElementById('deliveryPickup'); if (_dp) _dp.checked = false;
+            const _dd = document.getElementById('deliveryDelivery'); if (_dd) _dd.checked = false;
+            const _daf = document.getElementById('deliveryAddressField'); if (_daf) _daf.style.display = 'none';
+            const _da = document.getElementById('deliveryAddress'); if (_da) _da.value = '';
+            const _pbl = document.getElementById('deliveryPickupLabel'); if (_pbl) _pbl.style.border = '2px solid #e2e8f0';
+            const _dtl = document.getElementById('deliveryToAddrLabel'); if (_dtl) { _dtl.style.border = '2px solid #e2e8f0'; _dtl.style.display = 'flex'; }
+            const _pon = document.getElementById('deliveryPickupOnlyNotice'); if (_pon) _pon.style.display = 'none';
             updateBorrowLockState();
         }
 
@@ -2441,7 +2490,12 @@
             const bTimeErr = document.getElementById('borrowTimeError');
             const rTimeErr = document.getElementById('returnTimeError');
             const timesValid = !(bTimeErr && bTimeErr.style.display === 'block') && !(rTimeErr && rTimeErr.style.display === 'block');
-            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid);
+            const deliveryPickup = document.getElementById('deliveryPickup');
+            const deliveryDelivery = document.getElementById('deliveryDelivery');
+            const deliveryMethodSelected = (deliveryPickup && deliveryPickup.checked) || (deliveryDelivery && deliveryDelivery.checked);
+            const deliveryAddr = document.getElementById('deliveryAddress');
+            const deliveryAddrValid = !(deliveryDelivery && deliveryDelivery.checked) || (deliveryAddr && deliveryAddr.value.trim() !== '');
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected && deliveryAddrValid);
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
@@ -2628,6 +2682,41 @@
                 </div>`;
             });
             container.innerHTML = html;
+        }
+
+        function selectDeliveryMethod(method) {
+            const pickupRadio = document.getElementById('deliveryPickup');
+            const deliveryRadio = document.getElementById('deliveryDelivery');
+            const addrField = document.getElementById('deliveryAddressField');
+            const pickupLabel = document.getElementById('deliveryPickupLabel');
+            const deliveryLabel = document.getElementById('deliveryToAddrLabel');
+            if (pickupRadio) pickupRadio.checked = method === 'pickup';
+            if (deliveryRadio) deliveryRadio.checked = method === 'delivery';
+            const active = '2px solid #10b981', inactive = '2px solid #e2e8f0';
+            if (pickupLabel) pickupLabel.style.border = method === 'pickup' ? active : inactive;
+            if (deliveryLabel) deliveryLabel.style.border = method === 'delivery' ? active : inactive;
+            if (addrField) addrField.style.display = method === 'delivery' ? 'block' : 'none';
+            if (method !== 'delivery') { const da = document.getElementById('deliveryAddress'); if (da) da.value = ''; }
+            updateBorrowSubmitButton();
+        }
+
+        function updateDeliveryOptions(itemName) {
+            const allowed = _itemDeliveryAllowed(itemName);
+            const deliveryLabel = document.getElementById('deliveryToAddrLabel');
+            const notice = document.getElementById('deliveryPickupOnlyNotice');
+            const pickupRadio = document.getElementById('deliveryPickup');
+            const deliveryRadio = document.getElementById('deliveryDelivery');
+            const pickupLabel = document.getElementById('deliveryPickupLabel');
+            const addrField = document.getElementById('deliveryAddressField');
+            const da = document.getElementById('deliveryAddress');
+            if (da) da.value = '';
+            if (addrField) addrField.style.display = 'none';
+            if (pickupRadio) pickupRadio.checked = false;
+            if (deliveryRadio) deliveryRadio.checked = false;
+            if (deliveryLabel) { deliveryLabel.style.display = allowed ? 'flex' : 'none'; deliveryLabel.style.border = '2px solid #e2e8f0'; }
+            if (notice) notice.style.display = allowed ? 'none' : 'block';
+            if (pickupLabel) pickupLabel.style.border = '2px solid #e2e8f0';
+            if (!allowed) { if (pickupRadio) pickupRadio.checked = true; if (pickupLabel) pickupLabel.style.border = '2px solid #10b981'; }
         }
 
         function itemAllowsBurol(itemName) {
@@ -2951,7 +3040,11 @@
                 return `${h}:${m} ${ampm}`;
             };
             
-            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact} | Address: ${address}`;
+            const _delPickup = document.getElementById('deliveryPickup');
+            const _delDelivery = document.getElementById('deliveryDelivery');
+            const _isDelivery = _delDelivery && _delDelivery.checked;
+            const deliveryStr = _isDelivery ? 'Delivery to ' + (document.getElementById('deliveryAddress').value.trim()) : 'Pickup at Barangay Hall';
+            const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact} | Address: ${address} | Delivery: ${deliveryStr}`;
             const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
             
             if (result.success) { 
@@ -3042,6 +3135,7 @@
             const _ai = document.getElementById('availableItemsForPurpose'); if (_ai) _ai.innerHTML = '';
 
             document.getElementById('borrowModalTitle').innerHTML = item.name;
+            updateDeliveryOptions(item.name);
             
             const imageSrc = item.image_url ? item.image_url : '../barangay-sun-logo.jpg';
             document.getElementById('borrowModalImage').src = imageSrc;

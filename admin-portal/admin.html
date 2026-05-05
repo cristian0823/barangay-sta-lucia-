@@ -5322,13 +5322,23 @@
                     const rd = '<div style="line-height:1.2;"><strong style="color:var(--text);">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div>';
                     
                     let cleanPurpose = b.purpose || '';
+                    let deliveryBadgeHtml = '';
+                    if(cleanPurpose.includes('| Delivery:')) {
+                        const dm = cleanPurpose.match(/\| Delivery:\s*([^|]+)/);
+                        if(dm) {
+                            const isDelivery = dm[1].trim().toLowerCase().startsWith('delivery');
+                            deliveryBadgeHtml = isDelivery
+                                ? '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;white-space:nowrap;">&#128666; Delivery</span>'
+                                : '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;white-space:nowrap;">&#127963; Pickup</span>';
+                        }
+                    }
                     if(cleanPurpose.includes('| Purpose:')) {
                         const m = cleanPurpose.match(/Purpose:\s*([^|]+)/);
                         if(m) cleanPurpose = m[1].trim();
                     }
                     if(cleanPurpose.length > 50) cleanPurpose = cleanPurpose.substring(0, 50) + '...';
-                    
-                    const purposeHtml = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span style="color:var(--text);font-size:13px;">'+cleanPurpose+'</span><button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">View Details</button></div>';
+
+                    const purposeHtml = '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'+deliveryBadgeHtml+'<span style="color:var(--text);font-size:13px;">'+cleanPurpose+'</span></div><button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">View Details</button></div>';
 
                     return '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
                         +'<td>'+rd+'</td>'
@@ -6617,13 +6627,30 @@
                     <td style="text-align: center; color:${disposal > 0 ? '#991b1b' : '#9ca3af'};font-weight:${disposal > 0 ? '700' : '400'}">${disposal}</td>
                     <td style="text-align: center;">${statusBadge}</td>
                     <td style="text-align: right;">
-                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                        <div style="display:flex; gap:8px; justify-content:flex-end; align-items:center; flex-wrap:wrap;">
+                            ${(()=>{
+                                const lower = e.name.toLowerCase();
+                                const isPickupOnly = ['table','tent'].some(kw=>lower.includes(kw));
+                                if (isPickupOnly) return '<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">&#127963; Pickup Only</span>';
+                                const delSettings = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
+                                const deliveryOn = delSettings[lower] !== false;
+                                return `<button onclick="toggleDeliveryAdmin('${lower}')" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid ${deliveryOn?'#bbf7d0':'#e2e8f0'};background:${deliveryOn?'#f0fdf4':'#f8fafc'};color:${deliveryOn?'#166534':'#64748b'};">${deliveryOn?'&#128666; Delivery ON':'&#127963; Delivery OFF'}</button>`;
+                            })()}
                             <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
                             <button class="btn btn-smaller btn-danger" onclick="handleDeleteEquipment(${e.id})">Delete</button>
                         </div>
                     </td>
                 </tr>`;
                 }).join('');
+            }
+
+            function toggleDeliveryAdmin(itemNameLower) {
+                try {
+                    const s = JSON.parse(localStorage.getItem('brgy_delivery_settings') || '{}');
+                    s[itemNameLower] = s[itemNameLower] === false ? true : false;
+                    localStorage.setItem('brgy_delivery_settings', JSON.stringify(s));
+                } catch(e) {}
+                loadEquipment();
             }
 
             function quickUploadEquipImage(id, cell) {
@@ -8465,21 +8492,33 @@
                     let purposeHtml = '';
                     let rawPurpose = req.purpose || '';
                     if (rawPurpose.includes('[Time:') && rawPurpose.includes('| Purpose:')) {
-                        let parsedTime = '-', parsedPurpose = '-', parsedContact = '-', parsedAddress = '-';
+                        let parsedTime = '-', parsedPurpose = '-', parsedContact = '-', parsedAddress = '-', parsedDelivery = '';
                         rawPurpose.split(' | ').forEach(p => {
                             if(p.startsWith('[Time:')) parsedTime = p.replace('[Time: ', '').replace(']', '').trim();
                             else if(p.startsWith('Purpose:')) parsedPurpose = p.replace('Purpose: ', '').trim();
                             else if(p.startsWith('Contact:')) parsedContact = p.replace('Contact: ', '').trim();
                             else if(p.startsWith('Address:')) parsedAddress = p.replace('Address: ', '').trim();
+                            else if(p.startsWith('Delivery:')) parsedDelivery = p.replace('Delivery: ', '').trim();
                         });
-                        
+                        const isDelivery = parsedDelivery.toLowerCase().startsWith('delivery');
+                        const deliveryBadge = parsedDelivery
+                            ? `<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${isDelivery?'#eff6ff':'#f0fdf4'};color:${isDelivery?'#1d4ed8':'#166534'};border:1px solid ${isDelivery?'#bfdbfe':'#bbf7d0'};">${isDelivery?'&#128666; Delivery to address':'&#127963; Pickup at Barangay Hall'}</span>`
+                            : '';
+                        const deliveryDetail = isDelivery
+                            ? `<div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Delivery Address</span><strong style="font-size:13px;color:var(--text);">${parsedDelivery.replace(/^Delivery to\s*/i,'')}</strong></div>`
+                            : '';
+
                         purposeHtml = `
                             <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border); margin-bottom:16px;">
-                                <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:var(--primary,#10b981);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);padding-bottom:6px;">Resident Information</p>
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+                                    <p style="margin:0;font-size:11px;font-weight:800;color:var(--primary,#10b981);text-transform:uppercase;letter-spacing:0.5px;">Resident Information</p>
+                                    ${deliveryBadge}
+                                </div>
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                                     <div><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Contact No.</span><strong style="font-size:13px;color:var(--text);">${parsedContact}</strong></div>
                                     <div><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Requested Time</span><strong style="font-size:13px;color:var(--text);">${parsedTime}</strong></div>
                                     <div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Address</span><strong style="font-size:13px;color:var(--text);">${parsedAddress}</strong></div>
+                                    ${deliveryDetail}
                                 </div>
                                 <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Main Purpose</p>
                                 <p style="margin:0;font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${parsedPurpose}</p>
