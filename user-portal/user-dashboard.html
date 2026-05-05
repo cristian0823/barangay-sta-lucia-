@@ -998,7 +998,10 @@
                 <!-- Left Column: Calendar -->
                 <div class="w-full lg:w-1/2 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30 lg:overflow-y-auto flex flex-col" style="background: var(--dm-cal-bg, inherit);">
                     <div class="flex justify-between items-center mb-4">
-                        <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
+                            <span id="calRuleBadge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;"></span>
+                        </div>
                         <div class="flex space-x-2">
                             <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&larr;</button>
                             <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&rarr;</button>
@@ -1019,7 +1022,27 @@
                     </div>
                 </div>
                 <!-- Right Column: Professional Form -->
-                <div class="w-full lg:w-1/2 p-4 lg:p-6 flex flex-col lg:overflow-y-auto" style="overflow-x:hidden; padding-bottom: 24px;">
+                <div class="w-full lg:w-1/2 flex flex-col lg:overflow-y-auto" style="overflow-x:hidden;">
+                    <!-- PURPOSE SELECTOR PANEL -->
+                    <div id="purposeSelectorPanel" style="padding:20px 20px 12px;">
+                        <div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:10px;">SELECT PURPOSE</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;" id="purposeBtnGrid">
+                            <button type="button" onclick="selectBorrowPurpose('event')" id="purposeBtnEvent" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
+                                <span style="font-size:22px;">&#127881;</span>
+                                <span style="font-size:14px;font-weight:700;color:#0f172a;">Event</span>
+                                <span style="font-size:11px;color:#94a3b8;">Community gatherings</span>
+                            </button>
+                            <button type="button" onclick="selectBorrowPurpose('burol')" id="purposeBtnBurol" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
+                                <span style="font-size:22px;">&#128357;</span>
+                                <span style="font-size:14px;font-weight:700;color:#0f172a;">Burol / Funeral</span>
+                                <span style="font-size:11px;color:#94a3b8;">Wake and viewing</span>
+                            </button>
+                        </div>
+                        <div id="borrowDurationRules"></div>
+                        <div id="availableItemsForPurpose"></div>
+                    </div>
+                    <!-- FORM BODY: hidden until purpose selected -->
+                    <div id="borrowFormBody" style="display:none;padding:0 20px 24px;">
                     <div id="borrowModalAlerts" class="flex flex-col gap-3 mb-4 empty:hidden"></div>
                     <!-- Date Display -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
@@ -1107,6 +1130,7 @@
                             Submit Borrow Request
                         </button>
                     </form>
+                    </div><!-- /borrowFormBody -->
                 </div>
             </div>
         </div>
@@ -1679,7 +1703,13 @@
         let borrowStartDate = null;
         let borrowReturnDate = null;
         let borrowDateSelectingStart = true;
+        let currentBorrowPurpose = null;
         let allEquipmentList = [];
+        const BUROL_EXCLUDED = ['microphone', 'speaker', 'ladder', 'electric fan', 'fan'];
+        const ALL_BORROW_ITEMS = ['Chair', 'Table', 'Tent', 'Microphone', 'Speaker', 'Electric Fan', 'Ladder'];
+        const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;';
+        const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #059669;background:#10b981;box-shadow:0 4px 14px rgba(16,185,129,.35);';
+        const _BTN_INACTIVE = _BTN_BASE + 'border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;';
 
         // Toast
         function openSuccessModal(title, msg) {
@@ -2335,16 +2365,36 @@
         /* Duplicate openBorrowModalWithEquip removed */
 
         function openBorrowModal() { showToast('Please click Borrow on a specific equipment card', 'error'); }
-        function closeBorrowModal() { document.getElementById('borrowModal').classList.add('hidden'); borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true; updateBorrowLockState(); }
+        function closeBorrowModal() {
+            document.getElementById('borrowModal').classList.add('hidden');
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            currentBorrowPurpose = null;
+            const body = document.getElementById('borrowFormBody');
+            if (body) body.style.display = 'none';
+            const evBtn = document.getElementById('purposeBtnEvent');
+            const buBtn = document.getElementById('purposeBtnBurol');
+            if (evBtn) evBtn.style.cssText = _BTN_INACTIVE;
+            if (buBtn) buBtn.style.cssText = _BTN_INACTIVE;
+            const evName = evBtn && evBtn.querySelector('span:nth-child(2)');
+            const evSub  = evBtn && evBtn.querySelector('span:nth-child(3)');
+            const buName = buBtn && buBtn.querySelector('span:nth-child(2)');
+            const buSub  = buBtn && buBtn.querySelector('span:nth-child(3)');
+            if (evName) evName.style.color = '#0f172a'; if (evSub) evSub.style.color = '#94a3b8';
+            if (buName) buName.style.color = '#0f172a'; if (buSub) buSub.style.color = '#94a3b8';
+            const dr = document.getElementById('borrowDurationRules'); if (dr) dr.innerHTML = '';
+            const ai = document.getElementById('availableItemsForPurpose'); if (ai) ai.innerHTML = '';
+            updateBorrowLockState();
+        }
 
         // Submit button validation
         function updateBorrowSubmitButton() {
             const btn = document.getElementById('submitBorrowBtn');
+            if (!btn) return;
             const qty = parseInt(document.getElementById('borrowQty').value);
             const purpose = document.getElementById('borrowPurpose').value;
             const name = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
-            btn.disabled = !(borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '');
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '');
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
@@ -2533,12 +2583,85 @@
             container.innerHTML = html;
         }
 
+        function itemAllowsBurol(itemName) {
+            const lower = (itemName || '').toLowerCase();
+            return !BUROL_EXCLUDED.some(kw => lower.includes(kw));
+        }
+
+        function _setPurposeBtnStyle(btn, active) {
+            if (!btn || btn.style.display === 'none') return;
+            btn.style.cssText = active ? _BTN_ACTIVE : _BTN_INACTIVE;
+            const nameEl = btn.querySelector('span:nth-child(2)');
+            const subEl  = btn.querySelector('span:nth-child(3)');
+            if (nameEl) nameEl.style.color = active ? '#fff' : '#0f172a';
+            if (subEl)  subEl.style.color  = active ? 'rgba(255,255,255,.8)' : '#94a3b8';
+        }
+
+        function selectBorrowPurpose(purpose) {
+            currentBorrowPurpose = purpose;
+            _setPurposeBtnStyle(document.getElementById('purposeBtnEvent'), purpose === 'event');
+            _setPurposeBtnStyle(document.getElementById('purposeBtnBurol'), purpose === 'burol');
+            const body = document.getElementById('borrowFormBody');
+            if (body) { body.style.display = 'block'; body.style.visibility = 'visible'; }
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            updateBorrowDurationRules();
+            renderAvailableItemsForPurpose(purpose);
+            updateBorrowDateDisplays();
+            renderBorrowCalendar();
+            updateBorrowSubmitButton();
+        }
+
+        function updateBorrowDurationRules() {
+            const el = document.getElementById('borrowDurationRules');
+            if (!el) return;
+            if (!currentBorrowPurpose) { el.innerHTML = ''; return; }
+            if (currentBorrowPurpose === 'event') {
+                el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Event borrowing:</strong> Single day only. Borrow and return on the same day.</div>';
+            } else {
+                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Burol / Funeral Viewing:</strong> Minimum 3 days, maximum 7 days. Select your start and end dates.</div>';
+            }
+        }
+
+        function renderAvailableItemsForPurpose(purpose) {
+            const el = document.getElementById('availableItemsForPurpose');
+            if (!el || !purpose) { if (el) el.innerHTML = ''; return; }
+            const label = purpose === 'event' ? 'EVENT' : 'BUROL / FUNERAL';
+            const chips = ALL_BORROW_ITEMS.map(name => {
+                const excluded = !itemAllowsBurol(name);
+                const available = purpose === 'event' || !excluded;
+                if (available) {
+                    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;margin:2px;">' + name + '</span>';
+                } else {
+                    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;text-decoration:line-through;opacity:.7;margin:2px;">' + name + '</span>';
+                }
+            }).join('');
+            el.innerHTML = '<div style="margin-bottom:4px;"><div style="font-size:10px;font-weight:700;color:#64748b;letter-spacing:.08em;margin-bottom:6px;">AVAILABLE FOR ' + label + '</div><div>' + chips + '</div></div>';
+        }
+
         function renderBorrowCalendar() {
             const grid = document.getElementById('borrowCalendarGrid');
             const monthTitle = document.getElementById('borrowMonthTitle');
             const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
             monthTitle.textContent = months[currentMonth] + ' ' + currentYear;
+            // Update rule badge
+            const _crb = document.getElementById('calRuleBadge');
+            if (_crb) {
+                if (currentBorrowPurpose === 'event') {
+                    _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;';
+                    _crb.textContent = 'Single day only';
+                } else if (currentBorrowPurpose === 'burol') {
+                    _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
+                    _crb.textContent = '3–7 days only';
+                } else {
+                    _crb.style.display = 'none';
+                }
+            }
             grid.innerHTML = '';
+            // Gate calendar until purpose selected
+            if (!currentBorrowPurpose) {
+                grid.innerHTML = '<div style="grid-column:span 7;text-align:center;padding:32px 16px;color:#94a3b8;font-size:13px;font-weight:600;">&#128073; Select your purpose above to continue</div>';
+                return;
+            }
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
@@ -2613,27 +2736,38 @@
         }
 
         function selectBorrowDate(dateStr, currentAvailable = null) {
-            // 🔒 Lock: ignore all clicks once both dates are chosen
+            if (!currentBorrowPurpose) return showToast('Please select a purpose first.', 'info');
+            // Lock: ignore all clicks once both dates are chosen
             if (borrowStartDate && borrowReturnDate) return;
 
             const today = new Date(); today.setHours(0,0,0,0);
             if (new Date(dateStr) < today) return showToast('Cannot select past dates', 'error');
-            
+
             const bookings = window.activeBorrowingsForModal || [];
             const equip = window.currentEquipmentItem || { quantity: 1, broken: 0 };
             const totalStock = equip.quantity - (equip.broken || 0);
 
             if (borrowDateSelectingStart) {
                 if (currentAvailable !== null && currentAvailable <= 0) return showToast('This date is fully booked.', 'error');
+                if (currentBorrowPurpose === 'event') {
+                    // Single day: start and end are the same
+                    borrowStartDate = dateStr; borrowReturnDate = dateStr; borrowDateSelectingStart = true;
+                    updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
+                    updateBorrowLockState();
+                    return;
+                }
                 borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
-                showToast('Now select the return date', 'success');
+                showToast('Now select the return date (min 3 days from start)', 'success');
             } else {
-                if (new Date(dateStr) < new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
-                
+                if (new Date(dateStr) <= new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
+
                 const diffTime = Math.abs(new Date(dateStr) - new Date(borrowStartDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays > 7) {
-                    return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
+                if (currentBorrowPurpose === 'burol') {
+                    if (diffDays < 2) return showToast('Minimum 3 days required for Burol / Funeral Viewing.', 'error');
+                    if (diffDays > 6) return showToast('Maximum 7 days allowed for Burol / Funeral Viewing.', 'error');
+                } else if (diffDays > 7) {
+                    return showToast('You can only borrow equipment for a maximum of 7 days.', 'error');
                 }
                 
                 // Check all days in range for minimum availability
@@ -2719,7 +2853,8 @@
             e.preventDefault();
             const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
             const qty = parseInt(document.getElementById('borrowQty').value);
-            const purposeStr = document.getElementById('borrowPurpose').value;
+            const purposeTypeLabel = currentBorrowPurpose === 'burol' ? 'Burol/Funeral Viewing' : 'Event';
+            const purposeStr = '[' + purposeTypeLabel + '] ' + document.getElementById('borrowPurpose').value;
             const fullName = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
             const address = document.getElementById('borrowerAddress').value;
@@ -2841,7 +2976,30 @@
             const list = await getEquipment();
             const item = list.find(e => e.id === equipId);
             if (!item) return;
-            
+
+            // Reset purpose state for fresh modal
+            currentBorrowPurpose = null;
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            const _body = document.getElementById('borrowFormBody');
+            if (_body) _body.style.display = 'none';
+            const _evBtn = document.getElementById('purposeBtnEvent');
+            const _buBtn = document.getElementById('purposeBtnBurol');
+            if (_evBtn) { _evBtn.style.cssText = _BTN_INACTIVE; const s2=_evBtn.querySelector('span:nth-child(2)'); const s3=_evBtn.querySelector('span:nth-child(3)'); if(s2)s2.style.color='#0f172a'; if(s3)s3.style.color='#94a3b8'; }
+            // Show/hide Burol button based on item
+            if (_buBtn) {
+                if (itemAllowsBurol(item.name)) {
+                    _buBtn.style.cssText = _BTN_INACTIVE;
+                    _buBtn.style.display = 'flex';
+                    const s2=_buBtn.querySelector('span:nth-child(2)'); const s3=_buBtn.querySelector('span:nth-child(3)'); if(s2)s2.style.color='#0f172a'; if(s3)s3.style.color='#94a3b8';
+                    document.getElementById('purposeBtnGrid').style.gridTemplateColumns = '1fr 1fr';
+                } else {
+                    _buBtn.style.display = 'none';
+                    document.getElementById('purposeBtnGrid').style.gridTemplateColumns = '1fr';
+                }
+            }
+            const _dr = document.getElementById('borrowDurationRules'); if (_dr) _dr.innerHTML = '';
+            const _ai = document.getElementById('availableItemsForPurpose'); if (_ai) _ai.innerHTML = '';
+
             document.getElementById('borrowModalTitle').innerHTML = item.name;
             
             const imageSrc = item.image_url ? item.image_url : '../barangay-sun-logo.jpg';
