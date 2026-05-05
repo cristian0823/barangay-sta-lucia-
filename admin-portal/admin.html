@@ -8421,7 +8421,6 @@
                 }
                 submitAdminConcernResponse(newStatus);
             }
-            }
 
             function closeAdminConcernModal() {
                 document.getElementById('adminConcernModal').style.display = 'none';
@@ -8438,7 +8437,6 @@
                     const concern = _allAdminConcerns.find(x => x.id === concernId);
                     const existing = _adminParseConcernResponse(concern ? concern.response : null);
                     const newLog = [...existing.log];
-                    const now = new Date().toISOString();
                     const now = new Date().toISOString();
                     const _cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null; const adminName = _cu ? (_cu.fullName || _cu.full_name || _cu.email || 'Admin') : 'Admin';
                     const newReply = responseText.trim() || existing.reply || null;
