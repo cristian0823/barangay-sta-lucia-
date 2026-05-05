@@ -1023,6 +1023,8 @@
                             <span>⏰</span>
                             <span><strong>Important:</strong> Return the item at the specified time. A <strong>+1 day grace period</strong> is allowed.</span>
                         </div>
+                        <!-- Existing bookings panel — shown when dates are selected -->
+                        <div id="existingBookingsPanel"></div>
                         <div class="mb-1">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
                                 <span>2</span><span>Borrower Details</span>
@@ -1638,7 +1640,7 @@
         let borrowReturnDate = null;
         let borrowDateSelectingStart = true;
         let allEquipmentList = [];
-        let bookedDateSet = new Set(); // stores 'YYYY-MM-DD' strings that are fully booked
+        let bookedDateSet = new Set(); // legacy — kept for any external refs
         let currentBorrowEquipId = null; // track which equipment the modal is for
 
         // ── OPERATING HOURS ──────────────────────────────────────────
@@ -2325,8 +2327,9 @@
         // ==========================================
         // BORROW MODAL LOGIC
         // ==========================================
-        let bookedQtyMap = {}; // stores 'YYYY-MM-DD' -> total quantity booked
-        let currentBorrowEquipId = null; // track which equipment the modal is for
+        let bookedQtyMap = {}; // 'YYYY-MM-DD' -> total qty booked across all confirmed/pending borrowings
+        let currentEquipBookings = []; // raw bookings array for the open modal's equipment
+        let currentEquipTotalQty = 1; // total inventory of the open modal's equipment
 
         async function openBorrowModalWithEquip(equipId) {
             if (!isEquipOpen()) {
@@ -2357,14 +2360,17 @@
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
 
             // Fetch booked date ranges for this equipment from Supabase
+            currentEquipBookings = [];
+            currentEquipTotalQty = item.quantity || 1;
             try {
                 const { data: bookings } = await supabase
                     .from('borrowings')
-                    .select('borrow_date, return_date, quantity')
+                    .select('borrow_date, return_date, quantity, status')
                     .eq('equipment_id', equipId)
                     .in('status', ['approved', 'pending']);
-                
+
                 if (bookings && bookings.length > 0) {
+                    currentEquipBookings = bookings;
                     bookings.forEach(bk => {
                         // Safe parsing to avoid timezone shifts
                         const [y1, m1, d1] = bk.borrow_date.split('T')[0].split('-');
@@ -2372,7 +2378,7 @@
                         const start = new Date(y1, m1 - 1, d1, 12, 0, 0);
                         const end   = new Date(y2, m2 - 1, d2, 12, 0, 0);
                         const qty = bk.quantity || 1;
-                        
+
                         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                             const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
                             bookedQtyMap[ds] = (bookedQtyMap[ds] || 0) + qty;
@@ -2482,6 +2488,7 @@
                 }
                 if (dpReturnDay) { dpReturnDay.textContent = '--'; dpReturnMonth.textContent = 'Select date'; if (durText) durText.textContent = '0 days'; }
             }
+            renderExistingBookingsPanel();
         }
 
         function clearBorrowDates() {
@@ -2503,8 +2510,26 @@
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const maxInv = parseInt(document.getElementById('borrowQty').max) || 1;
+            const maxInv = currentEquipTotalQty || parseInt(document.getElementById('borrowQty').max) || 1;
             const isLocked = !!(borrowStartDate && borrowReturnDate);
+
+            // Update availability badge based on selected range
+            const _badge = document.getElementById('borrowModalAvailBadge');
+            if (_badge) {
+                if (isLocked) {
+                    let minFree = maxInv;
+                    for (let d = new Date(borrowStartDate); d <= new Date(borrowReturnDate); d.setDate(d.getDate()+1)) {
+                        const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                        minFree = Math.min(minFree, maxInv - (bookedQtyMap[ds] || 0));
+                    }
+                    minFree = Math.max(0, minFree);
+                    _badge.style.background = minFree === 0 ? '#ef4444' : minFree <= 1 ? '#f59e0b' : '#10b981';
+                    _badge.textContent = minFree === 0 ? 'None available for selected dates' : minFree + ' available for selected dates';
+                } else {
+                    _badge.style.background = '#10b981';
+                    _badge.textContent = (currentEquipTotalQty || maxInv) + ' Available';
+                }
+            }
 
             // Lock banner + step chip
             const _lb = document.getElementById('calLockBanner');
@@ -2554,6 +2579,12 @@
                 } else if (isLocked) {
                     // Out-of-range while locked: muted, no click
                     dayDiv.style.cssText = isDark ? 'background:#1f2937;color:#4b5563;cursor:not-allowed;opacity:0.55;' : 'background:#f9fafb;color:#d1d5db;cursor:not-allowed;';
+                } else if (!isLocked && bookedQty > 0) {
+                    // Partially booked — yellow, still selectable
+                    dayDiv.style.cssText = isDark ? 'background:#422006;color:#fbbf24;border:1px solid #78350f;cursor:pointer;' : 'background:#fef9c3;color:#854d0e;border:1px solid #fde047;cursor:pointer;';
+                    dayDiv.onclick = () => selectBorrowDate(dateStr);
+                    dayDiv.onmouseenter = () => { dayDiv.style.background = isDark ? '#713f12' : '#fef08a'; };
+                    dayDiv.onmouseleave = () => { dayDiv.style.background = isDark ? '#422006' : '#fef9c3'; };
                 } else {
                     dayDiv.style.cssText = isDark ? 'background:#374151;color:#34d399;border:1px solid #4b5563;cursor:pointer;' : 'background:#ecfdf5;color:#047857;border:1px solid #d1fae5;cursor:pointer;';
                     dayDiv.onclick = () => selectBorrowDate(dateStr);
@@ -2565,7 +2596,7 @@
                 if (dateObj.getTime() === today.getTime() && !isBooked) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
 
                 if (!isPast && !isBooked && bookedQty > 0) {
-                    dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#f59e0b;">' + bookedQty + ' booked</span>';
+                    dayDiv.innerHTML = '<span style="display:block;line-height:1;">' + day + '</span><span style="font-size:8px;color:#b45309;font-weight:700;">' + (maxInv - bookedQty) + ' left</span>';
                     dayDiv.title = (maxInv - bookedQty) + ' remaining';
                 } else if (!dayDiv.innerHTML && !dayDiv.textContent) {
                     dayDiv.textContent = day;
@@ -2577,6 +2608,7 @@
             const legend = document.getElementById('borrowCalLegend');
             if (legend) legend.innerHTML =
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#ecfdf5;border:1px solid #d1fae5;display:inline-block;"></span>Available</span>' +
+                '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#fef9c3;border:1px solid #fde047;display:inline-block;"></span>Partially Booked</span>' +
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#fee2e2;border:1px solid #fca5a5;display:inline-block;"></span>Fully Booked</span>' +
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#10b981;display:inline-block;"></span>Selected</span>' +
                 '<span style="display:flex;align-items:center;gap:4px;"><span style="width:11px;height:11px;border-radius:3px;background:#f3f4f6;display:inline-block;"></span>Past</span>';
@@ -2625,6 +2657,62 @@
             if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
             renderBorrowCalendar();
+        }
+
+        function renderExistingBookingsPanel() {
+            const panel = document.getElementById('existingBookingsPanel');
+            if (!panel) return;
+            if (!borrowStartDate || !borrowReturnDate) { panel.innerHTML = ''; return; }
+
+            const rangeStart = new Date(borrowStartDate);
+            const rangeEnd   = new Date(borrowReturnDate);
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+            // Filter bookings that overlap the selected range
+            const overlapping = currentEquipBookings.filter(bk => {
+                const [y1,m1,d1] = bk.borrow_date.split('T')[0].split('-');
+                const [y2,m2,d2] = bk.return_date.split('T')[0].split('-');
+                const bkStart = new Date(y1, m1-1, d1, 12);
+                const bkEnd   = new Date(y2, m2-1, d2, 12);
+                return bkStart <= rangeEnd && bkEnd >= rangeStart;
+            });
+
+            if (!overlapping.length) { panel.innerHTML = ''; return; }
+
+            // Total reserved qty across the range (worst-case day)
+            let maxReserved = 0;
+            for (let d = new Date(rangeStart); d <= rangeEnd; d.setDate(d.getDate()+1)) {
+                const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                maxReserved = Math.max(maxReserved, bookedQtyMap[ds] || 0);
+            }
+            const stillAvail = Math.max(0, currentEquipTotalQty - maxReserved);
+
+            const rows = overlapping.map(bk => {
+                const s = bk.borrow_date.split('T')[0]; const e = bk.return_date.split('T')[0];
+                const [sy,sm,sd] = s.split('-'); const [ey,em,ed] = e.split('-');
+                const dateLabel = s === e
+                    ? months[parseInt(sm)-1] + ' ' + parseInt(sd)
+                    : months[parseInt(sm)-1] + ' ' + parseInt(sd) + ' – ' + months[parseInt(em)-1] + ' ' + parseInt(ed);
+                const isApproved = bk.status === 'approved';
+                const badge = isApproved
+                    ? '<span style="background:#dcfce7;color:#166534;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid #bbf7d0;">✅ Approved</span>'
+                    : '<span style="background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid #fde68a;">⏳ Pending</span>';
+                return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;">' +
+                    '<div style="display:flex;align-items:center;gap:7px;">' + badge +
+                    '<span style="font-size:12px;color:#374151;font-weight:600;">📅 ' + dateLabel + '</span></div>' +
+                    '<span style="font-size:11px;color:#6b7280;font-weight:600;">' + (bk.quantity||1) + ' unit' + ((bk.quantity||1)>1?'s':'') + '</span>' +
+                    '</div>';
+            }).join('');
+
+            const availColor = stillAvail === 0 ? '#dc2626' : stillAvail <= 1 ? '#d97706' : '#059669';
+            panel.innerHTML =
+                '<div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:14px;padding:12px 14px;margin-bottom:10px;">' +
+                '<div style="font-size:11px;font-weight:800;color:#0369a1;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">📋 Existing Bookings in Your Range</div>' +
+                rows +
+                '<div style="margin-top:8px;padding-top:8px;display:flex;align-items:center;justify-content:space-between;">' +
+                '<span style="font-size:12px;color:#475569;font-weight:600;">' + overlapping.length + ' booking' + (overlapping.length>1?'s':'') + ' overlap your dates</span>' +
+                '<span style="font-size:12px;font-weight:800;color:' + availColor + ';">' + stillAvail + ' of ' + currentEquipTotalQty + ' units free</span>' +
+                '</div></div>';
         }
 
         // Borrow Form Submission
@@ -2736,24 +2824,6 @@
         // ==========================================
         // HISTORY / ACTIVITY PANEL LOGIC
         // ==========================================
-        async function openBorrowModalWithEquip(equipId) {
-            const list = await getEquipment();
-            const item = list.find(e => e.id === equipId);
-            if (!item) return;
-            document.getElementById('borrowModalTitle').innerHTML = 'Borrow ' + item.name + ' ' + item.icon;
-            (function(){ const _i=document.getElementById('borrowModalEquipImage'),_ic=document.getElementById('borrowModalEquipIcon'),_b=document.getElementById('borrowModalAvailBadge'); if(_i&&_ic){ if(item.image){_i.src=item.image;_i.style.display='block';_ic.style.display='none';}else{_i.style.display='none';_ic.style.display='';_ic.textContent=item.icon||'📦';} } if(_b)_b.textContent=(item.available||0)+' Available'; })();
-            document.getElementById('borrowEquipmentId').value = equipId;
-            document.getElementById('borrowEquipmentName').value = item.name;
-            document.getElementById('borrowQty').max = item.available;
-            document.getElementById('borrowQty').value = 1;
-            document.getElementById('borrowMaxHelp').innerHTML = '📦 Max: ' + item.available + ' units available';
-            document.getElementById('borrowPurpose').value = '';
-            document.getElementById('borrowerFullName').value = user.name || '';
-            document.getElementById('borrowerContact').value = '';
-            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
-            updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton();
-            document.getElementById('borrowModal').classList.remove('hidden');
-        }
 
         document.getElementById('concernForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
