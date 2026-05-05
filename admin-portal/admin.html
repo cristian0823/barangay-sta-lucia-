@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Barangay Sta. Lucia</title>
-    <!-- â”€â”€ EARLY AUTH GUARD: hide body before paint, redirect instantly if not admin â”€â”€ -->
+    <!-- Ã¢â€â‚¬Ã¢â€â‚¬ EARLY AUTH GUARD: hide body before paint, redirect instantly if not admin Ã¢â€â‚¬Ã¢â€â‚¬ -->
     <style id="auth-guard-style">body { visibility: hidden !important; }</style>
     <script>
     (function() {
@@ -21,12 +21,12 @@
         } else if (user.role !== 'admin') {
             window.location.replace('login.html');
         } else {
-            // Valid admin â€” reveal the page immediately
+            // Valid admin Ã¢â‚¬â€ reveal the page immediately
             document.getElementById('auth-guard-style').textContent = '';
         }
     })();
     </script>
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <!-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
     <style>
@@ -69,9 +69,9 @@
             --dark: #0f172a;
         }
 
-        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-           DARK MODE â€” Root Variable Overrides
-           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        /* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+           DARK MODE Ã¢â‚¬â€ Root Variable Overrides
+           Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
         [data-theme="dark"] {
             --green: #10b981;
             --green-dark: #059669;
@@ -101,7 +101,7 @@
             --dark: #f8fafc;
         }
 
-        /* â”€â”€ DARK MODE ELEMENT OVERRIDES â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ DARK MODE ELEMENT OVERRIDES Ã¢â€â‚¬Ã¢â€â‚¬ */
         [data-theme="dark"] body {
             background: #0b0f19;
             color: #f8fafc;
@@ -215,7 +215,7 @@
         /* Empty states */
         [data-theme="dark"] .empty-state { background: #1e293b; border-color: #475569; color: #94a3b8; }
 
-        /* â”€â”€ LEFT SIDEBAR LAYOUT â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ LEFT SIDEBAR LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬ */
 
         .admin-body-layout {
             display: flex;
@@ -325,7 +325,7 @@
             flex-shrink: 0;
         }
 
-        /* â”€â”€ Dark Mode Sidebar â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Dark Mode Sidebar Ã¢â€â‚¬Ã¢â€â‚¬ */
         [data-theme="dark"] .left-sidebar {
             background: #0f172a;
             border-right-color: #1e293b;
@@ -665,7 +665,7 @@
             font-weight: 600;
         }
 
-        /* â”€â”€ QUICK ACTION CARDS â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ QUICK ACTION CARDS Ã¢â€â‚¬Ã¢â€â‚¬ */
         .quick-action-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -733,7 +733,7 @@
             transform: translateX(3px);
         }
 
-        /* â”€â”€ STATUS ROWS â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ STATUS ROWS Ã¢â€â‚¬Ã¢â€â‚¬ */
         .status-row {
             display: flex;
             align-items: center;
@@ -1147,7 +1147,7 @@
 
         /* Equipment Icons Base & Dark Mode */
 
-        /* â”€â”€ Pagination + Filter Controls â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Pagination + Filter Controls Ã¢â€â‚¬Ã¢â€â‚¬ */
         .pg-controls { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-top:1px solid var(--border,#e2e8f0); flex-wrap:wrap; gap:8px; }
         .pg-info { font-size:13px; color:var(--muted,#6b7280); }
         .pg-btns { display:flex; gap:6px; align-items:center; }
@@ -1394,7 +1394,7 @@
             color: #fff;
         }
 
-        /* â”€â”€ HAMBURGER â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ HAMBURGER Ã¢â€â‚¬Ã¢â€â‚¬ */
         .hamburger-btn {
             display: none;
             flex-direction: column;
@@ -1420,7 +1420,7 @@
             transition: all 0.3s;
         }
 
-        /* â”€â”€ MOBILE OVERLAY + DRAWER â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ MOBILE OVERLAY + DRAWER Ã¢â€â‚¬Ã¢â€â‚¬ */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -1509,7 +1509,7 @@
             color: var(--green-xl);
         }
 
-        /* â”€â”€ RESPONSIVE â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ RESPONSIVE Ã¢â€â‚¬Ã¢â€â‚¬ */
         @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -1751,7 +1751,7 @@
                 }
             }
 
-            /* â”€â”€ BOTTOM TAB NAVIGATION â”€â”€ */
+            /* Ã¢â€â‚¬Ã¢â€â‚¬ BOTTOM TAB NAVIGATION Ã¢â€â‚¬Ã¢â€â‚¬ */
             .bottom-tab-nav {
                 position: fixed;
                 bottom: 0;
@@ -1980,7 +1980,7 @@
             50% { opacity: 0.5; }
         }
 
-        /* â”€â”€ DARK MODE THEME â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ DARK MODE THEME Ã¢â€â‚¬Ã¢â€â‚¬ */
         [data-theme="dark"] {
             --bg: #0f1117;
             --surface: #1a1d27;
@@ -2088,7 +2088,7 @@
         [data-theme="dark"] textarea::placeholder { color: #64748b; }
         [data-theme="dark"] label { color: #e2e8f0; }
 
-        /* Welcome banner stays green â€” intentional */
+        /* Welcome banner stays green Ã¢â‚¬â€ intentional */
 
         /* Activity log */
         [data-theme="dark"] .premium-card {
@@ -2112,14 +2112,14 @@
         [data-theme="dark"] .mobile-sidebar-nav button { color: #94a3b8; border-bottom-color: #2d3148; }
         [data-theme="dark"] .mobile-sidebar-nav button:hover { background: #232736; color: #e2e8f0; }
 
-        /* Calendar â€” do NOT use filter:brightness (kills text legibility); use explicit class overrides instead */
+        /* Calendar Ã¢â‚¬â€ do NOT use filter:brightness (kills text legibility); use explicit class overrides instead */
         [data-theme="dark"] #adminCalendarGrid > div { filter: none; }
         [data-theme="dark"] #adminCalendarGrid .cal-box-available { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
         [data-theme="dark"] #adminCalendarGrid .cal-box-booked    { background: #3b0f0f !important; border-color: #7f1d1d !important; color: #fca5a5 !important; }
         [data-theme="dark"] #adminCalendarGrid .cal-box-event     { background: #047857 !important; border-color: #064e3b !important; color: #ffffff   !important; }
         [data-theme="dark"] #adminCalendarGrid .cal-box-past      { background: #111827 !important; border-color: #1f2937 !important; color: #4b5563   !important; cursor: not-allowed; }
 
-        /* â”€â”€ DARK MODE â€” Extra overrides for inline-style white elements â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ DARK MODE Ã¢â‚¬â€ Extra overrides for inline-style white elements Ã¢â€â‚¬Ã¢â€â‚¬ */
 
         /* Catch ALL remaining inline background:#fff / background:#ffffff */
         [data-theme="dark"] [style*="background:#fff"],
@@ -2198,7 +2198,7 @@
             }
         }
 
-        /* â”€â”€ Event Calendar Theme & Dark Mode Legend Fix â”€â”€ */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Event Calendar Theme & Dark Mode Legend Fix Ã¢â€â‚¬Ã¢â€â‚¬ */
         .cal-box-available { background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; }
         .cal-box-event { background: #059669; border: 1px solid #047857; color: #ffffff; }
         .cal-box-booked { background: #fef2f2; border: 1px solid #fca5a5; color: #dc2626; }
@@ -2216,7 +2216,7 @@
     <link rel="icon" type="image/jpeg" href="barangay-sun-logo.jpg">
 
     <style>
-    /* â”€â”€ Admin Notification Bell CSS (Matches User Portal) â”€â”€ */
+    /* Ã¢â€â‚¬Ã¢â€â‚¬ Admin Notification Bell CSS (Matches User Portal) Ã¢â€â‚¬Ã¢â€â‚¬ */
     .admin-bell-dropdown {
         position: absolute;
         top: calc(100% + 14px);
@@ -2431,7 +2431,7 @@
         pointer-events: none;
         z-index: 10;
     }
-    /* â”€â”€ End Admin Bell CSS â”€â”€ */
+    /* Ã¢â€â‚¬Ã¢â€â‚¬ End Admin Bell CSS Ã¢â€â‚¬Ã¢â€â‚¬ */
     </style>
 
 </head>
@@ -2455,8 +2455,8 @@
                         <button onclick="mobileSwitchSection('audit-log')"> Audit Log</button>
             <button onclick="mobileSwitchSection('security-log')"> Security Log</button>
             <div style="height: 1px; background: var(--border); margin: 8px 0;"></div>
-            <button onclick="window.location.href='admin-settings.html'" style="color: var(--text);">âš™ï¸ Settings</button>
-            <button onclick="logoutUser()" style="color: var(--danger);">ðŸšª Logout</button>
+            <button onclick="window.location.href='admin-settings.html'" style="color: var(--text);">Ã¢Å¡â„¢Ã¯Â¸Â Settings</button>
+            <button onclick="logoutUser()" style="color: var(--danger);">Ã°Å¸Å¡Âª Logout</button>
         </div>
     </div>
 
@@ -2541,11 +2541,11 @@
                                         
                 <span class="left-sidebar-label" style="margin-top:12px;">SECURITY</span>
                 <button class="sidebar-btn" onclick="switchSection('audit-log', this)">
-                    <span class="sidebar-icon">ðŸ§¾</span>
+                    <span class="sidebar-icon">Ã°Å¸Â§Â¾</span>
                     Audit Log
                 </button>
                 <button class="sidebar-btn" onclick="switchSection('security-log', this)">
-                    <span class="sidebar-icon">ðŸ›¡ï¸</span>
+                    <span class="sidebar-icon">Ã°Å¸â€ºÂ¡Ã¯Â¸Â</span>
                     Security Log
                 </button>
 
@@ -2556,158 +2556,188 @@
             <div class="main-content">
                 <main class="dashboard-content">
                     <!-- Overview Section - Digital Dashboard -->
+                    <!-- Overview Section - Digital Dashboard -->
                     <div id="overview-section">
-                        <!-- â•â• HERO BANNER â•â• -->
-                        <div style="border-radius:24px;overflow:hidden;margin-bottom:24px;position:relative;background:linear-gradient(135deg,#064e3b 0%,#065f46 40%,#047857 100%);box-shadow:0 20px 60px rgba(4,120,87,0.35);">
-                            <!-- Background subtle mesh pattern -->
-                            <div style="position:absolute;inset:0;background-image:radial-gradient(circle at 80% 50%,rgba(52,211,153,0.2) 0%,transparent 60%),radial-gradient(circle at 10% 80%,rgba(6,95,70,0.4) 0%,transparent 40%);pointer-events:none;"></div>
-                            <!-- Barangay watermark image -->
-                            <div style="position:absolute;right:0;top:0;bottom:0;width:45%;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.08;"></div>
-                            <div style="position:relative;padding:32px 36px;display:flex;justify-content:space-between;align-items:center;gap:24px;">
+
+                        <!-- ══ HERO BANNER ══ -->
+                        <div style="border-radius:20px;overflow:hidden;margin-bottom:20px;position:relative;background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#047857 100%);box-shadow:0 16px 48px rgba(4,120,87,0.3);">
+                            <div style="position:absolute;inset:0;background-image:radial-gradient(ellipse at 75% 50%,rgba(52,211,153,0.18) 0%,transparent 65%),radial-gradient(ellipse at 15% 90%,rgba(6,78,59,0.5) 0%,transparent 45%);pointer-events:none;"></div>
+                            <div style="position:absolute;right:0;top:0;bottom:0;width:40%;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.06;"></div>
+                            <div style="position:relative;padding:30px 36px;display:flex;justify-content:space-between;align-items:center;gap:24px;">
                                 <div>
-                                    <div style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:8px;">Admin Control Center</div>
-                                    <h2 id="welcomeGreeting" style="font-size:26px;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.2;">Good morning, Admin</h2>
-                                    <p id="overviewSubtitle" style="font-size:14px;color:rgba(255,255,255,0.65);margin:0;">Here's a summary of what's happening today.</p>
+                                    <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+                                        <span style="display:inline-block;width:18px;height:1px;background:rgba(255,255,255,0.3);"></span>ADMIN CONTROL CENTER<span style="display:inline-block;width:18px;height:1px;background:rgba(255,255,255,0.3);"></span>
+                                    </div>
+                                    <h2 id="welcomeGreeting" style="font-size:28px;font-weight:800;color:#fff;margin:0 0 8px;line-height:1.2;letter-spacing:-0.5px;">Good morning, Admin</h2>
+                                    <p id="overviewSubtitle" style="font-size:13px;color:rgba(255,255,255,0.55);margin:0;font-weight:500;letter-spacing:0.2px;">Here's your live system overview for today.</p>
                                 </div>
-                                <div style="text-align:right;flex-shrink:0;">
-                                    <div id="heroClock" style="font-size:38px;font-weight:800;color:#fff;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1;">--:--</div>
-                                    <div id="heroDate" style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:4px;font-weight:500;"></div>
+                                <div style="text-align:right;flex-shrink:0;padding-left:32px;border-left:1px solid rgba(255,255,255,0.12);">
+                                    <div id="heroClock" style="font-size:42px;font-weight:800;color:#fff;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;">--:--</div>
+                                    <div id="heroDate" style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;font-weight:500;letter-spacing:0.3px;"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- â•â• STAT CARDS â•â• -->
-                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+                        <!-- ══ STAT CARDS ══ -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
+
                             <!-- Pending Requests -->
-                            <div onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.04));border-radius:50%;"></div>
-                                <div style="width:46px;height:46px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:16px;box-shadow:0 8px 20px rgba(245,158,11,0.35);">
+                            <div onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
                                     <i class="bi bi-box-seam-fill"></i>
                                 </div>
-                                <div id="pendingRequests" style="font-size:40px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">Pending Requests</div>
-                                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#f59e0b;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>Review now</div>
+                                <div id="pendingRequests" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Pending Requests</div>
+                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
+                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>Review now
+                                </div>
                             </div>
+
                             <!-- Pending Concerns -->
-                            <div onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(239,68,68,0.03));border-radius:50%;"></div>
-                                <div style="width:46px;height:46px;background:linear-gradient(135deg,#ef4444,#dc2626);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:16px;box-shadow:0 8px 20px rgba(239,68,68,0.35);">
+                            <div onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
                                     <i class="bi bi-megaphone-fill"></i>
                                 </div>
-                                <div id="pendingConcerns" style="font-size:40px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">Pending Concerns</div>
-                                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#ef4444;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>Respond now</div>
+                                <div id="pendingConcerns" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Pending Concerns</div>
+                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
+                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>Respond now
+                                </div>
                             </div>
+
                             <!-- Active Bookings -->
-                            <div onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(59,130,246,0.03));border-radius:50%;"></div>
-                                <div style="width:46px;height:46px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:16px;box-shadow:0 8px 20px rgba(59,130,246,0.35);">
+                            <div onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
                                     <i class="bi bi-calendar-check-fill"></i>
                                 </div>
-                                <div id="upcomingEvents" style="font-size:40px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">Active Bookings</div>
-                                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#3b82f6;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>View schedule</div>
+                                <div id="upcomingEvents" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Active Bookings</div>
+                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
+                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>View schedule
+                                </div>
                             </div>
+
                             <!-- Total Users -->
-                            <div onclick="switchSection('users')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border-radius:50%;"></div>
-                                <div style="width:46px;height:46px;background:linear-gradient(135deg,#10b981,#059669);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:16px;box-shadow:0 8px 20px rgba(16,185,129,0.35);">
+                            <div onclick="switchSection('users')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
                                     <i class="bi bi-people-fill"></i>
                                 </div>
-                                <div id="totalUsers" style="font-size:40px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">Total Users</div>
-                                <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>Manage users</div>
+                                <div id="totalUsers" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Total Users</div>
+                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
+                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>Manage users
+                                </div>
                             </div>
                         </div>
 
-                        <!-- â•â• QUICK NAV MODULE CARDS â•â• -->
-                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;">
-                            <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;cursor:pointer;text-align:left;transition:all 0.3s;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#10b981';this.style.boxShadow='0 12px 30px rgba(16,185,129,0.15)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="width:38px;height:38px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#059669;margin-bottom:12px;"><i class="bi bi-calendar-check-fill"></i></div>
-                                <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;">Facility Reservations</div>
-                                <div style="font-size:12px;color:var(--muted);">Review &amp; approve</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:18px;right:18px;color:#10b981;font-size:16px;"></i>
+                        <!-- ══ MODULE NAV CARDS ══ -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
+                            <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
+                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-calendar-check-fill"></i></div>
+                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Facility Reservations</div>
+                                <div style="font-size:11px;color:var(--muted);">Review &amp; approve</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
                             </button>
-                            <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;cursor:pointer;text-align:left;transition:all 0.3s;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#f59e0b';this.style.boxShadow='0 12px 30px rgba(245,158,11,0.15)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="width:38px;height:38px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#d97706;margin-bottom:12px;"><i class="bi bi-box-seam-fill"></i></div>
-                                <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;">Equipment Requests</div>
-                                <div style="font-size:12px;color:var(--muted);">Manage borrowings</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:18px;right:18px;color:#f59e0b;font-size:16px;"></i>
+                            <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
+                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-box-seam-fill"></i></div>
+                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Equipment Requests</div>
+                                <div style="font-size:11px;color:var(--muted);">Manage borrowings</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
                             </button>
-                            <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;cursor:pointer;text-align:left;transition:all 0.3s;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ef4444';this.style.boxShadow='0 12px 30px rgba(239,68,68,0.15)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="width:38px;height:38px;background:linear-gradient(135deg,#fee2e2,#fecaca);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#dc2626;margin-bottom:12px;"><i class="bi bi-megaphone-fill"></i></div>
-                                <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;">Citizen Concerns</div>
-                                <div style="font-size:12px;color:var(--muted);">Respond to reports</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:18px;right:18px;color:#ef4444;font-size:16px;"></i>
+                            <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
+                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-megaphone-fill"></i></div>
+                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Citizen Concerns</div>
+                                <div style="font-size:11px;color:var(--muted);">Respond to reports</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
                             </button>
-                            <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;cursor:pointer;text-align:left;transition:all 0.3s;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#8b5cf6';this.style.boxShadow='0 12px 30px rgba(139,92,246,0.15)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="width:38px;height:38px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#7c3aed;margin-bottom:12px;"><i class="bi bi-calendar-event-fill"></i></div>
-                                <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;">Court Events</div>
-                                <div style="font-size:12px;color:var(--muted);">Schedule &amp; manage</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:18px;right:18px;color:#8b5cf6;font-size:16px;"></i>
+                            <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
+                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-calendar-event-fill"></i></div>
+                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Court Events</div>
+                                <div style="font-size:11px;color:var(--muted);">Schedule &amp; manage</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
                             </button>
                         </div>
 
-                        <!-- â•â• BOTTOM ROW: Pending Actions + Recent Activity â•â• -->
-                        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px;">
+                        <!-- ══ BOTTOM ROW ══ -->
+                        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;">
+
                             <!-- Pending Actions -->
-                            <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow-sm);">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-                                    <div style="width:40px;height:40px;background:linear-gradient(135deg,#059669,#10b981);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;box-shadow:0 6px 16px rgba(16,185,129,0.3);"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow-sm);">
+                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+                                    <div style="width:38px;height:38px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#10b981;"><i class="bi bi-lightning-charge-fill"></i></div>
                                     <div>
-                                        <div style="font-size:15px;font-weight:800;color:var(--text);">Pending Actions</div>
-                                        <div style="font-size:11px;color:var(--muted);font-weight:500;">Requires your attention</div>
+                                        <div style="font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.2px;">Pending Actions</div>
+                                        <div style="font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;">Requires your attention</div>
                                     </div>
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:10px;">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--panel-bg);border-radius:12px;border:1px solid var(--border);">
+                                <div style="display:flex;flex-direction:column;gap:8px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
                                         <div style="display:flex;align-items:center;gap:10px;">
-                                            <div style="width:8px;height:8px;background:#f59e0b;border-radius:50%;flex-shrink:0;"></div>
+                                            <i class="bi bi-box-seam" style="color:#10b981;font-size:13px;"></i>
                                             <span style="font-size:13px;font-weight:600;color:var(--text);">Equipment Requests</span>
                                         </div>
-                                        <span id="glancePendingReqs" style="font-weight:800;font-size:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:3px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                        <span id="glancePendingReqs" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--panel-bg);border-radius:12px;border:1px solid var(--border);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
                                         <div style="display:flex;align-items:center;gap:10px;">
-                                            <div style="width:8px;height:8px;background:#ef4444;border-radius:50%;flex-shrink:0;"></div>
+                                            <i class="bi bi-megaphone" style="color:#10b981;font-size:13px;"></i>
                                             <span style="font-size:13px;font-weight:600;color:var(--text);">Open Concerns</span>
                                         </div>
-                                        <span id="glancePendingCons" style="font-weight:800;font-size:12px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:3px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                        <span id="glancePendingCons" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--panel-bg);border-radius:12px;border:1px solid var(--border);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
                                         <div style="display:flex;align-items:center;gap:10px;">
-                                            <div style="width:8px;height:8px;background:#3b82f6;border-radius:50%;flex-shrink:0;"></div>
+                                            <i class="bi bi-calendar-check" style="color:#10b981;font-size:13px;"></i>
                                             <span style="font-size:13px;font-weight:600;color:var(--text);">Active Bookings</span>
                                         </div>
-                                        <span id="glanceBookings" style="font-weight:800;font-size:12px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;padding:3px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                        <span id="glanceBookings" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--panel-bg);border-radius:12px;border:1px solid var(--border);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
                                         <div style="display:flex;align-items:center;gap:10px;">
-                                            <div style="width:8px;height:8px;background:#10b981;border-radius:50%;flex-shrink:0;"></div>
+                                            <i class="bi bi-people" style="color:#10b981;font-size:13px;"></i>
                                             <span style="font-size:13px;font-weight:600;color:var(--text);">Registered Users</span>
                                         </div>
-                                        <span id="glanceUsers" style="font-weight:800;font-size:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;padding:3px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                        <span id="glanceUsers" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Recent Activity -->
-                            <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow-sm);">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                            <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow-sm);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);">
                                     <div style="display:flex;align-items:center;gap:12px;">
-                                        <div style="width:40px;height:40px;background:linear-gradient(135deg,#1e293b,#334155);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#94a3b8;box-shadow:0 6px 16px rgba(0,0,0,0.15);"><i class="bi bi-activity"></i></div>
+                                        <div style="width:38px;height:38px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#10b981;"><i class="bi bi-activity"></i></div>
                                         <div>
-                                            <div style="font-size:15px;font-weight:800;color:var(--text);">Recent Activity</div>
-                                            <div style="font-size:11px;color:var(--muted);font-weight:500;">Latest system events</div>
+                                            <div style="font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.2px;">Recent Activity</div>
+                                            <div style="font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;">Latest system events</div>
                                         </div>
                                     </div>
-                                    <span style="font-size:10px;font-weight:800;letter-spacing:1px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:4px 12px;border-radius:20px;box-shadow:0 4px 12px rgba(16,185,129,0.3);">â— LIVE</span>
+                                    <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;">
+                                        <span style="width:6px;height:6px;background:#10b981;border-radius:50%;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>LIVE
+                                    </span>
                                 </div>
-                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;max-height:260px;overflow-y:auto;scrollbar-width:thin;">
+                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(16,185,129,0.2) transparent;">
                                     <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading activity...</div>
                                 </div>
                             </div>
                         </div>
+
+                        <style>
+                        @keyframes pulse-dot {
+                            0%,100%{opacity:1;transform:scale(1);}
+                            50%{opacity:0.5;transform:scale(0.75);}
+                        }
+                        </style>
                     </div>
+
 
                     <div id="requests-section" class="section-container" style="display: none;">
                         <div class="section-header">
@@ -2940,7 +2970,7 @@
                                     onclick="printEquipmentReport()">
                                     Print</button>
                                 <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add Item</button>
-                                <button class="btn btn-small btn-light" onclick="toggleMaintenanceLog()" id="maintenanceLogToggle">ðŸ“‹ Maintenance Log</button>
+                                <button class="btn btn-small btn-light" onclick="toggleMaintenanceLog()" id="maintenanceLogToggle">Ã°Å¸â€œâ€¹ Maintenance Log</button>
                             </div>
                         </div>
                         <div class="section-content" style="padding: 16px 26px 26px;">
@@ -2968,7 +2998,7 @@
                         <div style="background: var(--card,#1e293b); border-radius: 12px; border: 1px solid var(--border,#334155); overflow:hidden;">
                             <div style="padding: 16px 20px; border-bottom: 1px solid var(--border,#334155); display:flex; align-items:center; justify-content:space-between;">
                                 <div style="display:flex;align-items:center;gap:10px;">
-                                    <span style="font-size:20px;">ðŸ”§</span>
+                                    <span style="font-size:20px;">Ã°Å¸â€Â§</span>
                                     <div>
                                         <h4 style="margin:0;font-size:15px;font-weight:700;color:var(--text,#f1f5f9);">Maintenance History</h4>
                                         <p style="margin:0;font-size:12px;color:var(--muted,#94a3b8);">All Under Repair & For Disposal changes</p>
@@ -2984,7 +3014,7 @@
                                             <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Equipment</th>
                                             <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Action</th>
                                             <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Qty Changed</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Before â†’ After</th>
+                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Before Ã¢â€ â€™ After</th>
                                             <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Notes</th>
                                         </tr>
                                     </thead>
@@ -3152,7 +3182,7 @@
             <i class="bi bi-shield-fill-check" style="color: #ef4444; font-size: 28px;"></i>
             <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Security Log</h2>
         </div>
-        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication & session events â€” OWASP A09:2021 compliant monitoring.</p>
+        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication & session events Ã¢â‚¬â€ OWASP A09:2021 compliant monitoring.</p>
     </div>
 
     <!-- Stats Cards -->
@@ -3177,10 +3207,10 @@
 
     <!-- Quick Filter Tabs -->
     <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">âœ… Login Events</button>
-        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">ðŸ“‹ All Events</button>
-        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">âŒ Failed Only</button>
-        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">âš ï¸ Anomalies</button>
+        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">Ã¢Å“â€¦ Login Events</button>
+        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">Ã°Å¸â€œâ€¹ All Events</button>
+        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">Ã¢ÂÅ’ Failed Only</button>
+        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">Ã¢Å¡Â Ã¯Â¸Â Anomalies</button>
     </div>
 
     <!-- Filter Bar -->
@@ -4005,7 +4035,7 @@
 
                         if (conflicting.length > 0) {
                             let warningHtml = `<div style="margin-top:16px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:16px;">
-                                <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;">Â  ${conflicting.length} existing booking(s) conflict with this event:</div>
+                                <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;">Ã‚Â  ${conflicting.length} existing booking(s) conflict with this event:</div>
                                 <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">`;
                             conflicting.forEach(b => {
                                 warningHtml += `<div style="font-size:12px;background:#fff;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;color:#78350f;">
@@ -4550,7 +4580,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // â”€â”€ AUDIT LOG â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ AUDIT LOG Ã¢â€â‚¬Ã¢â€â‚¬
             let _allAuditLogs = [];
             let auditCurrentPage = 1;
             const auditItemsPerPage = 10;
@@ -4705,7 +4735,7 @@
                     if (a.includes('delete') || a.includes('removed')) return { label: 'Deleted', dot: '#ef4444' };
                     if (a.includes('batch') || a.includes('upload') || a.includes('update') || a.includes('edit')) return { label: 'Completed', dot: '#22c55e' };
                     if (a.includes('login') || a.includes('logout')) return { label: 'Done', dot: '#22c55e' };
-                    return { label: 'â€”', dot: '#94a3b8' };
+                    return { label: 'Ã¢â‚¬â€', dot: '#94a3b8' };
                 }
 
                 // Derive module from entity_type or action
@@ -4736,7 +4766,7 @@
                     const d    = new Date(a.created_at);
                     const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
                     const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
-                    const roleLabel = role === 'admin' ? 'ðŸ›¡ï¸ Admin' : role === 'user' ? 'ðŸ‘¤ User' : 'âš™ï¸ System';
+                    const roleLabel = role === 'admin' ? 'Ã°Å¸â€ºÂ¡Ã¯Â¸Â Admin' : role === 'user' ? 'Ã°Å¸â€˜Â¤ User' : 'Ã¢Å¡â„¢Ã¯Â¸Â System';
                     const roleColor = role === 'admin' ? '#8b5cf6' : role === 'user' ? '#0ea5e9' : '#94a3b8';
                     const roleBg = role === 'admin' ? 'rgba(139,92,246,0.15)' : role === 'user' ? 'rgba(14,165,233,0.15)' : 'rgba(148,163,184,0.15)';
                     const roleStyle = `display:inline-flex;align-items:center;gap:4px;background:${roleBg};color:${roleColor};`;
@@ -4794,7 +4824,7 @@
                 document.getElementById('auditDetailsModal').style.display = 'none';
             }
 
-            // â”€â”€ SECURITY LOG â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ SECURITY LOG Ã¢â€â‚¬Ã¢â€â‚¬
             let _allSecurityLogs = [];
             let securityCurrentPage = 1;
             const securityItemsPerPage = 10;
@@ -5030,7 +5060,7 @@
                         bdg = 'background:#fee2e2;color:#10b981;';
                     }
 
-                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : 'â€”';
+                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : 'Ã¢â‚¬â€';
                     const ipColor = (ev === 'New IP Detected' || ev === 'Suspicious Login Activity') ? '#ef4444' : 'var(--muted)';
                     return `<tr style="border-bottom:1px solid var(--border);${rowBg}">
                         <td style="padding: 12px; text-align:center;">${icon}</td>
@@ -5038,14 +5068,14 @@
                         <td style="padding: 12px;"><div style="font-weight:700; color: var(--text);">${uName}</div><div style="font-size:11px;color:var(--muted);">${uMail}</div></td>
                         <td style="padding: 12px;"><span style="${bdg}padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${ev}</span></td>
                         <td style="padding: 12px; font-weight: 600; color: var(--text);">${s.auth_method || 'System'}</td>
-                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || 'â€”'}</td>
+                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || 'Ã¢â‚¬â€'}</td>
                         <td style="padding: 12px; font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
-                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'â€”'}</td>
+                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'Ã¢â‚¬â€'}</td>
                     </tr>`;
                 }).join('');
             }
 
-            // â”€â”€ CLEAR LOG FUNCTIONS â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ CLEAR LOG FUNCTIONS Ã¢â€â‚¬Ã¢â€â‚¬
 
             async function clearAuditLogs() {
                 if (!confirm('Clear ALL audit log records? This cannot be undone.')) return;
@@ -5220,7 +5250,7 @@
             let _allActivityLogs = [];
 
 
-            // â•â•â• PAGINATION ENGINE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â PAGINATION ENGINE Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
             const PG_SIZE = 8;
             let _pgUsersPage = 1, _pgUsersList = [];
             let _pgConcernsPage = 1, _pgConcernsList = [], _pgConcernFilter = 'all';
@@ -5240,16 +5270,16 @@
                 let btns = '';
                 for (let p = 1; p <= totalPages; p++) {
                     if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - page) > 1) {
-                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 4px;">â€¦</span>';
+                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 4px;">Ã¢â‚¬Â¦</span>';
                         continue;
                     }
                     btns += '<button class="pg-btn' + (p === page ? ' pg-active' : '') + '" onclick="' + cbName + '(' + p + ')">' + p + '</button>';
                 }
-                el.innerHTML = '<span class="pg-info">Showing ' + s + 'â€“' + e + ' of ' + total + '</span>'
-                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>â€¹</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>â€º</button></div>';
+                el.innerHTML = '<span class="pg-info">Showing ' + s + 'Ã¢â‚¬â€œ' + e + ' of ' + total + '</span>'
+                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>Ã¢â‚¬Â¹</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>Ã¢â‚¬Âº</button></div>';
             }
 
-            // â”€â”€ Users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Users Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             function gotoUsersPage(p) { _pgUsersPage = p; renderUsersPagePg(); }
             function renderUsersPagePg() {
                 const tbody = document.getElementById('usersTable');
@@ -5270,7 +5300,7 @@
                 renderPg('usersPg', _pgUsersList.length, PG_SIZE, _pgUsersPage, 'gotoUsersPage');
             }
 
-            // â”€â”€ Concerns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Concerns Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             function applyConcernFilter() { _pgConcernFilter = document.getElementById('concernStatusFilter')?.value||'all'; _pgConcernsPage=1; renderConcernsPg(); }
             function gotoConcernsPage(p) { _pgConcernsPage = p; renderConcernsPg(); }
             function _adminConcernStatusLabel(status) {
@@ -5312,8 +5342,8 @@
                     const dt = c.createdAt||c.created_at ? new Date(c.createdAt||c.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
                     const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
                     const dot = !c.adminRead ? '<span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;margin-right:5px;vertical-align:middle;"></span>' : '';
-                    const resp = _adminParseConcernResponse(c.response).reply ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">âœ“ Replied</div>' : '';
-                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">ðŸ“· Photo</span>' : '';
+                    const resp = _adminParseConcernResponse(c.response).reply ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">Ã¢Å“â€œ Replied</div>' : '';
+                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">Ã°Å¸â€œÂ· Photo</span>' : '';
                     return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
                         +'<td><div style="line-height:1.3;">'+dot+'<strong style="color:var(--text);">'+(c.userName||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div></td>'
                         +'<td style="font-size:12px;color:var(--muted);">'+(c.address||'')+'</td>'
@@ -5327,7 +5357,7 @@
                 renderPg('concernsPg', list.length, PG_SIZE, _pgConcernsPage, 'gotoConcernsPage');
             }
 
-            // â”€â”€ Equipment Requests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Equipment Requests Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             let _pgReqFilter = 'all';
             let _pgReqSearch = '';
             
@@ -5404,7 +5434,7 @@
                 renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
             }
 
-            // â”€â”€ Court Bookings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Court Bookings Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             function gotoCourtPage(p) { _pgCourtPage=p; renderCourtPg(); }
             function renderCourtPg() {
                 const tbody = document.getElementById('courtBookingsTable');
@@ -5430,7 +5460,7 @@
                 renderPg('courtBookingsPg', _pgCourtList.length, PG_SIZE, _pgCourtPage, 'gotoCourtPage');
             }
 
-            // â”€â”€ Multi-Purpose â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Multi-Purpose Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             function gotoMpPage(p) { _pgMpPage=p; renderMpPg(); }
             function renderMpPg() {
                 const tbody = document.getElementById('multipurposeBookingsTable');
@@ -5456,7 +5486,7 @@
                 renderPg('multipurposePg', _pgMpList.length, PG_SIZE, _pgMpPage, 'gotoMpPage');
             }
 
-            // â”€â”€ Activity Log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Activity Log Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             function gotoActivityPage(p) { _pgActivityPage=p; renderActivityTable(); }
 
             let _activeLogFilter = 'all';
@@ -6198,7 +6228,7 @@
                             if (email) {
                                 await sendEmailNotification({
                                     to_email: email, name,
-                                    title: 'Facility Reservation Update  Å’',
+                                    title: 'Facility Reservation Update  Ã…â€™',
                                     message: `We regret to inform you that your Facility Reservation has been REJECTED.`,
                                     details: `Venue: ${b.venueName || b.venue || 'Court'} | Date: ${b.date}${comment ? ' | Reason: ' + comment : ''}`
                                 });
@@ -6579,38 +6609,38 @@
             }
 
             const actionStyles = {
-                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'ðŸ”§' },
-                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'âœ…' },
-                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'ðŸ—‘ï¸' },
-                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'â™»ï¸' },
-                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'ðŸ“¦' },
+                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'Ã°Å¸â€Â§' },
+                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'Ã¢Å“â€¦' },
+                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'Ã°Å¸â€”â€˜Ã¯Â¸Â' },
+                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'Ã¢â„¢Â»Ã¯Â¸Â' },
+                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'Ã°Å¸â€œÂ¦' },
             };
 
             tbody.innerHTML = logs.map(log => {
-                const style = actionStyles[log.action] || { bg:'#f3f4f6', color:'#374151', icon:'ðŸ“‹' };
+                const style = actionStyles[log.action] || { bg:'#f3f4f6', color:'#374151', icon:'Ã°Å¸â€œâ€¹' };
                 const dt = log.created_at ? new Date(log.created_at).toLocaleString('en-PH', {
                     month:'short', day:'2-digit', year:'numeric',
                     hour:'2-digit', minute:'2-digit', hour12:true
-                }) : 'â€”';
-                const before = log.prev_count ?? 'â€”';
-                const after  = log.new_count  ?? 'â€”';
+                }) : 'Ã¢â‚¬â€';
+                const before = log.prev_count ?? 'Ã¢â‚¬â€';
+                const after  = log.new_count  ?? 'Ã¢â‚¬â€';
                 return `<tr style="border-top:1px solid var(--border,#334155);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
                     <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);white-space:nowrap;">${dt}</td>
                     <td style="padding:12px 16px;">
-                        <span style="font-size:13px;font-weight:600;color:var(--text,#f1f5f9);">${log.item_name || 'â€”'}</span>
+                        <span style="font-size:13px;font-weight:600;color:var(--text,#f1f5f9);">${log.item_name || 'Ã¢â‚¬â€'}</span>
                     </td>
                     <td style="padding:12px 16px;text-align:center;">
                         <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;background:${style.bg};color:${style.color};">
                             ${style.icon} ${log.action}
                         </span>
                     </td>
-                    <td style="padding:12px 16px;text-align:center;font-size:14px;font-weight:700;color:var(--text,#f1f5f9);">${log.qty_changed ?? 'â€”'}</td>
+                    <td style="padding:12px 16px;text-align:center;font-size:14px;font-weight:700;color:var(--text,#f1f5f9);">${log.qty_changed ?? 'Ã¢â‚¬â€'}</td>
                     <td style="padding:12px 16px;text-align:center;font-size:13px;color:var(--muted,#94a3b8);">
                         <span style="color:#94a3b8;">${before}</span>
-                        <span style="margin:0 6px;">â†’</span>
+                        <span style="margin:0 6px;">Ã¢â€ â€™</span>
                         <span style="color:var(--text,#f1f5f9);font-weight:600;">${after}</span>
                     </td>
-                    <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);">${log.notes || 'â€”'}</td>
+                    <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);">${log.notes || 'Ã¢â‚¬â€'}</td>
                 </tr>`;
             }).join('');
         }
@@ -6664,7 +6694,7 @@
                             >
                                 ${e.image_url 
                                     ? `<img src="${e.image_url}" alt="${e.name}" style="width:100%;height:100%;object-fit:cover;">` 
-                                    : `<div style="text-align:center;padding:4px;"><div style="font-size:16px;">ðŸ“·</div><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;">Upload</div></div>`
+                                    : `<div style="text-align:center;padding:4px;"><div style="font-size:16px;">Ã°Å¸â€œÂ·</div><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;">Upload</div></div>`
                                 }
                                 <input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange(${e.id}, this)">
                             </div>
@@ -7516,7 +7546,7 @@
                 if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks;
                 if (el('glanceUsers')) el('glanceUsers').textContent = users.filter(u => u.role !== 'admin').length;
 
-                // Recent Activity Feed â€” reads from audit_log
+                // Recent Activity Feed Ã¢â‚¬â€ reads from audit_log
                 const feed = document.getElementById('overviewActivityFeed');
                 if (feed) {
                     try {
@@ -7538,16 +7568,16 @@
                         }
 
                         const evtIcon = ev => {
-                            if (!ev) return 'ðŸ“';
-                            if (ev.includes('Login') || ev.includes('Logout')) return 'ðŸ”';
-                            if (ev.includes('Borrow') || ev.includes('Equipment')) return 'ðŸª‘';
-                            if (ev.includes('Reservation') || ev.includes('Court') || ev.includes('Booking')) return 'ðŸ€';
-                            if (ev.includes('Concern')) return 'ðŸ“£';
-                            if (ev.includes('Event')) return 'ðŸ“…';
-                            if (ev.includes('User') || ev.includes('Resident')) return 'ðŸ‘¤';
-                            if (ev.includes('Delete') || ev.includes('Remove')) return 'ðŸ—‘ï¸';
-                            if (ev.includes('Update') || ev.includes('Edit')) return 'âœï¸';
-                            return 'ðŸ“‹';
+                            if (!ev) return 'Ã°Å¸â€œÂ';
+                            if (ev.includes('Login') || ev.includes('Logout')) return 'Ã°Å¸â€Â';
+                            if (ev.includes('Borrow') || ev.includes('Equipment')) return 'Ã°Å¸Âªâ€˜';
+                            if (ev.includes('Reservation') || ev.includes('Court') || ev.includes('Booking')) return 'Ã°Å¸Ââ‚¬';
+                            if (ev.includes('Concern')) return 'Ã°Å¸â€œÂ£';
+                            if (ev.includes('Event')) return 'Ã°Å¸â€œâ€¦';
+                            if (ev.includes('User') || ev.includes('Resident')) return 'Ã°Å¸â€˜Â¤';
+                            if (ev.includes('Delete') || ev.includes('Remove')) return 'Ã°Å¸â€”â€˜Ã¯Â¸Â';
+                            if (ev.includes('Update') || ev.includes('Edit')) return 'Ã¢Å“ÂÃ¯Â¸Â';
+                            return 'Ã°Å¸â€œâ€¹';
                         };
 
                         if (recent.length === 0) {
@@ -7779,7 +7809,7 @@
                 dayEvents.forEach(e => {
                     const startM = timeToMinutes(e.time || '07:00');
                     const endM   = timeToMinutes(e.end_time || e.time || '22:00');
-                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  â€“  ' + adminFmt12(e.end_time) : '');
+                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  Ã¢â‚¬â€œ  ' + adminFmt12(e.end_time) : '');
                     entries.push({
                         type: 'event', id: e.id, timeStr,
                         label: e.title,
@@ -7811,8 +7841,8 @@
                         if (isFullDayBlock) {
                             // Full-day admin block: show Cancel + Reschedule
                             actionBtns = `
-                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">ðŸ—‘ Cancel Event</button>
-                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">ðŸ“… Reschedule</button>`;
+                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">Ã°Å¸â€”â€˜ Cancel Event</button>
+                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">Ã°Å¸â€œâ€¦ Reschedule</button>`;
                         } else if (!isBk) {
                             // Normal event: Reschedule + Remove
                             actionBtns = `
@@ -7983,7 +8013,7 @@
                 if(btn) btn.textContent = 'Update Event';
             };
 
-            // â”€â”€ Cancel a full-day admin block event (frees the date for reservations)
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Cancel a full-day admin block event (frees the date for reservations)
             window.adminCancelBlockedEvent = async function(id) {
                 if (!await showConfirmModal(
                     'Cancel this full-day block? Users will be able to reserve this date again.',
@@ -7991,7 +8021,7 @@
                 )) return;
                 const res = await deleteEvent(id);
                 if (res.success) {
-                    showAlert('âœ… Day block cancelled. The date is now open for reservations.', 'success');
+                    showAlert('Ã¢Å“â€¦ Day block cancelled. The date is now open for reservations.', 'success');
                     const dateStr = document.getElementById('adsDate').value;
                     const venue   = document.getElementById('adsVenue').value;
                     await refreshAdminDaySchedule(dateStr, venue);
@@ -7999,7 +8029,7 @@
                 } else { showAlert('Error: ' + res.message, 'error'); }
             };
 
-            // â”€â”€ Reschedule a full-day admin block to a new date
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Reschedule a full-day admin block to a new date
             window.adminRescheduleBlockedEvent = async function(id) {
                 const allEvs = await getEvents();
                 const ev = allEvs.find(e => String(e.id) === String(id));
@@ -8014,11 +8044,11 @@
                 picker.id = '_adminBlockReschedulePicker';
                 picker.style.cssText = 'background:#eff6ff;border:2px solid #3b82f6;border-radius:14px;padding:16px;margin-bottom:12px;';
                 picker.innerHTML = `
-                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">ðŸ“… Reschedule "${ev.title}" to:</p>
+                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">Ã°Å¸â€œâ€¦ Reschedule "${ev.title}" to:</p>
                     <input type="date" id="_adminBlockNewDate" min="${today}" value="" style="width:100%;padding:9px 12px;border:1.5px solid #93c5fd;border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:10px;">
                     <div style="display:flex;gap:8px;">
-                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">âœ… Confirm Reschedule</button>
-                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">âœ•</button>
+                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Ã¢Å“â€¦ Confirm Reschedule</button>
+                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">Ã¢Å“â€¢</button>
                     </div>`;
 
                 const list = document.getElementById('adsScheduleList');
@@ -8040,11 +8070,11 @@
                     });
                     if (alreadyBlocked) {
                         showAlert('That date is already fully blocked by another event. Choose a different date.', 'error');
-                        this.disabled = false; this.textContent = 'âœ… Confirm Reschedule';
+                        this.disabled = false; this.textContent = 'Ã¢Å“â€¦ Confirm Reschedule';
                         return;
                     }
 
-                    // Only pass known DB column fields â€” avoid camelCase-mapped props like createdAt
+                    // Only pass known DB column fields Ã¢â‚¬â€ avoid camelCase-mapped props like createdAt
                     const res = await updateEvent(id, {
                         title:       ev.title,
                         date:        newDate,
@@ -8058,14 +8088,14 @@
                     });
                     if (res.success) {
                         picker.remove();
-                        showAlert(`âœ… Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
+                        showAlert(`Ã¢Å“â€¦ Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
                         const dateStr = document.getElementById('adsDate').value;
                         const venue   = document.getElementById('adsVenue').value;
                         await refreshAdminDaySchedule(dateStr, venue);
                         if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
                     } else {
                         showAlert('Error rescheduling: ' + res.message, 'error');
-                        this.disabled = false; this.textContent = 'âœ… Confirm Reschedule';
+                        this.disabled = false; this.textContent = 'Ã¢Å“â€¦ Confirm Reschedule';
                     }
                 });
             };
@@ -8307,7 +8337,7 @@
                     renderConcernsPg();
                 } catch (e) {
                     console.error("loadConcerns crash:", e);
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">Â  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">Ã‚Â  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
                 }
             }
 
@@ -8334,7 +8364,7 @@
                 // Header subtitle
                 const submittedShort = concern.createdAt||concern.created_at ? new Date(concern.createdAt||concern.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
                 const headerSub = document.getElementById('adminConcernHeaderSub');
-                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' Â· ' + (concern.address||'') + ' Â· ' + submittedShort;
+                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' Ã‚Â· ' + (concern.address||'') + ' Ã‚Â· ' + submittedShort;
 
                 // Status dropdown
                 const sel = document.getElementById('adminConcernStatusSelect');
@@ -8386,7 +8416,7 @@
                         if (entry.action === 'status_changed') {
                             const lbl = _adminConcernStatusLabel(entry.status);
                             const dot = lbl==='Resolved'?'#10b981':lbl==='Rejected'?'#ef4444':'#f59e0b';
-                            items.push({dot, title:'Status â†’ '+lbl, by:entry.by||'', ts});
+                            items.push({dot, title:'Status Ã¢â€ â€™ '+lbl, by:entry.by||'', ts});
                         }
                         if (entry.action === 'replied') items.push({dot:'#3b82f6', title:'Reply sent to citizen', by:entry.by||'', ts});
                     });
@@ -9066,7 +9096,7 @@
                 <div style="padding:24px;">
                     <div style="margin-bottom:20px;">
                         <label style="display:block;font-size:13px;font-weight:700;color:var(--text,#374151);margin-bottom:8px;">Admin Password</label>
-                        <input type="password" id="adminPasswordConfirmInput" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border,#d1d5db);background:var(--bg,#f9fafb);font-size:14px;color:var(--text,#111827);outline:none;transition:all 0.2s;">
+                        <input type="password" id="adminPasswordConfirmInput" placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border,#d1d5db);background:var(--bg,#f9fafb);font-size:14px;color:var(--text,#111827);outline:none;transition:all 0.2s;">
                         <p id="adminPasswordConfirmError" style="display:none;color:#10b981;font-size:12px;margin:8px 0 0;font-weight:600;">Incorrect password.</p>
                     </div>
                     <div style="display:flex;gap:12px;">
@@ -9089,7 +9119,7 @@
                         style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.35)'"
                         onmouseout="this.style.background='rgba(255,255,255,0.2)'"></button>
-                    <div style="width:64px;height:64px;border-radius:50%;background:#fff;color:#10b981;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">Â </div>
+                    <div style="width:64px;height:64px;border-radius:50%;background:#fff;color:#10b981;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">Ã‚Â </div>
                     <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0;">Suspend Resident</h3>
                     <p style="color:rgba(255,255,255,0.9);font-size:13px;margin:4px 0 0;" id="suspendModalUsername"></p>
                 </div>
@@ -9205,7 +9235,7 @@
                 <div style="display:flex;flex-direction:column;gap:14px;">
                     <button onclick="openAdminCancelBookingsEventFlow()"
                         style="padding:16px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-                        Â  Cancel Existing Bookings & Add Event
+                        Ã‚Â  Cancel Existing Bookings & Add Event
                     </button>
                     <button onclick="openAdminJustAddEventFlow()"
                         style="padding:16px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;box-shadow:0 4px 12px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
@@ -9354,7 +9384,7 @@
                             id: 'booking_' + b.id,
                             refId: b.id,
                             type: 'booking',
-                            icon: 'ðŸ“…',
+                            icon: 'Ã°Å¸â€œâ€¦',
                             message: 'New facility reservation on ' + b.date,
                             createdAt: b.created_at
                         }));
@@ -9362,7 +9392,7 @@
                             id: 'borrow_' + b.id,
                             refId: b.id,
                             type: 'borrow',
-                            icon: 'ðŸ“¦',
+                            icon: 'Ã°Å¸â€œÂ¦',
                             message: 'Equipment request: ' + b.quantity + 'x ' + b.equipment,
                             createdAt: b.created_at
                         }));
@@ -9370,7 +9400,7 @@
                             id: 'concern_' + c.id,
                             refId: c.id,
                             type: 'concern',
-                            icon: 'ðŸ“¢',
+                            icon: 'Ã°Å¸â€œÂ¢',
                             message: 'New concern: ' + (c.title || 'Untitled'),
                             createdAt: c.created_at
                         }));
@@ -9379,9 +9409,9 @@
                         const bookings = (JSON.parse(localStorage.getItem('courtBookings')) || []).filter(b => b.status === 'pending');
                         const borrowings = (JSON.parse(localStorage.getItem('courtBorrowings')) || []).filter(b => b.status === 'pending');
                         const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => c.status === 'pending');
-                        bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: 'ðŸ“…', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
-                        borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: 'ðŸ“¦', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
-                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: 'ðŸ“¢', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
+                        bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: 'Ã°Å¸â€œâ€¦', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
+                        borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: 'Ã°Å¸â€œÂ¦', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
+                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: 'Ã°Å¸â€œÂ¢', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
                     }
                 } catch(e) { console.warn('Admin bell error:', e); }
 
