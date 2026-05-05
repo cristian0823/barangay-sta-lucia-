@@ -1124,9 +1124,6 @@
                                     </div>
                                 </label>
                             </div>
-                            <div id="deliveryAddressField" style="display:none;margin-top:8px;">
-                                <input type="text" id="deliveryAddress" class="form-input" placeholder="Enter complete delivery address" oninput="updateBorrowSubmitButton()">
-                            </div>
                             <p id="deliveryPickupOnlyNotice" style="display:none;font-size:11px;color:#92400e;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;margin-top:6px;">&#9888;&#65039; This item is <strong>Pickup only</strong> — large/heavy items cannot be delivered.</p>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
@@ -2427,8 +2424,6 @@
             // Reset delivery method
             const _dp = document.getElementById('deliveryPickup'); if (_dp) _dp.checked = false;
             const _dd = document.getElementById('deliveryDelivery'); if (_dd) _dd.checked = false;
-            const _daf = document.getElementById('deliveryAddressField'); if (_daf) _daf.style.display = 'none';
-            const _da = document.getElementById('deliveryAddress'); if (_da) _da.value = '';
             const _pbl = document.getElementById('deliveryPickupLabel'); if (_pbl) _pbl.style.border = '2px solid #e2e8f0';
             const _dtl = document.getElementById('deliveryToAddrLabel'); if (_dtl) { _dtl.style.border = '2px solid #e2e8f0'; _dtl.style.display = 'flex'; }
             const _pon = document.getElementById('deliveryPickupOnlyNotice'); if (_pon) _pon.style.display = 'none';
@@ -2493,9 +2488,7 @@
             const deliveryPickup = document.getElementById('deliveryPickup');
             const deliveryDelivery = document.getElementById('deliveryDelivery');
             const deliveryMethodSelected = (deliveryPickup && deliveryPickup.checked) || (deliveryDelivery && deliveryDelivery.checked);
-            const deliveryAddr = document.getElementById('deliveryAddress');
-            const deliveryAddrValid = !(deliveryDelivery && deliveryDelivery.checked) || (deliveryAddr && deliveryAddr.value.trim() !== '');
-            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected && deliveryAddrValid);
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected);
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
@@ -2695,8 +2688,6 @@
             const active = '2px solid #10b981', inactive = '2px solid #e2e8f0';
             if (pickupLabel) pickupLabel.style.border = method === 'pickup' ? active : inactive;
             if (deliveryLabel) deliveryLabel.style.border = method === 'delivery' ? active : inactive;
-            if (addrField) addrField.style.display = method === 'delivery' ? 'block' : 'none';
-            if (method !== 'delivery') { const da = document.getElementById('deliveryAddress'); if (da) da.value = ''; }
             updateBorrowSubmitButton();
         }
 
@@ -2707,10 +2698,6 @@
             const pickupRadio = document.getElementById('deliveryPickup');
             const deliveryRadio = document.getElementById('deliveryDelivery');
             const pickupLabel = document.getElementById('deliveryPickupLabel');
-            const addrField = document.getElementById('deliveryAddressField');
-            const da = document.getElementById('deliveryAddress');
-            if (da) da.value = '';
-            if (addrField) addrField.style.display = 'none';
             if (pickupRadio) pickupRadio.checked = false;
             if (deliveryRadio) deliveryRadio.checked = false;
             if (deliveryLabel) { deliveryLabel.style.display = allowed ? 'flex' : 'none'; deliveryLabel.style.border = '2px solid #e2e8f0'; }
@@ -3043,7 +3030,7 @@
             const _delPickup = document.getElementById('deliveryPickup');
             const _delDelivery = document.getElementById('deliveryDelivery');
             const _isDelivery = _delDelivery && _delDelivery.checked;
-            const deliveryStr = _isDelivery ? 'Delivery to ' + (document.getElementById('deliveryAddress').value.trim()) : 'Pickup at Barangay Hall';
+            const deliveryStr = _isDelivery ? 'Delivery to ' + address : 'Pickup at Barangay Hall';
             const fullPurpose = `[Time: ${formatTime(borrowTime)} to ${formatTime(returnTime)}] | Purpose: ${purposeStr} | Borrower: ${fullName} | Contact: ${contact} | Address: ${address} | Delivery: ${deliveryStr}`;
             const result = await borrowEquipment(equipId, qty, borrowDate, returnDate, fullPurpose);
             
