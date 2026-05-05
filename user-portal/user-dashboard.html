@@ -4057,6 +4057,16 @@ async function loadSettingsView() {
 
                 supabase
                     .channel('live-notifications')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'site_settings' }, payload => {
+                        const newR = payload.new;
+                        if (!newR || !newR.key) return;
+                        const validKeys = ['equipment_open_hour', 'equipment_close_hour', 'facility_open_hour', 'facility_close_hour'];
+                        if (validKeys.includes(newR.key)) {
+                            const current = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                            current[newR.key] = parseInt(newR.value);
+                            localStorage.setItem('brgy_operating_hours', JSON.stringify(current));
+                        }
+                    })
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'borrowings' }, () => {
                         console.log('Borrowing changed! Reloading equipment...');
                         if (typeof loadEquipmentView === 'function') loadEquipmentView();
