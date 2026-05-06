@@ -570,7 +570,7 @@
                                     <div style="font-size:13px;font-weight:700;color:var(--text-main);">Equipment Lending</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Chairs, tables & more</div>
                                 </div>
-                                <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                                <span id="svc-equip-badge" style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
                                 <div style="width:32px;height:32px;border-radius:8px;background:var(--input-bg);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-dribbble" style="color:var(--muted);"></i></div>
@@ -578,7 +578,7 @@
                                     <div style="font-size:13px;font-weight:700;color:var(--text-main);">Facility Reservations</div>
                                     <div style="font-size:11px;color:var(--text-muted);">Basketball & Multi-purpose</div>
                                 </div>
-                                <span style="font-size:11px;background:var(--input-bg);color:#475569;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                                <span id="svc-facility-badge" style="font-size:11px;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
                                 <div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-chat-left-text-fill"></i></div>
@@ -1678,6 +1678,23 @@
 
         // ── OPERATING HOURS ──────────────────────────────────────────
         let OPERATING_HOURS = { equipOpen: 8, equipClose: 17, facilityOpen: 6, facilityClose: 21 };
+
+        function updateServiceStatusBadges() {
+            const equipBadge = document.getElementById('svc-equip-badge');
+            const facilityBadge = document.getElementById('svc-facility-badge');
+            const equipOpen = isEquipOpen();
+            const facilOpen = isFacilityOpen();
+            if (equipBadge) {
+                equipBadge.textContent = equipOpen ? 'Open' : 'Closed';
+                equipBadge.style.background = equipOpen ? '#d1fae5' : '#fee2e2';
+                equipBadge.style.color = equipOpen ? '#065f46' : '#991b1b';
+            }
+            if (facilityBadge) {
+                facilityBadge.textContent = facilOpen ? 'Open' : 'Closed';
+                facilityBadge.style.background = facilOpen ? '#d1fae5' : '#fee2e2';
+                facilityBadge.style.color = facilOpen ? '#065f46' : '#991b1b';
+            }
+        }
 
         async function loadOperatingHours() {
             // 1. Apply localStorage cache synchronously so OPERATING_HOURS is
