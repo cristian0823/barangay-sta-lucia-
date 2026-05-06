@@ -8431,7 +8431,7 @@
                         if (entry.action === 'status_changed') {
                             const lbl = _adminConcernStatusLabel(entry.status);
                             const dot = lbl==='Resolved'?'#10b981':lbl==='Rejected'?'#ef4444':'#f59e0b';
-                            items.push({dot, title:'Status ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ '+lbl, by:entry.by||'', ts});
+                            items.push({dot, title:'Status -> '+lbl, by:entry.by||'', ts});
                         }
                         if (entry.action === 'replied') items.push({dot:'#3b82f6', title:'Reply sent to citizen', by:entry.by||'', ts});
                     });
@@ -8495,6 +8495,7 @@
                     const newLog = [...existing.log];
                     const now = new Date().toISOString();
                     const _cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null; const adminName = _cu ? (_cu.fullName || _cu.full_name || _cu.email || 'Admin') : 'Admin';
+                    newLog.push({ action: 'status_changed', status: newStatus, timestamp: now, by: adminName });
                     const newReply = responseText.trim() || existing.reply || null;
                     if (responseText.trim() && responseText.trim() !== existing.reply) {
                         newLog.push({ action: 'replied', timestamp: now, by: adminName });

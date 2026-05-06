@@ -733,7 +733,8 @@
                             <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
                         </div>
                         <div class="p-6">
-                            <div id="myConcernsList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                            <div id="myConcernsList" class="flex flex-col gap-4"></div>
+                            <div id="concernsPaginationRow"></div>
                         </div>
                     </div>
 
@@ -3079,17 +3080,38 @@
             return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;' + s + '">' + (icons[label]||'') + ' ' + label + '</span>';
         }
 
-        async function loadConcernsView() {
-            const concerns = await getMyConcerns();
+        let _concernsCurrentPage = 1;
+        const _CONCERNS_PER_PAGE = 5;
+        let _concernsAllSorted = [];
+
+        async function loadConcernsView(page) {
+            if (page === undefined) {
+                // Fresh load: fetch data and reset to page 1
+                const concerns = await getMyConcerns();
+                _concernsAllSorted = concerns ? [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) : [];
+                _concernsCurrentPage = 1;
+            } else {
+                _concernsCurrentPage = page;
+            }
+            _renderConcernsPage();
+        }
+
+        function _renderConcernsPage() {
             const container = document.getElementById('myConcernsList');
+            const pgContainer = document.getElementById('concernsPaginationRow');
             container.className = 'flex flex-col gap-4';
-            if (!concerns || concerns.length === 0) {
+            if (!_concernsAllSorted || _concernsAllSorted.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 italic py-4">You have not submitted any concerns yet.</p>';
+                if (pgContainer) pgContainer.innerHTML = '';
                 return;
             }
-            const sorted = [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const total = _concernsAllSorted.length;
+            const totalPages = Math.ceil(total / _CONCERNS_PER_PAGE);
+            const start = (_concernsCurrentPage - 1) * _CONCERNS_PER_PAGE;
+            const pageItems = _concernsAllSorted.slice(start, start + _CONCERNS_PER_PAGE);
             const fmtTs = ts => ts ? new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
-            container.innerHTML = sorted.map(c => {
+
+            container.innerHTML = pageItems.map(c => {
                 const parsed = _parseConcernResponse(c.response);
                 const statusLabel = _concernStatusLabel(c.status);
                 const isPending = !c.status || c.status === 'pending' || c.status === 'open';
@@ -3114,16 +3136,14 @@
                     }
                 });
                 const stepTs = [fmtTs(c.createdAt), inProgressTs||'—', finalTs||'—'];
-                const stepColors = {active:{
-                    0:'#f59e0b', 1:'#3b82f6', 2: statusLabel==='Rejected'?'#ef4444':'#10b981'
-                }};
+                const stepColors = {active:{ 0:'#f59e0b', 1:'#3b82f6', 2: statusLabel==='Rejected'?'#ef4444':'#10b981' }};
                 const stepsHtml = steps.map((step, i) => {
                     const done = i < activeIdx;
                     const active = i === activeIdx;
                     const notReached = i > activeIdx;
                     const col = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'transparent');
                     const border = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'var(--border-color)');
-                    const icon = done ? '✓' : (active && i === 0 ? '✓' : active ? '●' : '');
+                    const icon = done ? '&#10003;' : (active && i === 0 ? '&#10003;' : active ? '&#9679;' : '');
                     const textCol = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'var(--text-muted)');
                     return '<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:0;">'
                         + '<div style="width:30px;height:30px;border-radius:50%;background:'+col+';border:2px solid '+border+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:'+(notReached?'var(--text-muted)':'#fff')+';z-index:1;flex-shrink:0;">'+icon+'</div>'
@@ -3170,21 +3190,18 @@
                     + '</div>';
 
                 // Admin reply box
+                const lastReply = parsed.log.filter(e=>e.action==='replied').slice(-1)[0];
                 const replyHtml = parsed.reply
                     ? '<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:14px;">'
                         + '<div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#10b981;margin-bottom:8px;">Admin reply</div>'
                         + '<p style="margin:0 0 8px;font-size:13px;color:var(--text-main);line-height:1.6;">'+parsed.reply+'</p>'
-                        + (parsed.log.filter(e=>e.action==='replied').slice(-1)[0]
-                            ? '<div style="font-size:11px;color:var(--text-muted);">'+
-                              (parsed.log.filter(e=>e.action==='replied').slice(-1)[0].by||'Admin')+' · '+
-                              fmtTs(parsed.log.filter(e=>e.action==='replied').slice(-1)[0].timestamp)+'</div>'
-                            : '')
+                        + (lastReply ? '<div style="font-size:11px;color:var(--text-muted);">'+(lastReply.by||'Admin')+' &middot; '+fmtTs(lastReply.timestamp)+'</div>' : '')
                         + '</div>'
                     : '';
 
                 const statusBadge = _concernStatusBadge(c.status);
                 const repliedBadge = parsed.reply
-                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);">✓ Replied</span>'
+                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);">&#10003; Replied</span>'
                     : '';
 
                 return '<div style="background:var(--card-bg,var(--input-bg));border:1px solid var(--border-color);border-radius:16px;padding:18px;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 20px rgba(0,0,0,0.1)\'" onmouseout="this.style.boxShadow=\'none\'">'
@@ -3192,7 +3209,7 @@
                     + '<h4 style="margin:0;font-size:15px;font-weight:800;color:var(--text-main);line-height:1.3;">'+c.title+'</h4>'
                     + '<div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;margin-top:2px;">'+statusBadge+repliedBadge+'</div>'
                     + '</div>'
-                    + '<p style="margin:0 0 8px;font-size:12px;color:var(--text-muted);">'+c.category+' · '+(c.address||'')+' · Submitted '+fmtTs(c.createdAt)+'</p>'
+                    + '<p style="margin:0 0 8px;font-size:12px;color:var(--text-muted);">'+c.category+' &middot; '+(c.address||'')+' &middot; Submitted '+fmtTs(c.createdAt)+'</p>'
                     + '<p style="margin:0;font-size:13px;color:var(--text-main);line-height:1.5;opacity:0.85;">'+actualDescription+'</p>'
                     + attachedImageHtml
                     + timelineHtml
@@ -3204,6 +3221,32 @@
                         + '</div>' : '')
                     + '</div>';
             }).join('');
+
+            // Render pagination
+            if (pgContainer) {
+                if (totalPages <= 1) { pgContainer.innerHTML = ''; return; }
+                const btns = [];
+                // Prev button
+                btns.push('<button onclick="_renderConcernsPage && ((_concernsCurrentPage>1)&&(_concernsCurrentPage--,_renderConcernsPage()))" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--input-bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;'
+                    + (_concernsCurrentPage===1?'opacity:0.4;pointer-events:none;':'')+'">&#8592; Prev</button>');
+                // Page buttons (show max 5 around current)
+                const range = 2;
+                for (let p = 1; p <= totalPages; p++) {
+                    if (p === 1 || p === totalPages || (p >= _concernsCurrentPage - range && p <= _concernsCurrentPage + range)) {
+                        const isActive = p === _concernsCurrentPage;
+                        btns.push('<button onclick="loadConcernsView('+p+')" style="padding:6px 12px;border-radius:8px;border:1px solid '+(isActive?'#10b981':'var(--border-color)')+';background:'+(isActive?'#10b981':'var(--input-bg)')+';color:'+(isActive?'#fff':'var(--text-muted)')+';font-size:13px;font-weight:'+(isActive?'800':'600')+';cursor:pointer;min-width:36px;">'+p+'</button>');
+                    } else if (p === _concernsCurrentPage - range - 1 || p === _concernsCurrentPage + range + 1) {
+                        btns.push('<span style="padding:6px 4px;color:var(--text-muted);font-size:13px;">...</span>');
+                    }
+                }
+                // Next button
+                btns.push('<button onclick="_renderConcernsPage && ((_concernsCurrentPage<'+totalPages+')&&(_concernsCurrentPage++,_renderConcernsPage()))" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--input-bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;'
+                    + (_concernsCurrentPage===totalPages?'opacity:0.4;pointer-events:none;':'')+'">Next &#8594;</button>');
+                pgContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border-color);margin-top:8px;">'
+                    + '<span style="font-size:12px;color:var(--text-muted);margin-right:8px;">Showing '+(((_concernsCurrentPage-1)*_CONCERNS_PER_PAGE)+1)+'-'+Math.min(_concernsCurrentPage*_CONCERNS_PER_PAGE,total)+' of '+total+'</span>'
+                    + btns.join('')
+                    + '</div>';
+            }
         }
 
         // ==========================================
