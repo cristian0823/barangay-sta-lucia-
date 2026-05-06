@@ -63,6 +63,7 @@
         .content-panel { display: none !important; animation: fadeIn 0.3s ease; }
         .content-panel.active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .glass-card { 
             background-color: var(--panel-bg); 
             border: 1px solid rgba(0, 0, 0, 0.06); 
@@ -1679,7 +1680,8 @@
         let OPERATING_HOURS = { equipOpen: 8, equipClose: 17, facilityOpen: 6, facilityClose: 21 };
 
         async function loadOperatingHours() {
-            // 1. Check localStorage first (set by admin on same browser/device)
+            // 1. Apply localStorage cache synchronously so OPERATING_HOURS is
+            //    always up-to-date before any async awaits
             try {
                 const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
                 if (ls.equipment_open_hour  != null) OPERATING_HOURS.equipOpen     = ls.equipment_open_hour;
@@ -1687,15 +1689,24 @@
                 if (ls.facility_open_hour   != null) OPERATING_HOURS.facilityOpen  = ls.facility_open_hour;
                 if (ls.facility_close_hour  != null) OPERATING_HOURS.facilityClose = ls.facility_close_hour;
             } catch(e) {}
-            // 2. Supabase overrides localStorage when table exists (cross-device sync)
+            // 2. Supabase overrides and writes back to localStorage so cache
+            //    is always fresh for the NEXT synchronous read
             try {
                 const { data, error } = await supabase.from('site_settings').select('key,value');
-                if (!error && data) data.forEach(r => {
-                    if (r.key === 'equipment_open_hour')  OPERATING_HOURS.equipOpen     = parseInt(r.value);
-                    if (r.key === 'equipment_close_hour') OPERATING_HOURS.equipClose    = parseInt(r.value);
-                    if (r.key === 'facility_open_hour')   OPERATING_HOURS.facilityOpen  = parseInt(r.value);
-                    if (r.key === 'facility_close_hour')  OPERATING_HOURS.facilityClose = parseInt(r.value);
-                });
+                if (!error && data) {
+                    data.forEach(r => {
+                        if (r.key === 'equipment_open_hour')  OPERATING_HOURS.equipOpen     = parseInt(r.value);
+                        if (r.key === 'equipment_close_hour') OPERATING_HOURS.equipClose    = parseInt(r.value);
+                        if (r.key === 'facility_open_hour')   OPERATING_HOURS.facilityOpen  = parseInt(r.value);
+                        if (r.key === 'facility_close_hour')  OPERATING_HOURS.facilityClose = parseInt(r.value);
+                    });
+                    // Persist back to localStorage so the next visit reads fresh values instantly
+                    try {
+                        const cache = {};
+                        data.forEach(r => { cache[r.key] = parseInt(r.value); });
+                        localStorage.setItem('brgy_operating_hours', JSON.stringify(cache));
+                    } catch(e) {}
+                }
             } catch(e) { /* use defaults/localStorage */ }
         }
 
@@ -2218,13 +2229,23 @@
         }
 
         async function loadEquipmentView() {
-            console.log('[DEBUG] loadEquipmentView called');
+            // IMMEDIATELY clear the grid with a loading state so stale
+            // "Borrow" buttons are NEVER visible during the async fetch.
+            // This is the key fix for the 1-second flash bug.
+            const _grid = document.getElementById('equipmentGrid');
+            if (_grid) {
+                _grid.innerHTML =
+                    '<div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;' +
+                    'justify-content:center;padding:48px 20px;gap:12px;">' +
+                    '<div style="width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#10b981;' +
+                    'border-radius:50%;animation:spin 0.8s linear infinite;"></div>' +
+                    '<span style="font-size:13px;color:#94a3b8;font-weight:600;">Loading equipment status...</span>' +
+                    '</div>';
+            }
             try {
-                // Always reload operating hours from Supabase FIRST so the
-                // borrow button state is always accurate (fixes race condition)
+                // Reload operating hours from Supabase so the render is always accurate
                 await loadOperatingHours();
                 const list = await getEquipment();
-                console.log('[DEBUG] getEquipment returned:', list);
                 allEquipmentList = list;
                 await renderEquipmentGrid(list);
                 loadMyBorrowingsList();
