@@ -2815,182 +2815,155 @@
                     <!-- Overview Section - Digital Dashboard -->
                     <div id="overview-section">
 
-                        <!-- â•â• HERO BANNER â•â• -->
-                        <div style="border-radius:20px;overflow:hidden;margin-bottom:20px;position:relative;background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#047857 100%);box-shadow:0 16px 48px rgba(4,120,87,0.3);">
-                            <div style="position:absolute;inset:0;background-image:radial-gradient(ellipse at 75% 50%,rgba(52,211,153,0.18) 0%,transparent 65%),radial-gradient(ellipse at 15% 90%,rgba(6,78,59,0.5) 0%,transparent 45%);pointer-events:none;"></div>
-                            <div style="position:absolute;right:0;top:0;bottom:0;width:40%;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.06;"></div>
-                            <div style="position:relative;padding:30px 36px;display:flex;justify-content:space-between;align-items:center;gap:24px;">
+                        <!-- GOVERNMENT HERO BANNER -->
+                        <div style="border-radius:10px;overflow:hidden;margin-bottom:20px;position:relative;background:linear-gradient(135deg,#064E3B 0%,#065f46 55%,#047857 100%);box-shadow:0 8px 28px rgba(4,78,59,0.35);">
+                            <div style="position:absolute;inset:0;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.07;pointer-events:none;"></div>
+                            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FDB913,#fde68a,#FDB913);"></div>
+                            <div style="position:relative;padding:24px 32px;display:flex;justify-content:space-between;align-items:center;gap:24px;">
                                 <div>
-                                    <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
-                                        <span style="display:inline-block;width:18px;height:1px;background:rgba(255,255,255,0.3);"></span>ADMIN CONTROL CENTER<span style="display:inline-block;width:18px;height:1px;background:rgba(255,255,255,0.3);"></span>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                                        <div style="height:1px;width:18px;background:rgba(253,185,19,0.45);"></div>
+                                        <span style="font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(253,185,19,0.65);">BARANGAY STA. LUCIA &mdash; ADMIN CONTROL CENTER</span>
+                                        <div style="height:1px;width:18px;background:rgba(253,185,19,0.45);"></div>
                                     </div>
-                                    <h2 id="welcomeGreeting" style="font-size:28px;font-weight:800;color:#fff;margin:0 0 8px;line-height:1.2;letter-spacing:-0.5px;">Good morning, Admin</h2>
-                                    <p id="overviewSubtitle" style="font-size:13px;color:rgba(255,255,255,0.55);margin:0;font-weight:500;letter-spacing:0.2px;">Here's your live system overview for today.</p>
+                                    <h2 id="welcomeGreeting" style="font-size:26px;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.2;letter-spacing:-0.5px;">Good morning, Admin</h2>
+                                    <p id="overviewSubtitle" style="font-size:12px;color:rgba(255,255,255,0.52);margin:0;font-weight:500;">Here's your live system overview for today.</p>
                                 </div>
-                                <div style="text-align:right;flex-shrink:0;padding-left:32px;border-left:1px solid rgba(255,255,255,0.12);">
-                                    <div id="heroClock" style="font-size:42px;font-weight:800;color:#fff;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;">--:--</div>
-                                    <div id="heroDate" style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;font-weight:500;letter-spacing:0.3px;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- â•â• STAT CARDS â•â• -->
-                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
-
-                            <!-- Pending Requests -->
-                            <div onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
-                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
-                                    <i class="bi bi-box-seam-fill"></i>
-                                </div>
-                                <div id="pendingRequests" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Pending Requests</div>
-                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
-                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>Review now
-                                </div>
-                            </div>
-
-                            <!-- Pending Concerns -->
-                            <div onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
-                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
-                                    <i class="bi bi-megaphone-fill"></i>
-                                </div>
-                                <div id="pendingConcerns" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Pending Concerns</div>
-                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
-                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>Respond now
-                                </div>
-                            </div>
-
-                            <!-- Active Bookings -->
-                            <div onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
-                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
-                                    <i class="bi bi-calendar-check-fill"></i>
-                                </div>
-                                <div id="upcomingEvents" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Active Bookings</div>
-                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
-                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>View schedule
-                                </div>
-                            </div>
-
-                            <!-- Total Users -->
-                            <div onclick="switchSection('users')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:all 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-sm);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 16px 40px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none;"></div>
-                                <div style="width:42px;height:42px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#10b981;margin-bottom:16px;">
-                                    <i class="bi bi-people-fill"></i>
-                                </div>
-                                <div id="totalUsers" style="font-size:38px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:4px;">0</div>
-                                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Total Users</div>
-                                <div style="padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;letter-spacing:0.3px;">
-                                    <i class="bi bi-arrow-right-short" style="font-size:15px;"></i>Manage users
+                                <div style="text-align:right;flex-shrink:0;padding-left:28px;border-left:1px solid rgba(253,185,19,0.2);">
+                                    <div id="heroClock" style="font-size:40px;font-weight:800;color:#fff;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;">--:--</div>
+                                    <div id="heroDate" style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px;font-weight:500;letter-spacing:0.3px;"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- â•â• MODULE NAV CARDS â•â• -->
-                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
-                            <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
-                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-calendar-check-fill"></i></div>
-                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Facility Reservations</div>
-                                <div style="font-size:11px;color:var(--muted);">Review &amp; approve</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
+                        <!-- STAT CARDS -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px;">
+
+                            <div onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="cursor:pointer;background:#fff;border:1px solid #BBE5CE;border-left:4px solid #059669;border-radius:8px;padding:18px 16px;transition:all 0.22s;box-shadow:0 1px 4px rgba(5,150,105,0.08);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 22px rgba(5,150,105,0.15)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.08)';">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                                    <div style="width:36px;height:36px;background:rgba(5,150,105,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#059669;"><i class="bi bi-box-seam-fill"></i></div>
+                                    <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#059669;background:rgba(5,150,105,0.1);padding:3px 7px;border-radius:4px;">Equipment</span>
+                                </div>
+                                <div id="pendingRequests" style="font-size:36px;font-weight:900;color:#022c22;line-height:1;letter-spacing:-2px;margin-bottom:3px;">0</div>
+                                <div style="font-size:10px;font-weight:700;color:#4B7A66;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Pending Requests</div>
+                                <div style="padding-top:10px;border-top:1px solid #D1FAE5;font-size:11px;color:#059669;font-weight:700;display:flex;align-items:center;gap:3px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>Review now</div>
+                            </div>
+
+                            <div onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="cursor:pointer;background:#fff;border:1px solid #BBE5CE;border-left:4px solid #FDB913;border-radius:8px;padding:18px 16px;transition:all 0.22s;box-shadow:0 1px 4px rgba(5,150,105,0.08);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 22px rgba(5,150,105,0.15)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.08)';">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                                    <div style="width:36px;height:36px;background:rgba(253,185,19,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#D97706;"><i class="bi bi-megaphone-fill"></i></div>
+                                    <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#D97706;background:rgba(253,185,19,0.12);padding:3px 7px;border-radius:4px;">Concerns</span>
+                                </div>
+                                <div id="pendingConcerns" style="font-size:36px;font-weight:900;color:#022c22;line-height:1;letter-spacing:-2px;margin-bottom:3px;">0</div>
+                                <div style="font-size:10px;font-weight:700;color:#4B7A66;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Pending Concerns</div>
+                                <div style="padding-top:10px;border-top:1px solid #D1FAE5;font-size:11px;color:#D97706;font-weight:700;display:flex;align-items:center;gap:3px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>Respond now</div>
+                            </div>
+
+                            <div onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="cursor:pointer;background:#fff;border:1px solid #BBE5CE;border-left:4px solid #3B82F6;border-radius:8px;padding:18px 16px;transition:all 0.22s;box-shadow:0 1px 4px rgba(5,150,105,0.08);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 22px rgba(5,150,105,0.15)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.08)';">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                                    <div style="width:36px;height:36px;background:rgba(59,130,246,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#3B82F6;"><i class="bi bi-calendar-check-fill"></i></div>
+                                    <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#3B82F6;background:rgba(59,130,246,0.1);padding:3px 7px;border-radius:4px;">Bookings</span>
+                                </div>
+                                <div id="upcomingEvents" style="font-size:36px;font-weight:900;color:#022c22;line-height:1;letter-spacing:-2px;margin-bottom:3px;">0</div>
+                                <div style="font-size:10px;font-weight:700;color:#4B7A66;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Active Bookings</div>
+                                <div style="padding-top:10px;border-top:1px solid #D1FAE5;font-size:11px;color:#3B82F6;font-weight:700;display:flex;align-items:center;gap:3px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>View schedule</div>
+                            </div>
+
+                            <div onclick="switchSection('users')" style="cursor:pointer;background:#fff;border:1px solid #BBE5CE;border-left:4px solid #8B5CF6;border-radius:8px;padding:18px 16px;transition:all 0.22s;box-shadow:0 1px 4px rgba(5,150,105,0.08);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 22px rgba(5,150,105,0.15)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.08)';">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                                    <div style="width:36px;height:36px;background:rgba(139,92,246,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#8B5CF6;"><i class="bi bi-people-fill"></i></div>
+                                    <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#8B5CF6;background:rgba(139,92,246,0.1);padding:3px 7px;border-radius:4px;">Users</span>
+                                </div>
+                                <div id="totalUsers" style="font-size:36px;font-weight:900;color:#022c22;line-height:1;letter-spacing:-2px;margin-bottom:3px;">0</div>
+                                <div style="font-size:10px;font-weight:700;color:#4B7A66;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Total Users</div>
+                                <div style="padding-top:10px;border-top:1px solid #D1FAE5;font-size:11px;color:#8B5CF6;font-weight:700;display:flex;align-items:center;gap:3px;"><i class="bi bi-arrow-right-short" style="font-size:14px;"></i>Manage users</div>
+                            </div>
+                        </div>
+
+                        <!-- MODULE QUICK ACCESS -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+                            <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:#fff;border:1px solid #BBE5CE;border-radius:8px;padding:14px 14px 36px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(5,150,105,0.06);transition:all 0.22s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(5,150,105,0.14)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.06)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);"></div>
+                                <div style="width:32px;height:32px;background:rgba(5,150,105,0.1);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#059669;margin-bottom:10px;"><i class="bi bi-calendar-check-fill"></i></div>
+                                <div style="font-size:12px;font-weight:700;color:#022c22;margin-bottom:2px;">Facility Reservations</div>
+                                <div style="font-size:11px;color:#4B7A66;">Review &amp; approve</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:11px;right:12px;color:#059669;font-size:13px;opacity:0.7;"></i>
                             </button>
-                            <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
-                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-box-seam-fill"></i></div>
-                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Equipment Requests</div>
-                                <div style="font-size:11px;color:var(--muted);">Manage borrowings</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
+                            <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[3])" style="background:#fff;border:1px solid #BBE5CE;border-radius:8px;padding:14px 14px 36px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(5,150,105,0.06);transition:all 0.22s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(5,150,105,0.14)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.06)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FDB913,#fde68a);"></div>
+                                <div style="width:32px;height:32px;background:rgba(253,185,19,0.12);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#D97706;margin-bottom:10px;"><i class="bi bi-box-seam-fill"></i></div>
+                                <div style="font-size:12px;font-weight:700;color:#022c22;margin-bottom:2px;">Equipment Requests</div>
+                                <div style="font-size:11px;color:#4B7A66;">Manage borrowings</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:11px;right:12px;color:#D97706;font-size:13px;opacity:0.7;"></i>
                             </button>
-                            <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
-                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-megaphone-fill"></i></div>
-                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Citizen Concerns</div>
-                                <div style="font-size:11px;color:var(--muted);">Respond to reports</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
+                            <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[4])" style="background:#fff;border:1px solid #BBE5CE;border-radius:8px;padding:14px 14px 36px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(5,150,105,0.06);transition:all 0.22s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(5,150,105,0.14)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.06)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3B82F6,#93C5FD);"></div>
+                                <div style="width:32px;height:32px;background:rgba(59,130,246,0.1);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#3B82F6;margin-bottom:10px;"><i class="bi bi-megaphone-fill"></i></div>
+                                <div style="font-size:12px;font-weight:700;color:#022c22;margin-bottom:2px;">Citizen Concerns</div>
+                                <div style="font-size:11px;color:#4B7A66;">Respond to reports</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:11px;right:12px;color:#3B82F6;font-size:13px;opacity:0.7;"></i>
                             </button>
-                            <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px 44px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s cubic-bezier(0.4,0,0.2,1);" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(16,185,129,0.5)';this.style.boxShadow='0 12px 32px rgba(16,185,129,0.12)';" onmouseout="this.style.transform='';this.style.borderColor='var(--border)';this.style.boxShadow='var(--shadow-sm)';">
-                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399);opacity:0.6;"></div>
-                                <div style="width:36px;height:36px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#10b981;margin-bottom:12px;"><i class="bi bi-calendar-event-fill"></i></div>
-                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;">Court Events</div>
-                                <div style="font-size:11px;color:var(--muted);">Schedule &amp; manage</div>
-                                <i class="bi bi-arrow-right" style="position:absolute;bottom:14px;right:14px;color:#10b981;font-size:14px;opacity:0.7;"></i>
+                            <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:#fff;border:1px solid #BBE5CE;border-radius:8px;padding:14px 14px 36px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(5,150,105,0.06);transition:all 0.22s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(5,150,105,0.14)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(5,150,105,0.06)';">
+                                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#8B5CF6,#C4B5FD);"></div>
+                                <div style="width:32px;height:32px;background:rgba(139,92,246,0.1);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#8B5CF6;margin-bottom:10px;"><i class="bi bi-calendar-event-fill"></i></div>
+                                <div style="font-size:12px;font-weight:700;color:#022c22;margin-bottom:2px;">Court Events</div>
+                                <div style="font-size:11px;color:#4B7A66;">Schedule &amp; manage</div>
+                                <i class="bi bi-arrow-right" style="position:absolute;bottom:11px;right:12px;color:#8B5CF6;font-size:13px;opacity:0.7;"></i>
                             </button>
                         </div>
 
-                        <!-- â•â• BOTTOM ROW â•â• -->
+                        <!-- BOTTOM ROW: Pending Actions + Recent Activity -->
                         <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;">
 
-                            <!-- Pending Actions -->
-                            <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow-sm);">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-                                    <div style="width:38px;height:38px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#10b981;"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <div style="background:#fff;border:1px solid #BBE5CE;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(5,150,105,0.06);">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #D1FAE5;">
+                                    <div style="width:34px;height:34px;background:rgba(5,150,105,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#059669;"><i class="bi bi-lightning-charge-fill"></i></div>
                                     <div>
-                                        <div style="font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.2px;">Pending Actions</div>
-                                        <div style="font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;">Requires your attention</div>
+                                        <div style="font-size:13px;font-weight:800;color:#022c22;">Pending Actions</div>
+                                        <div style="font-size:11px;color:#4B7A66;">Requires your attention</div>
                                     </div>
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:8px;">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-box-seam" style="color:#10b981;font-size:13px;"></i>
-                                            <span style="font-size:13px;font-weight:600;color:var(--text);">Equipment Requests</span>
-                                        </div>
-                                        <span id="glancePendingReqs" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                <div style="display:flex;flex-direction:column;gap:7px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F6FBF8;border-radius:7px;border:1px solid #D1FAE5;">
+                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-box-seam" style="color:#059669;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#022c22;">Equipment Requests</span></div>
+                                        <span id="glancePendingReqs" style="font-weight:800;font-size:11px;background:rgba(5,150,105,0.12);color:#059669;border:1px solid rgba(5,150,105,0.2);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-megaphone" style="color:#10b981;font-size:13px;"></i>
-                                            <span style="font-size:13px;font-weight:600;color:var(--text);">Open Concerns</span>
-                                        </div>
-                                        <span id="glancePendingCons" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F6FBF8;border-radius:7px;border:1px solid #D1FAE5;">
+                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-megaphone" style="color:#D97706;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#022c22;">Open Concerns</span></div>
+                                        <span id="glancePendingCons" style="font-weight:800;font-size:11px;background:rgba(253,185,19,0.12);color:#D97706;border:1px solid rgba(253,185,19,0.2);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-calendar-check" style="color:#10b981;font-size:13px;"></i>
-                                            <span style="font-size:13px;font-weight:600;color:var(--text);">Active Bookings</span>
-                                        </div>
-                                        <span id="glanceBookings" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F6FBF8;border-radius:7px;border:1px solid #D1FAE5;">
+                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-calendar-check" style="color:#3B82F6;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#022c22;">Active Bookings</span></div>
+                                        <span id="glanceBookings" style="font-weight:800;font-size:11px;background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.2);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel-bg);border-radius:11px;border:1px solid var(--border);">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-people" style="color:#10b981;font-size:13px;"></i>
-                                            <span style="font-size:13px;font-weight:600;color:var(--text);">Registered Users</span>
-                                        </div>
-                                        <span id="glanceUsers" style="font-weight:800;font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:2px 10px;border-radius:20px;min-width:28px;text-align:center;"></span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F6FBF8;border-radius:7px;border:1px solid #D1FAE5;">
+                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-people" style="color:#8B5CF6;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#022c22;">Registered Users</span></div>
+                                        <span id="glanceUsers" style="font-weight:800;font-size:11px;background:rgba(139,92,246,0.1);color:#8B5CF6;border:1px solid rgba(139,92,246,0.2);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Recent Activity -->
-                            <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow-sm);">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <div style="width:38px;height:38px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#10b981;"><i class="bi bi-activity"></i></div>
+                            <div style="background:#fff;border:1px solid #BBE5CE;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(5,150,105,0.06);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #D1FAE5;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <div style="width:34px;height:34px;background:rgba(5,150,105,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#059669;"><i class="bi bi-activity"></i></div>
                                         <div>
-                                            <div style="font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.2px;">Recent Activity</div>
-                                            <div style="font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;">Latest system events</div>
+                                            <div style="font-size:13px;font-weight:800;color:#022c22;">Recent Activity</div>
+                                            <div style="font-size:11px;color:#4B7A66;">Latest system events</div>
                                         </div>
                                     </div>
-                                    <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.25);padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;">
-                                        <span style="width:6px;height:6px;background:#10b981;border-radius:50%;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>LIVE
+                                    <span style="font-size:9px;font-weight:800;letter-spacing:1.5px;background:rgba(5,150,105,0.1);color:#059669;border:1px solid rgba(5,150,105,0.2);padding:3px 10px;border-radius:12px;display:flex;align-items:center;gap:4px;">
+                                        <span style="width:5px;height:5px;background:#059669;border-radius:50%;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>LIVE
                                     </span>
                                 </div>
-                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(16,185,129,0.2) transparent;">
-                                    <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading activity...</div>
+                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;max-height:240px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(5,150,105,0.2) transparent;">
+                                    <div style="text-align:center;padding:24px;color:#4B7A66;font-size:13px;">Loading activity...</div>
                                 </div>
                             </div>
                         </div>
 
                         <style>
-                        @keyframes pulse-dot {
-                            0%,100%{opacity:1;transform:scale(1);}
-                            50%{opacity:0.5;transform:scale(0.75);}
-                        }
+                        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.75);} }
                         </style>
                     </div>
 
