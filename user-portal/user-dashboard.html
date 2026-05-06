@@ -3082,60 +3082,129 @@
         async function loadConcernsView() {
             const concerns = await getMyConcerns();
             const container = document.getElementById('myConcernsList');
+            container.className = 'flex flex-col gap-4';
             if (!concerns || concerns.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 italic py-4 col-span-full">You have not submitted any concerns yet.</p>';
+                container.innerHTML = '<p class="text-gray-500 italic py-4">You have not submitted any concerns yet.</p>';
                 return;
             }
             const sorted = [...concerns].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const fmtTs = ts => ts ? new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
             container.innerHTML = sorted.map(c => {
-                const statusBadge = _concernStatusBadge(c.status);
                 const parsed = _parseConcernResponse(c.response);
+                const statusLabel = _concernStatusLabel(c.status);
+                const isPending = !c.status || c.status === 'pending' || c.status === 'open';
                 let actualDescription = c.description || 'No description provided';
                 let attachedImageHtml = '';
                 if (actualDescription.includes('[ATTACHED_IMAGE_DATA]')) {
                     const parts = actualDescription.split('[ATTACHED_IMAGE_DATA]');
                     actualDescription = parts[0].replace(/Usern/g, '').trim();
                     const b64 = parts[1].replace(/Usern/g, '').trim();
-                    attachedImageHtml = '<div class="mt-2"><img src="' + b64 + '" class="max-h-24 rounded-lg border shadow-sm object-cover" alt="Attached photo"></div>';
+                    attachedImageHtml = '<div style="margin:10px 0 4px;"><img src="'+b64+'" style="max-height:120px;border-radius:10px;border:1px solid var(--border-color);object-fit:cover;" alt="Attached photo"></div>';
                 }
-                const repliedBadge = parsed.reply
-                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;">&#10003; Replied</span>'
-                    : '';
-                const fmtTs = ts => ts ? new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : '';
-                const submittedEntry = '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-top:4px;flex-shrink:0;"></div><div><span style="font-size:11px;font-weight:700;color:#92400e;">Submitted</span><span style="font-size:10px;color:#94a3b8;margin-left:6px;">' + fmtTs(c.createdAt) + '</span></div></div>';
-                const logEntries = parsed.log.map(entry => {
-                    const ts = fmtTs(entry.timestamp);
+
+                // STATUS TIMELINE
+                const steps = ['Submitted', 'In Progress', statusLabel === 'Rejected' ? 'Rejected' : 'Resolved'];
+                const activeIdx = Math.max(0, steps.indexOf(statusLabel));
+                let inProgressTs = '', finalTs = '';
+                parsed.log.forEach(e => {
+                    if (e.action === 'status_changed') {
+                        const lbl = _concernStatusLabel(e.status);
+                        if (lbl === 'In Progress') inProgressTs = fmtTs(e.timestamp);
+                        if (lbl === 'Resolved' || lbl === 'Rejected') finalTs = fmtTs(e.timestamp);
+                    }
+                });
+                const stepTs = [fmtTs(c.createdAt), inProgressTs||'—', finalTs||'—'];
+                const stepColors = {active:{
+                    0:'#f59e0b', 1:'#3b82f6', 2: statusLabel==='Rejected'?'#ef4444':'#10b981'
+                }};
+                const stepsHtml = steps.map((step, i) => {
+                    const done = i < activeIdx;
+                    const active = i === activeIdx;
+                    const notReached = i > activeIdx;
+                    const col = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'transparent');
+                    const border = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'var(--border-color)');
+                    const icon = done ? '✓' : (active && i === 0 ? '✓' : active ? '●' : '');
+                    const textCol = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'var(--text-muted)');
+                    return '<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:0;">'
+                        + '<div style="width:30px;height:30px;border-radius:50%;background:'+col+';border:2px solid '+border+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:'+(notReached?'var(--text-muted)':'#fff')+';z-index:1;flex-shrink:0;">'+icon+'</div>'
+                        + '<div style="font-size:11px;font-weight:700;color:'+textCol+';margin-top:6px;text-align:center;white-space:nowrap;">'+step+'</div>'
+                        + '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;text-align:center;">'+stepTs[i]+'</div>'
+                        + '</div>';
+                });
+                const line1 = activeIdx >= 1 ? 'background:linear-gradient(90deg,#10b981,'+stepColors.active[1]+')' : 'background:var(--border-color)';
+                const line2 = activeIdx >= 2 ? 'background:linear-gradient(90deg,'+stepColors.active[1]+','+(statusLabel==='Rejected'?'#ef4444':'#10b981')+')' : 'background:var(--border-color)';
+                const timelineHtml = '<div style="margin:14px 0 10px;padding:14px 16px;background:var(--input-bg);border-radius:12px;border:1px solid var(--border-color);">'
+                    + '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">Status Timeline</div>'
+                    + '<div style="display:flex;align-items:flex-start;position:relative;">'
+                    + stepsHtml[0]
+                    + '<div style="flex:1;height:2px;'+line1+';margin-top:14px;"></div>'
+                    + stepsHtml[1]
+                    + '<div style="flex:1;height:2px;'+line2+';margin-top:14px;"></div>'
+                    + stepsHtml[2]
+                    + '</div></div>';
+
+                // ACTIVITY LOG
+                const logItems = [{dot:'#10b981', title:'Concern submitted', desc:'Citizen submitted the concern via Resident Portal.', ts: fmtTs(c.createdAt)}];
+                parsed.log.forEach(entry => {
                     if (entry.action === 'status_changed') {
-                        const dot = entry.status === 'resolved' || entry.status === 'closed' ? '#10b981' : entry.status === 'rejected' ? '#ef4444' : '#3b82f6';
-                        return '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="width:8px;height:8px;border-radius:50%;background:' + dot + ';margin-top:4px;flex-shrink:0;"></div><div><span style="font-size:11px;font-weight:700;color:var(--text-main);">Status: ' + _concernStatusLabel(entry.status) + '</span><span style="font-size:10px;color:#94a3b8;margin-left:6px;">' + ts + '</span></div></div>';
+                        const lbl = _concernStatusLabel(entry.status);
+                        const dot = lbl==='Resolved'?'#10b981':lbl==='Rejected'?'#ef4444':'#f59e0b';
+                        logItems.push({dot, title:'Status updated to '+lbl, desc:(entry.by?'Updated by '+entry.by+'.':'Status changed.'), ts:fmtTs(entry.timestamp)});
                     }
-                    if (entry.action === 'replied') {
-                        return '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;margin-top:4px;flex-shrink:0;"></div><div><span style="font-size:11px;font-weight:700;color:#065f46;">Admin replied</span><span style="font-size:10px;color:#94a3b8;margin-left:6px;">' + ts + '</span></div></div>';
-                    }
-                    return '';
-                }).filter(Boolean);
-                const timelineHtml = (parsed.log.length > 0)
-                    ? '<div style="margin-top:10px;padding:10px 12px;background:var(--input-bg,#f9fafb);border-radius:10px;border:1px solid var(--border-color);display:flex;flex-direction:column;gap:6px;"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Activity</div>' + submittedEntry + logEntries.join('') + '</div>'
-                    : '';
+                    if (entry.action === 'replied') logItems.push({dot:'#3b82f6', title:'Admin replied', desc:'A response was sent to your concern.', ts:fmtTs(entry.timestamp)});
+                });
+                const activityHtml = '<div style="margin-bottom:12px;">'
+                    + '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Activity Log</div>'
+                    + logItems.map((item, idx) =>
+                        '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;'+(idx<logItems.length-1?'border-bottom:1px solid var(--border-color);':'')+'">'
+                        + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">'
+                        + '<div style="width:10px;height:10px;border-radius:50%;background:'+item.dot+';box-shadow:0 0 6px '+item.dot+'55;margin-top:2px;flex-shrink:0;"></div>'
+                        + (idx<logItems.length-1?'<div style="width:1px;flex:1;min-height:14px;background:var(--border-color);margin-top:4px;"></div>':'')
+                        + '</div>'
+                        + '<div style="flex:1;">'
+                        + '<div style="font-size:12px;font-weight:700;color:var(--text-main);">'+item.title+'</div>'
+                        + '<div style="font-size:11px;color:var(--text-muted);margin-top:1px;">'+item.desc+'</div>'
+                        + '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">'+item.ts+'</div>'
+                        + '</div></div>'
+                    ).join('')
+                    + '</div>';
+
+                // Admin reply box
                 const replyHtml = parsed.reply
-                    ? '<div style="background:#ecfdf5;border-left:4px solid #10b981;padding:10px 12px;border-radius:0 10px 10px 0;margin-top:10px;"><p style="margin:0 0 4px;font-size:11px;font-weight:800;color:#065f46;">Admin Response:</p><p style="margin:0;font-size:13px;color:#065f46;line-height:1.5;">' + parsed.reply + '</p></div>'
+                    ? '<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:14px;">'
+                        + '<div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#10b981;margin-bottom:8px;">Admin reply</div>'
+                        + '<p style="margin:0 0 8px;font-size:13px;color:var(--text-main);line-height:1.6;">'+parsed.reply+'</p>'
+                        + (parsed.log.filter(e=>e.action==='replied').slice(-1)[0]
+                            ? '<div style="font-size:11px;color:var(--text-muted);">'+
+                              (parsed.log.filter(e=>e.action==='replied').slice(-1)[0].by||'Admin')+' · '+
+                              fmtTs(parsed.log.filter(e=>e.action==='replied').slice(-1)[0].timestamp)+'</div>'
+                            : '')
+                        + '</div>'
                     : '';
-                const isPending = !c.status || c.status === 'pending' || c.status === 'open';
-                return '<div class="p-4 rounded-xl border hover:shadow-md transition-shadow bg-white dark:bg-gray-800 flex flex-col" style="border-color:var(--border-color);">' +
-                    '<div class="flex justify-between items-start gap-2 mb-2">' +
-                    '<h4 class="font-bold text-base line-clamp-1" style="color:var(--text-main);">' + c.title + '</h4>' +
-                    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">' + statusBadge + repliedBadge + '</div>' +
-                    '</div>' +
-                    '<p class="text-xs opacity-80 mb-1" style="color:var(--text-main);">' + actualDescription + '</p>' +
-                    attachedImageHtml +
-                    '<div class="flex items-center justify-between mt-3 pt-3 border-t" style="border-color:var(--border-color);">' +
-                    '<div class="flex items-center gap-3 text-xs" style="color:var(--text-muted);"><span class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">' + c.category + '</span><span>&#128197; ' + formatDate(c.createdAt) + '</span></div>' +
-                    (isPending ? '<div class="flex gap-2"><button onclick="openEditConcernModal(' + c.id + ')" class="text-xs text-blue-500 hover:text-blue-700 font-semibold bg-blue-50 px-2 py-1 rounded">Edit</button><button onclick="deleteMyConcern(' + c.id + ')" class="text-xs text-red-500 hover:text-red-700 font-semibold bg-red-50 px-2 py-1 rounded">Delete</button></div>' : '') +
-                    '</div>' +
-                    timelineHtml +
-                    replyHtml +
-                    '</div>';
+
+                const statusBadge = _concernStatusBadge(c.status);
+                const repliedBadge = parsed.reply
+                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);">✓ Replied</span>'
+                    : '';
+
+                return '<div style="background:var(--card-bg,var(--input-bg));border:1px solid var(--border-color);border-radius:16px;padding:18px;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 20px rgba(0,0,0,0.1)\'" onmouseout="this.style.boxShadow=\'none\'">'
+                    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;">'
+                    + '<h4 style="margin:0;font-size:15px;font-weight:800;color:var(--text-main);line-height:1.3;">'+c.title+'</h4>'
+                    + '<div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;margin-top:2px;">'+statusBadge+repliedBadge+'</div>'
+                    + '</div>'
+                    + '<p style="margin:0 0 8px;font-size:12px;color:var(--text-muted);">'+c.category+' · '+(c.address||'')+' · Submitted '+fmtTs(c.createdAt)+'</p>'
+                    + '<p style="margin:0;font-size:13px;color:var(--text-main);line-height:1.5;opacity:0.85;">'+actualDescription+'</p>'
+                    + attachedImageHtml
+                    + timelineHtml
+                    + activityHtml
+                    + replyHtml
+                    + (isPending ? '<div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-color);">'
+                        + '<button onclick="openEditConcernModal('+c.id+')" style="padding:7px 18px;border-radius:9px;background:rgba(59,130,246,0.12);color:#3b82f6;border:1px solid rgba(59,130,246,0.25);font-size:12px;font-weight:700;cursor:pointer;">Edit</button>'
+                        + '<button onclick="deleteMyConcern('+c.id+')" style="padding:7px 18px;border-radius:9px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25);font-size:12px;font-weight:700;cursor:pointer;">Delete</button>'
+                        + '</div>' : '')
+                    + '</div>';
             }).join('');
+        }
         }
 
         // ==========================================
