@@ -3202,7 +3202,7 @@
             <i class="bi bi-shield-fill-check" style="color: #ef4444; font-size: 28px;"></i>
             <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Security Log</h2>
         </div>
-        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication & session events ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â OWASP A09:2021 compliant monitoring.</p>
+        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication &amp; session events &mdash; OWASP A09:2021 compliant monitoring.</p>
     </div>
 
     <!-- Stats Cards -->
@@ -4786,7 +4786,7 @@
                     const d    = new Date(a.created_at);
                     const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
                     const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
-                    const roleLabel = role === 'admin' ? 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ‚Â¡ÃƒÂ¯Ã‚Â¸Ã‚Â Admin' : role === 'user' ? 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ User' : 'ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â System';
+                    const roleLabel = role === 'admin' ? '<i class="bi bi-shield-lock-fill"></i> Admin' : role === 'user' ? '<i class="bi bi-person-fill"></i> User' : '<i class="bi bi-question-circle"></i> Unknown';
                     const roleColor = role === 'admin' ? '#8b5cf6' : role === 'user' ? '#0ea5e9' : '#94a3b8';
                     const roleBg = role === 'admin' ? 'rgba(139,92,246,0.15)' : role === 'user' ? 'rgba(14,165,233,0.15)' : 'rgba(148,163,184,0.15)';
                     const roleStyle = `display:inline-flex;align-items:center;gap:4px;background:${roleBg};color:${roleColor};`;
@@ -5090,7 +5090,7 @@
                         <td style="padding: 12px; font-weight: 600; color: var(--text);">${s.auth_method || 'System'}</td>
                         <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
                         <td style="padding: 12px; font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
-                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'N/A'}</td>
                     </tr>`;
                 }).join('');
             }
@@ -5296,7 +5296,7 @@
                     btns += '<button class="pg-btn' + (p === page ? ' pg-active' : '') + '" onclick="' + cbName + '(' + p + ')">' + p + '</button>';
                 }
                 el.innerHTML = '<span class="pg-info">Showing ' + s + 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“' + e + ' of ' + total + '</span>'
-                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>ÃƒÂ¢Ã¢â€šÂ¬Ã‚Âº</button></div>';
+                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>&#8250;</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>&lsaquo;</button></div>';
             }
 
             // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Users ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
@@ -5362,8 +5362,8 @@
                     const dt = c.createdAt||c.created_at ? new Date(c.createdAt||c.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
                     const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
                     const dot = !c.adminRead ? '<span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;margin-right:5px;vertical-align:middle;"></span>' : '';
-                    const resp = _adminParseConcernResponse(c.response).reply ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Replied</div>' : '';
-                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â· Photo</span>' : '';
+                    const resp = _adminParseConcernResponse(c.response).reply ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;"><i class=\"bi bi-check-circle-fill\"></i> Replied</div>' : '';
+                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;"><i class=\"bi bi-image-fill\"></i> Photo</span>' : '';
                     return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
                         +'<td><div style="line-height:1.3;">'+dot+'<strong style="color:var(--text);">'+(c.userName||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div></td>'
                         +'<td style="font-size:12px;color:var(--muted);">'+(c.address||'')+'</td>'
@@ -6248,7 +6248,7 @@
                             if (email) {
                                 await sendEmailNotification({
                                     to_email: email, name,
-                                    title: 'Facility Reservation Update  Ãƒâ€¦Ã¢â‚¬â„¢',
+ title: 'Facility Reservation Update ',
                                     message: `We regret to inform you that your Facility Reservation has been REJECTED.`,
                                     details: `Venue: ${b.venueName || b.venue || 'Court'} | Date: ${b.date}${comment ? ' | Reason: ' + comment : ''}`
                                 });
@@ -6629,11 +6629,11 @@
             }
 
             const actionStyles = {
-                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§' },
-                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦' },
-                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â' },
-                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'ÃƒÂ¢Ã¢â€žÂ¢Ã‚Â»ÃƒÂ¯Ã‚Â¸Ã‚Â' },
-                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦' },
+                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'<i class=\"bi bi-tools\"></i>' },
+                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'<i class=\"bi bi-check-circle-fill\"></i>' },
+                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'<i class=\"bi bi-trash3-fill\"></i>' },
+                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'<i class=\"bi bi-arrow-counterclockwise\"></i>' },
+                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'<i class=\"bi bi-box-seam\"></i>' },
             };
 
             tbody.innerHTML = logs.map(log => {
