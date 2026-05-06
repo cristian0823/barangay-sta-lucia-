@@ -1725,6 +1725,8 @@
                     } catch(e) {}
                 }
             } catch(e) { /* use defaults/localStorage */ }
+            // Always update the Barangay Services card after hours are resolved
+            updateServiceStatusBadges();
         }
 
         function getManilaHour() {
@@ -4134,6 +4136,9 @@ async function loadSettingsView() {
         // Real-time live flow: Wait for new notifications immediately
         document.addEventListener('DOMContentLoaded', async () => {
             loadOperatingHours(); // load admin-configured hours in background
+            // Apply cached hours immediately (synchronous) so the dashboard
+            // Barangay Services card shows the right status before the async fetch completes
+            updateServiceStatusBadges();
             if (typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable()) {
                 supabase
                     .channel('live-notifications')
