@@ -2220,6 +2220,9 @@
         async function loadEquipmentView() {
             console.log('[DEBUG] loadEquipmentView called');
             try {
+                // Always reload operating hours from Supabase FIRST so the
+                // borrow button state is always accurate (fixes race condition)
+                await loadOperatingHours();
                 const list = await getEquipment();
                 console.log('[DEBUG] getEquipment returned:', list);
                 allEquipmentList = list;
@@ -2440,7 +2443,12 @@
         }
 
         async function openBorrowModalWithEquip(equipId) {
+            // Re-fetch hours from Supabase every time the modal is opened so
+            // stale cached values can never bypass the closed-status check
+            await loadOperatingHours();
             if (!isEquipOpen()) {
+                // Re-render the grid so the button updates to "Closed" immediately
+                if (allEquipmentList && allEquipmentList.length) await renderEquipmentGrid(allEquipmentList);
                 showToast('Borrowing requests are currently closed. Operating hours: ' + fmtOpHour(OPERATING_HOURS.equipOpen) + ' – ' + fmtOpHour(OPERATING_HOURS.equipClose), 'error');
                 return;
             }
@@ -2909,7 +2917,10 @@
         // Borrow Form Submission
         document.getElementById('borrowForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
+            // Always do a live check before allowing submission
+            await loadOperatingHours();
             if (!isEquipOpen()) {
+                if (allEquipmentList && allEquipmentList.length) await renderEquipmentGrid(allEquipmentList);
                 return showToast('Borrowing requests are currently closed (' + fmtOpHour(OPERATING_HOURS.equipOpen) + ' – ' + fmtOpHour(OPERATING_HOURS.equipClose) + ').', 'error');
             }
             const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
