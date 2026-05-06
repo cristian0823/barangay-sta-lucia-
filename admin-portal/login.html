@@ -13,10 +13,14 @@
         /* ── PAGE BACKGROUND ── */
         body {
             min-height: 100vh;
-            background: #0F2547;
+            background-color: #0F2547;
             background-image:
-                radial-gradient(ellipse at 20% 80%, rgba(26,58,107,0.6) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(15,37,71,0.8) 0%, transparent 50%);
+                linear-gradient(rgba(10,25,55,0.72), rgba(10,25,55,0.72)),
+                url('brgy.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -67,8 +71,8 @@
             width: 100%;
             max-width: 480px;
             background: #FFFFFF;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
             overflow: hidden;
         }
 
@@ -338,19 +342,6 @@
 </head>
 <body>
 
-    <!-- Government header strip -->
-    <div class="gov-header-strip">
-        <span class="gov-strip-left">Republic of the Philippines</span>
-        <div class="gov-strip-right">
-            <span style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:500;">NCR | Quezon City</span>
-            <div class="gov-flag-bar">
-                <span class="gov-flag-blue"></span>
-                <span class="gov-flag-red"></span>
-                <span class="gov-flag-white"></span>
-            </div>
-        </div>
-    </div>
-
     <!-- Login card -->
     <div class="login-card">
         <div class="card-gold-bar"></div>
@@ -444,8 +435,6 @@
             <p>Authorized Personnel Only &bull; <a href="terms.html" target="_blank">Terms &amp; Conditions</a></p>
         </div>
     </div>
-
-    <p class="page-note">Barangay Sta. Lucia &bull; Novaliches, Quezon City &bull; NCR, Philippines</p>
 
     <div id="toast"></div>
 
