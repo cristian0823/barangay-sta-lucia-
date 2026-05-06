@@ -2920,7 +2920,7 @@
                                     onclick="printEquipmentReport()">
                                     Print</button>
                                 <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add Item</button>
-                                <button class="btn btn-small btn-light" onclick="toggleMaintenanceLog()" id="maintenanceLogToggle">📋 Maintenance Log</button>
+                    <button class="btn btn-small btn-light" onclick="toggleMaintenanceLog()" id="maintenanceLogToggle"><i class="bi bi-clipboard2-pulse"></i> Maintenance Log</button>
                             </div>
                         </div>
                         <div class="section-content" style="padding: 16px 26px 26px;">
@@ -3157,10 +3157,10 @@
 
     <!-- Quick Filter Tabs -->
     <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">✅ Login Events</button>
-        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">📋 All Events</button>
-        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">❌ Failed Only</button>
-        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">⚠️ Anomalies</button>
+                                <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: white; font-weight: 700; font-size: 13px; cursor: pointer;">🔵 Login Events</button>
+                                <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">📋 All Events</button>
+                                <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">❌ Failed Only</button>
+                                <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">⚠️ Anomalies</button>
     </div>
 
     <!-- Filter Bar -->
@@ -4705,7 +4705,7 @@
                     const d    = new Date(a.created_at);
                     const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
                     const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
-                    const roleLabel = role === 'admin' ? '🛡️ Admin' : role === 'user' ? '👤 User' : '⚙️ System';
+                    const roleLabel = role === 'admin' ? '<i class="bi bi-shield-lock-fill"></i> Admin' : role === 'user' ? '<i class="bi bi-person-fill"></i> User' : '<i class="bi bi-question-circle"></i> Unknown';
                     const roleColor = role === 'admin' ? '#8b5cf6' : role === 'user' ? '#0ea5e9' : '#94a3b8';
                     const roleBg = role === 'admin' ? 'rgba(139,92,246,0.15)' : role === 'user' ? 'rgba(14,165,233,0.15)' : 'rgba(148,163,184,0.15)';
                     const roleStyle = `display:inline-flex;align-items:center;gap:4px;background:${roleBg};color:${roleColor};`;
@@ -5009,7 +5009,7 @@
                         <td style="padding: 12px; font-weight: 600; color: var(--text);">${s.auth_method || 'System'}</td>
                         <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || '—'}</td>
                         <td style="padding: 12px; font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
-                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || '—'}</td>
+                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'N/A'}</td>
                     </tr>`;
                 }).join('');
             }
@@ -6135,7 +6135,7 @@
                             if (email) {
                                 await sendEmailNotification({
                                     to_email: email, name,
-                                    title: 'Facility Reservation Update  Œ',
+                                    title: 'Facility Reservation Update',
                                     message: `We regret to inform you that your Facility Reservation has been REJECTED.`,
                                     details: `Venue: ${b.venueName || b.venue || 'Court'} | Date: ${b.date}${comment ? ' | Reason: ' + comment : ''}`
                                 });
@@ -6516,10 +6516,10 @@
             }
 
             const actionStyles = {
-                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'🔧' },
-                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'✅' },
-                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'🗑️' },
-                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'♻️' },
+                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'<i class="bi bi-tools"></i>' },
+                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'<i class="bi bi-check-circle-fill"></i>' },
+                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'<i class="bi bi-trash3-fill"></i>' },
+                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'<i class="bi bi-arrow-counterclockwise"></i>' },
                 'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'📦' },
             };
 
@@ -7530,7 +7530,10 @@
 
                 body.innerHTML = notifications.map(notif => {
                     const iconClass = notif.type === 'concern' ? 'concern' : notif.type === 'borrow' ? 'request' : 'booking';
-                    const icon = notif.type === 'concern' ? '' : notif.type === 'borrow' ? '' : '';
+                    let icon = '';
+                    if (notif.type === 'concern') icon = '<i class="bi bi-megaphone-fill"></i>';
+                    else if (notif.type === 'borrow') icon = '<i class="bi bi-box-seam"></i>';
+                    else if (notif.type === 'booking') icon = '<i class="bi bi-calendar-check-fill"></i>';
 
                     const timeAgo = formatTimeAgoAdmin(notif.created_at || notif.createdAt);
                     const unreadClass = notif.isRead ? '' : 'unread';
@@ -9246,8 +9249,8 @@
                         const borrowings = (JSON.parse(localStorage.getItem('courtBorrowings')) || []).filter(b => b.status === 'pending');
                         const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => c.status === 'pending');
                         bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: '📅', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
-                        borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: '📦', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
-                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: '📢', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
+                        borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: '<i class="bi bi-box-seam"></i>', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
+                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: '<i class="bi bi-megaphone-fill"></i>', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
                     }
                 } catch(e) { console.warn('Admin bell error:', e); }
 

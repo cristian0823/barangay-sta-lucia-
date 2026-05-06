@@ -1200,33 +1200,7 @@
                     </div>
                 </div>
 
-                <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:14px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#1e40af;">
-                    <strong>ℹ️ Hours are saved in this browser.</strong> To sync across all devices, a database table is needed.
-                    <details style="margin-top:8px;cursor:pointer;">
-                        <summary style="font-weight:700;color:#3b82f6;outline:none;">Show Database Setup SQL</summary>
-                        <div style="position:relative;margin-top:8px;">
-                            <pre id="ohSqlBlock" style="background:#1e1b4b;color:#a5f3fc;padding:10px 14px;border-radius:10px;font-size:11.5px;overflow-x:auto;white-space:pre-wrap;margin:0;">CREATE TABLE IF NOT EXISTS site_settings (
-  key text PRIMARY KEY,
-  value text NOT NULL,
-  updated_at timestamptz DEFAULT now()
-);
-INSERT INTO site_settings (key,value) VALUES
-  ('equipment_open_hour','8'),('equipment_close_hour','17'),
-  ('facility_open_hour','6'),('facility_close_hour','21')
-ON CONFLICT (key) DO NOTHING;
-
-ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "auth read/write" ON site_settings;
-DROP POLICY IF EXISTS "anon read" ON site_settings;
-CREATE POLICY "anon all" ON site_settings FOR ALL TO anon USING (true) WITH CHECK (true);
-
--- Enable realtime for this table
-ALTER PUBLICATION supabase_realtime ADD TABLE site_settings;</pre>
-                            <button onclick="navigator.clipboard.writeText(document.getElementById('ohSqlBlock').textContent).then(()=>showToast('SQL copied!','success'))" style="position:absolute;top:8px;right:8px;padding:4px 10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Copy</button>
-                        </div>
-                    </details>
-                    <div id="ohSyncStatus" style="margin-top:8px;font-size:12px;color:#1d4ed8;"></div>
-                </div>
+                <div id="ohSyncStatus" style="display:none;"></div>
 
                 <div class="profile-grid">
                     <div class="card">

@@ -1981,14 +1981,14 @@
                 
                 const timeStr = n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Just now';
 
-                let iconHtml = '<i class="bi bi-bell-fill"></i>';
-                                if (n.type === 'booking_approved') iconHtml = '✅';
-                if (n.type === 'booking_rejected' || n.type === 'equipment_rejected') iconHtml = '❌';
-                if (n.type === 'concern_resolved') iconHtml = '✅';
-                if (n.type === 'concern_in_progress') iconHtml = '🔧';
-                if (n.type === 'equipment_approved') iconHtml = '📦';
-                if (n.type === 'booking_cancelled' || n.type === 'event_conflict') iconHtml = '⚠️';
-                if (n.type === 'event_added') iconHtml = '📅';
+                let iconHtml = '<i class="bi bi-bell-fill text-gray-500"></i>';
+                if (n.type === 'booking_approved') iconHtml = '<i class="bi bi-check-circle-fill text-emerald-500"></i>';
+                if (n.type === 'booking_rejected' || n.type === 'equipment_rejected') iconHtml = '<i class="bi bi-x-circle-fill text-red-500"></i>';
+                if (n.type === 'concern_resolved') iconHtml = '<i class="bi bi-check-circle-fill text-emerald-500"></i>';
+                if (n.type === 'concern_in_progress') iconHtml = '<i class="bi bi-tools text-amber-500"></i>';
+                if (n.type === 'equipment_approved') iconHtml = '<i class="bi bi-box-seam text-emerald-500"></i>';
+                if (n.type === 'booking_cancelled' || n.type === 'event_conflict') iconHtml = '<i class="bi bi-exclamation-triangle-fill text-amber-500"></i>';
+                if (n.type === 'event_added') iconHtml = '<i class="bi bi-calendar-event-fill text-emerald-500"></i>';
 
                 const html = `
                     <div class="${containerCss}" onclick="handleBellClick('${n.id}')">
