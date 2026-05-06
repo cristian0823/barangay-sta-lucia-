@@ -2436,35 +2436,35 @@
 
     <style id="gov-theme">
     /* ================================================================
-       PHILIPPINE GOVERNMENT OFFICIAL UI THEME
+       PHILIPPINE GOVERNMENT UI THEME — EMERALD GREEN EDITION
        Barangay Sta. Lucia - Admin Portal
     ================================================================ */
 
-    /* --- Root color overrides (government palette) --- */
+    /* --- Root color overrides (emerald palette) --- */
     :root {
-        --bg: #EDEEF2;
-        --surface: #FFFFFF;
-        --panel-bg: #F3F4F7;
-        --primary: #1A3A6B;
-        --primary-dark: #0F2547;
-        --text: #1A2A44;
-        --muted: #5A6A7E;
-        --border: #D0D7E1;
-        --gov-navy: #1A3A6B;
-        --gov-sidebar: #0F2547;
-        --gov-gold: #FDB913;
-        --gov-red: #CE1126;
+        --bg:           #F0FDF4;
+        --surface:      #FFFFFF;
+        --panel-bg:     #F6FBF8;
+        --primary:      #059669;
+        --primary-dark: #047857;
+        --text:         #022c22;
+        --muted:        #4B7A66;
+        --border:       #BBE5CE;
+        --gov-dark:     #064E3B;
+        --gov-primary:  #059669;
+        --gov-gold:     #FDB913;
+        --gov-red:      #CE1126;
     }
 
     /* --- Page background --- */
     body {
-        background: #EDEEF2 !important;
-        color: #1A2A44 !important;
+        background: #F0FDF4 !important;
+        color: #022c22 !important;
     }
 
     /* --- Left sidebar --- */
     .left-sidebar {
-        background: #0F2547 !important;
+        background: #064E3B !important;
         border-right: 1px solid rgba(253,185,19,0.18) !important;
     }
     .left-sidebar-label {
@@ -2473,15 +2473,15 @@
         letter-spacing: 0.11em !important;
     }
     .sidebar-btn {
-        color: rgba(255,255,255,0.72) !important;
+        color: rgba(255,255,255,0.75) !important;
         border-radius: 5px !important;
     }
     .sidebar-btn:hover {
-        background: rgba(253,185,19,0.11) !important;
+        background: rgba(253,185,19,0.12) !important;
         color: #FDB913 !important;
     }
     .sidebar-btn.active {
-        background: rgba(26,58,107,0.85) !important;
+        background: rgba(5,150,105,0.35) !important;
         border-left: 3px solid #FDB913 !important;
         color: #FDB913 !important;
         font-weight: 600 !important;
@@ -2490,8 +2490,8 @@
     /* --- Dashboard header --- */
     .dashboard-header {
         background: #FFFFFF !important;
-        border-bottom: 2px solid #1A3A6B !important;
-        box-shadow: 0 2px 8px rgba(26,58,107,0.1) !important;
+        border-bottom: 2px solid #059669 !important;
+        box-shadow: 0 2px 8px rgba(5,150,105,0.1) !important;
         position: relative !important;
     }
     .dashboard-header::after {
@@ -2502,62 +2502,62 @@
         left: 0; right: 0;
         height: 2px;
         background: linear-gradient(90deg, #FDB913 0%, #FDB913 40%, #CE1126 40%, #CE1126 100%);
-        opacity: 0.6;
+        opacity: 0.5;
     }
     .dashboard-logo span, #adminMobileName {
-        color: #1A3A6B !important;
+        color: #059669 !important;
     }
-    .user-name { color: #1A2A44 !important; }
-    .user-role { color: #5A6A7E !important; font-size: 11px !important; }
+    .user-name { color: #022c22 !important; }
+    .user-role { color: #4B7A66 !important; font-size: 11px !important; }
     .user-avatar {
-        background: #1A3A6B !important;
+        background: #059669 !important;
         color: #FDB913 !important;
         font-weight: 800 !important;
-        border: 2px solid rgba(253,185,19,0.3) !important;
+        border: 2px solid rgba(253,185,19,0.35) !important;
     }
     .logout-btn {
-        color: #5A6A7E !important;
-        border-color: #D0D7E1 !important;
+        color: #4B7A66 !important;
+        border-color: #BBE5CE !important;
     }
     .logout-btn:hover {
-        background: #1A3A6B !important;
+        background: #059669 !important;
         color: #FFFFFF !important;
-        border-color: #1A3A6B !important;
+        border-color: #059669 !important;
     }
 
     /* --- Stat cards --- */
     .stat-card {
         background: #FFFFFF !important;
-        border: 1px solid #D0D7E1 !important;
-        border-top: 3px solid #1A3A6B !important;
+        border: 1px solid #BBE5CE !important;
+        border-top: 3px solid #059669 !important;
         border-radius: 6px !important;
-        box-shadow: 0 1px 4px rgba(26,58,107,0.07) !important;
+        box-shadow: 0 1px 4px rgba(5,150,105,0.07) !important;
     }
     .stat-card:nth-child(2) { border-top-color: #FDB913 !important; }
     .stat-card:nth-child(3) { border-top-color: #CE1126 !important; }
-    .stat-card:nth-child(4) { border-top-color: #2E7D32 !important; }
+    .stat-card:nth-child(4) { border-top-color: #34D399 !important; }
     .stat-label {
-        color: #5A6A7E !important;
+        color: #4B7A66 !important;
         font-size: 11px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.09em !important;
         font-weight: 700 !important;
     }
-    .stat-number { color: #1A2A44 !important; font-weight: 800 !important; }
-    .stat-icon { color: #1A3A6B !important; opacity: 0.75 !important; }
+    .stat-number { color: #022c22 !important; font-weight: 800 !important; }
+    .stat-icon { color: #059669 !important; opacity: 0.8 !important; }
 
     /* --- Section containers --- */
     .section-container {
         background: #FFFFFF !important;
-        border: 1px solid #D0D7E1 !important;
+        border: 1px solid #BBE5CE !important;
         border-radius: 6px !important;
-        box-shadow: 0 1px 4px rgba(26,58,107,0.05) !important;
+        box-shadow: 0 1px 4px rgba(5,150,105,0.05) !important;
     }
 
     /* --- Data tables --- */
     .data-table thead tr,
     .data-table th {
-        background: #1A3A6B !important;
+        background: #059669 !important;
         color: #FFFFFF !important;
         font-weight: 600 !important;
         font-size: 12px !important;
@@ -2572,41 +2572,41 @@
     #users-section .data-table th,
     #audit-log-section .data-table th,
     #security-log-section .data-table th {
-        background: #1A3A6B !important;
+        background: #059669 !important;
         color: #FFFFFF !important;
     }
     .data-table tbody tr:nth-child(even) {
-        background: #F5F6F8 !important;
+        background: #F6FBF8 !important;
     }
     .data-table tbody tr:hover {
-        background: rgba(26,58,107,0.05) !important;
+        background: rgba(5,150,105,0.06) !important;
     }
     .data-table td {
-        border-bottom: 1px solid #E8ECF1 !important;
-        color: #1A2A44 !important;
+        border-bottom: 1px solid #D1FAE5 !important;
+        color: #022c22 !important;
     }
 
     /* --- Primary button --- */
     .btn-main, button.btn-main {
-        background: #1A3A6B !important;
+        background: #059669 !important;
         color: #FFFFFF !important;
         border-radius: 5px !important;
         font-weight: 600 !important;
-        box-shadow: 0 2px 8px rgba(26,58,107,0.22) !important;
+        box-shadow: 0 2px 8px rgba(5,150,105,0.25) !important;
         border: none !important;
     }
     .btn-main:hover, button.btn-main:hover {
-        background: #0F2547 !important;
-        box-shadow: 0 4px 14px rgba(26,58,107,0.32) !important;
+        background: #047857 !important;
+        box-shadow: 0 4px 14px rgba(5,150,105,0.35) !important;
         transform: translateY(-1px) !important;
     }
 
     /* --- Mobile sidebar --- */
     .mobile-sidebar {
-        background: #0F2547 !important;
+        background: #064E3B !important;
     }
     .mobile-sidebar-header {
-        background: #0A1E3D !important;
+        background: #042F20 !important;
         border-bottom: 1px solid rgba(253,185,19,0.2) !important;
         color: #FFFFFF !important;
     }
@@ -2618,56 +2618,77 @@
         color: #FDB913 !important;
     }
 
-    /* --- Notification bell button --- */
+    /* --- Notification bell --- */
     .admin-bell-btn {
-        color: #1A3A6B !important;
+        color: #059669 !important;
     }
     .admin-bell-btn:hover {
-        background: rgba(26,58,107,0.08) !important;
+        background: rgba(5,150,105,0.1) !important;
     }
 
-    /* --- Overview section heading strip --- */
-    #overview-section h2,
-    #overview-section h3,
-    #requests-section h2,
-    #court-bookings-section h2,
-    #concerns-section h2,
-    #equipment-section h2,
-    #users-section h2,
-    #events-section h2,
-    #audit-log-section h2,
-    #security-log-section h2 {
-        color: #1A2A44 !important;
-        border-bottom: 2px solid #1A3A6B !important;
+    /* --- Section headings --- */
+    #overview-section h2, #overview-section h3,
+    #requests-section h2, #court-bookings-section h2,
+    #concerns-section h2, #equipment-section h2,
+    #users-section h2, #events-section h2,
+    #audit-log-section h2, #security-log-section h2 {
+        color: #022c22 !important;
+        border-bottom: 2px solid #059669 !important;
         padding-bottom: 10px !important;
     }
 
-    /* --- Hamburger bars (mobile) --- */
+    /* --- Hamburger bars --- */
     .hamburger-btn span {
-        background: #1A3A6B !important;
+        background: #059669 !important;
     }
 
-    /* --- Dark mode: keep sidebar look but adjust text --- */
-    [data-theme="dark"] .left-sidebar { background: #07152A !important; }
+    /* ==========================================
+       DARK MODE OVERRIDES
+    ========================================== */
+    [data-theme="dark"] body { background: #021810 !important; color: #d1fae5 !important; }
+    [data-theme="dark"] .left-sidebar { background: #032218 !important; }
+    [data-theme="dark"] .sidebar-btn { color: rgba(209,250,229,0.72) !important; }
+    [data-theme="dark"] .sidebar-btn:hover { background: rgba(253,185,19,0.1) !important; color: #FDB913 !important; }
     [data-theme="dark"] .sidebar-btn.active {
-        background: rgba(253,185,19,0.15) !important;
+        background: rgba(5,150,105,0.25) !important;
         border-left-color: #FDB913 !important;
         color: #FDB913 !important;
     }
-    [data-theme="dark"] .dashboard-header { background: #0F1B2D !important; border-bottom-color: #1A3A6B !important; }
-    [data-theme="dark"] .user-name { color: #E2E8F0 !important; }
-    [data-theme="dark"] .user-avatar { background: #1A3A6B !important; color: #FDB913 !important; }
-    [data-theme="dark"] .stat-card { background: #121826 !important; border-color: #1E293B !important; }
-    [data-theme="dark"] .section-container { background: #121826 !important; border-color: #1E293B !important; }
+    [data-theme="dark"] .dashboard-header {
+        background: #0A2E1E !important;
+        border-bottom-color: #059669 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+    }
+    [data-theme="dark"] .user-name { color: #d1fae5 !important; }
+    [data-theme="dark"] .user-avatar { background: #059669 !important; color: #FDB913 !important; }
+    [data-theme="dark"] .stat-card {
+        background: #0A2E1E !important;
+        border-color: #134E35 !important;
+    }
+    [data-theme="dark"] .section-container {
+        background: #0A2E1E !important;
+        border-color: #134E35 !important;
+    }
     [data-theme="dark"] .data-table th,
     [data-theme="dark"] #requests-section .data-table th,
     [data-theme="dark"] #court-bookings-section .data-table th,
     [data-theme="dark"] #concerns-section .data-table th,
-    [data-theme="dark"] #equipment-section .data-table th {
-        background: #0F2547 !important;
-        color: #E2E8F0 !important;
+    [data-theme="dark"] #equipment-section .data-table th,
+    [data-theme="dark"] #users-section .data-table th,
+    [data-theme="dark"] #audit-log-section .data-table th,
+    [data-theme="dark"] #security-log-section .data-table th {
+        background: #047857 !important;
+        color: #d1fae5 !important;
     }
-    [data-theme="dark"] body { background: #0B0F19 !important; }
+    [data-theme="dark"] .data-table tbody tr:nth-child(even) { background: #0d3824 !important; }
+    [data-theme="dark"] .data-table td { border-bottom-color: #134E35 !important; color: #d1fae5 !important; }
+    [data-theme="dark"] .btn-main, [data-theme="dark"] button.btn-main {
+        background: #059669 !important;
+        color: #FFFFFF !important;
+    }
+    [data-theme="dark"] .stat-label { color: #6EE7B7 !important; }
+    [data-theme="dark"] .stat-number { color: #d1fae5 !important; }
+    [data-theme="dark"] .logout-btn { color: #6EE7B7 !important; border-color: #134E35 !important; }
     </style>
 </head>
 
