@@ -26,6 +26,39 @@
         }
     })();
     </script>
+    <!-- LIGHT MODE ENFORCEMENT: neutralize any saved dark-mode state -->
+    <script>
+        (function(){
+            localStorage.setItem("barangay-theme","light");
+            document.documentElement.removeAttribute("data-theme");
+            document.documentElement.setAttribute("data-theme","light");
+        })();
+    </script>
+    <style id="light-force">
+        /* Force light backgrounds — overrides [data-theme="dark"] rules */
+        html, body { background-color: #EDEEF2 !important; color: #1A1A2E !important; }
+        .main-content { background-color: #EDEEF2 !important; color: #1A1A2E !important; }
+        .dashboard-content { background-color: transparent !important; }
+        /* Cards and panels must be white */
+        .stat-card, .section-container, .admin-tables,
+        .section-content, .quick-action-card, .court-booking-card,
+        .gov-stat-card { background-color: #FFFFFF !important; color: #1A1A2E !important; border-color: #D1D5DB !important; }
+        /* Inline-styled white cards in overview */
+        #overview-section > div > div[style*="background:#fff"],
+        #overview-section div[style*="background:#fff"] { background-color: #FFFFFF !important; }
+        /* Section headers */
+        .section-header { background-color: #FFFFFF !important; color: #1A1A2E !important; }
+        .section-header h3 { color: #1A3A6B !important; }
+        /* Tables */
+        .data-table td { color: #1A1A2E !important; background: transparent !important; }
+        /* Override any dark body/bg vars the old theme set */
+        [data-theme="dark"] body, [data-theme="light"] body { background: #EDEEF2 !important; color: #1A1A2E !important; }
+        [data-theme="dark"] .main-content { background: #EDEEF2 !important; }
+        [data-theme="dark"] .section-container, [data-theme="dark"] .section-header,
+        [data-theme="dark"] .admin-tables { background: #FFFFFF !important; border-color: #D1D5DB !important; }
+        [data-theme="dark"] .section-header h3 { color: #1A3A6B !important; }
+        [data-theme="dark"] .data-table td { color: #1A1A2E !important; }
+    </style>
     <!-- ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
@@ -2922,10 +2955,6 @@
             </div>
             <!-- RIGHT: Controls -->
             <div class="user-menu" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
-                <!-- Dark mode toggle -->
-                <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:6px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:15px;flex-shrink:0;transition:background 0.15s;">
-                    <i class="bi bi-moon-stars-fill"></i>
-                </button>
                 <!-- Notification Bell -->
                 <div style="position:relative;display:flex;align-items:center;" id="adminBellWrapper">
                     <button class="admin-bell-btn" onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:6px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;flex-shrink:0;transition:background 0.15s;">

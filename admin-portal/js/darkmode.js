@@ -1,43 +1,16 @@
 /**
- * Dark Mode Utility — Barangay Sta. Lucia
- * Applies [data-theme="dark"] to <html>, persists in localStorage.
+ * Dark Mode — DISABLED for Barangay Sta. Lucia Admin Portal
+ * Light theme is enforced permanently. Dark mode has been removed.
  */
-
 (function () {
     const STORAGE_KEY = 'barangay-theme';
 
-    function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem(STORAGE_KEY, theme);
+    // Always force light theme regardless of saved preference
+    localStorage.setItem(STORAGE_KEY, 'light');
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'light');
 
-        // Update all toggle buttons on the page
-        document.querySelectorAll('.dark-mode-toggle').forEach(btn => {
-            const isDark = theme === 'dark';
-            btn.innerHTML = isDark
-                ? '<span style="font-size:18px;">☀️</span>'
-                : '<span style="font-size:18px;">🌙</span>';
-            btn.title = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-        });
-    }
-
-    function toggle() {
-        const current = document.documentElement.getAttribute('data-theme') || 'light';
-        applyTheme(current === 'dark' ? 'light' : 'dark');
-    }
-
-    function init() {
-        const saved = localStorage.getItem(STORAGE_KEY) || 'light';
-        applyTheme(saved);
-    }
-
-    // Auto-init when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
-    // Expose globally
-    window.toggleDarkMode = toggle;
-    window.initDarkMode = init;
+    // No-op stubs so existing onclick="toggleDarkMode()" calls don't throw
+    window.toggleDarkMode = function () {};
+    window.initDarkMode   = function () {};
 })();
