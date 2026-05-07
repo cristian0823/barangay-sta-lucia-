@@ -108,18 +108,31 @@
 
       /* ── Bell dropdown ───────────────────────────────────── */
       .admin-bell-dropdown { position: absolute; top: calc(100% + 8px); right: 0;
-        background: #fff; border: 1px solid #D1D5DB; border-radius: 8px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 320px; z-index: 200; display: none; }
+        background: #fff; border: 1px solid #D1D5DB; border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.15); width: 320px; z-index: 200;
+        display: none; overflow: hidden; }
       .admin-bell-header { display: flex; align-items: center; justify-content: space-between;
-        padding: 14px 16px; border-bottom: 1px solid #E5E7EB; }
-      .admin-bell-header h3 { font-size: 14px; font-weight: 700; color: #1A1A2E; margin: 0; }
-      .admin-bell-markall { font-size: 12px; color: #1A3A6B; background: none; border: none; cursor: pointer; font-weight: 600; }
-      .admin-bell-list { max-height: 300px; overflow-y: auto; }
-      .admin-bell-empty { text-align: center; padding: 24px; color: #6B7280; font-size: 13px; }
-      .admin-bell-footer { padding: 10px 16px; border-top: 1px solid #E5E7EB; font-size: 12px;
-        color: #1A3A6B; cursor: pointer; font-weight: 600; text-align: center; }
-      .admin-bell-item { padding: 12px 16px; border-bottom: 1px solid #F3F4F6; font-size: 12px; cursor: pointer; }
+        padding: 12px 16px; background: #1A3A6B; }
+      .admin-bell-header h3 { font-size: 14px; font-weight: 700; color: #fff; margin: 0; }
+      .admin-bell-markall { font-size: 12px; color: #FDB913; background: none; border: none;
+        cursor: pointer; font-weight: 600; transition: color 0.15s; }
+      .admin-bell-markall:hover { color: #fff; }
+      .admin-bell-list { max-height: 288px; overflow-y: auto; }
+      .admin-bell-empty { text-align: center; padding: 32px 16px; color: #6B7280; font-size: 13px; }
+      .admin-bell-footer { padding: 10px 16px; border-top: 1px solid #D1D5DB;
+        background: #F9FAFB; font-size: 12px; color: #1A3A6B; cursor: pointer;
+        font-weight: 600; text-align: center; transition: color 0.15s; }
+      .admin-bell-footer:hover { color: #0F2547; }
+      .admin-bell-item { display: flex; gap: 10px; padding: 12px 16px;
+        border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.15s; }
       .admin-bell-item:hover { background: #F9FAFB; }
+      .admin-bell-item:last-child { border-bottom: none; }
+      .admin-bell-icon-circle { width: 32px; height: 32px; border-radius: 50%;
+        background: rgba(26,58,107,0.08); color: #1A3A6B; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; font-size: 14px; }
+      .admin-bell-msg { font-size: 13px; color: #1A1A2E; font-weight: 500;
+        margin: 0 0 2px; line-height: 1.35; }
+      .admin-bell-time { font-size: 10px; color: #6B7280; }
 
       /* ── Data tables ─────────────────────────────────────── */
       .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -306,7 +319,7 @@
                 <div class="admin-bell-list" id="adminBellList" onclick="event.stopPropagation()">
                     <div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>
                 </div>
-                <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">See all activity in Audit Log</div>
+                <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">See all activity in Audit Log →</div>
             </div>
         </div>
         <!-- Divider -->
@@ -3171,7 +3184,7 @@
                     }
                     btns += '<button class="pg-btn' + (p === page ? ' pg-active' : '') + '" onclick="' + cbName + '(' + p + ')">' + p + '</button>';
                 }
-                el.innerHTML = '<span class="pg-info">Showing ' + s + 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“' + e + ' of ' + total + '</span>'
+                el.innerHTML = '<span class="pg-info">Showing ' + s + ' - ' + e + ' of ' + total + '</span>'
                     + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>&#8250;</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>&lsaquo;</button></div>';
             }
 
@@ -7280,7 +7293,7 @@
                             id: 'booking_' + b.id,
                             refId: b.id,
                             type: 'booking',
-                            icon: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦',
+                            icon: '<i class="bi bi-calendar-check-fill"></i>',
                             message: 'New facility reservation on ' + b.date,
                             createdAt: b.created_at
                         }));
@@ -7288,7 +7301,7 @@
                             id: 'borrow_' + b.id,
                             refId: b.id,
                             type: 'borrow',
-                            icon: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦',
+                            icon: '<i class="bi bi-box-seam"></i>',
                             message: 'Equipment request: ' + b.quantity + 'x ' + b.equipment,
                             createdAt: b.created_at
                         }));
@@ -7296,7 +7309,7 @@
                             id: 'concern_' + c.id,
                             refId: c.id,
                             type: 'concern',
-                            icon: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¢',
+                            icon: '<i class="bi bi-megaphone-fill"></i>',
                             message: 'New concern: ' + (c.title || 'Untitled'),
                             createdAt: c.created_at
                         }));
@@ -7305,7 +7318,7 @@
                         const bookings = (JSON.parse(localStorage.getItem('courtBookings')) || []).filter(b => b.status === 'pending');
                         const borrowings = (JSON.parse(localStorage.getItem('courtBorrowings')) || []).filter(b => b.status === 'pending');
                         const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => c.status === 'pending');
-                        bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
+                        bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: '<i class="bi bi-calendar-check-fill"></i>', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
                         borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: '<i class="bi bi-box-seam"></i>', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
                         concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: '<i class="bi bi-megaphone-fill"></i>', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
                     }
