@@ -1,6 +1,4 @@
-﻿                var dateFrom=(document.getElementById('concernDateFrom')||{}).value||''; var dateTo=(document.getElementById('concernDateTo')||{}).value||'';
-                if (dateFrom || dateTo) { list = list.filter(function(c){ var d=new Date(c.createdAt||c.created_at); if(isNaN(d)) return true; var ds=d.toISOString().slice(0,10); if(dateFrom&&ds<dateFrom) return false; if(dateTo&&ds>dateTo) return false; return true; }); }
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
