@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -107,32 +107,38 @@
       .sidebar-overlay.active { display: block; }
 
       /* ── Bell dropdown ───────────────────────────────────── */
-      .admin-bell-dropdown { position: absolute; top: calc(100% + 8px); right: 0;
-        background: #fff; border: 1px solid #D1D5DB; border-radius: 12px;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.15); width: 360px; z-index: 200;
-        display: none; overflow: hidden; }
+      .admin-bell-dropdown { position: absolute; top: calc(100% + 10px); right: 0;
+        background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+        width: 380px; max-height: 480px; z-index: 200;
+        display: none; overflow: hidden; flex-direction: column; }
       .admin-bell-header { display: flex; align-items: center; justify-content: space-between;
-        padding: 12px 16px; background: #1A3A6B; }
-      .admin-bell-header h3 { font-size: 14px; font-weight: 700; color: #fff; margin: 0; }
-      .admin-bell-markall { font-size: 12px; color: #FDB913; background: none; border: none;
-        cursor: pointer; font-weight: 600; transition: color 0.15s; }
-      .admin-bell-markall:hover { color: #fff; }
-      .admin-bell-list { max-height: 288px; overflow-y: auto; }
-      .admin-bell-empty { text-align: center; padding: 32px 16px; color: #6B7280; font-size: 13px; }
-      .admin-bell-footer { padding: 10px 16px; border-top: 1px solid #D1D5DB;
-        background: #F9FAFB; font-size: 12px; color: #1A3A6B; cursor: pointer;
-        font-weight: 600; text-align: center; transition: color 0.15s; }
-      .admin-bell-footer:hover { color: #0F2547; }
-      .admin-bell-item { display: flex; gap: 10px; padding: 12px 16px;
-        border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.15s; }
-      .admin-bell-item:hover { background: #F9FAFB; }
+        padding: 14px 16px; background: #fff; border-bottom: 1px solid #F1F5F9; flex-shrink: 0; }
+      .admin-bell-header h3 { font-size: 15px; font-weight: 500; color: #1A3A6B; margin: 0; }
+      .admin-bell-markall { font-size: 13px; color: #4B6C9E; background: none; border: none;
+        cursor: pointer; font-weight: 500; transition: color 0.15s; font-family: inherit; }
+      .admin-bell-markall:hover { color: #1A3A6B; }
+      .admin-bell-list { overflow-y: auto; flex: 1; }
+      .admin-bell-empty { text-align: center; padding: 36px 16px; color: #9CA3AF; font-size: 14px; }
+      .admin-bell-footer { padding: 12px 16px; border-top: 1px solid #F1F5F9;
+        font-size: 13px; color: #1A3A6B; cursor: pointer;
+        font-weight: 500; text-align: center; transition: color 0.15s; flex-shrink: 0; }
+      .admin-bell-footer:hover { color: #0F2547; background: #F9FAFB; }
+      .admin-bell-item { display: flex; gap: 12px; padding: 12px 16px;
+        border-bottom: 1px solid #F8FAFC; border-left: 3px solid transparent;
+        cursor: pointer; transition: background 0.12s; align-items: flex-start; }
+      .admin-bell-item:hover { background: #F8FAFC; }
       .admin-bell-item:last-child { border-bottom: none; }
-      .admin-bell-icon-circle { width: 32px; height: 32px; border-radius: 50%;
+      .admin-bell-item.is-unread { border-left-color: #1e2a4a; background: #F8FAFF; }
+      .admin-bell-item.is-unread:hover { background: #EEF2FF; }
+      .admin-bell-icon-circle { width: 34px; height: 34px; border-radius: 50%;
         background: rgba(26,58,107,0.08); color: #1A3A6B; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center; font-size: 14px; }
-      .admin-bell-msg { font-size: 13px; color: #1A1A2E; font-weight: 500;
-        margin: 0 0 2px; line-height: 1.35; }
-      .admin-bell-time { font-size: 10px; color: #6B7280; }
+        display: flex; align-items: center; justify-content: center; font-size: 15px; margin-top: 1px; }
+      .admin-bell-title { font-size: 13px; color: #1A1A2E; font-weight: 500;
+        margin: 0 0 2px; line-height: 1.3; }
+      .admin-bell-msg { font-size: 12px; color: #6B7280; font-weight: 400;
+        margin: 0 0 3px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+      .admin-bell-time { font-size: 11px; color: #9CA3AF; }
 
       /* ── Profile dropdown ───────────────────────────────── */
       .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0;
@@ -401,14 +407,6 @@
 
 <!-- Fixed Desktop Sidebar -->
 <aside style="position:fixed;top:64px;left:0;bottom:0;width:220px;background:#0F2547;overflow:hidden;z-index:90;display:flex;flex-direction:column;">
-    <!-- Brand Header -->
-    <div style="display:flex;align-items:center;gap:10px;padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
-        <img src="barangay-sun-logo.jpg" alt="Logo" style="width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0;">
-        <div style="min-width:0;">
-            <div style="font-size:13px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Brgy. Sta. Lucia</div>
-        </div>
-    </div>
-
     <!-- Nav: MAIN -->
     <div style="padding:8px;">
         <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Main</div>
@@ -456,27 +454,19 @@
 <div style="margin-left:220px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
     <div style="padding:28px;">
                     <!-- Overview Section -->
-                    <!-- Overview Section -->
                     <div id="overview-section">
 
                         <!-- HERO BANNER -->
                         <div style="border-radius:10px;overflow:hidden;margin-bottom:22px;position:relative;background:linear-gradient(135deg,#0F2547 0%,#1A3A6B 100%);box-shadow:0 4px 20px rgba(15,37,71,0.28);min-height:160px;display:flex;align-items:center;padding:32px 36px;">
                             <!-- Watermark seal -->
                             <img src="barangay-sun-logo.jpg" alt="" style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:220px;height:220px;object-fit:cover;opacity:0.06;border-radius:50%;pointer-events:none;">
-                            <!-- Gold bottom accent -->
-                            <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FDB913 0%,#FDB913 60%,#CE1126 60%,#CE1126 100%);"></div>
+                            <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:#1e2a4a;"></div>
                             <!-- Content -->
                             <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:20px;position:relative;z-index:1;">
                                 <div>
                                     <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;color:#FDB913;text-transform:uppercase;margin-bottom:8px;">Barangay Sta. Lucia Admin Portal</div>
                                     <div style="font-size:28px;font-weight:700;color:#FFFFFF;margin-bottom:6px;line-height:1.2;" id="welcomeGreeting">Good morning, Admin</div>
                                     <div style="font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:10px;" id="heroDate">Loading date...</div>
-                                    <!-- PH Flag strip -->
-                                    <div style="display:flex;height:3px;width:120px;border-radius:2px;overflow:hidden;">
-                                        <div style="flex:1;background:#CE1126;"></div>
-                                        <div style="flex:1;background:#FDB913;"></div>
-                                        <div style="flex:1;background:#0038A8;"></div>
-                                    </div>
                                 </div>
                                 <div style="text-align:right;">
                                     <div id="liveStatusBadge" style="display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.2);border:1px solid rgba(22,163,74,0.35);border-radius:20px;padding:3px 10px;margin-bottom:6px;">
@@ -570,105 +560,6 @@
 
                             </div>
                         </div>
-                        <!-- BOTTOM ROW: Pending Actions + Recent Activity -->
-                        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-bottom:22px;">
-
-                            <!-- Pending Actions Panel -->
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;">
-                                <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;background:#1A3A6B;">
-                                    <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-lightning-charge-fill" style="font-size:18px;color:#FDB913;"></i></div>
-                                    <div>
-                                        <div style="font-size:15px;font-weight:700;color:#fff;">Pending Actions</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.7);">Requires your attention</div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-box-seam" style="color:#1A3A6B;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Equipment Requests</div>
-                                                <div style="font-size:11px;color:#6B7280;">Pending approval</div>
-                                            </div>
-                                        </div>
-                                        <span id="glancePendingReqs" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-megaphone" style="color:#B8860B;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Open Concerns</div>
-                                                <div style="font-size:11px;color:#6B7280;">Awaiting response</div>
-                                            </div>
-                                        </div>
-                                        <span id="glancePendingCons" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-calendar-check" style="color:#16A34A;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Active Bookings</div>
-                                                <div style="font-size:11px;color:#6B7280;">Current reservations</div>
-                                            </div>
-                                        </div>
-                                        <span id="glanceBookings" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-people" style="color:#CE1126;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Registered Users</div>
-                                                <div style="font-size:11px;color:#6B7280;">Total residents</div>
-                                            </div>
-                                        </div>
-                                        <span id="glanceUsers" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                </div>
-                                <div style="padding:12px 20px;border-top:1px solid #F3F4F6;text-align:center;">
-                                    <a href="#" onclick="switchSection('requests',document.querySelectorAll('.sidebar-btn')[2]);return false;" style="font-size:13px;font-weight:600;color:#FDB913;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All Requests</a>
-                                </div>
-                            </div>
-
-                            <!-- Recent Activity Panel -->
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;display:flex;flex-direction:column;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#1A3A6B;">
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-activity" style="font-size:18px;color:#FDB913;"></i></div>
-                                        <div>
-                                            <div style="font-size:15px;font-weight:700;color:#fff;">Recent Activity</div>
-                                            <div style="font-size:12px;color:rgba(255,255,255,0.7);">Latest system events</div>
-                                        </div>
-                                    </div>
-                                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.2);border:1px solid rgba(22,163,74,0.4);border-radius:4px;padding:3px 10px;">
-                                        <span style="width:6px;height:6px;background:#4ADE80;border-radius:50%;display:inline-block;animation:pulse-dot 1.8s infinite;"></span>
-                                        <span style="font-size:11px;font-weight:600;color:#4ADE80;text-transform:uppercase;letter-spacing:0.05em;">LIVE</span>
-                                    </span>
-                                </div>
-                                <div id="overviewActivityFeed" style="flex:1;overflow-y:auto;max-height:260px;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,0.2) transparent;">
-                                    <div style="text-align:center;padding:32px;color:#6B7280;font-size:13px;">Loading activity...</div>
-                                </div>
-                                <div style="padding:12px 20px;border-top:1px solid #F3F4F6;text-align:center;">
-                                    <a href="#" onclick="switchSection('audit-log',document.querySelectorAll('.sidebar-btn')[8]);return false;" style="font-size:13px;font-weight:600;color:#FDB913;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All Activity</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- GOVERNMENT TRUST FOOTER -->
-                        <div style="background:#0F2547;border-radius:8px;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:8px;">
-                            <span style="font-size:11px;color:rgba(255,255,255,0.6);">Barangay Sta. Lucia Official Admin System</span>
-                            <span style="font-size:11px;color:rgba(255,255,255,0.5);">&#128274; Secure Connection &bull; All sessions are monitored and logged</span>
-                            <span style="font-size:11px;color:rgba(255,255,255,0.5);">Version 1.0 &bull; &copy; 2026 Barangay Sta. Lucia</span>
-                        </div>
-
-                        <style>
-                        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
-                        /* Thin scrollbars globally */
-                        ::-webkit-scrollbar { width:4px; height:4px; }
-                        ::-webkit-scrollbar-track { background:#EDEEF2; border-radius:4px; }
-                        ::-webkit-scrollbar-thumb { background:#1A3A6B; border-radius:4px; }
-                        * { scrollbar-width:thin; scrollbar-color:#1A3A6B #EDEEF2; }
-                        </style>
                     </div>
 
 
@@ -976,40 +867,6 @@
                             </table>
                         </div>
                     </div>
-
-                    <!-- MAINTENANCE LOG PANEL -->
-                    <div id="maintenanceLogPanel" style="display:none; padding: 0 26px 26px;">
-                        <div style="background: var(--card,#1e293b); border-radius: 12px; border: 1px solid var(--border,#334155); overflow:hidden;">
-                            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border,#334155); display:flex; align-items:center; justify-content:space-between;">
-                                <div style="display:flex;align-items:center;gap:10px;">
-                                    <span style="font-size:20px;"><i class="bi bi-wrench-adjustable"></i></span>
-                                    <div>
-                                        <h4 style="margin:0;font-size:15px;font-weight:700;color:var(--text,#f1f5f9);">Maintenance History</h4>
-                                        <p style="margin:0;font-size:12px;color:var(--muted,#94a3b8);">All Under Repair & For Disposal changes</p>
-                                    </div>
-                                </div>
-                                <input type="text" id="maintenanceSearch" placeholder="Search item..." oninput="filterMaintenanceLogs()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border,#334155);background:var(--bg,#0f172a);color:var(--text,#f1f5f9);font-size:13px;width:200px;">
-                            </div>
-                            <div style="overflow-x:auto;">
-                                <table style="width:100%;border-collapse:collapse;">
-                                    <thead>
-                                        <tr style="background:var(--bg,#0f172a);">
-                                            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;letter-spacing:0.05em;">Date & Time</th>
-                                            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Equipment</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Action</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Qty Changed</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Before → After</th>
-                                            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="maintenanceLogTable">
-                                        <tr><td colspan="6" style="padding:32px;text-align:center;color:var(--muted,#94a3b8);">Loading...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- USERS SECTION -->
                     <div id="users-section" class="section-container" style="display: none;">
                         <div class="section-header">
@@ -1716,102 +1573,145 @@
         </div>
 
         <div class="modal" id="addEquipmentModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Add Equipment</h3>
-                    <button class="modal-close" onclick="closeModal('addEquipmentModal')">&times;</button>
-                </div>
-                <form id="addEquipmentForm">
-                    <div class="form-group">
-                        <label for="equipName">Equipment Name</label>
-                        <input type="text" id="equipName" placeholder="e.g., Portable Tables" required>
+            <div class="modal-content" style="max-width:560px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+                <div style="background:#1A3A6B;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:11px;font-weight:600;color:rgba(253,185,19,0.9);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">Inventory</div>
+                        <h3 style="font-size:18px;font-weight:700;color:#fff;margin:0;">Add Equipment</h3>
                     </div>
+                    <button onclick="closeModal('addEquipmentModal')" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+                </div>
+                <form id="addEquipmentForm" style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
                     <input type="hidden" id="equipCategory" value="General">
                     <input type="hidden" id="equipIcon" value="">
-                    <div class="form-group">
-                        <label for="equipImage">Item Photo</label>
-                        <input type="file" id="equipImage" accept="image/*">
-                        <small style="color:var(--muted);font-size:11px;">Max size 2MB. Optional.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="equipDesc">Description</label>
-                        <textarea id="equipDesc" placeholder="Brief description" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="equipQuantity">Quantity</label>
-                        <input type="number" id="equipQuantity" min="1" value="1" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="equipBroken">Under Repair (Qty)</label>
-                            <input type="number" id="equipBroken" min="0" value="0" required>
+                    <div style="background:#F8FAFF;border:1px solid #E5E9F5;border-radius:10px;padding:16px 20px;">
+                        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#1A3A6B;text-transform:uppercase;margin-bottom:14px;">Item Details</div>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Equipment Name <span style="color:#CE1126;">*</span></label>
+                            <input type="text" id="equipName" placeholder="e.g., Portable Tables" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                         </div>
-                        <div class="form-group">
-                            <label for="equipDisposal">For Disposal (Qty)</label>
-                            <input type="number" id="equipDisposal" min="0" value="0" required>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Description</label>
+                            <textarea id="equipDesc" placeholder="Brief description of the item..." rows="2" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Item Photo <span style="font-size:11px;color:#9CA3AF;font-weight:400;">(optional, max 2MB)</span></label>
+                            <div onclick="document.getElementById('equipImage').click()" style="border:2px dashed #C7D2FE;border-radius:8px;padding:18px;text-align:center;cursor:pointer;transition:border-color 0.15s;background:#fff;" onmouseover="this.style.borderColor='#1A3A6B'" onmouseout="this.style.borderColor='#C7D2FE'">
+                                <div id="addPhotoPlaceholder">
+                                    <i class="bi bi-camera" style="font-size:22px;color:#A5B4FC;display:block;margin-bottom:5px;"></i>
+                                    <div style="font-size:13px;font-weight:500;color:#6B7280;">Click to upload photo</div>
+                                    <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">JPG, PNG supported</div>
+                                </div>
+                                <div id="addPhotoPreview" style="display:none;">
+                                    <img id="addPhotoThumb" src="" alt="Preview" style="max-height:90px;max-width:100%;border-radius:6px;object-fit:cover;">
+                                    <div style="font-size:11px;color:#6B7280;margin-top:5px;">Click to change photo</div>
+                                </div>
+                            </div>
+                            <input type="file" id="equipImage" accept="image/*" style="display:none;" onchange="(function(f){if(!f)return;var r=new FileReader();r.onload=function(e){document.getElementById('addPhotoThumb').src=e.target.result;document.getElementById('addPhotoPlaceholder').style.display='none';document.getElementById('addPhotoPreview').style.display='block';};r.readAsDataURL(f);})(this.files[0])">
                         </div>
                     </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('addEquipmentModal')">Cancel</button>
+                    <div style="background:#F8FAFF;border:1px solid #E5E9F5;border-radius:10px;padding:16px 20px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#1A3A6B;text-transform:uppercase;">Quantity Details</div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-size:11px;color:#6B7280;">Available:</span>
+                                <span id="addAvailPill" style="background:#DCFCE7;color:#166534;font-size:12px;font-weight:700;border-radius:20px;padding:2px 10px;border:1px solid #86EFAC;">1</span>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Total Qty <span style="color:#CE1126;">*</span></label>
+                                <input type="number" id="equipQuantity" min="1" value="1" required oninput="calcAddAvail()" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Under Repair</label>
+                                <input type="number" id="equipBroken" min="0" value="0" required oninput="calcAddAvail()" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">For Disposal</label>
+                                <input type="number" id="equipDisposal" min="0" value="0" required oninput="calcAddAvail()" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                        </div>
+                        <div id="addQtyWarn" style="display:none;margin-top:8px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
                     </div>
                 </form>
+                <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
+                    <button type="button" onclick="closeModal('addEquipmentModal')" style="padding:8px 20px;border-radius:6px;border:1px solid #1A3A6B;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#EEF2FF'" onmouseout="this.style.background='transparent'">Cancel</button>
+                    <button type="submit" form="addEquipmentForm" style="padding:8px 20px;border-radius:6px;border:none;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Add Equipment</button>
+                </div>
             </div>
         </div>
 
         <div class="modal" id="editEquipmentModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Edit Equipment</h3>
-                    <button class="modal-close" onclick="closeModal('editEquipmentModal')">&times;</button>
-                </div>
-                <form id="editEquipmentForm">
-                    <input type="hidden" id="editEquipId">
-                    <div class="form-group">
-                        <label for="editEquipName">Equipment Name</label>
-                        <input type="text" id="editEquipName" required>
+            <div class="modal-content" style="max-width:560px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+                <div style="background:#1A3A6B;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:11px;font-weight:600;color:rgba(253,185,19,0.9);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">Inventory</div>
+                        <h3 style="font-size:18px;font-weight:700;color:#fff;margin:0;">Edit Equipment</h3>
                     </div>
+                    <button onclick="closeModal('editEquipmentModal')" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+                </div>
+                <form id="editEquipmentForm" style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+                    <input type="hidden" id="editEquipId">
                     <input type="hidden" id="editEquipCategory" value="General">
                     <input type="hidden" id="editEquipIcon" value="">
-                    <div class="form-group">
-                        <label for="editEquipImage">Update Item Photo</label>
-                        <input type="file" id="editEquipImage" accept="image/*">
-                        <div id="editEquipImagePreview" style="margin-top:10px;display:none;">
-                            <img src="" alt="Preview" style="max-width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
+                    <div style="background:#F8FAFF;border:1px solid #E5E9F5;border-radius:10px;padding:16px 20px;">
+                        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#1A3A6B;text-transform:uppercase;margin-bottom:14px;">Item Details</div>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Equipment Name <span style="color:#CE1126;">*</span></label>
+                            <input type="text" id="editEquipName" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                         </div>
-                        <small style="color:var(--muted);font-size:11px;">Leave empty to keep current photo.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEquipDesc">Description</label>
-                        <textarea id="editEquipDesc" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEquipQuantity">Total Quantity</label>
-                        <input type="number" id="editEquipQuantity" min="1" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editEquipBroken">Under Repair (Qty)</label>
-                            <input type="number" id="editEquipBroken" min="0" required>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Description</label>
+                            <textarea id="editEquipDesc" rows="2" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="editEquipDisposal">For Disposal (Qty)</label>
-                            <input type="number" id="editEquipDisposal" min="0" required>
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Item Photo <span style="font-size:11px;color:#9CA3AF;font-weight:400;">(leave empty to keep current)</span></label>
+                            <div onclick="document.getElementById('editEquipImage').click()" style="border:2px dashed #C7D2FE;border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:border-color 0.15s;background:#fff;" onmouseover="this.style.borderColor='#1A3A6B'" onmouseout="this.style.borderColor='#C7D2FE'">
+                                <div id="editEquipImagePreview" style="display:none;margin-bottom:6px;">
+                                    <img src="" alt="Preview" style="max-height:90px;max-width:100%;border-radius:6px;object-fit:cover;">
+                                </div>
+                                <div id="editPhotoLabel" style="font-size:13px;color:#6B7280;"><i class="bi bi-camera" style="margin-right:5px;"></i>Click to upload new photo</div>
+                            </div>
+                            <input type="file" id="editEquipImage" accept="image/*" style="display:none;" onchange="(function(f){if(!f)return;var r=new FileReader();r.onload=function(e){var pd=document.getElementById('editEquipImagePreview');pd.querySelector('img').src=e.target.result;pd.style.display='block';document.getElementById('editPhotoLabel').textContent='Click to change photo';}; r.readAsDataURL(f);})(this.files[0])">
                         </div>
                     </div>
-                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="editEquipArchived" style="width: 16px; margin: 0;">
-                        <label for="editEquipArchived" style="margin: 0;">Archive this equipment</label>
-                    </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('editEquipmentModal')">Cancel</button>
+                    <div style="background:#F8FAFF;border:1px solid #E5E9F5;border-radius:10px;padding:16px 20px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#1A3A6B;text-transform:uppercase;">Quantity Details</div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-size:11px;color:#6B7280;">Available:</span>
+                                <span id="editAvailPill" style="background:#DCFCE7;color:#166534;font-size:12px;font-weight:700;border-radius:20px;padding:2px 10px;border:1px solid #86EFAC;">—</span>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Total Qty <span style="color:#CE1126;">*</span></label>
+                                <input type="number" id="editEquipQuantity" min="1" required oninput="calcEditAvail()" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Under Repair</label>
+                                <input type="number" id="editEquipBroken" min="0" required oninput="calcEditAvail()" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">For Disposal</label>
+                                <input type="number" id="editEquipDisposal" min="0" required oninput="calcEditAvail()" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                        </div>
+                        <div id="editQtyWarn" style="display:none;margin-bottom:10px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;">
+                            <input type="checkbox" id="editEquipArchived" style="width:15px;height:15px;cursor:pointer;accent-color:#1A3A6B;flex-shrink:0;">
+                            <span>Archive this equipment (hide from active inventory)</span>
+                        </label>
                     </div>
                 </form>
+                <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
+                    <button type="button" onclick="closeModal('editEquipmentModal')" style="padding:8px 20px;border-radius:6px;border:1px solid #1A3A6B;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#EEF2FF'" onmouseout="this.style.background='transparent'">Cancel</button>
+                    <button type="submit" form="editEquipmentForm" style="padding:8px 20px;border-radius:6px;border:none;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Save Changes</button>
+                </div>
             </div>
         </div>
+
 
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script src="js/xlsx.full.min.js"></script>
@@ -4587,27 +4487,36 @@
         let allMaintenanceLogs = [];
 
         window.toggleMaintenanceLog = async function() {
-            const panel = document.getElementById('maintenanceLogPanel');
+            const drawer = document.getElementById('maintenanceDrawer');
+            const overlay = document.getElementById('maintenanceDrawerOverlay');
             const btn = document.getElementById('maintenanceLogToggle');
-            if (!panel) return;
-            const isHidden = panel.style.display === 'none';
-            panel.style.display = isHidden ? 'block' : 'none';
-            btn.style.background = isHidden ? 'var(--primary, #16a34a)' : '';
-            btn.style.color = isHidden ? '#fff' : '';
-            if (isHidden) await loadMaintenanceLogs();
+            if (!drawer) return;
+            drawer.style.transform = 'translateX(0)';
+            overlay.style.display = 'block';
+            if (btn) { btn.style.background = '#1A3A6B'; btn.style.color = '#fff'; }
+            await loadMaintenanceLogs();
+        };
+
+        window.closeMaintenanceDrawer = function() {
+            const drawer = document.getElementById('maintenanceDrawer');
+            const overlay = document.getElementById('maintenanceDrawerOverlay');
+            const btn = document.getElementById('maintenanceLogToggle');
+            if (drawer) drawer.style.transform = 'translateX(100%)';
+            if (overlay) overlay.style.display = 'none';
+            if (btn) { btn.style.background = 'transparent'; btn.style.color = '#1A3A6B'; }
         };
 
         window.loadMaintenanceLogs = async function() {
             const tbody = document.getElementById('maintenanceLogTable');
             if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="padding:24px;text-align:center;color:#9CA3AF;">Loading...</td></tr>';
             try {
                 allMaintenanceLogs = typeof getMaintenanceLogs === 'function' ? await getMaintenanceLogs() : [];
                 renderMaintenanceLogs(allMaintenanceLogs);
             } catch(e) {
-                tbody.innerHTML = '<tr><td colspan="6" style="padding:24px;text-align:center;color:#ef4444;">Failed to load logs.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="padding:24px;text-align:center;color:#CE1126;">Failed to load logs.</td></tr>';
             }
-        }
+        };
 
         window.filterMaintenanceLogs = function() {
             const q = (document.getElementById('maintenanceSearch')?.value || '').toLowerCase();
@@ -4616,50 +4525,37 @@
                 (l.action || '').toLowerCase().includes(q)
             );
             renderMaintenanceLogs(filtered);
-        }
+        };
 
         function renderMaintenanceLogs(logs) {
             const tbody = document.getElementById('maintenanceLogTable');
+            const footer = document.getElementById('maintDrawerFooter');
             if (!tbody) return;
             if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="padding:32px;text-align:center;color:#94a3b8;font-size:14px;">No maintenance records found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="padding:40px;text-align:center;color:#9CA3AF;font-size:14px;"><i class=\"bi bi-clipboard2-x\" style=\"font-size:28px;display:block;margin-bottom:8px;color:#D1D5DB;\"></i>No maintenance records found.</td></tr>';
+                if (footer) footer.textContent = '';
                 return;
             }
-
-            const actionStyles = {
-                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'<i class="bi bi-tools"></i>' },
-                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'<i class="bi bi-check-circle-fill"></i>' },
-                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'<i class="bi bi-trash3-fill"></i>' },
-                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'<i class="bi bi-arrow-counterclockwise"></i>' },
-                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'<i class=\"bi bi-box-seam\"></i>' },
+            if (footer) footer.textContent = logs.length + ' record' + (logs.length !== 1 ? 's' : '');
+            const aS = {
+                'Under Repair':{ bg:'#FEF3C7',color:'#92400E',icon:'bi-tools' },
+                'Repaired':{ bg:'#D1FAE5',color:'#065F46',icon:'bi-check-circle-fill' },
+                'For Disposal':{ bg:'#FEE2E2',color:'#991B1B',icon:'bi-trash3-fill' },
+                'Recovered from Disposal':{ bg:'#DBEAFE',color:'#1E40AF',icon:'bi-arrow-counterclockwise' },
+                'Disposal Cleared (New Stock)':{ bg:'#EDE9FE',color:'#5B21B6',icon:'bi-box-seam' }
             };
-
-            tbody.innerHTML = logs.map(log => {
-                const style = actionStyles[log.action] || { bg:'#f3f4f6', color:'#374151', icon:'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹' };
-                const dt = log.created_at ? new Date(log.created_at).toLocaleString('en-PH', {
-                    month:'short', day:'2-digit', year:'numeric',
-                    hour:'2-digit', minute:'2-digit', hour12:true
-                }) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
-                const before = log.prev_count ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
-                const after  = log.new_count  ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
-                return `<tr style="border-top:1px solid var(--border,#334155);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
-                    <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);white-space:nowrap;">${dt}</td>
-                    <td style="padding:12px 16px;">
-                        <span style="font-size:13px;font-weight:600;color:var(--text,#f1f5f9);">${log.item_name || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span>
-                    </td>
-                    <td style="padding:12px 16px;text-align:center;">
-                        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;background:${style.bg};color:${style.color};">
-                            ${style.icon} ${log.action}
-                        </span>
-                    </td>
-                    <td style="padding:12px 16px;text-align:center;font-size:14px;font-weight:700;color:var(--text,#f1f5f9);">${log.qty_changed ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
-                    <td style="padding:12px 16px;text-align:center;font-size:13px;color:var(--muted,#94a3b8);">
-                        <span style="color:#94a3b8;">${before}</span>
-                        <span style="margin:0 6px;">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span>
-                        <span style="color:var(--text,#f1f5f9);font-weight:600;">${after}</span>
-                    </td>
-                    <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);">${log.notes || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
-                </tr>`;
+            tbody.innerHTML = logs.map(function(log) {
+                var s = aS[log.action] || {bg:'#F3F4F6',color:'#374151',icon:'bi-circle'};
+                var dt = log.created_at ? new Date(log.created_at).toLocaleString('en-PH',{month:'short',day:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true}) : '-';
+                var before = log.prev_count != null ? log.prev_count : '-';
+                var after = log.new_count != null ? log.new_count : '-';
+                var html = '<tr style="border-top:1px solid #F3F4F6">';
+                html += '<td style="padding:10px 14px;font-size:12px;color:#6B7280;white-space:nowrap;">' + dt + '</td>';
+                html += '<td style="padding:10px 14px;font-size:13px;font-weight:600;color:#1A1A2E;">' + (log.item_name || '-') + '</td>';
+                html += '<td style="padding:10px 14px;text-align:center;"><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;background:' + s.bg + ';color:' + s.color + '"><i class="bi ' + s.icon + '"></i> ' + log.action + '</span></td>';
+                html += '<td style="padding:10px 14px;text-align:center;font-size:13px;color:#6B7280;"><span>' + before + '</span><span style="margin:0 5px;color:#9CA3AF;">&rarr;</span><span style="font-weight:700;color:#1A1A2E;">' + after + '</span></td>';
+                html += '</tr>';
+                return html;
             }).join('');
         }
         // ========== END MAINTENANCE LOG UI ==========
@@ -4792,8 +4688,46 @@
                 });
             }
 
+            function calcAddAvail() {
+                var t = parseInt(document.getElementById('equipQuantity').value) || 0;
+                var b = parseInt(document.getElementById('equipBroken').value) || 0;
+                var d = parseInt(document.getElementById('equipDisposal').value) || 0;
+                var avail = t - b - d;
+                var pill = document.getElementById('addAvailPill');
+                var warn = document.getElementById('addQtyWarn');
+                if (avail < 0) {
+                    pill.textContent = '!';
+                    pill.style.background = '#FEE2E2'; pill.style.color = '#CE1126'; pill.style.borderColor = '#FCA5A5';
+                    warn.style.display = 'block';
+                } else {
+                    pill.textContent = avail;
+                    pill.style.background = '#DCFCE7'; pill.style.color = '#166534'; pill.style.borderColor = '#86EFAC';
+                    warn.style.display = 'none';
+                }
+            }
+            function calcEditAvail() {
+                var t = parseInt(document.getElementById('editEquipQuantity').value) || 0;
+                var b = parseInt(document.getElementById('editEquipBroken').value) || 0;
+                var d = parseInt(document.getElementById('editEquipDisposal').value) || 0;
+                var avail = t - b - d;
+                var pill = document.getElementById('editAvailPill');
+                var warn = document.getElementById('editQtyWarn');
+                if (avail < 0) {
+                    pill.textContent = '!';
+                    pill.style.background = '#FEE2E2'; pill.style.color = '#CE1126'; pill.style.borderColor = '#FCA5A5';
+                    warn.style.display = 'block';
+                } else {
+                    pill.textContent = avail;
+                    pill.style.background = '#DCFCE7'; pill.style.color = '#166534'; pill.style.borderColor = '#86EFAC';
+                    warn.style.display = 'none';
+                }
+            }
+
             function openAddEquipmentModal() {
                 document.getElementById('addEquipmentForm').reset();
+                document.getElementById('addPhotoPlaceholder').style.display = 'block';
+                document.getElementById('addPhotoPreview').style.display = 'none';
+                document.getElementById('addAvailPill').textContent = '1';
                 document.getElementById('addEquipmentModal').classList.add('active');
                 history.pushState({ modal: 'addEquipmentModal' }, '', '#addEquipmentModal');
             }
@@ -4863,6 +4797,8 @@
                     previewDiv.style.display = 'none';
                 }
                 document.getElementById('editEquipImage').value = '';
+                document.getElementById('editPhotoLabel').textContent = 'Click to upload new photo';
+                calcEditAvail();
 
                 document.getElementById('editEquipmentModal').classList.add('active');
                 history.pushState({ modal: 'editEquipmentModal' }, '', '#editEquipmentModal');
@@ -7394,6 +7330,7 @@
                 if (!drop) return;
                 const isOpen = drop.style.display === 'flex';
                 drop.style.display = isOpen ? 'none' : 'flex';
+                drop.style.flexDirection = 'column';
                 if (!isOpen) refreshAdminBell();
             }
 
@@ -7473,7 +7410,8 @@
                             refId: b.id,
                             type: 'booking',
                             icon: '<i class="bi bi-calendar-check-fill"></i>',
-                            message: 'New facility reservation on ' + b.date,
+                            title: 'Facility Reservation',
+                            message: 'Pending reservation on ' + (b.date ? new Date(b.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : b.date),
                             createdAt: b.created_at
                         }));
                         (borrowingsRes.data || []).forEach(b => items.push({
@@ -7481,7 +7419,8 @@
                             refId: b.id,
                             type: 'borrow',
                             icon: '<i class="bi bi-box-seam"></i>',
-                            message: 'Equipment request: ' + b.quantity + 'x ' + b.equipment,
+                            title: 'Equipment Request',
+                            message: (b.quantity || 1) + 'x ' + (b.equipment || 'Item') + ' requested',
                             createdAt: b.created_at
                         }));
                         (concernsRes.data || []).forEach(c => items.push({
@@ -7489,7 +7428,8 @@
                             refId: c.id,
                             type: 'concern',
                             icon: '<i class="bi bi-megaphone-fill"></i>',
-                            message: 'New concern: ' + (c.title || 'Untitled'),
+                            title: 'New Concern',
+                            message: c.title || c.description || 'Untitled concern',
                             createdAt: c.created_at
                         }));
                     } else {
@@ -7517,18 +7457,21 @@
                 }
 
                 if (total === 0) {
-                    list.innerHTML = '<div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>';
+                    list.innerHTML = '<div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:40px;display:block;margin-bottom:12px;opacity:0.35;"></i>You\'re all caught up</div>';
                     return;
                 }
 
                 list.innerHTML = visible.slice(0, 5).map(n => {
                     const timeStr = n.createdAt
-                        ? new Date(n.createdAt).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        ? new Date(n.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
                         : 'Just now';
+                    const msg = n.message || '';
+                    const shortMsg = msg.length > 60 ? msg.substring(0, 60) + '…' : msg;
                     return `<div class="admin-bell-item is-unread" data-notif-id="${n.id}" onclick="handleAdminBellClick('${n.id}', '${n.type}')">
                         <div class="admin-bell-icon-circle">${n.icon}</div>
-                        <div style="flex:1;min-width:0;padding-right:12px;">
-                            <p class="admin-bell-msg">${n.message}</p>
+                        <div style="flex:1;min-width:0;">
+                            <p class="admin-bell-title">${n.title || 'Notification'}</p>
+                            <p class="admin-bell-msg">${shortMsg}</p>
                             <div class="admin-bell-time">${timeStr}</div>
                         </div>
                     </div>`;
@@ -7592,6 +7535,43 @@
                 </div>
             </div>
         </div>
+
+<!-- MAINTENANCE HISTORY DRAWER -->
+<div id="maintenanceDrawerOverlay" onclick="closeMaintenanceDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:8000;"></div>
+<div id="maintenanceDrawer" style="position:fixed;top:0;right:0;bottom:0;width:480px;max-width:96vw;background:#fff;box-shadow:-6px 0 32px rgba(0,0,0,0.18);z-index:8001;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);">
+    <div style="background:#1A3A6B;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-wrench-adjustable" style="font-size:18px;color:#FDB913;"></i></div>
+            <div>
+                <div style="font-size:15px;font-weight:700;color:#fff;">Maintenance History</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.6);">All repair &amp; disposal changes</div>
+            </div>
+        </div>
+        <button onclick="closeMaintenanceDrawer()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+    </div>
+    <div style="padding:10px 14px;border-bottom:1px solid #F3F4F6;background:#FAFAFA;flex-shrink:0;">
+        <div style="position:relative;">
+            <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:13px;pointer-events:none;"></i>
+            <input type="text" id="maintenanceSearch" placeholder="Search equipment or action..." oninput="filterMaintenanceLogs()" style="width:100%;padding:7px 12px 7px 32px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+        </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#1A3A6B #F3F4F6;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+                <tr style="background:#F8FAFF;position:sticky;top:0;z-index:1;">
+                    <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #E5E7EB;">Date</th>
+                    <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #E5E7EB;">Equipment</th>
+                    <th style="padding:10px 14px;text-align:center;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #E5E7EB;">Action</th>
+                    <th style="padding:10px 14px;text-align:center;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #E5E7EB;">Before &rarr; After</th>
+                </tr>
+            </thead>
+            <tbody id="maintenanceLogTable">
+                <tr><td colspan="4" style="padding:32px;text-align:center;color:#9CA3AF;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="padding:10px 16px;border-top:1px solid #F3F4F6;background:#FAFAFA;font-size:12px;color:#6B7280;flex-shrink:0;text-align:center;" id="maintDrawerFooter"></div>
+</div>
 </body>
 
 </html>
