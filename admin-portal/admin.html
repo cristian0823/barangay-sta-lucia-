@@ -2836,6 +2836,48 @@
     [data-theme="dark"] .btn-main { background: var(--gov-navy) !important; }
     [data-theme="dark"] .stat-label { color: #8B949E !important; }
     [data-theme="dark"] .stat-number { color: #E6EDF3 !important; }
+
+    /* ======== TOPBAR: dark navy overrides ======== */
+    .dashboard-header { background: #1A3A6B !important; border-bottom: 3px solid #FDB913 !important; }
+    .dashboard-header .user-name { color: #FFFFFF !important; }
+    .dashboard-header .user-role { color: rgba(255,255,255,0.6) !important; }
+    [data-theme="dark"] .dashboard-header { background: #0D1B38 !important; border-bottom-color: #FDB913 !important; }
+
+    /* ======== SIDEBAR: separator lines above section labels ======== */
+    .left-sidebar-label {
+        position: relative !important;
+        margin-top: 6px !important;
+    }
+    .left-sidebar-label::before {
+        content: "" !important;
+        display: block !important;
+        height: 1px !important;
+        background: rgba(255,255,255,0.10) !important;
+        margin-bottom: 6px !important;
+    }
+
+    /* ======== GLOBAL: cursor + transitions ======== */
+    button, a, [role="button"], .sidebar-btn, .gov-stat-card { cursor: pointer !important; }
+    .gov-stat-card, .sidebar-btn, .logout-btn { transition: all 0.15s ease !important; }
+
+    /* ======== SCROLLBAR ======== */
+    ::-webkit-scrollbar { width: 4px !important; height: 4px !important; }
+    ::-webkit-scrollbar-track { background: #EDEEF2 !important; border-radius: 4px !important; }
+    ::-webkit-scrollbar-thumb { background: #1A3A6B !important; border-radius: 4px !important; }
+
+    /* ======== DARK MODE: additional topbar controls ======== */
+    [data-theme="dark"] .admin-dark-toggle { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.15) !important; }
+    [data-theme="dark"] .admin-bell-btn { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.15) !important; color: #fff !important; }
+
+    /* ======== RESPONSIVE ======== */
+    @media (max-width: 1024px) {
+        .dashboard-content { padding: 16px !important; }
+    }
+    @media (max-width: 768px) {
+        .hamburger-btn { display: flex !important; }
+        .dashboard { grid-template-columns: 1fr !important; }
+        .left-sidebar { display: none !important; }
+    }
     </style>
 </head>
 
@@ -2864,30 +2906,32 @@
     </div>
 
     <div class="dashboard">
-        <header class="dashboard-header">
-            <div class="dashboard-nav">
-                <!-- Mobile hamburger -->
-                <button class="hamburger-btn" onclick="openMobileSidebar()" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
-                <div style="display:flex;flex-direction:column;line-height:1.2;margin-left:4px;">
-                    <span style="font-size:13px;font-weight:800;color:#1A1A2E;" id="adminMobileName">Dashboard</span>
-                    <span style="font-size:11px;color:#6B7280;">Barangay Sta. Lucia Admin Portal</span>
+        <header class="dashboard-header" style="background:#1A3A6B;border-bottom:3px solid #FDB913;padding:0 24px;display:flex;align-items:center;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(15,37,71,0.35);">
+            <!-- LEFT: Logo + System Name -->
+            <button class="hamburger-btn" onclick="openMobileSidebar()" aria-label="Menu" style="display:none;flex-direction:column;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:8px;cursor:pointer;margin-right:12px;">
+                <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
+                <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
+            </button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <img src="barangay-sun-logo.jpg" alt="Seal" style="width:38px;height:38px;border-radius:50%;border:2px solid rgba(253,185,19,0.5);object-fit:cover;flex-shrink:0;">
+                <div style="line-height:1.3;">
+                    <div style="font-size:15px;font-weight:700;color:#FFFFFF;letter-spacing:0.01em;" id="adminMobileName">Barangay Sta. Lucia Admin Portal</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:400;">Official Administrative System</div>
                 </div>
             </div>
-            <!-- RIGHT: user controls -->
+            <!-- RIGHT: Controls -->
             <div class="user-menu" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
-                <div class="user-info" style="text-align:right;">
-                    <span class="user-name" id="userName">Administrator</span>
-                    <span class="user-role" style="display:block;">Official</span>
-                </div>
-                <div class="user-avatar" id="userAvatar" style="width:36px;height:36px;border-radius:50%;background:#1A3A6B;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;">A</div>
+                <!-- Dark mode toggle -->
+                <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:6px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:15px;flex-shrink:0;transition:background 0.15s;">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
                 <!-- Notification Bell -->
                 <div style="position:relative;display:flex;align-items:center;" id="adminBellWrapper">
-                    <button class="admin-bell-btn" onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn">
+                    <button class="admin-bell-btn" onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:6px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;flex-shrink:0;transition:background 0.15s;">
                         <i class="bi bi-bell-fill"></i>
                     </button>
-                    <span class="admin-bell-badge" id="adminBellBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#CE1126;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;line-height:1;border:2px solid #fff;pointer-events:none;z-index:10;"></span>
+                    <span class="admin-bell-badge" id="adminBellBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:#CE1126;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;line-height:1;border:2px solid #1A3A6B;pointer-events:none;z-index:10;"></span>
                     <div class="admin-bell-dropdown" id="adminBellDropdown">
                         <div class="admin-bell-header">
                             <h3>Notifications</h3>
@@ -2903,9 +2947,24 @@
                         </div>
                     </div>
                 </div>
-                <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn" style="background:#F0F4FF;border:1px solid #D1D5DB;border-radius:6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;"><i class="bi bi-moon-stars-fill" style="font-size:14px;color:#6B7280;"></i></button>
-                <a href="admin-settings.html" class="logout-btn" style="text-decoration:none;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;font-weight:600;color:#1A1A2E;">Settings</a>
-                <button class="logout-btn" onclick="logoutUser()">Logout</button>
+                <!-- Divider -->
+                <div style="width:1px;height:28px;background:rgba(255,255,255,0.20);flex-shrink:0;"></div>
+                <!-- Avatar + Name -->
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div id="userAvatar" style="width:34px;height:34px;border-radius:50%;background:#FDB913;color:#0F2547;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(253,185,19,0.4);">A</div>
+                    <div style="line-height:1.3;">
+                        <div class="user-name" id="userName" style="font-size:14px;font-weight:600;color:#FFFFFF;white-space:nowrap;">Administrator</div>
+                        <div class="user-role" style="font-size:11px;color:rgba(255,255,255,0.6);">Official</div>
+                    </div>
+                </div>
+                <!-- Settings -->
+                <a href="admin-settings.html" class="logout-btn" style="text-decoration:none;display:flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid rgba(255,255,255,0.30);border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:transparent;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">
+                    <i class="bi bi-gear" style="font-size:13px;"></i> Settings
+                </a>
+                <!-- Logout -->
+                <button class="logout-btn" onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border:none;border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:#CE1126;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#a50e1f'" onmouseout="this.style.background='#CE1126'">
+                    <i class="bi bi-box-arrow-right" style="font-size:13px;"></i> Logout
+                </button>
             </div>
         </header>
 
@@ -2979,172 +3038,219 @@
             <div class="main-content">
                 <main class="dashboard-content">
                     <!-- Overview Section -->
+                    <!-- Overview Section -->
                     <div id="overview-section">
 
                         <!-- HERO BANNER -->
-                        <div style="border-radius:8px;overflow:hidden;margin-bottom:20px;position:relative;background:linear-gradient(135deg,#0F2547 0%,#1A3A6B 60%,#1e4a87 100%);box-shadow:0 6px 24px rgba(15,37,71,0.30);padding:28px 32px;">
-                            <div style="position:absolute;top:0;right:0;bottom:0;width:40%;background:url('barangay-sun-logo.jpg') center/cover no-repeat;opacity:0.06;"></div>
-                            <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                        <div style="border-radius:10px;overflow:hidden;margin-bottom:22px;position:relative;background:linear-gradient(135deg,#0F2547 0%,#1A3A6B 100%);box-shadow:0 4px 20px rgba(15,37,71,0.28);min-height:160px;display:flex;align-items:center;padding:32px 36px;">
+                            <!-- Watermark seal -->
+                            <img src="barangay-sun-logo.jpg" alt="" style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:220px;height:220px;object-fit:cover;opacity:0.06;border-radius:50%;pointer-events:none;">
+                            <!-- Gold bottom accent -->
+                            <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FDB913 0%,#FDB913 60%,#CE1126 60%,#CE1126 100%);"></div>
+                            <!-- Content -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:20px;position:relative;z-index:1;">
                                 <div>
-                                    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FDB913;text-transform:uppercase;margin-bottom:6px;">Barangay Sta. Lucia Admin Portal</div>
-                                    <div style="font-size:24px;font-weight:800;color:#FFFFFF;margin-bottom:4px;" id="welcomeGreeting">Good morning, Admin</div>
-                                    <div style="font-size:13px;color:rgba(255,255,255,0.65);" id="heroDate">Loading date...</div>
+                                    <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;color:#FDB913;text-transform:uppercase;margin-bottom:8px;">Barangay Sta. Lucia Admin Portal</div>
+                                    <div style="font-size:28px;font-weight:700;color:#FFFFFF;margin-bottom:6px;line-height:1.2;" id="welcomeGreeting">Good morning, Admin</div>
+                                    <div style="font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:10px;" id="heroDate">Loading date...</div>
+                                    <!-- PH Flag strip -->
+                                    <div style="display:flex;height:3px;width:120px;border-radius:2px;overflow:hidden;">
+                                        <div style="flex:1;background:#CE1126;"></div>
+                                        <div style="flex:1;background:#FDB913;"></div>
+                                        <div style="flex:1;background:#0038A8;"></div>
+                                    </div>
                                 </div>
                                 <div style="text-align:right;">
-                                    <div style="font-size:36px;font-weight:800;color:#FFFFFF;font-variant-numeric:tabular-nums;letter-spacing:-1px;" id="heroClock">00:00:00</div>
-                                    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Philippine Standard Time</div>
+                                    <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.2);border:1px solid rgba(22,163,74,0.35);border-radius:20px;padding:3px 10px;margin-bottom:6px;">
+                                        <span style="width:6px;height:6px;background:#4ADE80;border-radius:50%;display:inline-block;animation:pulse-dot 1.8s infinite;"></span>
+                                        <span style="font-size:10px;font-weight:700;color:#4ADE80;letter-spacing:0.1em;">LIVE</span>
+                                    </div>
+                                    <div style="font-size:38px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums;letter-spacing:-1px;line-height:1;" id="heroClock">00:00:00</div>
+                                    <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px;">Philippine Standard Time</div>
                                 </div>
                             </div>
-                            <!-- Gold accent bar -->
-                            <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FDB913,#CE1126,#FDB913);opacity:0.8;"></div>
                         </div>
 
-                        <!-- STAT CARDS -->
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+                        <!-- KPI STAT CARDS -->
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px;">
 
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);position:relative;overflow:hidden;">
-                                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#1A3A6B;"></div>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1A3A6B;flex-shrink:0;"><i class="bi bi-box-seam-fill"></i></div>
-                                    <div>
-                                        <div class="stat-label" style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Equipment Requests</div>
-                                        <div class="stat-number" style="font-size:28px;font-weight:800;color:#1A1A2E;line-height:1;" id="pendingRequests">—</div>
-                                        <div style="font-size:11px;color:#6B7280;">pending</div>
-                                    </div>
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Equipment Requests</div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-box-seam-fill" style="font-size:20px;color:#1A3A6B;"></i></div>
                                 </div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingRequests">—</div>
+                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">pending</div>
                             </div>
 
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);position:relative;overflow:hidden;">
-                                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#FDB913;"></div>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#B8860B;flex-shrink:0;"><i class="bi bi-megaphone-fill"></i></div>
-                                    <div>
-                                        <div class="stat-label" style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Open Concerns</div>
-                                        <div class="stat-number" style="font-size:28px;font-weight:800;color:#1A1A2E;line-height:1;" id="pendingConcerns">—</div>
-                                        <div style="font-size:11px;color:#6B7280;">unresolved</div>
-                                    </div>
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #FDB913;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Open Concerns</div>
+                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-megaphone-fill" style="font-size:20px;color:#B8860B;"></i></div>
                                 </div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingConcerns">—</div>
+                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">unresolved</div>
                             </div>
 
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);position:relative;overflow:hidden;">
-                                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#16A34A;"></div>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#16A34A;flex-shrink:0;"><i class="bi bi-calendar-check-fill"></i></div>
-                                    <div>
-                                        <div class="stat-label" style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Upcoming Events</div>
-                                        <div class="stat-number" style="font-size:28px;font-weight:800;color:#1A1A2E;line-height:1;" id="upcomingEvents">—</div>
-                                        <div style="font-size:11px;color:#6B7280;">scheduled</div>
-                                    </div>
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #16A34A;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Upcoming Events</div>
+                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-calendar-check-fill" style="font-size:20px;color:#16A34A;"></i></div>
                                 </div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="upcomingEvents">—</div>
+                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">scheduled</div>
                             </div>
 
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);position:relative;overflow:hidden;">
-                                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#CE1126;"></div>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#CE1126;flex-shrink:0;"><i class="bi bi-people-fill"></i></div>
-                                    <div>
-                                        <div class="stat-label" style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Registered Users</div>
-                                        <div class="stat-number" style="font-size:28px;font-weight:800;color:#1A1A2E;line-height:1;" id="totalUsers">—</div>
-                                        <div style="font-size:11px;color:#6B7280;">residents</div>
-                                    </div>
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #CE1126;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Registered Users</div>
+                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-people-fill" style="font-size:20px;color:#CE1126;"></i></div>
                                 </div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="totalUsers">—</div>
+                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">residents</div>
                             </div>
 
                         </div>
 
-                        <!-- QUICK ACCESS MODULES -->
-                        <div style="margin-bottom:20px;">
-                            <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:#6B7280;text-transform:uppercase;margin-bottom:10px;">Quick Access</div>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+                        <!-- QUICK ACCESS -->
+                        <div style="margin-bottom:22px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:#6B7280;text-transform:uppercase;margin-bottom:12px;">Quick Access</div>
+                            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
 
-                                <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(26,58,107,0.12)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';">
-                                    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:#1A3A6B;"></div>
-                                    <div style="width:30px;height:30px;background:rgba(26,58,107,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#1A3A6B;margin-bottom:8px;"><i class="bi bi-calendar-check-fill"></i></div>
-                                    <div style="font-size:12px;font-weight:700;color:#1A1A2E;">Reservations</div>
-                                    <div style="font-size:11px;color:#6B7280;">Manage bookings</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:10px;right:10px;color:#1A3A6B;font-size:12px;opacity:0.6;"></i>
+                                <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <!-- Diagonal stripe pattern -->
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(26,58,107,0.05) 0px,rgba(26,58,107,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-check-fill" style="font-size:22px;color:#1A3A6B;"></i></div>
+                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Reservations</div>
+                                    <div style="font-size:13px;color:#6B7280;">Manage bookings</div>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#1A3A6B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
-                                <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])" style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(26,58,107,0.12)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';">
-                                    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:#FDB913;"></div>
-                                    <div style="width:30px;height:30px;background:rgba(253,185,19,0.12);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#B8860B;margin-bottom:8px;"><i class="bi bi-box-seam"></i></div>
-                                    <div style="font-size:12px;font-weight:700;color:#1A1A2E;">Equipment</div>
-                                    <div style="font-size:11px;color:#6B7280;">Review requests</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:10px;right:10px;color:#B8860B;font-size:12px;opacity:0.6;"></i>
+                                <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #FDB913;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#d4a017';this.style.boxShadow='0 4px 14px rgba(253,185,19,0.2)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#FDB913';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(253,185,19,0.07) 0px,rgba(253,185,19,0.07) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-box-seam" style="font-size:22px;color:#B8860B;"></i></div>
+                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Equipment</div>
+                                    <div style="font-size:13px;color:#6B7280;">Review requests</div>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#B8860B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
-                                <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])" style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(26,58,107,0.12)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';">
-                                    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:#CE1126;"></div>
-                                    <div style="width:30px;height:30px;background:rgba(206,17,38,0.08);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#CE1126;margin-bottom:8px;"><i class="bi bi-megaphone-fill"></i></div>
-                                    <div style="font-size:12px;font-weight:700;color:#1A1A2E;">Concerns</div>
-                                    <div style="font-size:11px;color:#6B7280;">Respond to reports</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:10px;right:10px;color:#CE1126;font-size:12px;opacity:0.6;"></i>
+                                <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #CE1126;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#a50e1f';this.style.boxShadow='0 4px 14px rgba(206,17,38,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#CE1126';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(206,17,38,0.05) 0px,rgba(206,17,38,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-megaphone-fill" style="font-size:22px;color:#CE1126;"></i></div>
+                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Concerns</div>
+                                    <div style="font-size:13px;color:#6B7280;">Respond to reports</div>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#CE1126;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
-                                <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(26,58,107,0.12)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';">
-                                    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:#16A34A;"></div>
-                                    <div style="width:30px;height:30px;background:rgba(22,163,74,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#16A34A;margin-bottom:8px;"><i class="bi bi-calendar-event-fill"></i></div>
-                                    <div style="font-size:12px;font-weight:700;color:#1A1A2E;">Court Events</div>
-                                    <div style="font-size:11px;color:#6B7280;">Schedule &amp; manage</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:10px;right:10px;color:#16A34A;font-size:12px;opacity:0.6;"></i>
+                                <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #16A34A;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#15803d';this.style.boxShadow='0 4px 14px rgba(22,163,74,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#16A34A';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(22,163,74,0.05) 0px,rgba(22,163,74,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-event-fill" style="font-size:22px;color:#16A34A;"></i></div>
+                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Court Events</div>
+                                    <div style="font-size:13px;color:#6B7280;">Schedule &amp; manage</div>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#16A34A;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
                             </div>
                         </div>
 
                         <!-- BOTTOM ROW: Pending Actions + Recent Activity -->
-                        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:14px;">
+                        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-bottom:22px;">
 
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #E5E7EB;">
-                                    <div style="width:34px;height:34px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#1A3A6B;"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <!-- Pending Actions Panel -->
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;">
+                                <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #F3F4F6;">
+                                    <div style="width:36px;height:36px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-lightning-charge-fill" style="font-size:18px;color:#1A3A6B;"></i></div>
                                     <div>
-                                        <div style="font-size:13px;font-weight:800;color:#1A1A2E;">Pending Actions</div>
-                                        <div style="font-size:11px;color:#6B7280;">Requires your attention</div>
+                                        <div style="font-size:15px;font-weight:700;color:#1A3A6B;">Pending Actions</div>
+                                        <div style="font-size:12px;color:#6B7280;">Requires your attention</div>
                                     </div>
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:7px;">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F4F5F9;border-radius:6px;border:1px solid #E5E7EB;">
-                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-box-seam" style="color:#1A3A6B;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#1A1A2E;">Equipment Requests</span></div>
-                                        <span id="glancePendingReqs" style="font-weight:800;font-size:11px;background:rgba(26,58,107,0.1);color:#1A3A6B;border:1px solid rgba(26,58,107,0.2);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <i class="bi bi-box-seam" style="color:#1A3A6B;font-size:15px;"></i>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Equipment Requests</div>
+                                                <div style="font-size:11px;color:#6B7280;">Pending approval</div>
+                                            </div>
+                                        </div>
+                                        <span id="glancePendingReqs" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F4F5F9;border-radius:6px;border:1px solid #E5E7EB;">
-                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-megaphone" style="color:#B8860B;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#1A1A2E;">Open Concerns</span></div>
-                                        <span id="glancePendingCons" style="font-weight:800;font-size:11px;background:rgba(253,185,19,0.12);color:#B8860B;border:1px solid rgba(253,185,19,0.25);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <i class="bi bi-megaphone" style="color:#B8860B;font-size:15px;"></i>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Open Concerns</div>
+                                                <div style="font-size:11px;color:#6B7280;">Awaiting response</div>
+                                            </div>
+                                        </div>
+                                        <span id="glancePendingCons" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F4F5F9;border-radius:6px;border:1px solid #E5E7EB;">
-                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-calendar-check" style="color:#16A34A;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#1A1A2E;">Active Bookings</span></div>
-                                        <span id="glanceBookings" style="font-weight:800;font-size:11px;background:rgba(22,163,74,0.1);color:#16A34A;border:1px solid rgba(22,163,74,0.2);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <i class="bi bi-calendar-check" style="color:#16A34A;font-size:15px;"></i>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Active Bookings</div>
+                                                <div style="font-size:11px;color:#6B7280;">Current reservations</div>
+                                            </div>
+                                        </div>
+                                        <span id="glanceBookings" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
                                     </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F4F5F9;border-radius:6px;border:1px solid #E5E7EB;">
-                                        <div style="display:flex;align-items:center;gap:8px;"><i class="bi bi-people" style="color:#CE1126;font-size:12px;"></i><span style="font-size:12px;font-weight:600;color:#1A1A2E;">Registered Users</span></div>
-                                        <span id="glanceUsers" style="font-weight:800;font-size:11px;background:rgba(206,17,38,0.08);color:#CE1126;border:1px solid rgba(206,17,38,0.15);padding:2px 9px;border-radius:12px;min-width:24px;text-align:center;"></span>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <i class="bi bi-people" style="color:#CE1126;font-size:15px;"></i>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Registered Users</div>
+                                                <div style="font-size:11px;color:#6B7280;">Total residents</div>
+                                            </div>
+                                        </div>
+                                        <span id="glanceUsers" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
                                     </div>
+                                </div>
+                                <div style="padding:12px 20px;border-top:1px solid #F3F4F6;text-align:center;">
+                                    <a href="#" onclick="switchSection('requests',document.querySelectorAll('.sidebar-btn')[2]);return false;" style="font-size:13px;font-weight:600;color:#FDB913;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All Requests</a>
                                 </div>
                             </div>
 
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #E5E7EB;">
-                                    <div style="display:flex;align-items:center;gap:10px;">
-                                        <div style="width:34px;height:34px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#1A3A6B;"><i class="bi bi-activity"></i></div>
+                            <!-- Recent Activity Panel -->
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;display:flex;flex-direction:column;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #F3F4F6;">
+                                    <div style="display:flex;align-items:center;gap:12px;">
+                                        <div style="width:36px;height:36px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-activity" style="font-size:18px;color:#1A3A6B;"></i></div>
                                         <div>
-                                            <div style="font-size:13px;font-weight:800;color:#1A1A2E;">Recent Activity</div>
-                                            <div style="font-size:11px;color:#6B7280;">Latest system events</div>
+                                            <div style="font-size:15px;font-weight:700;color:#1A3A6B;">Recent Activity</div>
+                                            <div style="font-size:12px;color:#6B7280;">Latest system events</div>
                                         </div>
                                     </div>
-                                    <span style="font-size:9px;font-weight:800;letter-spacing:1.5px;background:rgba(22,163,74,0.1);color:#16A34A;border:1px solid rgba(22,163,74,0.2);padding:3px 10px;border-radius:12px;display:flex;align-items:center;gap:4px;">
-                                        <span style="width:5px;height:5px;background:#16A34A;border-radius:50%;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>LIVE
+                                    <span style="display:inline-flex;align-items:center;gap:5px;background:#DCFCE7;border-radius:4px;padding:4px 10px;">
+                                        <span style="width:6px;height:6px;background:#16A34A;border-radius:50%;display:inline-block;animation:pulse-dot 1.8s infinite;"></span>
+                                        <span style="font-size:11px;font-weight:600;color:#15803D;text-transform:uppercase;letter-spacing:0.05em;">LIVE</span>
                                     </span>
                                 </div>
-                                <div id="overviewActivityFeed" style="display:flex;flex-direction:column;max-height:240px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,0.15) transparent;">
-                                    <div style="text-align:center;padding:24px;color:#6B7280;font-size:13px;">Loading activity...</div>
+                                <div id="overviewActivityFeed" style="flex:1;overflow-y:auto;max-height:260px;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,0.2) transparent;">
+                                    <div style="text-align:center;padding:32px;color:#6B7280;font-size:13px;">Loading activity...</div>
+                                </div>
+                                <div style="padding:12px 20px;border-top:1px solid #F3F4F6;text-align:center;">
+                                    <a href="#" onclick="switchSection('audit-log',document.querySelectorAll('.sidebar-btn')[8]);return false;" style="font-size:13px;font-weight:600;color:#FDB913;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All Activity</a>
                                 </div>
                             </div>
 
                         </div>
 
+                        <!-- GOVERNMENT TRUST FOOTER -->
+                        <div style="background:#0F2547;border-radius:8px;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:8px;">
+                            <span style="font-size:11px;color:rgba(255,255,255,0.6);">Barangay Sta. Lucia Official Admin System</span>
+                            <span style="font-size:11px;color:rgba(255,255,255,0.5);">&#128274; Secure Connection &bull; All sessions are monitored and logged</span>
+                            <span style="font-size:11px;color:rgba(255,255,255,0.5);">Version 1.0 &bull; &copy; 2026 Barangay Sta. Lucia</span>
+                        </div>
+
                         <style>
-                        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.75);} }
+                        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+                        /* Thin scrollbars globally */
+                        ::-webkit-scrollbar { width:4px; height:4px; }
+                        ::-webkit-scrollbar-track { background:#EDEEF2; border-radius:4px; }
+                        ::-webkit-scrollbar-thumb { background:#1A3A6B; border-radius:4px; }
+                        * { scrollbar-width:thin; scrollbar-color:#1A3A6B #EDEEF2; }
                         </style>
                     </div>
 
