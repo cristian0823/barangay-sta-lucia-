@@ -1,0 +1,69 @@
+                    <div id="court-bookings-section" class="section-container" style="display:none;">
+                        <style>
+                        .cb-tab-btn { padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;background:transparent;color:#6B7280;border:none;transition:all 0.15s; }
+                        .cb-tab-btn:hover { background:#fff;color:#1A1A2E; }
+                        .cb-tab-btn.cb-active { background:#1A3A6B;color:#fff;font-weight:600; }
+                        </style>
+
+                        <!-- PAGE HEADING -->
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                                        <i class="bi bi-calendar-check-fill"></i> FACILITY MANAGEMENT
+                                    </p>
+                                    <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Facility Reservations</h1>
+                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Review, approve or reject resident reservation requests.</p>
+                                </div>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <button onclick="loadAdminBookings()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1px solid #1A3A6B;border-radius:6px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">
+                                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FILTER + SEARCH BAR -->
+                        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
+                            <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="courtBookingTabs">
+                                <button class="cb-tab-btn cb-active" onclick="setCourtBookingTab('All', this)">All</button>
+                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Pending', this)">Pending</button>
+                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Approved', this)">Approved</button>
+                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Cancelled', this)">Cancelled / Rejected</button>
+                            </div>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <select id="courtBookingVenueFilter" onchange="loadAdminBookings()" style="padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                                    <option value="all">All Venues</option>
+                                    <option value="basketball">Basketball Court</option>
+                                    <option value="multipurpose">Multi-Purpose Hall</option>
+                                </select>
+                                <div style="position:relative;">
+                                    <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
+                                    <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;width:200px;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                            <table class="data-table" style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1A3A6B;">
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Resident</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Venue</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Date</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Time</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Purpose</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courtBookingsTable"></tbody>
+                            </table>
+                            <div id="noCourtBookings" class="empty-state" style="display:none;padding:60px 20px;text-align:center;">
+                                <div style="width:56px;height:56px;background:rgba(26,58,107,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1A3A6B;margin:0 auto 16px;"><i class="bi bi-calendar-x"></i></div>
+                                <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:6px;">No Reservations Found</div>
+                                <div style="font-size:13px;color:#6B7280;">No facility reservations match your current filters.</div>
+                            </div>
+                        </div>
+                        <div id="courtBookingsPg" class="pg-controls" style="display:none;margin-top:16px;"></div>
+                    </div> <!-- Closes court-bookings-section -->

@@ -1,1749 +1,4 @@
-﻿<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Barangay Sta. Lucia</title>
-    <!-- ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ EARLY AUTH GUARD: hide body before paint, redirect instantly if not admin ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ -->
-    <style id="auth-guard-style">body { visibility: hidden !important; }</style>
-    <script>
-    (function() {
-        function _getUser() {
-            try {
-                var u = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
-                return u ? JSON.parse(u) : null;
-            } catch(e) { return null; }
-        }
-        var user = _getUser();
-        if (!user) {
-            window.location.replace('login.html');
-        } else if (user.role !== 'admin') {
-            window.location.replace('login.html');
-        } else {
-            // Valid admin ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â reveal the page immediately
-            document.getElementById('auth-guard-style').textContent = '';
-        }
-    })();
-    </script>
-    <!-- ============================================================
-         PHILIPPINE GOVERNMENT ADMIN PORTAL — TAILWIND EDITION
-    ============================================================ -->
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'gov-navy':    '#1A3A6B',
-              'gov-sidebar': '#0F2547',
-              'gov-gold':    '#FDB913',
-              'gov-red':     '#CE1126',
-              'gov-success': '#16A34A',
-              'gov-warning': '#D97706',
-              'gov-bg':      '#EDEEF2',
-              'gov-muted':   '#6B7280',
-              'gov-border':  '#D1D5DB',
-            }
-          }
-        }
-      }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
-    <link rel="icon" type="image/jpeg" href="barangay-sun-logo.jpg">
-
-    <!-- Light mode enforcement (runs before page renders) -->
-    <script>
-      (function(){
-        localStorage.setItem('barangay-theme','light');
-        document.documentElement.removeAttribute('data-theme');
-        document.documentElement.setAttribute('data-theme','light');
-        window.toggleDarkMode = function(){};
-        window.initDarkMode   = function(){};
-      })();
-    </script>
-
-    <style>
-      /* Base */
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Inter', sans-serif; background: #EDEEF2; color: #1A1A2E; }
-
-      /* Scrollbars */
-      ::-webkit-scrollbar { width: 4px; height: 4px; }
-      ::-webkit-scrollbar-track { background: #EDEEF2; }
-      ::-webkit-scrollbar-thumb { background: #1A3A6B; border-radius: 4px; }
-
-      /* ── Sidebar nav button ─────────────────────────────── */
-      .sidebar-btn {
-        display: flex; align-items: center; gap: 10px;
-        width: 100%; padding: 9px 14px; border: none;
-        background: transparent; color: rgba(255,255,255,0.72);
-        font-size: 13px; font-weight: 500; cursor: pointer;
-        text-align: left; border-radius: 6px; font-family: inherit;
-        transition: all 0.15s;
-      }
-      .sidebar-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-      .sidebar-btn.active { background: #FDB913; color: #0F2547; font-weight: 700; }
-      .sidebar-btn.active i { color: #0F2547; }
-
-      /* ── Mobile sidebar ─────────────────────────────────── */
-      .mobile-sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 260px;
-        background: #0F2547; z-index: 500; transform: translateX(-100%);
-        transition: transform 0.3s ease; display: flex; flex-direction: column; }
-      .mobile-sidebar.open { transform: translateX(0); }
-      .mobile-sidebar-header { display: flex; align-items: center; justify-content: space-between;
-        padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; font-weight: 700; }
-      .mobile-sidebar-close { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
-      .mobile-sidebar-nav { display: flex; flex-direction: column; padding: 8px; flex: 1; overflow-y: auto; }
-      .mobile-sidebar-nav button { display: flex; align-items: center; gap: 10px;
-        padding: 10px 12px; border: none; background: transparent;
-        color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 500;
-        cursor: pointer; border-radius: 6px; font-family: inherit;
-        text-align: left; width: 100%; transition: all 0.15s; }
-      .mobile-sidebar-nav button:hover { background: rgba(255,255,255,0.08); color: #fff; }
-      .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 400; display: none; }
-      .sidebar-overlay.active { display: block; }
-
-      /* ── Bell dropdown ───────────────────────────────────── */
-      .admin-bell-dropdown { position: absolute; top: calc(100% + 8px); right: 0;
-        background: #fff; border: 1px solid #D1D5DB; border-radius: 12px;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.15); width: 320px; z-index: 200;
-        display: none; overflow: hidden; }
-      .admin-bell-header { display: flex; align-items: center; justify-content: space-between;
-        padding: 12px 16px; background: #1A3A6B; }
-      .admin-bell-header h3 { font-size: 14px; font-weight: 700; color: #fff; margin: 0; }
-      .admin-bell-markall { font-size: 12px; color: #FDB913; background: none; border: none;
-        cursor: pointer; font-weight: 600; transition: color 0.15s; }
-      .admin-bell-markall:hover { color: #fff; }
-      .admin-bell-list { max-height: 288px; overflow-y: auto; }
-      .admin-bell-empty { text-align: center; padding: 32px 16px; color: #6B7280; font-size: 13px; }
-      .admin-bell-footer { padding: 10px 16px; border-top: 1px solid #D1D5DB;
-        background: #F9FAFB; font-size: 12px; color: #1A3A6B; cursor: pointer;
-        font-weight: 600; text-align: center; transition: color 0.15s; }
-      .admin-bell-footer:hover { color: #0F2547; }
-      .admin-bell-item { display: flex; gap: 10px; padding: 12px 16px;
-        border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.15s; }
-      .admin-bell-item:hover { background: #F9FAFB; }
-      .admin-bell-item:last-child { border-bottom: none; }
-      .admin-bell-icon-circle { width: 32px; height: 32px; border-radius: 50%;
-        background: rgba(26,58,107,0.08); color: #1A3A6B; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center; font-size: 14px; }
-      .admin-bell-msg { font-size: 13px; color: #1A1A2E; font-weight: 500;
-        margin: 0 0 2px; line-height: 1.35; }
-      .admin-bell-time { font-size: 10px; color: #6B7280; }
-
-      /* ── Data tables ─────────────────────────────────────── */
-      .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-      .data-table th { background: #1A3A6B; color: #fff; padding: 10px 14px; text-align: left;
-        font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-      .data-table td { padding: 10px 14px; border-bottom: 1px solid #F3F4F6; color: #1A1A2E; vertical-align: middle; }
-      .data-table tr:hover td { background: #F0F4FF; }
-
-      /* ── Status badges ───────────────────────────────────── */
-      .status-pending { background: #FEF9C3; color: #854D0E; border: 1px solid #FDE047; }
-      .status-approved, .status-available, .status-resolved, .status-replied, .status-active {
-        background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
-      .status-rejected, .status-suspended { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
-      .status-returned, .status-borrowed { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
-      .status-open { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
-      .status-closed { background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB; }
-      .status-pending, .status-approved, .status-available, .status-resolved,
-      .status-replied, .status-rejected, .status-suspended, .status-returned,
-      .status-borrowed, .status-open, .status-closed, .status-active {
-        padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-        display: inline-block; text-transform: uppercase; letter-spacing: 0.04em; }
-
-      /* ── Pagination ──────────────────────────────────────── */
-      .pg-controls { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; }
-      .pg-btn { padding: 5px 12px; border: 1px solid #D1D5DB; border-radius: 6px;
-        font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: #1A3A6B;
-        transition: all 0.15s; font-family: inherit; }
-      .pg-btn:hover, .pg-btn.active { background: #1A3A6B; color: #fff; border-color: #1A3A6B; }
-      .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-      /* ── Section layout ──────────────────────────────────── */
-      .section-container { background: transparent; }
-      .section-header { background: #fff; border: 1px solid #D1D5DB; border-radius: 8px;
-        padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-      .section-header h3 { font-size: 18px; font-weight: 700; color: #1A3A6B; margin: 0; }
-      .section-content { background: #fff; border: 1px solid #D1D5DB; border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; }
-      .admin-tables { background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; overflow: hidden; }
-
-      /* ── Buttons ─────────────────────────────────────────── */
-      .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px;
-        border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
-        border: none; transition: all 0.15s; font-family: inherit; }
-      .btn-primary { background: #1A3A6B; color: #fff; }
-      .btn-primary:hover { background: #0F2547; }
-      .btn-secondary { background: #FDB913; color: #0F2547; }
-      .btn-secondary:hover { opacity: 0.9; }
-      .btn-danger { background: #CE1126; color: #fff; }
-      .btn-danger:hover { background: #a50e1f; }
-      .btn-small { padding: 4px 10px; font-size: 11px; }
-      .btn-outline { background: transparent; border: 1px solid #D1D5DB; color: #374151; }
-      .btn-outline:hover { background: #F9FAFB; }
-
-      /* ── Forms ───────────────────────────────────────────── */
-      .form-group { margin-bottom: 14px; }
-      .form-group label { display: block; font-size: 12px; font-weight: 600; color: #374151;
-        text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-      .form-group input, .form-group select, .form-group textarea {
-        width: 100%; padding: 9px 12px; border: 1px solid #D1D5DB; border-radius: 6px;
-        font-size: 13px; font-family: inherit; color: #1A1A2E; background: #fff; outline: none; transition: border-color 0.15s; }
-      .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-        border-color: #1A3A6B; box-shadow: 0 0 0 3px rgba(26,58,107,0.12); }
-      .form-row { display: flex; gap: 12px; }
-      .form-label { font-size: 12px; font-weight: 600; color: #374151;
-        text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px; }
-      .form-input { width: 100%; padding: 9px 12px; border: 1px solid #D1D5DB; border-radius: 6px;
-        font-size: 13px; font-family: inherit; color: #1A1A2E; background: #fff; outline: none;
-        transition: border-color 0.15s; }
-      .form-input:focus { border-color: #1A3A6B; box-shadow: 0 0 0 3px rgba(26,58,107,0.12); }
-
-      /* ── Modals ──────────────────────────────────────────── */
-      .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
-        align-items: center; justify-content: center; padding: 20px; }
-      .modal.active { display: flex; }
-      .modal-content { background: #fff; border-radius: 10px; width: 100%; max-width: 560px;
-        max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-      .modal-header { display: flex; align-items: center; justify-content: space-between;
-        padding: 16px 20px; border-bottom: 1px solid #E5E7EB; }
-      .modal-header h3 { font-size: 16px; font-weight: 700; color: #1A3A6B; margin: 0; }
-      .modal-close { background: none; border: none; font-size: 20px; cursor: pointer;
-        color: #6B7280; line-height: 1; }
-      .modal-body { padding: 20px; }
-      .modal-footer { padding: 14px 20px; border-top: 1px solid #E5E7EB;
-        display: flex; gap: 10px; justify-content: flex-end; }
-
-      /* ── Empty state ─────────────────────────────────────── */
-      .empty-state { text-align: center; padding: 48px 20px; color: #6B7280; }
-      .empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
-      .empty-state p { font-size: 14px; }
-
-      /* ── Activity feed ───────────────────────────────────── */
-      .activity-item { display: flex; align-items: flex-start; gap: 10px;
-        padding: 10px 16px; border-bottom: 1px solid #F3F4F6; font-size: 12px; }
-      .activity-avatar { width: 30px; height: 30px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 11px; flex-shrink: 0; }
-      .activity-meta { font-size: 11px; color: #6B7280; margin-top: 2px; }
-
-      /* ── Alert ───────────────────────────────────────────── */
-      .alert { padding: 12px 16px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; }
-      .alert-danger { background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B; }
-      .alert-success { background: #DCFCE7; border: 1px solid #86EFAC; color: #166534; }
-      .alert-warning { background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; }
-
-      /* ── Toast ───────────────────────────────────────────── */
-      #toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-        padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
-        transform: translateY(80px); transition: transform 0.3s ease;
-        pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-      #toast.success { background: #16A34A; color: #fff; }
-      #toast.error   { background: #CE1126; color: #fff; }
-      #toast.show    { transform: translateY(0); }
-
-      /* ── Misc ────────────────────────────────────────────── */
-      .hidden { display: none !important; }
-      .concern-details { padding: 16px; }
-      .concern-details p { font-size: 13px; color: #374151; margin-bottom: 8px; }
-      .court-booking-card { background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; padding: 16px; margin-bottom: 10px; }
-      .req-tab-btn.active-tab { background: #1A3A6B !important; color: #fff !important; border-color: #1A3A6B !important; }
-      .quick-action-card { background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; padding: 16px; }
-      .code-digit { transition: all 0.18s; font-family: monospace; }
-      .code-digit.filled { border-color: #1A3A6B !important; background: #EEF2FF !important; }
-      .stat-card, .stat-content, .stat-value, .stat-number { color: #1A1A2E; }
-      @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
-    </style>
-</head>
-
-<body style="font-family:'Inter',sans-serif;background:#EDEEF2;margin:0;padding:0;">
-
-<!-- Mobile Sidebar Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
-
-<!-- Mobile Sidebar Drawer -->
-<div class="mobile-sidebar" id="mobileSidebar">
-    <div class="mobile-sidebar-header">
-        <span><i class="bi bi-layout-sidebar"></i> Admin Menu</span>
-        <button class="mobile-sidebar-close" onclick="closeMobileSidebar()"><i class="bi bi-x-lg"></i></button>
-    </div>
-    <div class="mobile-sidebar-nav" id="mobileSidebarNav">
-        <button onclick="mobileSwitchSection('overview')"><i class="bi bi-grid-1x2-fill"></i> Overview</button>
-        <button onclick="mobileSwitchSection('court-bookings')"><i class="bi bi-calendar-check-fill"></i> Facility Reservations</button>
-        <button onclick="mobileSwitchSection('requests')"><i class="bi bi-box-seam"></i> Equipment Requests</button>
-        <button onclick="mobileSwitchSection('concerns')"><i class="bi bi-megaphone-fill"></i> Concerns</button>
-        <button onclick="mobileSwitchSection('users')"><i class="bi bi-people-fill"></i> Manage Users</button>
-        <button onclick="mobileSwitchSection('events')"><i class="bi bi-calendar-event-fill"></i> Court Events</button>
-        <button onclick="mobileSwitchSection('equipment')"><i class="bi bi-box-seam-fill"></i> Inventory</button>
-        <button onclick="mobileSwitchSection('audit-log')"><i class="bi bi-journal-text"></i> Audit Log</button>
-        <button onclick="mobileSwitchSection('security-log')"><i class="bi bi-shield-lock-fill"></i> Security Log</button>
-        <div style="height:1px;background:rgba(255,255,255,0.1);margin:8px 0;"></div>
-        <button onclick="window.location.href='admin-settings.html'"><i class="bi bi-gear-fill"></i> Settings</button>
-        <button onclick="logoutUser()" style="color:#FCA5A5;"><i class="bi bi-box-arrow-right"></i> Logout</button>
-    </div>
-</div>
-
-<!-- Fixed Topbar -->
-<header style="position:fixed;top:0;left:0;right:0;height:64px;background:#1A3A6B;border-bottom:3px solid #FDB913;display:flex;align-items:center;padding:0 24px;z-index:100;box-shadow:0 2px 8px rgba(15,37,71,0.35);">
-    <!-- Hamburger (mobile only) -->
-    <button id="hamburgerBtn" onclick="openMobileSidebar()" aria-label="Menu" style="display:none;flex-direction:column;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:8px;cursor:pointer;margin-right:12px;">
-        <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
-        <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
-        <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
-    </button>
-    <!-- Logo + System Name -->
-    <div style="display:flex;align-items:center;gap:12px;">
-        <img src="barangay-sun-logo.jpg" alt="Seal" style="width:38px;height:38px;border-radius:50%;border:2px solid rgba(253,185,19,0.5);object-fit:cover;flex-shrink:0;">
-        <div style="line-height:1.3;">
-            <div style="font-size:15px;font-weight:700;color:#fff;letter-spacing:0.01em;">Barangay Sta. Lucia Admin Portal</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:400;">Official Administrative System</div>
-        </div>
-    </div>
-    <!-- Right Controls -->
-    <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
-        <!-- Notification Bell -->
-        <div style="position:relative;display:flex;align-items:center;" id="adminBellWrapper">
-            <button onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:6px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;flex-shrink:0;transition:background 0.15s;">
-                <i class="bi bi-bell-fill"></i>
-            </button>
-            <span id="adminBellBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:#CE1126;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;line-height:1;border:2px solid #1A3A6B;pointer-events:none;z-index:10;"></span>
-            <div class="admin-bell-dropdown" id="adminBellDropdown">
-                <div class="admin-bell-header">
-                    <h3>Notifications</h3>
-                    <button class="admin-bell-markall" onclick="markAllAdminBellRead(); event.stopPropagation();"><i class="bi bi-check-all"></i> Mark all read</button>
-                </div>
-                <div class="admin-bell-list" id="adminBellList" onclick="event.stopPropagation()">
-                    <div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>
-                </div>
-                <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">See all activity in Audit Log →</div>
-            </div>
-        </div>
-        <!-- Divider -->
-        <div style="width:1px;height:28px;background:rgba(255,255,255,0.20);flex-shrink:0;"></div>
-        <!-- Avatar + Name -->
-        <div style="display:flex;align-items:center;gap:8px;">
-            <div id="userAvatar" style="width:34px;height:34px;border-radius:50%;background:#FDB913;color:#0F2547;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(253,185,19,0.4);">A</div>
-            <div style="line-height:1.3;">
-                <div id="userName" style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;">Administrator</div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.6);">Official</div>
-            </div>
-        </div>
-        <!-- Settings -->
-        <a href="admin-settings.html" style="text-decoration:none;display:flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid rgba(255,255,255,0.30);border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:transparent;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">
-            <i class="bi bi-gear" style="font-size:13px;"></i> Settings
-        </a>
-        <!-- Logout -->
-        <button onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border:none;border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:#CE1126;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#a50e1f'" onmouseout="this.style.background='#CE1126'">
-            <i class="bi bi-box-arrow-right" style="font-size:13px;"></i> Logout
-        </button>
-    </div>
-</header>
-
-<!-- Fixed Desktop Sidebar -->
-<aside style="position:fixed;top:64px;left:0;bottom:0;width:240px;background:#0F2547;overflow-y:auto;z-index:90;display:flex;flex-direction:column;">
-    <!-- Brand Header -->
-    <div style="display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
-        <img src="barangay-sun-logo.jpg" alt="Logo" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;">
-        <div style="min-width:0;">
-            <div style="font-size:13px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Brgy. Sta. Lucia</div>
-            <div style="font-size:10px;font-weight:600;color:#FDB913;letter-spacing:0.5px;margin-top:1px;">Admin Panel</div>
-        </div>
-    </div>
-
-    <!-- Nav: MAIN -->
-    <div style="padding:8px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Main</div>
-        <button class="sidebar-btn active" onclick="switchSection('overview', this)">
-            <i class="bi bi-grid-1x2-fill"></i> Overview
-        </button>
-    </div>
-
-    <!-- Nav: MANAGEMENT -->
-    <div style="padding:0 8px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Management</div>
-        <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">
-            <i class="bi bi-calendar-check-fill"></i> Facility Reservations
-        </button>
-        <button class="sidebar-btn" onclick="switchSection('requests', this)">
-            <i class="bi bi-box-seam"></i> Equipment Requests
-        </button>
-        <button class="sidebar-btn" onclick="switchSection('concerns', this)">
-            <i class="bi bi-megaphone-fill"></i> Concerns
-        </button>
-        <button class="sidebar-btn" onclick="switchSection('users', this)">
-            <i class="bi bi-people-fill"></i> Manage Users
-        </button>
-        <button class="sidebar-btn" onclick="switchSection('events', this)">
-            <i class="bi bi-calendar-event-fill"></i> Court Events
-        </button>
-        <button class="sidebar-btn" onclick="switchSection('equipment', this)">
-            <i class="bi bi-box-seam-fill"></i> Inventory
-        </button>
-    </div>
-
-    <!-- Nav: SECURITY -->
-    <div style="padding:0 8px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Security</div>
-        <button class="sidebar-btn" onclick="switchSection('audit-log', this)">
-            <i class="bi bi-journal-text"></i> Audit Log
-        </button>
-        <button class="sidebar-btn" onclick="switchSection('security-log', this)">
-            <i class="bi bi-shield-lock-fill"></i> Security Log
-        </button>
-    </div>
-
-    <!-- Sidebar Footer -->
-    <div style="margin-top:auto;padding:12px 8px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
-        <a href="admin-settings.html" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:rgba(255,255,255,0.72);font-size:13px;font-weight:500;text-decoration:none;transition:all 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.72)'">
-            <i class="bi bi-gear-fill"></i> Settings
-        </a>
-        <button onclick="logoutUser()" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:rgba(255,255,255,0.72);font-size:13px;font-weight:500;background:transparent;border:none;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:all 0.18s;" onmouseover="this.style.background='rgba(206,17,38,0.15)';this.style.color='#FCA5A5'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.72)'">
-            <i class="bi bi-box-arrow-right"></i> Logout
-        </button>
-    </div>
-</aside>
-
-<!-- Main Content Area -->
-<div style="margin-left:240px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
-    <div style="padding:28px;">
-                    <!-- Overview Section -->
-                    <!-- Overview Section -->
-                    <div id="overview-section">
-
-                        <!-- HERO BANNER -->
-                        <div style="border-radius:10px;overflow:hidden;margin-bottom:22px;position:relative;background:linear-gradient(135deg,#0F2547 0%,#1A3A6B 100%);box-shadow:0 4px 20px rgba(15,37,71,0.28);min-height:160px;display:flex;align-items:center;padding:32px 36px;">
-                            <!-- Watermark seal -->
-                            <img src="barangay-sun-logo.jpg" alt="" style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:220px;height:220px;object-fit:cover;opacity:0.06;border-radius:50%;pointer-events:none;">
-                            <!-- Gold bottom accent -->
-                            <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FDB913 0%,#FDB913 60%,#CE1126 60%,#CE1126 100%);"></div>
-                            <!-- Content -->
-                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:20px;position:relative;z-index:1;">
-                                <div>
-                                    <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;color:#FDB913;text-transform:uppercase;margin-bottom:8px;">Barangay Sta. Lucia Admin Portal</div>
-                                    <div style="font-size:28px;font-weight:700;color:#FFFFFF;margin-bottom:6px;line-height:1.2;" id="welcomeGreeting">Good morning, Admin</div>
-                                    <div style="font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:10px;" id="heroDate">Loading date...</div>
-                                    <!-- PH Flag strip -->
-                                    <div style="display:flex;height:3px;width:120px;border-radius:2px;overflow:hidden;">
-                                        <div style="flex:1;background:#CE1126;"></div>
-                                        <div style="flex:1;background:#FDB913;"></div>
-                                        <div style="flex:1;background:#0038A8;"></div>
-                                    </div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.2);border:1px solid rgba(22,163,74,0.35);border-radius:20px;padding:3px 10px;margin-bottom:6px;">
-                                        <span style="width:6px;height:6px;background:#4ADE80;border-radius:50%;display:inline-block;animation:pulse-dot 1.8s infinite;"></span>
-                                        <span style="font-size:10px;font-weight:700;color:#4ADE80;letter-spacing:0.1em;">LIVE</span>
-                                    </div>
-                                    <div style="font-size:38px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums;letter-spacing:-1px;line-height:1;" id="heroClock">00:00:00</div>
-                                    <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px;">Philippine Standard Time</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- KPI STAT CARDS -->
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px;">
-
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Equipment Requests</div>
-                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-box-seam-fill" style="font-size:20px;color:#1A3A6B;"></i></div>
-                                </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingRequests">—</div>
-                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">pending</div>
-                            </div>
-
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #FDB913;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Open Concerns</div>
-                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-megaphone-fill" style="font-size:20px;color:#B8860B;"></i></div>
-                                </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingConcerns">—</div>
-                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">unresolved</div>
-                            </div>
-
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #16A34A;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Upcoming Events</div>
-                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-calendar-check-fill" style="font-size:20px;color:#16A34A;"></i></div>
-                                </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="upcomingEvents">—</div>
-                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">scheduled</div>
-                            </div>
-
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #CE1126;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
-                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                                    <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Registered Users</div>
-                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-people-fill" style="font-size:20px;color:#CE1126;"></i></div>
-                                </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="totalUsers">—</div>
-                                <div style="font-size:12px;color:#6B7280;margin-top:2px;">residents</div>
-                            </div>
-
-                        </div>
-
-                        <!-- QUICK ACCESS -->
-                        <div style="margin-bottom:22px;">
-                            <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:#6B7280;text-transform:uppercase;margin-bottom:12px;">Quick Access</div>
-                            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-
-                                <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <!-- Diagonal stripe pattern -->
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(26,58,107,0.05) 0px,rgba(26,58,107,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-check-fill" style="font-size:22px;color:#1A3A6B;"></i></div>
-                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Reservations</div>
-                                    <div style="font-size:13px;color:#6B7280;">Manage bookings</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#1A3A6B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
-                                </button>
-
-                                <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #FDB913;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#d4a017';this.style.boxShadow='0 4px 14px rgba(253,185,19,0.2)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#FDB913';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(253,185,19,0.07) 0px,rgba(253,185,19,0.07) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-box-seam" style="font-size:22px;color:#B8860B;"></i></div>
-                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Equipment</div>
-                                    <div style="font-size:13px;color:#6B7280;">Review requests</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#B8860B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
-                                </button>
-
-                                <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #CE1126;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#a50e1f';this.style.boxShadow='0 4px 14px rgba(206,17,38,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#CE1126';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(206,17,38,0.05) 0px,rgba(206,17,38,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-megaphone-fill" style="font-size:22px;color:#CE1126;"></i></div>
-                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Concerns</div>
-                                    <div style="font-size:13px;color:#6B7280;">Respond to reports</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#CE1126;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
-                                </button>
-
-                                <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #16A34A;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#15803d';this.style.boxShadow='0 4px 14px rgba(22,163,74,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#16A34A';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(22,163,74,0.05) 0px,rgba(22,163,74,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-event-fill" style="font-size:22px;color:#16A34A;"></i></div>
-                                    <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Court Events</div>
-                                    <div style="font-size:13px;color:#6B7280;">Schedule &amp; manage</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#16A34A;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
-                                </button>
-
-                            </div>
-                        </div>
-
-                        <!-- BOTTOM ROW: Pending Actions + Recent Activity -->
-                        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-bottom:22px;">
-
-                            <!-- Pending Actions Panel -->
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;">
-                                <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;background:#1A3A6B;">
-                                    <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-lightning-charge-fill" style="font-size:18px;color:#FDB913;"></i></div>
-                                    <div>
-                                        <div style="font-size:15px;font-weight:700;color:#fff;">Pending Actions</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.7);">Requires your attention</div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-box-seam" style="color:#1A3A6B;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Equipment Requests</div>
-                                                <div style="font-size:11px;color:#6B7280;">Pending approval</div>
-                                            </div>
-                                        </div>
-                                        <span id="glancePendingReqs" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-megaphone" style="color:#B8860B;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Open Concerns</div>
-                                                <div style="font-size:11px;color:#6B7280;">Awaiting response</div>
-                                            </div>
-                                        </div>
-                                        <span id="glancePendingCons" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F9FAFB;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-calendar-check" style="color:#16A34A;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Active Bookings</div>
-                                                <div style="font-size:11px;color:#6B7280;">Current reservations</div>
-                                            </div>
-                                        </div>
-                                        <span id="glanceBookings" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#F5F7FA'" onmouseout="this.style.background=''">
-                                        <div style="display:flex;align-items:center;gap:10px;">
-                                            <i class="bi bi-people" style="color:#CE1126;font-size:15px;"></i>
-                                            <div>
-                                                <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Registered Users</div>
-                                                <div style="font-size:11px;color:#6B7280;">Total residents</div>
-                                            </div>
-                                        </div>
-                                        <span id="glanceUsers" style="min-width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:11px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;"></span>
-                                    </div>
-                                </div>
-                                <div style="padding:12px 20px;border-top:1px solid #F3F4F6;text-align:center;">
-                                    <a href="#" onclick="switchSection('requests',document.querySelectorAll('.sidebar-btn')[2]);return false;" style="font-size:13px;font-weight:600;color:#FDB913;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All Requests</a>
-                                </div>
-                            </div>
-
-                            <!-- Recent Activity Panel -->
-                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;display:flex;flex-direction:column;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#1A3A6B;">
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-activity" style="font-size:18px;color:#FDB913;"></i></div>
-                                        <div>
-                                            <div style="font-size:15px;font-weight:700;color:#fff;">Recent Activity</div>
-                                            <div style="font-size:12px;color:rgba(255,255,255,0.7);">Latest system events</div>
-                                        </div>
-                                    </div>
-                                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.2);border:1px solid rgba(22,163,74,0.4);border-radius:4px;padding:3px 10px;">
-                                        <span style="width:6px;height:6px;background:#4ADE80;border-radius:50%;display:inline-block;animation:pulse-dot 1.8s infinite;"></span>
-                                        <span style="font-size:11px;font-weight:600;color:#4ADE80;text-transform:uppercase;letter-spacing:0.05em;">LIVE</span>
-                                    </span>
-                                </div>
-                                <div id="overviewActivityFeed" style="flex:1;overflow-y:auto;max-height:260px;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,0.2) transparent;">
-                                    <div style="text-align:center;padding:32px;color:#6B7280;font-size:13px;">Loading activity...</div>
-                                </div>
-                                <div style="padding:12px 20px;border-top:1px solid #F3F4F6;text-align:center;">
-                                    <a href="#" onclick="switchSection('audit-log',document.querySelectorAll('.sidebar-btn')[8]);return false;" style="font-size:13px;font-weight:600;color:#FDB913;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All Activity</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- GOVERNMENT TRUST FOOTER -->
-                        <div style="background:#0F2547;border-radius:8px;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:8px;">
-                            <span style="font-size:11px;color:rgba(255,255,255,0.6);">Barangay Sta. Lucia Official Admin System</span>
-                            <span style="font-size:11px;color:rgba(255,255,255,0.5);">&#128274; Secure Connection &bull; All sessions are monitored and logged</span>
-                            <span style="font-size:11px;color:rgba(255,255,255,0.5);">Version 1.0 &bull; &copy; 2026 Barangay Sta. Lucia</span>
-                        </div>
-
-                        <style>
-                        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
-                        /* Thin scrollbars globally */
-                        ::-webkit-scrollbar { width:4px; height:4px; }
-                        ::-webkit-scrollbar-track { background:#EDEEF2; border-radius:4px; }
-                        ::-webkit-scrollbar-thumb { background:#1A3A6B; border-radius:4px; }
-                        * { scrollbar-width:thin; scrollbar-color:#1A3A6B #EDEEF2; }
-                        </style>
-                    </div>
-
-
-                    <div id="requests-section" class="section-container" style="display: none;">
-                        <style>
-                        .req-tab-btn { padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;background:transparent;color:#6B7280;border:none;transition:all 0.15s; }
-                        .req-tab-btn:hover { background:#fff;color:#1A1A2E; }
-                        .req-tab-btn.active-tab { background:#1A3A6B !important;color:#fff !important;font-weight:600; }
-                        </style>
-
-                        <!-- PAGE HEADING -->
-                        <div style="margin-bottom:20px;">
-                            <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
-                                <i class="bi bi-box-seam"></i> MANAGEMENT
-                            </p>
-                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Equipment Borrowing Requests</h1>
-                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Approve, reject, or track equipment borrowing requests from residents.</p>
-                        </div>
-
-                        <!-- FILTER + SEARCH BAR -->
-                        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
-                            <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="reqFilterTabs">
-                                <button class="req-tab-btn active-tab" onclick="setReqTab('all', this)">All</button>
-                                <button class="req-tab-btn" onclick="setReqTab('pending', this)">Pending</button>
-                                <button class="req-tab-btn" onclick="setReqTab('approved', this)">Approved</button>
-                                <button class="req-tab-btn" onclick="setReqTab('returned', this)">Returned</button>
-                                <button class="req-tab-btn" onclick="setReqTab('rejected', this)">Rejected</button>
-                            </div>
-                            <div style="position:relative;">
-                                <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
-                                <input type="text" id="reqFilterSearch" placeholder="Search resident or equipment..." oninput="applyReqFilter()" style="padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;width:260px;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                            </div>
-                        </div>
-
-                        <!-- TABLE -->
-                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                            <table class="data-table" style="width:100%;border-collapse:collapse;">
-                                <thead>
-                                    <tr style="background:#1A3A6B;">
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Resident</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Equipment</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Qty</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Dates</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Purpose</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="requestsTable"></tbody>
-                            </table>
-                            <div id="requestsPg" class="pg-controls" style="display:none;padding:12px;"></div>
-                            <div id="noRequests" class="empty-state" style="padding:60px 20px;text-align:center;">
-                                <div class="empty-state-icon" style="width:56px;height:56px;background:rgba(26,58,107,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1A3A6B;margin:0 auto 12px;"><i class="bi bi-inbox"></i></div>
-                                <p style="color:#6B7280;font-size:13px;">No pending requests</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="court-bookings-section" class="section-container" style="display:none;">
-                        <style>
-                        .cb-tab-btn { padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;background:transparent;color:#6B7280;border:none;transition:all 0.15s; }
-                        .cb-tab-btn:hover { background:#fff;color:#1A1A2E; }
-                        .cb-tab-btn.cb-active { background:#1A3A6B;color:#fff;font-weight:600; }
-                        </style>
-
-                        <!-- PAGE HEADING -->
-                        <div style="margin-bottom:20px;">
-                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-                                <div>
-                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
-                                        <i class="bi bi-calendar-check-fill"></i> FACILITY MANAGEMENT
-                                    </p>
-                                    <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Facility Reservations</h1>
-                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Review, approve or reject resident reservation requests.</p>
-                                </div>
-                                <div style="display:flex;gap:8px;align-items:center;">
-                                    <button onclick="loadAdminBookings()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1px solid #1A3A6B;border-radius:6px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">
-                                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- FILTER + SEARCH BAR -->
-                        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
-                            <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="courtBookingTabs">
-                                <button class="cb-tab-btn cb-active" onclick="setCourtBookingTab('All', this)">All</button>
-                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Pending', this)">Pending</button>
-                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Approved', this)">Approved</button>
-                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Cancelled', this)">Cancelled / Rejected</button>
-                            </div>
-                            <div style="display:flex;gap:8px;align-items:center;">
-                                <select id="courtBookingVenueFilter" onchange="loadAdminBookings()" style="padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                                    <option value="all">All Venues</option>
-                                    <option value="basketball">Basketball Court</option>
-                                    <option value="multipurpose">Multi-Purpose Hall</option>
-                                </select>
-                                <div style="position:relative;">
-                                    <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
-                                    <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;width:200px;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- TABLE -->
-                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                            <table class="data-table" style="width:100%;border-collapse:collapse;">
-                                <thead>
-                                    <tr style="background:#1A3A6B;">
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Resident</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Venue</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Date</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Time</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Purpose</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="courtBookingsTable"></tbody>
-                            </table>
-                            <div id="noCourtBookings" class="empty-state" style="display:none;padding:60px 20px;text-align:center;">
-                                <div style="width:56px;height:56px;background:rgba(26,58,107,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1A3A6B;margin:0 auto 16px;"><i class="bi bi-calendar-x"></i></div>
-                                <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:6px;">No Reservations Found</div>
-                                <div style="font-size:13px;color:#6B7280;">No facility reservations match your current filters.</div>
-                            </div>
-                        </div>
-                        <div id="courtBookingsPg" class="pg-controls" style="display:none;margin-top:16px;"></div>
-                    </div> <!-- Closes court-bookings-section -->
-
-
-
-                    <div id="rejectReasonModal"
-                        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9000; align-items:center; justify-content:center;">
-                        <div
-                            style="background:#fff; border-radius:16px; padding:28px; width:90%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-                            <h3 style="font-size:18px; font-weight:800; color:#111; margin-bottom:6px;"> Reject Reservation
-                            </h3>
-                            <p style="font-size:13px; color:#6b7280; margin-bottom:18px;">Please provide a reason so the
-                                resident knows why their booking was rejected.</p>
-                            <textarea id="rejectReasonText" rows="4"
-                                placeholder="e.g. The venue is reserved for a barangay event on this date."
-                                style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
-                                onfocus="this.style.borderColor='#ef4444'"
-                                onblur="this.style.borderColor='#d1d5db'"></textarea>
-                            <div style="display:flex; gap:10px; margin-top:16px;">
-                                <button onclick="closeRejectModal()"
-                                    style="flex:1; padding:11px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff;">Cancel</button>
-                                <button onclick="confirmReject()"
-                                    style="flex:1; padding:11px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;">Confirm
-                                    Reject</button>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div id="concerns-section" class="section-container" style="display: none;">
-
-                        <!-- PAGE HEADING -->
-                        <div style="margin-bottom:20px;">
-                            <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
-                                <i class="bi bi-megaphone-fill"></i> CITIZEN ENGAGEMENT
-                            </p>
-                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Citizen Concerns</h1>
-                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Respond to and track concerns submitted by residents.</p>
-                        </div>
-
-                        <!-- FILTER + SEARCH BAR -->
-                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px;">
-                            <span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;">Filter:</span>
-                            <select id="concernStatusFilter" onchange="applyConcernFilter()" style="padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                                <option value="all">All Status</option>
-                                <option value="open">Submitted</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="resolved">Resolved</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                            <div style="position:relative;flex:1;min-width:180px;max-width:340px;">
-                                <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
-                                <input type="text" id="concernSearch" placeholder="Search citizen or concern..." oninput="applyConcernFilter()" style="width:100%;padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                            </div>
-                        </div>
-
-                        <!-- TABLE -->
-                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                            <table class="data-table" style="width:100%;border-collapse:collapse;">
-                                <thead>
-                                    <tr style="background:#1A3A6B;">
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Citizen</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Address</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Category</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Title</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Date</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="concernsTable"></tbody>
-                            </table>
-                            <div id="concernsPg" class="pg-controls" style="display:none;padding:12px;"></div>
-                        </div>
-                    </div>
-
-                    <div id="events-section" class="section-container" style="display: none;">
-                        <div class="section-content" style="padding: 24px;">
-
-                            <input type="hidden" id="adminSelectedVenue" value="basketball">
-
-                            <!-- Top/Bottom Layout -->
-                            <div class="admin-cal-grid" style="display:flex; flex-direction:column; gap:32px; align-items:stretch;">
-
-                                <!-- Calendar Card (Left Side) -->
-                                <div style="background:var(--surface, #fff); border-radius:24px; padding:32px; box-shadow:0 12px 40px rgba(0,0,0,0.06); border:1px solid var(--border, #f1f5f9); position:relative; overflow:hidden;">
-                                    <!-- Month Header -->
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; position:relative; z-index:10;">
-                                        <h2 id="adminCalendarMonth" style="font-size:24px; font-weight:800; color:var(--text, #0f172a); margin:0; letter-spacing:-0.02em;"></h2>
-                                        <div style="display:flex; gap:8px; align-items:center;">
-                                            <button onclick="changeAdminMonth(-1)" style="width:40px;height:40px;border-radius:12px;border:1px solid var(--border, #e2e8f0);background:var(--surface, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:var(--muted, #64748b);" onmouseover="this.style.background='var(--panel-bg, #f8fafc)';this.style.color='var(--text, #0f172a)';this.style.borderColor='var(--border, #cbd5e1)';" onmouseout="this.style.background='var(--surface, #fff)';this.style.color='var(--muted, #64748b)';this.style.borderColor='var(--border, #e2e8f0)';">&lt;</button>
-                                            <button onclick="jumpToToday()" style="padding:0 14px;height:40px;border-radius:12px;border:1px solid var(--border, #e2e8f0);background:var(--surface, #fff);cursor:pointer;font-size:12px;font-weight:700;color:#a855f7;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;letter-spacing:0.02em;" onmouseover="this.style.background='var(--panel-bg, #faf5ff)';this.style.borderColor='var(--border, #e9d5ff)';" onmouseout="this.style.background='var(--surface, #fff)';this.style.borderColor='var(--border, #e2e8f0)';">Today</button>
-                                            <button onclick="changeAdminMonth(1)" style="width:40px;height:40px;border-radius:12px;border:1px solid var(--border, #e2e8f0);background:var(--surface, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:var(--muted, #64748b);" onmouseover="this.style.background='var(--panel-bg, #f8fafc)';this.style.color='var(--text, #0f172a)';this.style.borderColor='var(--border, #cbd5e1)';" onmouseout="this.style.background='var(--surface, #fff)';this.style.color='var(--muted, #64748b)';this.style.borderColor='var(--border, #e2e8f0)';">&gt;</button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Day Labels -->
-                                    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:12px; position:relative; z-index:10; padding-bottom:12px;">
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Sun</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Mon</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Tue</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Wed</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Thu</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Fri</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Sat</div>
-                                    </div>
-                                    <div id="adminCalendarGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; position:relative; z-index:10;"></div>
-
-                                    <!-- Legend -->
-                                    <div style="display:flex; justify-content:center; gap:20px; margin-top:32px; padding-top:24px; border-top:1px solid var(--border, #f1f5f9); position:relative; z-index:10;">
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-available" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Available</span></div>
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-event" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Brgy Event</span></div>
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-booked" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Booked</span></div>
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-past" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Past</span></div>
-                                    </div>
-                                </div>
-
-                                <!-- Right Panel: Schedule Overview -->
-                                <div style="min-width:0; background:var(--surface, #fff); border-radius:24px; border:1px solid var(--border, #f1f5f9); box-shadow:0 12px 40px rgba(0,0,0,0.06); display:flex; flex-direction:column; overflow:hidden;">
-                                    <div style="padding:24px 24px 0 24px; flex-shrink:0;">
-                                        <h2 style="font-size:20px; font-weight:800; color:var(--text, #0f172a); margin:0 0 6px 0; letter-spacing:-0.02em;">Schedule Overview</h2>
-                                        <p style="font-size:13px; color:var(--muted, #64748b); margin:0;">Click any date to view its schedule and add events.</p>
-                                    </div>
-
-                                    <div style="padding:20px 24px 24px 24px; flex-grow:1; display:flex; flex-direction:column;">
-
-                                        <!-- All Bookings List -->
-                                        <h3 style="font-size:14px;font-weight:700;color:var(--text, #1e293b);margin:0 0 10px;"> All Active Bookings & Events</h3>
-                                        <div id="adminAllBookingsList" style="display:flex;flex-direction:column;gap:8px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div id="equipment-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>Inventory</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-small btn-light"
-                                    onclick="printEquipmentReport()">
-                                    Print</button>
-                                <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add Item</button>
-                    <button class="btn btn-small btn-light" onclick="toggleMaintenanceLog()" id="maintenanceLogToggle"><i class="bi bi-clipboard2-pulse"></i> Maintenance Log</button>
-                            </div>
-                        </div>
-                        <div class="section-content" style="padding: 16px 26px 26px;">
-                            <div class="admin-tables">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: left;">Equipment</th>
-                                            <th style="text-align: center;">Total</th>
-                                            <th style="text-align: center;">Available</th>
-                                            <th style="text-align: center;">Under Repair</th>
-                                            <th style="text-align: center;">For Disposal</th>
-                                            <th style="text-align: center;">Status</th>
-                                            <th style="text-align: right;">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="equipmentTable"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div> 
-
-                    <!-- MAINTENANCE LOG PANEL -->
-                    <div id="maintenanceLogPanel" style="display:none; padding: 0 26px 26px;">
-                        <div style="background: var(--card,#1e293b); border-radius: 12px; border: 1px solid var(--border,#334155); overflow:hidden;">
-                            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border,#334155); display:flex; align-items:center; justify-content:space-between;">
-                                <div style="display:flex;align-items:center;gap:10px;">
-                                    <span style="font-size:20px;"><i class="bi bi-wrench-adjustable"></i></span>
-                                    <div>
-                                        <h4 style="margin:0;font-size:15px;font-weight:700;color:var(--text,#f1f5f9);">Maintenance History</h4>
-                                        <p style="margin:0;font-size:12px;color:var(--muted,#94a3b8);">All Under Repair & For Disposal changes</p>
-                                    </div>
-                                </div>
-                                <input type="text" id="maintenanceSearch" placeholder="Search item..." oninput="filterMaintenanceLogs()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border,#334155);background:var(--bg,#0f172a);color:var(--text,#f1f5f9);font-size:13px;width:200px;">
-                            </div>
-                            <div style="overflow-x:auto;">
-                                <table style="width:100%;border-collapse:collapse;">
-                                    <thead>
-                                        <tr style="background:var(--bg,#0f172a);">
-                                            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;letter-spacing:0.05em;">Date & Time</th>
-                                            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Equipment</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Action</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Qty Changed</th>
-                                            <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Before → After</th>
-                                            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted,#94a3b8);text-transform:uppercase;">Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="maintenanceLogTable">
-                                        <tr><td colspan="6" style="padding:32px;text-align:center;color:var(--muted,#94a3b8);">Loading...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- USERS SECTION -->
-                    <div id="users-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <div>
-                                <h3> Manage Users</h3>
-                                <p style="font-size: 13px; color: var(--muted); margin-top: 5px;">Registered residents uploaded from Excel or CSV</p>
-                            </div>
-                            <div style="display:flex;gap:8px;">
-                                <a href="data:text/csv;charset=utf-8,barangay_id%2Cfull_name%2Cemail%2Cphone%2Caddress%0ABGY-001%2CJuan%20dela%20Cruz%2Cjuan%40email.com%2C09171234567%2C123%20Rizal%20St." download="resident_template.csv" class="btn btn-small btn-light" style="text-decoration:none;"> Download Template</a>
-                                <button class="btn btn-small btn-primary" onclick="document.getElementById('batchUploadModal').classList.add('active')"> Upload Excel / CSV</button>
-                            </div>
-                        </div>
-                        <div class="section-content">
-                            <div style="padding:12px 16px 4px;"><div style="position:relative;max-width:380px;"><i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;"></i><input type="text" id="usersSearch" placeholder="Search name, Barangay ID, email..." oninput="loadUsers()" style="width:100%;padding:8px 12px 8px 32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;"></div></div>
-                            <div class="admin-tables">
-                                <table class="data-table">
-                                <thead>
-                                        <tr>
-                                            <th>Barangay ID</th>
-                                            <th>Full Name</th>
-                                            <th>Phone</th>
-                                            <th>Email</th>
-                                            <th>Address</th>
-                                            <th>Status</th>
-                                            <th style="text-align:center;">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="usersTable"></tbody>
-                                </table>
-                                <div id="usersPg" class="pg-controls" style="display:none;"></div>
-                                <div id="noUsers" class="empty-state" style="display: none;">
-                                    <div class="empty-state-icon"></div>
-                                    <p>No registered users found. Use Batch Upload to add residents.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- Users Section -->
-
-                    <!-- BATCH UPLOAD MODAL -->
-                    <div id="batchUploadModal" class="modal">
-                        <div class="modal-content" style="max-width:560px;">
-                            <div class="modal-header">
-                                <h3> Batch Upload Residents</h3>
-                                <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')">&times;</button>
-                            </div>
-                            <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Upload an <strong>Excel (.xlsx)</strong> or <strong>CSV</strong> file. Required columns: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">barangay_id, full_name</code>. Optional: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">email, phone, address</code></p>
-                            
-                            <div id="batchDropZone" style="border:2px dashed var(--border);border-radius:14px;padding:36px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--panel-bg);" onclick="document.getElementById('batchFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#10b981';this.style.background='var(--green-50)';" ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';" ondrop="event.preventDefault();this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';handleBatchFileDrop(event)">
-                                <div style="font-size:36px;margin-bottom:8px;"></div>
-                                <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Drop Excel or CSV file here</p>
-                                <p style="font-size:12px;color:var(--muted);">or click to browse &mdash; supports .xlsx, .xls, .csv</p>
-                                <input type="file" id="batchFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="previewBatchFile(this.files[0])">
-                            </div>
-
-                            <div id="batchPreview" style="display:none;margin-top:16px;">
-                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;">Preview <span id="batchRowCount" style="color:var(--green);"></span></div>
-                                <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
-                                    <table class="data-table" style="font-size:12px;">
-                                        <thead>
-                                            <tr><th>Barangay ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Address</th></tr>
-                                        </thead>
-                                        <tbody id="batchPreviewRows"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div id="batchUploadResult" style="display:none;margin-top:12px;font-size:13px;padding:10px 14px;border-radius:10px;"></div>
-
-                            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
-                                <button class="btn btn-light" onclick="document.getElementById('batchUploadModal').classList.remove('active');resetBatchUpload()">Cancel</button>
-                                <button class="btn btn-primary" id="batchUploadBtn" onclick="submitBatchUpload()" disabled>Upload Residents</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Activity Log Section (Premium) -->
-                    
-<div class="section-container" id="audit-log-section" style="display:none; padding: 24px;">
-    <div class="section-header" style="margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-            <i class="bi bi-receipt-cutoff" style="color: #6366f1; font-size: 28px;"></i>
-            <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Audit Log</h2>
-        </div>
-        <p style="color: var(--muted); font-size: 14px; margin: 0;">System operational tracking for reservations, requests, and concerns.</p>
-    </div>
-
-    <!-- Filter Bar -->
-    <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">ACTION</label>
-            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <option value="all">All Actions</option>
-                <option value="Borrow">Borrow Equipment</option>
-                <option value="Reserve">Facility Reservation</option>
-                <option value="Concern">Concerns</option>
-                <option value="Event">Events</option>
-            </select>
-        </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-        </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-        </div>
-        <div style="flex: 2; min-width: 200px; position: relative;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
-            <div style="display: flex;">
-                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <button onclick="renderAuditLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
-            </div>
-        </div>
-        <div>
-            <button onclick="printAuditLog()" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <i class="bi bi-printer"></i> Print
-            </button>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div style="background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div class="table-responsive">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="auditLogTable">
-                <thead>
-                    <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">TIMESTAMP</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">PERFORMED BY</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">ROLE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">ACTION</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">MODULE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">STATUS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DETAILS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: right;"></th>
-                    </tr>
-                </thead>
-                <tbody id="auditList">
-                    <!-- Loaded dynamically -->
-                </tbody>
-            </table>
-        </div>
-        <!-- Audit Log Pagination Controls -->
-        <div id="auditPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
-            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
-            <span id="auditPageInfo" style="font-size: 13px; color: var(--muted);">Page 1 of 1</span>
-            <button id="auditNextBtn" onclick="changeAuditPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
-        </div>
-    </div>
-</div>
-
-<div class="section-container" id="security-log-section" style="display:none; padding: 24px;">
-    <div class="section-header" style="margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-            <i class="bi bi-shield-fill-check" style="color: #ef4444; font-size: 28px;"></i>
-            <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Security Log</h2>
-        </div>
-        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication &amp; session events &mdash; OWASP A09:2021 compliant monitoring.</p>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-grid" style="gap: 16px; margin-bottom: 24px;">
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
-            <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
-        </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">FAILED ATTEMPTS TODAY</div>
-            <div id="secStatFailed" style="font-size: 28px; font-weight: 800; color: #eab308;">0</div>
-        </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="bi bi-exclamation-triangle-fill"></i> ANOMALIES TODAY</div>
-            <div id="secStatAnomalies" style="font-size: 28px; font-weight: 800; color: #ef4444;">0</div>
-        </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">TOTAL RECORDS</div>
-            <div id="secStatTotal" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
-        </div>
-    </div>
-
-    <!-- Quick Filter Tabs -->
-    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                                <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: white; font-weight: 700; font-size: 13px; cursor: pointer;">🔵 Login Events</button>
-                                <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">📋 All Events</button>
-                                <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">❌ Failed Only</button>
-                                <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">⚠️ Anomalies</button>
-    </div>
-
-    <!-- Filter Bar -->
-    <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">EVENT TYPE</label>
-            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <option value="all">All Events</option>
-                <option value="logins" selected>Login Events Only</option>
-                <option value="success">Success Only</option>
-                <option value="failed">Failed Attempts</option>
-                <option value="anomaly">Anomalies</option>
-            </select>
-        </div>
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">AUTH METHOD</label>
-            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <option value="all">All Methods</option>
-                <option value="Password">Password</option>
-                <option value="Google">Google</option>
-            </select>
-        </div>
-        <div style="display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 8px;">
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;">
-                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444;"> Only Anomalies
-            </label>
-        </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-        </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-        </div>
-        <div style="flex: 2; min-width: 200px; position: relative;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
-            <div style="display: flex;">
-                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <button onclick="renderSecurityLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div style="background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div class="table-responsive">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="securityLogTable">
-                <thead>
-                    <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted); width: 40px;"></th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">TIMESTAMP</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">EMAIL / USER</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">EVENT</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">AUTH</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">IP ADDRESS</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DEVICE</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DETAILS</th>
-                    </tr>
-                </thead>
-                <tbody id="securityList">
-                    <!-- Loaded dynamically -->
-                </tbody>
-            </table>
-        </div>
-        <!-- Security Log Pagination Controls -->
-        <div id="securityPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
-            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
-            <span id="securityPageInfo" style="font-size: 13px; color: var(--muted);">Page 1 of 1</span>
-            <button id="securityNextBtn" onclick="changeSecurityPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
-        </div>
-    </div>
-</div>
-
-
-<div id="profile-section" class="section-container" style="display: none;">
-                        <div class="section-header"
-                            style="margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
-                            <h3
-                                style="font-size: 28px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px;">
-                                <i class="bi bi-person-badge" style="color: var(--primary);"></i> My Profile
-                            </h3>
-                            <span style="font-size: 14px; color: var(--muted); font-weight: 500;">Manage your personal
-                                information and security settings seamlessly.</span>
-                        </div>
-                        <div class="section-content">
-                            <div class="profile-grid"
-                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
-                                <!-- Profile Card -->
-                                <div class="premium-card"
-                                    style="background: #fff; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                                    <div
-                                        style="background: linear-gradient(135deg, var(--green-light), #ecfdf5); padding: 25px 30px; border-bottom: 1px solid var(--border);">
-                                        <h3
-                                            style="margin: 0; font-size: 18px; font-weight: 700; color: var(--green-dark);">
-                                            <i class="bi bi-person-lines-fill"></i> Personal Details
-                                        </h3>
-                                    </div>
-                                    <div style="padding: 30px;">
-                                        <form id="profileForm">
-                                            <div class="form-group" style="margin-bottom: 20px;">
-                                                <label
-                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Full
-                                                    Name</label>
-                                                <input type="text" id="fullName" placeholder="Your full name"
-                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
-                                                    onfocus="this.style.borderColor='var(--primary)'"
-                                                    onblur="this.style.borderColor='var(--border)'">
-                                            </div>
-                                            <div class="form-group" style="margin-bottom: 20px;">
-                                                <label
-                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Email
-                                                    Address</label>
-                                                <input type="email" id="email" placeholder="your@email.com"
-                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
-                                                    onfocus="this.style.borderColor='var(--primary)'"
-                                                    onblur="this.style.borderColor='var(--border)'">
-                                            </div>
-                                            <div class="form-group" style="margin-bottom: 30px;">
-                                                <label
-                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
-                                                <input type="text" id="username" disabled
-                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; background: #f9fafb; color: var(--muted); cursor: not-allowed; box-sizing: border-box;">
-                                            </div>
-                                            <button type="submit"
-                                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, var(--green-base), var(--green-dark)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);"
-                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)'"
-                                                onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 14px rgba(16, 185, 129, 0.4)'">
-                                                Update Profile <i class="bi bi-arrow-right-short"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                <!-- Password Card -->
-                                <div class="premium-card"
-                                    style="background: #fff; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                                    <div
-                                        style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding: 25px 30px; border-bottom: 1px solid var(--border);">
-                                        <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #1e3a8a;"><i
-                                                class="bi bi-shield-lock-fill"></i> Security Settings</h3>
-                                    </div>
-                                    <div style="padding: 30px;">
-                                        <form id="passwordForm">
-                                            <div class="form-group" style="margin-bottom: 20px;">
-                                                <label
-                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Current
-                                                    Password</label>
-                                                <input type="password" id="currentPassword" placeholder=""
-                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
-                                                    onfocus="this.style.borderColor='#3b82f6'"
-                                                    onblur="this.style.borderColor='var(--border)'">
-                                            </div>
-                                            <div class="form-group" style="margin-bottom: 20px;">
-                                                <label
-                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">New
-                                                    Password</label>
-                                                <input type="password" id="newPassword" placeholder=""
-                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
-                                                    onfocus="this.style.borderColor='#3b82f6'"
-                                                    onblur="this.style.borderColor='var(--border)'">
-                                            </div>
-                                            <div class="form-group" style="margin-bottom: 30px;">
-                                                <label
-                                                    style="font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Confirm
-                                                    New Password</label>
-                                                <input type="password" id="confirmPassword" placeholder=""
-                                                    style="width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; transition: border-color 0.3s ease; box-sizing: border-box;"
-                                                    onfocus="this.style.borderColor='#3b82f6'"
-                                                    onblur="this.style.borderColor='var(--border)'">
-                                            </div>
-                                            <button type="submit"
-                                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);"
-                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5)'"
-                                                onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 14px rgba(59, 130, 246, 0.4)'">
-                                                Update Password <i class="bi bi-shield-check"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!--  SYSTEM INFO (PREMIUM)  -->
-                    <div id="system-section" class="section-container" style="display: none;">
-                        <div class="section-header"
-                            style="margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
-                            <h3
-                                style="font-size: 28px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px;">
-                                <i class="bi bi-hdd-network" style="color: #6366f1;"></i> System Analytics
-                            </h3>
-                            <span style="font-size: 14px; color: var(--muted); font-weight: 500;">Real-time overview of
-                                platform statistics and infrastructure details.</span>
-                        </div>
-                        <div class="section-content">
-                            <!-- Premium Stats Grid -->
-                            <div
-                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px;">
-
-                                <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-5px)'"
-                                    onmouseout="this.style.transform='none'">
-                                    <div
-                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-people-fill"></i>
-                                    </div>
-                                    <div
-                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Total Users</div>
-                                    <div id="statTotalUsers" style="font-size: 42px; font-weight: 800; line-height: 1;">
-                                        0</div>
-                                </div>
-
-                                <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-5px)'"
-                                    onmouseout="this.style.transform='none'">
-                                    <div
-                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-person-check-fill"></i>
-                                    </div>
-                                    <div
-                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Regular Users</div>
-                                    <div id="statRegularUsers"
-                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
-                                </div>
-
-                                <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-5px)'"
-                                    onmouseout="this.style.transform='none'">
-                                    <div
-                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-shield-lock-fill"></i>
-                                    </div>
-                                    <div
-                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Administrators</div>
-                                    <div id="statAdmins" style="font-size: 42px; font-weight: 800; line-height: 1;">0
-                                    </div>
-                                </div>
-
-                                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-5px)'"
-                                    onmouseout="this.style.transform='none'">
-                                    <div
-                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-box-seam-fill"></i>
-                                    </div>
-                                    <div
-                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Equipment Items</div>
-                                    <div id="statEquipmentAdminInfo"
-                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
-                                </div>
-
-                                <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-5px)'"
-                                    onmouseout="this.style.transform='none'">
-                                    <div
-                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-exclamation-triangle-fill"></i>
-                                    </div>
-                                    <div
-                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Pending Req.</div>
-                                    <div id="statPendingAdminInfo"
-                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
-                                </div>
-
-                                <div style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.3); position: relative; overflow: hidden; transition: transform 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-5px)'"
-                                    onmouseout="this.style.transform='none'">
-                                    <div
-                                        style="position: absolute; right: -10px; top: -10px; font-size: 100px; opacity: 0.1;">
-                                        <i class="bi bi-calendar-event-fill"></i>
-                                    </div>
-                                    <div
-                                        style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 10px;">
-                                        Facility Reservations</div>
-                                    <div id="statBookingsAdminInfo"
-                                        style="font-size: 42px; font-weight: 800; line-height: 1;">0</div>
-                                </div>
-
-                            </div>
-
-                            <!-- System Infrastructure Panel -->
-                            <div
-                                style="background: #fff; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid var(--border);">
-                                <div
-                                    style="background: #f8fafc; padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text);"><i
-                                            class="bi bi-cpu" style="margin-right: 8px;"></i> System Infrastructure</h3>
-                                    <span
-                                        style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
-                                        All Systems Operational</span>
-                                </div>
-                                <div
-                                    style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; align-items: center;">
-                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
-                                        <div
-                                            style="background: #e0e7ff; color: #4338ca; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-box"></i>
-                                        </div>
-                                        <div>
-                                            <p
-                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-                                                Version</p>
-                                            <p
-                                                style="font-weight: 800; font-size: 16px; margin: 0; color: var(--text);">
-                                                BMS v1.0</p>
-                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Core
-                                                Engine</p>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
-                                        <div
-                                            style="background: #dcfce7; color: #15803d; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-database"></i>
-                                        </div>
-                                        <div>
-                                            <p
-                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-                                                Backend</p>
-                                            <p
-                                                style="font-weight: 800; font-size: 16px; margin: 0; color: var(--text);">
-                                                Supabase</p>
-                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">PostgreSQL
-                                                + Auth</p>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
-                                        <div
-                                            style="background: #fae8ff; color: #c026d3; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-geo-alt"></i>
-                                        </div>
-                                        <div>
-                                            <p
-                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-                                                Location</p>
-                                            <p
-                                                style="font-weight: 800; font-size: 16px; margin: 0; color: var(--text);">
-                                                Sta. Lucia</p>
-                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">Quezon
-                                                City</p>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: flex-start; gap: 15px;">
-                                        <div
-                                            style="background: #f1f5f9; color: #475569; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                            <i class="bi bi-clock-history"></i>
-                                        </div>
-                                        <div>
-                                            <p
-                                                style="color: var(--muted); font-size: 11px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-                                                Last Sync</p>
-                                            <p style="font-weight: 800; font-size: 14px; margin: 0; color: var(--text);"
-                                                id="lastUpdatedInfo"></p>
-                                            <p style="color: var(--muted); font-size: 12px; margin-top: 2px;">
-                                                Auto-refreshed</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-            </div><!-- end .main-content -->
-        </div><!-- end .admin-body-layout -->
-
-        <div class="modal" id="concernModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Respond to Concern</h3>
-                    <button class="modal-close" onclick="closeModal('concernModal')">&times;</button>
-                </div>
-                <div id="concernDetails" style="margin-bottom: 18px;"></div>
-                <form id="concernResponseForm">
-                    <input type="hidden" id="concernId">
-                    <div class="form-group">
-                        <label for="concernAssignee">Assign To</label>
-                        <input type="text" id="concernAssignee" placeholder="e.g. Tanod Juan">
-                    </div>
-                    <div class="form-group">
-                        <label for="concernStatus">Status</label>
-                        <select id="concernStatus" required>
-                            <option value="pending">Pending</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="concernResponse">Response</label>
-                        <textarea id="concernResponse" placeholder="Enter your response..." rows="3"></textarea>
-                    </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Response</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('concernModal')">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="eventModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Add Court Event</h3>
-                    <button class="modal-close" onclick="closeModal('eventModal')">&times;</button>
-                </div>
-                <form id="eventForm" onsubmit="window.handleAdminEventSubmit(event)">
-                    <div class="form-group">
-                        <label for="eventTitle">Event Title</label>
-                        <input type="text" id="eventTitle" placeholder="e.g., Basketball Tournament" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDate">Date</label>
-                        <input type="date" id="eventDate" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="eventTime">Start Time</label>
-                            <input type="time" id="eventTime" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eventEndTime">End Time</label>
-                            <input type="time" id="eventEndTime">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventLocation">Location</label>
-                        <input type="text" id="eventLocation" value="Barangay Basketball Court" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDescription">Event Details (Description)</label>
-                        <textarea id="eventDescription" placeholder="e.g., Free vaccine drive for residents" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventCapacity">Maximum Capacity Limit</label>
-                        <input type="number" id="eventCapacity" placeholder="Leave empty or 0 for unlimited" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="eventOrganizer">Organizer</label>
-                        <input type="text" id="eventOrganizer" placeholder="Organizer name" required>
-                    </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Event</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('eventModal')">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="editEventModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Edit Court Event</h3>
-                    <button class="modal-close" onclick="closeModal('editEventModal')">&times;</button>
-                </div>
-                <form id="editEventForm">
-                    <input type="hidden" id="editEventId">
-                    <div class="form-group">
-                        <label for="editEventTitle">Event Title</label>
-                        <input type="text" id="editEventTitle" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEventDate">Date</label>
-                        <input type="date" id="editEventDate" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editEventTime">Start Time</label>
-                            <input type="time" id="editEventTime" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="editEventEndTime">End Time</label>
-                            <input type="time" id="editEventEndTime">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEventLocation">Location</label>
-                        <input type="text" id="editEventLocation" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEventDescription">Event Details (Description)</label>
-                        <textarea id="editEventDescription" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEventCapacity">Maximum Capacity Limit</label>
-                        <input type="number" id="editEventCapacity" placeholder="Leave empty or 0 for unlimited" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="editEventOrganizer">Organizer</label>
-                        <input type="text" id="editEventOrganizer" required>
-                    </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('editEventModal')">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="addEquipmentModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Add Equipment</h3>
-                    <button class="modal-close" onclick="closeModal('addEquipmentModal')">&times;</button>
-                </div>
-                <form id="addEquipmentForm">
-                    <div class="form-group">
-                        <label for="equipName">Equipment Name</label>
-                        <input type="text" id="equipName" placeholder="e.g., Portable Tables" required>
-                    </div>
-                    <input type="hidden" id="equipCategory" value="General">
-                    <input type="hidden" id="equipIcon" value="">
-                    <div class="form-group">
-                        <label for="equipImage">Item Photo</label>
-                        <input type="file" id="equipImage" accept="image/*">
-                        <small style="color:var(--muted);font-size:11px;">Max size 2MB. Optional.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="equipDesc">Description</label>
-                        <textarea id="equipDesc" placeholder="Brief description" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="equipQuantity">Quantity</label>
-                        <input type="number" id="equipQuantity" min="1" value="1" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="equipBroken">Under Repair (Qty)</label>
-                            <input type="number" id="equipBroken" min="0" value="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="equipDisposal">For Disposal (Qty)</label>
-                            <input type="number" id="equipDisposal" min="0" value="0" required>
-                        </div>
-                    </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Equipment</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('addEquipmentModal')">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="editEquipmentModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Edit Equipment</h3>
-                    <button class="modal-close" onclick="closeModal('editEquipmentModal')">&times;</button>
-                </div>
-                <form id="editEquipmentForm">
-                    <input type="hidden" id="editEquipId">
-                    <div class="form-group">
-                        <label for="editEquipName">Equipment Name</label>
-                        <input type="text" id="editEquipName" required>
-                    </div>
-                    <input type="hidden" id="editEquipCategory" value="General">
-                    <input type="hidden" id="editEquipIcon" value="">
-                    <div class="form-group">
-                        <label for="editEquipImage">Update Item Photo</label>
-                        <input type="file" id="editEquipImage" accept="image/*">
-                        <div id="editEquipImagePreview" style="margin-top:10px;display:none;">
-                            <img src="" alt="Preview" style="max-width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
-                        </div>
-                        <small style="color:var(--muted);font-size:11px;">Leave empty to keep current photo.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEquipDesc">Description</label>
-                        <textarea id="editEquipDesc" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editEquipQuantity">Total Quantity</label>
-                        <input type="number" id="editEquipQuantity" min="1" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editEquipBroken">Under Repair (Qty)</label>
-                            <input type="number" id="editEquipBroken" min="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="editEquipDisposal">For Disposal (Qty)</label>
-                            <input type="number" id="editEquipDisposal" min="0" required>
-                        </div>
-                    </div>
-                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="editEquipArchived" style="width: 16px; margin: 0;">
-                        <label for="editEquipArchived" style="margin: 0;">Archive this equipment</label>
-                    </div>
-                    <div class="form-row" style="margin-top: 16px;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
-                        <button type="button" class="btn btn-danger" style="width: 100%;"
-                            onclick="closeModal('editEquipmentModal')">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="js/xlsx.full.min.js"></script>
-        <script src="js/supabase-config.js"></script>
-        <script src="js/crypto-utils.js"></script>
-        <script src="js/app.js"></script>
-        <script src="js/realtime-listeners.js"></script>
-        <script src="js/darkmode.js"></script>
-        <script>
             if (!requireAuth()) window.location.href = 'login.html';
             if (!requireAdmin()) window.location.href = 'home.html';
 
@@ -1957,7 +212,7 @@
 
                         if (conflicting.length > 0) {
                             let warningHtml = `<div style="margin-top:16px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:16px;">
-                                <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;">Ãƒâ€šÃ‚Â  ${conflicting.length} existing booking(s) conflict with this event:</div>
+                                <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;">  ${conflicting.length} existing booking(s) conflict with this event:</div>
                                 <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">`;
                             conflicting.forEach(b => {
                                 warningHtml += `<div style="font-size:12px;background:#fff;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;color:#78350f;">
@@ -2502,7 +757,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ AUDIT LOG ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── AUDIT LOG ──
             let _allAuditLogs = [];
             let auditCurrentPage = 1;
             const auditItemsPerPage = 10;
@@ -2657,7 +912,7 @@
                     if (a.includes('delete') || a.includes('removed')) return { label: 'Deleted', dot: '#ef4444' };
                     if (a.includes('batch') || a.includes('upload') || a.includes('update') || a.includes('edit')) return { label: 'Completed', dot: '#22c55e' };
                     if (a.includes('login') || a.includes('logout')) return { label: 'Done', dot: '#22c55e' };
-                    return { label: 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â', dot: '#94a3b8' };
+                    return { label: '—', dot: '#94a3b8' };
                 }
 
                 // Derive module from entity_type or action
@@ -2688,7 +943,7 @@
                     const d    = new Date(a.created_at);
                     const who  = a.users ? (a.users.full_name || a.users.username || 'System') : (a.target_username || 'System');
                     const role = a.users ? (a.users.role || (who.toLowerCase().includes('admin') ? 'admin' : 'user')) : 'system';
-                    const roleLabel = role === 'admin' ? '<i class="bi bi-shield-lock-fill"></i> Admin' : role === 'user' ? '<i class="bi bi-person-fill"></i> User' : '<i class="bi bi-question-circle"></i> Unknown';
+                    const roleLabel = role === 'admin' ? '🛡️ Admin' : role === 'user' ? '👤 User' : '⚙️ System';
                     const roleColor = role === 'admin' ? '#8b5cf6' : role === 'user' ? '#0ea5e9' : '#94a3b8';
                     const roleBg = role === 'admin' ? 'rgba(139,92,246,0.15)' : role === 'user' ? 'rgba(14,165,233,0.15)' : 'rgba(148,163,184,0.15)';
                     const roleStyle = `display:inline-flex;align-items:center;gap:4px;background:${roleBg};color:${roleColor};`;
@@ -2746,7 +1001,7 @@
                 document.getElementById('auditDetailsModal').style.display = 'none';
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ SECURITY LOG ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── SECURITY LOG ──
             let _allSecurityLogs = [];
             let securityCurrentPage = 1;
             const securityItemsPerPage = 10;
@@ -2982,7 +1237,7 @@
                         bdg = 'background:#fee2e2;color:#10b981;';
                     }
 
-                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
+                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
                     const ipColor = (ev === 'New IP Detected' || ev === 'Suspicious Login Activity') ? '#ef4444' : 'var(--muted)';
                     return `<tr style="border-bottom:1px solid var(--border);${rowBg}">
                         <td style="padding: 12px; text-align:center;">${icon}</td>
@@ -2990,14 +1245,14 @@
                         <td style="padding: 12px;"><div style="font-weight:700; color: var(--text);">${uName}</div><div style="font-size:11px;color:var(--muted);">${uMail}</div></td>
                         <td style="padding: 12px;"><span style="${bdg}padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${ev}</span></td>
                         <td style="padding: 12px; font-weight: 600; color: var(--text);">${s.auth_method || 'System'}</td>
-                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || '—'}</td>
                         <td style="padding: 12px; font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
-                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'N/A'}</td>
+                        <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || '—'}</td>
                     </tr>`;
                 }).join('');
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ CLEAR LOG FUNCTIONS ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── CLEAR LOG FUNCTIONS ──
 
             async function clearAuditLogs() {
                 if (!confirm('Clear ALL audit log records? This cannot be undone.')) return;
@@ -3172,7 +1427,7 @@
             let _allActivityLogs = [];
 
 
-            // ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â PAGINATION ENGINE ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â
+            // ═══ PAGINATION ENGINE ══════════════════════════════════════════
             const PG_SIZE = 8;
             let _pgUsersPage = 1, _pgUsersList = [];
             let _pgConcernsPage = 1, _pgConcernsList = [], _pgConcernFilter = 'all';
@@ -3192,16 +1447,16 @@
                 let btns = '';
                 for (let p = 1; p <= totalPages; p++) {
                     if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - page) > 1) {
-                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 4px;">ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</span>';
+                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 4px;">…</span>';
                         continue;
                     }
                     btns += '<button class="pg-btn' + (p === page ? ' pg-active' : '') + '" onclick="' + cbName + '(' + p + ')">' + p + '</button>';
                 }
-                el.innerHTML = '<span class="pg-info">Showing ' + s + ' - ' + e + ' of ' + total + '</span>'
-                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>&#8250;</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>&lsaquo;</button></div>';
+                el.innerHTML = '<span class="pg-info">Showing ' + s + '–' + e + ' of ' + total + '</span>'
+                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>‹</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>›</button></div>';
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Users ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── Users ─────────────────────────────────────────────────────────
             function gotoUsersPage(p) { _pgUsersPage = p; renderUsersPagePg(); }
             function renderUsersPagePg() {
                 const tbody = document.getElementById('usersTable');
@@ -3222,7 +1477,7 @@
                 renderPg('usersPg', _pgUsersList.length, PG_SIZE, _pgUsersPage, 'gotoUsersPage');
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Concerns ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── Concerns ─────────────────────────────────────────────────────
             function applyConcernFilter() { _pgConcernFilter = document.getElementById('concernStatusFilter')?.value||'all'; _pgConcernsPage=1; renderConcernsPg(); }
             function gotoConcernsPage(p) { _pgConcernsPage = p; renderConcernsPg(); }
             function _adminConcernStatusLabel(status) {
@@ -3260,26 +1515,26 @@
                 tbody.innerHTML = slice.map(c => {
                     const label = _adminConcernStatusLabel(c.status);
                     const s = sc[label] || {bg:'#f1f5f9',c:'#374151'};
-                    const badge='<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:'+s.bg+';color:'+s.c+';text-transform:uppercase;letter-spacing:0.04em;">'+label+'</span>';
+                    const badge='<span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:'+s.bg+';color:'+s.c+';">'+label+'</span>';
                     const dt = c.createdAt||c.created_at ? new Date(c.createdAt||c.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
                     const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-                    const dot = !c.adminRead ? '<span style="display:inline-block;width:7px;height:7px;background:#CE1126;border-radius:50%;margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>' : '';
-                    const resp = _adminParseConcernResponse(c.response).reply ? '<span style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;"><i class=\"bi bi-check-circle-fill\"></i> Replied</span>' : '';
-                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;background:#DBEAFE;color:#1E40AF;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;"><i class=\"bi bi-image-fill\"></i> Photo</span>' : '';
-                    return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(26,58,107,0.04)\'" onmouseout="this.style.background=\'\'">'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;"><div style="line-height:1.3;">'+dot+'<strong style="color:#1A1A2E;">'+(c.userName||'')+'</strong><br><small style="color:#6B7280;font-size:11px;">'+dt+'</small></div></td>'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:12px;color:#6B7280;">'+(c.address||'')+'</td>'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;color:#1A1A2E;">'+(c.category||'')+'</td>'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;color:#1A1A2E;"><div style="display:flex;flex-direction:column;gap:3px;"><span>'+( c.title||'')+'</span>'+resp+( img ? '<div>'+img+'</div>' : '')+'</div></td>'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:12px;color:#6B7280;">'+date+'</td>'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;">'+badge+'</td>'
-                        +'<td style="padding:12px 18px;border-bottom:1px solid #F3F4F6;"><button onclick="event.stopPropagation();openConcernRespond('+c.id+')" style="padding:6px 14px;font-size:12px;font-weight:600;color:#1A3A6B;background:transparent;border:1px solid #1A3A6B;border-radius:6px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background=\'#1A3A6B\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#1A3A6B\'">Respond</button></td>'
+                    const dot = !c.adminRead ? '<span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;margin-right:5px;vertical-align:middle;"></span>' : '';
+                    const resp = _adminParseConcernResponse(c.response).reply ? '<div style="margin-top:3px;font-size:11px;color:#059669;font-style:italic;">✓ Replied</div>' : '';
+                    const img = (c.description&&c.description.includes('[ATTACHED_IMAGE_DATA]'))||c.imageUrl ? '<span style="margin-left:5px;font-size:10px;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:20px;font-weight:700;">📷 Photo</span>' : '';
+                    return '<tr data-cid="'+c.id+'" onclick="openConcernRespond('+c.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
+                        +'<td><div style="line-height:1.3;">'+dot+'<strong style="color:var(--text);">'+(c.userName||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div></td>'
+                        +'<td style="font-size:12px;color:var(--muted);">'+(c.address||'')+'</td>'
+                        +'<td style="color:var(--text);">'+(c.category||'')+'</td>'
+                        +'<td style="color:var(--text);"><div style="display:flex;flex-direction:column;gap:3px;"><span>'+( c.title||'')+'</span>'+resp+( img ? '<div>'+img+'</div>' : '')+'</div></td>'
+                        +'<td style="font-size:12px;color:var(--muted);">'+date+'</td>'
+                        +'<td>'+badge+'</td>'
+                        +'<td><button class="btn btn-small btn-primary" onclick="event.stopPropagation();openConcernRespond('+c.id+')">Respond</button></td>'
                         +'</tr>';
                 }).join('');
                 renderPg('concernsPg', list.length, PG_SIZE, _pgConcernsPage, 'gotoConcernsPage');
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Equipment Requests ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── Equipment Requests ────────────────────────────────────────────
             let _pgReqFilter = 'all';
             let _pgReqSearch = '';
             
@@ -3356,7 +1611,7 @@
                 renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Court Bookings ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── Court Bookings ────────────────────────────────────────────────
             function gotoCourtPage(p) { _pgCourtPage=p; renderCourtPg(); }
             function renderCourtPg() {
                 const tbody = document.getElementById('courtBookingsTable');
@@ -3382,7 +1637,7 @@
                 renderPg('courtBookingsPg', _pgCourtList.length, PG_SIZE, _pgCourtPage, 'gotoCourtPage');
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Multi-Purpose ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── Multi-Purpose ─────────────────────────────────────────────────
             function gotoMpPage(p) { _pgMpPage=p; renderMpPg(); }
             function renderMpPg() {
                 const tbody = document.getElementById('multipurposeBookingsTable');
@@ -3408,7 +1663,7 @@
                 renderPg('multipurposePg', _pgMpList.length, PG_SIZE, _pgMpPage, 'gotoMpPage');
             }
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Activity Log ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+            // ── Activity Log ──────────────────────────────────────────────────
             function gotoActivityPage(p) { _pgActivityPage=p; renderActivityTable(); }
 
             let _activeLogFilter = 'all';
@@ -4150,7 +2405,7 @@
                             if (email) {
                                 await sendEmailNotification({
                                     to_email: email, name,
- title: 'Facility Reservation Update ',
+                                    title: 'Facility Reservation Update  Œ',
                                     message: `We regret to inform you that your Facility Reservation has been REJECTED.`,
                                     details: `Venue: ${b.venueName || b.venue || 'Court'} | Date: ${b.date}${comment ? ' | Reason: ' + comment : ''}`
                                 });
@@ -4531,38 +2786,38 @@
             }
 
             const actionStyles = {
-                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'<i class="bi bi-tools"></i>' },
-                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'<i class="bi bi-check-circle-fill"></i>' },
-                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'<i class="bi bi-trash3-fill"></i>' },
-                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'<i class="bi bi-arrow-counterclockwise"></i>' },
-                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'<i class=\"bi bi-box-seam\"></i>' },
+                'Under Repair':           { bg:'#fef3c7', color:'#92400e', icon:'🔧' },
+                'Repaired':               { bg:'#d1fae5', color:'#065f46', icon:'✅' },
+                'For Disposal':           { bg:'#fee2e2', color:'#991b1b', icon:'🗑️' },
+                'Recovered from Disposal':{ bg:'#dbeafe', color:'#1e40af', icon:'♻️' },
+                'Disposal Cleared (New Stock)': { bg:'#ede9fe', color:'#5b21b6', icon:'📦' },
             };
 
             tbody.innerHTML = logs.map(log => {
-                const style = actionStyles[log.action] || { bg:'#f3f4f6', color:'#374151', icon:'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹' };
+                const style = actionStyles[log.action] || { bg:'#f3f4f6', color:'#374151', icon:'📋' };
                 const dt = log.created_at ? new Date(log.created_at).toLocaleString('en-PH', {
                     month:'short', day:'2-digit', year:'numeric',
                     hour:'2-digit', minute:'2-digit', hour12:true
-                }) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
-                const before = log.prev_count ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
-                const after  = log.new_count  ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
+                }) : '—';
+                const before = log.prev_count ?? '—';
+                const after  = log.new_count  ?? '—';
                 return `<tr style="border-top:1px solid var(--border,#334155);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
                     <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);white-space:nowrap;">${dt}</td>
                     <td style="padding:12px 16px;">
-                        <span style="font-size:13px;font-weight:600;color:var(--text,#f1f5f9);">${log.item_name || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span>
+                        <span style="font-size:13px;font-weight:600;color:var(--text,#f1f5f9);">${log.item_name || '—'}</span>
                     </td>
                     <td style="padding:12px 16px;text-align:center;">
                         <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;background:${style.bg};color:${style.color};">
                             ${style.icon} ${log.action}
                         </span>
                     </td>
-                    <td style="padding:12px 16px;text-align:center;font-size:14px;font-weight:700;color:var(--text,#f1f5f9);">${log.qty_changed ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                    <td style="padding:12px 16px;text-align:center;font-size:14px;font-weight:700;color:var(--text,#f1f5f9);">${log.qty_changed ?? '—'}</td>
                     <td style="padding:12px 16px;text-align:center;font-size:13px;color:var(--muted,#94a3b8);">
                         <span style="color:#94a3b8;">${before}</span>
-                        <span style="margin:0 6px;">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span>
+                        <span style="margin:0 6px;">→</span>
                         <span style="color:var(--text,#f1f5f9);font-weight:600;">${after}</span>
                     </td>
-                    <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);">${log.notes || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                    <td style="padding:12px 16px;font-size:12px;color:var(--muted,#94a3b8);">${log.notes || '—'}</td>
                 </tr>`;
             }).join('');
         }
@@ -4616,7 +2871,7 @@
                             >
                                 ${e.image_url 
                                     ? `<img src="${e.image_url}" alt="${e.name}" style="width:100%;height:100%;object-fit:cover;">` 
-                                    : `<div style="text-align:center;padding:4px;"><div style="font-size:16px;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â·</div><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;">Upload</div></div>`
+                                    : `<div style="text-align:center;padding:4px;"><div style="font-size:16px;">📷</div><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;">Upload</div></div>`
                                 }
                                 <input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange(${e.id}, this)">
                             </div>
@@ -4994,7 +3249,7 @@
                                 `).join('')}
                             </tbody>
                         </table>
-                        <script>
+                        
                             window.onload = function() { window.print(); window.close(); }
                         <\/script>
                     </body>
@@ -5093,7 +3348,7 @@
             <h2>${title}</h2>
             <p class="meta">Barangay Sta. Lucia, Novaliches, Quezon City &nbsp;|&nbsp; Generated: ${new Date().toLocaleString()}</p>
             <hr/>${tableHtml}
-            <script>window.onload=function(){window.print();}<\/script>
+            window.onload=function(){window.print();}<\/script>
             </body></html>`);
                 w.document.close();
             }
@@ -5129,9 +3384,13 @@
             function setCourtBookingTab(tab, btn) {
                 _cbTabFilter = tab;
                 document.querySelectorAll('.cb-tab-btn').forEach(b => {
-                    b.classList.remove('cb-active');
+                    b.style.background = 'var(--bg)';
+                    b.style.color = 'var(--text)';
+                    b.style.border = '1px solid var(--border)';
                 });
-                btn.classList.add('cb-active');
+                btn.style.background = 'var(--primary)';
+                btn.style.color = '#fff';
+                btn.style.border = 'none';
                 loadAdminBookings();
             }
 
@@ -5422,8 +3681,6 @@
                 const dateEl = document.getElementById('welcomeDateStr');
                 const timeEl = document.getElementById('welcomeTime');
                 const today = document.getElementById('todayDate');
-                const heroClockEl = document.getElementById('heroClock');
-                const heroDateEl = document.getElementById('heroDate');
                 function tick() {
                     const now = new Date();
                     const h = now.getHours();
@@ -5435,8 +3692,6 @@
                     if (dateEl) dateEl.textContent = ds;
                     if (today) today.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    if (heroClockEl) heroClockEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    if (heroDateEl) heroDateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
                 }
                 tick();
                 setInterval(tick, 1000);
@@ -5464,7 +3719,7 @@
                 if (el('glanceBookings')) el('glanceBookings').textContent = activeBooks;
                 if (el('glanceUsers')) el('glanceUsers').textContent = users.filter(u => u.role !== 'admin').length;
 
-                // Recent Activity Feed ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â reads from audit_log
+                // Recent Activity Feed — reads from audit_log
                 const feed = document.getElementById('overviewActivityFeed');
                 if (feed) {
                     try {
@@ -5486,16 +3741,16 @@
                         }
 
                         const evtIcon = ev => {
-                            if (!ev) return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â';
-                            if (ev.includes('Login') || ev.includes('Logout')) return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â';
-                            if (ev.includes('Borrow') || ev.includes('Equipment')) return 'ÃƒÂ°Ã…Â¸Ã‚ÂªÃ¢â‚¬Ëœ';
-                            if (ev.includes('Reservation') || ev.includes('Court') || ev.includes('Booking')) return 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â€šÂ¬';
-                            if (ev.includes('Concern')) return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â£';
-                            if (ev.includes('Event')) return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦';
-                            if (ev.includes('User') || ev.includes('Resident')) return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤';
-                            if (ev.includes('Delete') || ev.includes('Remove')) return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â';
-                            if (ev.includes('Update') || ev.includes('Edit')) return 'ÃƒÂ¢Ã…â€œÃ‚ÂÃƒÂ¯Ã‚Â¸Ã‚Â';
-                            return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹';
+                            if (!ev) return '📝';
+                            if (ev.includes('Login') || ev.includes('Logout')) return '🔐';
+                            if (ev.includes('Borrow') || ev.includes('Equipment')) return '🪑';
+                            if (ev.includes('Reservation') || ev.includes('Court') || ev.includes('Booking')) return '🏀';
+                            if (ev.includes('Concern')) return '📣';
+                            if (ev.includes('Event')) return '📅';
+                            if (ev.includes('User') || ev.includes('Resident')) return '👤';
+                            if (ev.includes('Delete') || ev.includes('Remove')) return '🗑️';
+                            if (ev.includes('Update') || ev.includes('Edit')) return '✏️';
+                            return '📋';
                         };
 
                         if (recent.length === 0) {
@@ -5564,10 +3819,7 @@
 
                 body.innerHTML = notifications.map(notif => {
                     const iconClass = notif.type === 'concern' ? 'concern' : notif.type === 'borrow' ? 'request' : 'booking';
-                    let icon = '';
-                    if (notif.type === 'concern') icon = '<i class="bi bi-megaphone-fill"></i>';
-                    else if (notif.type === 'borrow') icon = '<i class="bi bi-box-seam"></i>';
-                    else if (notif.type === 'booking') icon = '<i class="bi bi-calendar-check-fill"></i>';
+                    const icon = notif.type === 'concern' ? '' : notif.type === 'borrow' ? '' : '';
 
                     const timeAgo = formatTimeAgoAdmin(notif.created_at || notif.createdAt);
                     const unreadClass = notif.isRead ? '' : 'unread';
@@ -5730,7 +3982,7 @@
                 dayEvents.forEach(e => {
                     const startM = timeToMinutes(e.time || '07:00');
                     const endM   = timeToMinutes(e.end_time || e.time || '22:00');
-                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“  ' + adminFmt12(e.end_time) : '');
+                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  –  ' + adminFmt12(e.end_time) : '');
                     entries.push({
                         type: 'event', id: e.id, timeStr,
                         label: e.title,
@@ -5762,8 +4014,8 @@
                         if (isFullDayBlock) {
                             // Full-day admin block: show Cancel + Reschedule
                             actionBtns = `
-                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬Ëœ Cancel Event</button>
-                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Reschedule</button>`;
+                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">🗑 Cancel Event</button>
+                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">📅 Reschedule</button>`;
                         } else if (!isBk) {
                             // Normal event: Reschedule + Remove
                             actionBtns = `
@@ -5934,7 +4186,7 @@
                 if(btn) btn.textContent = 'Update Event';
             };
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Cancel a full-day admin block event (frees the date for reservations)
+            // ── Cancel a full-day admin block event (frees the date for reservations)
             window.adminCancelBlockedEvent = async function(id) {
                 if (!await showConfirmModal(
                     'Cancel this full-day block? Users will be able to reserve this date again.',
@@ -5942,7 +4194,7 @@
                 )) return;
                 const res = await deleteEvent(id);
                 if (res.success) {
-                    showAlert('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Day block cancelled. The date is now open for reservations.', 'success');
+                    showAlert('✅ Day block cancelled. The date is now open for reservations.', 'success');
                     const dateStr = document.getElementById('adsDate').value;
                     const venue   = document.getElementById('adsVenue').value;
                     await refreshAdminDaySchedule(dateStr, venue);
@@ -5950,7 +4202,7 @@
                 } else { showAlert('Error: ' + res.message, 'error'); }
             };
 
-            // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Reschedule a full-day admin block to a new date
+            // ── Reschedule a full-day admin block to a new date
             window.adminRescheduleBlockedEvent = async function(id) {
                 const allEvs = await getEvents();
                 const ev = allEvs.find(e => String(e.id) === String(id));
@@ -5965,11 +4217,11 @@
                 picker.id = '_adminBlockReschedulePicker';
                 picker.style.cssText = 'background:#eff6ff;border:2px solid #3b82f6;border-radius:14px;padding:16px;margin-bottom:12px;';
                 picker.innerHTML = `
-                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Reschedule "${ev.title}" to:</p>
+                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">📅 Reschedule "${ev.title}" to:</p>
                     <input type="date" id="_adminBlockNewDate" min="${today}" value="" style="width:100%;padding:9px 12px;border:1.5px solid #93c5fd;border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:10px;">
                     <div style="display:flex;gap:8px;">
-                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirm Reschedule</button>
-                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
+                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">✅ Confirm Reschedule</button>
+                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">✕</button>
                     </div>`;
 
                 const list = document.getElementById('adsScheduleList');
@@ -5991,11 +4243,11 @@
                     });
                     if (alreadyBlocked) {
                         showAlert('That date is already fully blocked by another event. Choose a different date.', 'error');
-                        this.disabled = false; this.textContent = 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirm Reschedule';
+                        this.disabled = false; this.textContent = '✅ Confirm Reschedule';
                         return;
                     }
 
-                    // Only pass known DB column fields ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â avoid camelCase-mapped props like createdAt
+                    // Only pass known DB column fields — avoid camelCase-mapped props like createdAt
                     const res = await updateEvent(id, {
                         title:       ev.title,
                         date:        newDate,
@@ -6009,14 +4261,14 @@
                     });
                     if (res.success) {
                         picker.remove();
-                        showAlert(`ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
+                        showAlert(`✅ Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
                         const dateStr = document.getElementById('adsDate').value;
                         const venue   = document.getElementById('adsVenue').value;
                         await refreshAdminDaySchedule(dateStr, venue);
                         if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
                     } else {
                         showAlert('Error rescheduling: ' + res.message, 'error');
-                        this.disabled = false; this.textContent = 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirm Reschedule';
+                        this.disabled = false; this.textContent = '✅ Confirm Reschedule';
                     }
                 });
             };
@@ -6258,7 +4510,7 @@
                     renderConcernsPg();
                 } catch (e) {
                     console.error("loadConcerns crash:", e);
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">Ãƒâ€šÃ‚Â  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
                 }
             }
 
@@ -6285,7 +4537,7 @@
                 // Header subtitle
                 const submittedShort = concern.createdAt||concern.created_at ? new Date(concern.createdAt||concern.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
                 const headerSub = document.getElementById('adminConcernHeaderSub');
-                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' Ãƒâ€šÃ‚Â· ' + (concern.address||'') + ' Ãƒâ€šÃ‚Â· ' + submittedShort;
+                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' · ' + (concern.address||'') + ' · ' + submittedShort;
 
                 // Status dropdown
                 const sel = document.getElementById('adminConcernStatusSelect');
@@ -6337,7 +4589,7 @@
                         if (entry.action === 'status_changed') {
                             const lbl = _adminConcernStatusLabel(entry.status);
                             const dot = lbl==='Resolved'?'#10b981':lbl==='Rejected'?'#ef4444':'#f59e0b';
-                            items.push({dot, title:'Status -> '+lbl, by:entry.by||'', ts});
+                            items.push({dot, title:'Status → '+lbl, by:entry.by||'', ts});
                         }
                         if (entry.action === 'replied') items.push({dot:'#3b82f6', title:'Reply sent to citizen', by:entry.by||'', ts});
                     });
@@ -6401,7 +4653,6 @@
                     const newLog = [...existing.log];
                     const now = new Date().toISOString();
                     const _cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null; const adminName = _cu ? (_cu.fullName || _cu.full_name || _cu.email || 'Admin') : 'Admin';
-                    newLog.push({ action: 'status_changed', status: newStatus, timestamp: now, by: adminName });
                     const newReply = responseText.trim() || existing.reply || null;
                     if (responseText.trim() && responseText.trim() !== existing.reply) {
                         newLog.push({ action: 'replied', timestamp: now, by: adminName });
@@ -6656,777 +4907,4 @@
 
             // DOMContentLoaded for other potential form listeners goes here if needed.
 
-        </script>
-
-        <!-- Admin Eq Reject Modal -->
-        <div id="rejectEqModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div
-                style="background:#fff; border-radius:18px; padding:28px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 style="font-size:18px; font-weight:800; color:#111;">Reject Request</h3>
-                    <button onclick="closeRejectEqModal()"
-                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;"></button>
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label
-                        style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Reason
-                        for Rejection *</label>
-                    <textarea id="rejectEqReasonText" rows="4" required placeholder="State the reason why..."
-                        style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
-                        onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'"></textarea>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button type="button" onclick="closeRejectEqModal()"
-                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Cancel</button>
-                    <button type='button' onclick='confirmRejectEq(this)'
-                        style="flex:1; padding:12px; background:#ef4444; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Reject</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Global Image Lightbox Modal -->
-        <div id="adminImageLightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); z-index:10000; align-items:center; justify-content:center; padding:20px; cursor:zoom-out;" onclick="this.style.display='none'">
-            <img id="adminImageLightboxImg" src="" style="max-width:100%; max-height:100vh; object-fit:contain; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.5);" />
-            <div style="position:absolute; top:20px; right:20px; color:#fff; background:rgba(255,255,255,0.2); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;"></div>
-        </div>
-
-        <script>
-            function openAdminImageLightbox(url) {
-                const lb = document.getElementById('adminImageLightbox');
-                const img = document.getElementById('adminImageLightboxImg');
-                img.src = url;
-                lb.style.display = 'flex';
-            }
-        </script>
-
-        <!-- Admin Concern Respond Modal -->
-        <div id="adminConcernModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(8px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:var(--surface); border-radius:20px; width:100%; max-width:600px; box-shadow:0 32px 80px rgba(0,0,0,0.35); max-height:92vh; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; position:relative;">
-
-                <!-- Modal Header -->
-                <div style="padding:20px 24px 16px; border-bottom:1px solid var(--border); flex-shrink:0; position:sticky; top:0; background:var(--surface); z-index:1; border-radius:20px 20px 0 0;">
-                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:16px;right:16px;background:var(--bg);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
-                    <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Admin &mdash; Respond &amp; Update Status</div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
-                        <h3 id="adminConcernTitle" style="margin:0;font-size:17px;font-weight:800;color:var(--text);">Concern</h3>
-                        <span id="adminConcernStatusBadge"></span>
-                    </div>
-                    <p style="color:var(--muted);font-size:13px;margin:0;" id="adminConcernHeaderSub"></p>
-                </div>
-
-                <!-- Concern Details -->
-                <div style="padding:16px 24px 0;" id="adminConcernDetailsDiv"></div>
-
-                <!-- Update Status + Response form -->
-                <div style="padding:16px 24px;">
-                    <div style="margin-bottom:14px;">
-                        <label style="display:block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Update Status</label>
-                        <select id="adminConcernStatusSelect" onchange="onConcernStatusSelectChange()" style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;color:var(--text);background:var(--bg);outline:none;cursor:pointer;">
-                            <option value="open">Submitted</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom:14px;">
-                        <label id="adminConcernResponseLabel" style="display:block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Write a Response</label>
-                        <textarea id="adminConcernResponseText" rows="4" placeholder="Type your response to the citizen (optional for status updates)..." style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;color:var(--text);background:var(--bg);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;line-height:1.5;transition:border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='var(--border)'"></textarea>
-                        <p id="adminConcernRejectNote" style="display:none;margin:6px 0 0;font-size:12px;color:#ef4444;font-weight:600;">* Rejection reason is required and will be shared with the citizen.</p>
-                    </div>
-                    <button onclick="sendAdminConcernResponse()" id="adminConcernSendBtn" style="width:100%;padding:13px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.3px;margin-bottom:8px;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">Send response &amp; update status</button>
-                    <button onclick="closeAdminConcernModal()" style="width:100%;padding:11px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);">Close</button>
-                </div>
-
-                <!-- Audit Log -->
-                <div id="adminConcernAuditLogDiv" style="padding:0 24px 24px;"></div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- ADMIN BOOKING MODAL (CENTERED)             -->
-        <!-- ========================================== -->
-        <div id="adminBookingModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:var(--bg,#fff); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:90vh; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; position:relative;">
-                
-                <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:16px 20px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminBookingModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
-                    <div style="font-size:30px;margin-bottom:8px;"></div>
-                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Facility Reservation</h3>
-                    <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminBookingHeaderSub"></p>
-                </div>
-
-                <div style="padding:16px 20px 0;">
-                    <div id="adminBookingDetailsDiv"></div>
-                </div>
-
-                
-
-                <div id="adminBookingActionsDiv" style="padding:16px 20px 20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- ADMIN EQUIPMENT REQUEST MODAL (CENTERED)   -->
-        <!-- ========================================== -->
-        <div id="adminRequestModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:var(--bg,#fff); border-radius:24px; width:100%; max-width:560px; box-shadow:0 32px 80px rgba(0,0,0,0.25); max-height:none; overflow:hidden; display:flex; flex-direction:column; position:relative;">
-                
-                <div style="background:linear-gradient(135deg,#047857,#059669); border-radius:24px 24px 0 0; padding:16px 20px; position:relative; flex-shrink:0;">
-                    <button onclick="closeAdminRequestModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
-                    <div style="font-size:30px;margin-bottom:8px;"></div>
-                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px;">Equipment Request</h3>
-                    <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;" id="adminRequestHeaderSub"></p>
-                </div>
-
-                <div style="padding:16px 20px 0;">
-                    <div id="adminRequestDetailsDiv"></div>
-                </div>
-
-                <div style="margin:8px 28px 0; border-top:2px dashed var(--border,#e5e7eb);"></div>
-
-                <div id="adminRequestActionsDiv" style="padding:16px 20px 20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- ADD COURT EVENT MODAL -->
-        <!-- ========================================== -->
-        <div id="adsEventModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10500;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:var(--surface, #fff);border:1px solid var(--border, #fff);border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;max-height:90vh;animation:modalIn 0.3s ease;">
-                <!-- Header -->
-                <div style="background:linear-gradient(135deg,#10b981,#059669);padding:24px;position:relative;flex-shrink:0;">
-                    <button onclick="closeAdsEventModal()" type="button"
-                        style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmousedown="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
-                    <div style="font-size:32px;margin-bottom:8px;"></div>
-                    <h3 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px 0;">Add Court Event</h3>
-                    <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;">Schedule a barangay activity</p>
-                </div>
-                <!-- Body -->
-                <div style="padding:20px 24px;overflow-y:auto;">
-                    <form id="adsEventForm" style="display:flex;flex-direction:column;gap:14px;" onsubmit="window.handleAdsEventSubmit(event)">
-                        <input type="hidden" id="adsDate">
-                        <input type="hidden" id="adsVenue">
-
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Event Title</label>
-                            <input type="text" id="adsEventTitle" required
-                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
-                        </div>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                            <div>
-                                <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Start Time</label>
-                                <select id="adsStartTime" required
-                                    style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:all 0.2s;"></select>
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">End Time</label>
-                                <select id="adsEndTime" required
-                                    style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:all 0.2s;"></select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Post-Event Cleanup Extension</label>
-                            <select id="adsCleanupTime"
-                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;cursor:pointer;transition:all 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
-                                <option value="0" style="color:var(--text, #000); background:var(--bg, #fff);">None</option>
-                                <option value="30" style="color:var(--text, #000); background:var(--bg, #fff);">30 Minutes</option>
-                                <option value="60" style="color:var(--text, #000); background:var(--bg, #fff);">1 Hour</option>
-                                <option value="90" style="color:var(--text, #000); background:var(--bg, #fff);">1.5 Hours</option>
-                                <option value="120" style="color:var(--text, #000); background:var(--bg, #fff);">2 Hours</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Organizer</label>
-                            <input type="text" id="adsOrganizer" required value="Barangay Council"
-                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
-                        </div>
-
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Event Details (Description)</label>
-                            <textarea id="adsEventDescription" placeholder="e.g., Free vaccine drive for residents" rows="3"
-                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;transition:all 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'"></textarea>
-                        </div>
-
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted, #6b7280);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Max Capacity Limit</label>
-                            <input type="number" id="adsEventCapacity" placeholder="Leave empty for unlimited" min="0"
-                                style="width:100%;padding:10px 14px;background:var(--bg, #f9fafb);border:1.5px solid var(--border, #e5e7eb);color:var(--text, #0f172a);border-radius:12px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:all 0.2s;"
-                                onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='var(--border, #e5e7eb)'">
-                        </div>
-
-                        <button type="submit"
-                            style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
-                             Schedule Event
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- ADMIN DAY SCHEDULE POPUP -->
-        <!-- ========================================== -->
-        <div id="adminDayScheduleModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:#fff;border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;max-height:90vh;animation:modalIn 0.3s ease;">
-
-                <!-- Header -->
-                <div style="background:linear-gradient(135deg,#064e3b,#059669);padding:24px;position:relative;flex-shrink:0;">
-                    <button onclick="closeAdminDayPopup()"
-                        style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
-                    <div style="font-size:32px;margin-bottom:8px;"></div>
-                    <h3 id="adsDayTitle" style="color:#fff;font-size:20px;font-weight:800;margin:0 0 4px 0;"></h3>
-                    <p id="adsDayVenue" style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;"></p>
-                </div>
-
-                <!-- Schedule List -->
-                <div style="padding:20px 24px 8px;overflow-y:auto;flex-grow:1;">
-                    <p style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px 0;">Schedule For This Day</p>
-                    <div id="adsScheduleList" style="display:flex;flex-direction:column;gap:10px;"></div>
-                    <div id="adsEmptyState" style="display:none;text-align:center;padding:28px 0;">
-                        <div style="font-size:40px;margin-bottom:10px;"></div>
-                        <p style="font-size:14px;font-weight:700;color:var(--muted);margin:0 0 4px 0;">No reservations or events for this day.</p>
-                        <p style="font-size:12px;color:var(--muted);margin:0;">All time slots are available!</p>
-                    </div>
-                </div>
-
-                <!-- Add Event Section -->
-                <div style="padding:16px 24px 24px;flex-shrink:0;border-top:1px solid #f1f5f9;">
-                    <button id="adsToggleFormBtn" onclick="openAdsEventModal()"
-                        style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(59,130,246,0.3);">
-                        <span> Add Court Event</span>
-                    </button>
-                    
-                    <button id="adsCancelMassBtn" onclick="openAdminMassCancelModal()"
-                        style="width:100%;padding:14px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(220,38,38,0.3);margin-top:10px;">
-                        <span> Cancel All Reservations for This Day</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- SUCCESS MODAL FOR SCHEDULING EVENT -->
-        <!-- ========================================== -->
-        <div id="adminEventSuccessModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:24px;width:100%;max-width:380px;box-shadow:0 0 40px rgba(0,0,0,0.5);text-align:center;padding:40px 24px;animation:fadeIn 0.3s ease;">
-                <div style="width:80px;height:80px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px;">
-                    
-                </div>
-                <h3 style="font-size:24px;font-weight:900;color:#f8fafc;margin-bottom:8px;">Success!</h3>
-                <p style="font-size:15px;font-weight:500;color:#cbd5e1;margin-bottom:32px;">Your event has been successfully scheduled and synced.</p>
-                <button onclick="document.getElementById('adminEventSuccessModal').style.display='none'; if(typeof closeAdminDayPopup==='function') closeAdminDayPopup(); if(typeof closeModal==='function') closeModal('eventModal');"
-                    style="width:100%;padding:14px;background:linear-gradient(to right, #22c55e, #16a34a);color:#fff;border:1px solid rgba(74,222,128,0.2);border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);transition:all 0.2s ease;">
-                    Awesome, got it!
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- MASS CANCEL MODAL -->
-        <!-- ========================================== -->
-        <div id="adminMassCancelModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:#fff;border-radius:24px;width:100%;max-width:420px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;padding:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <h3 style="font-size:18px; font-weight:800; color:#111;"> Cancel All Reservations</h3>
-                    <button onclick="document.getElementById('adminMassCancelModal').style.display='none'"
-                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">&times;</button>
-                </div>
-                <p style="font-size:13px; color:#4b5563; margin-bottom:18px;">You are about to cancel all user Facility Reservations for <strong id="amcDateText"></strong>. All affected users will be notified.</p>
-
-                <div style="margin-bottom:14px;">
-                    <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Event Name *</label>
-                    <input type="text" id="amcEventName" required placeholder="e.g. Barangay Fiesta, Basketball Tournament..."
-                        style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box;"
-                        onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
-                </div>
-                <div style="margin-bottom:14px;">
-                    <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Organizer *</label>
-                    <input type="text" id="amcOrganizer" required placeholder="e.g. Barangay Council"
-                        style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box;"
-                        onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
-                </div>
-                <div style="margin-bottom:14px;">
-                    <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Capacity (max attendees)</label>
-                    <input type="number" id="amcCapacity" placeholder="e.g. 100" min="0"
-                        style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box;"
-                        onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
-                </div>
-                <div style="display:flex;gap:10px;margin-bottom:14px;">
-                    <div style="flex:1;">
-                        <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Start Time *</label>
-                        <select id="amcStartTime" required style="width:100%; padding:11px 14px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box; background:#fff;"
-                            onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'">
-                            <option value="">Select...</option>
-                            <option value="06:00">6:00 AM</option><option value="07:00" selected>7:00 AM</option>
-                            <option value="08:00">8:00 AM</option><option value="09:00">9:00 AM</option>
-                            <option value="10:00">10:00 AM</option><option value="11:00">11:00 AM</option>
-                            <option value="12:00">12:00 PM</option><option value="13:00">1:00 PM</option>
-                            <option value="14:00">2:00 PM</option><option value="15:00">3:00 PM</option>
-                            <option value="16:00">4:00 PM</option><option value="17:00">5:00 PM</option>
-                            <option value="18:00">6:00 PM</option><option value="19:00">7:00 PM</option>
-                            <option value="20:00">8:00 PM</option><option value="21:00">9:00 PM</option>
-                            <option value="22:00">10:00 PM</option>
-                        </select>
-                    </div>
-                    
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label style="display:block; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Reason / Details *</label>
-                    <textarea id="amcReason" rows="3" required placeholder="e.g. Court will be used for the Barangay Fiesta celebration..."
-                        style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
-                        onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#d1d5db'"></textarea>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button type="button" onclick="document.getElementById('adminMassCancelModal').style.display='none'"
-                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff; font-family:inherit;">Keep Reservations</button>
-                    <button type="button" onclick="confirmAdminMassCancel()" id="amcConfirmBtn"
-                        style="flex:1; padding:12px; background:#dc2626; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;">Cancel All</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- ADMIN PASSWORD CONFIRM MODAL -->
-        <!-- ========================================== -->
-        <div id="adminPasswordConfirmModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:95000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:var(--surface,#fff);border-radius:24px;width:100%;max-width:400px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;animation:modalIn 0.3s ease;">
-                <div style="background:linear-gradient(135deg,#dc2626,#991b1b);padding:24px;position:relative;text-align:center;">
-                    <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0;" id="adminPasswordConfirmTitle">Confirm Action</h3>
-                    <p style="color:rgba(255,255,255,0.9);font-size:13px;margin:4px 0 0;">Please enter your password to proceed.</p>
-                </div>
-                <div style="padding:24px;">
-                    <div style="margin-bottom:20px;">
-                        <label style="display:block;font-size:13px;font-weight:700;color:var(--text,#374151);margin-bottom:8px;">Admin Password</label>
-                        <input type="password" id="adminPasswordConfirmInput" placeholder="ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border,#d1d5db);background:var(--bg,#f9fafb);font-size:14px;color:var(--text,#111827);outline:none;transition:all 0.2s;">
-                        <p id="adminPasswordConfirmError" style="display:none;color:#10b981;font-size:12px;margin:8px 0 0;font-weight:600;">Incorrect password.</p>
-                    </div>
-                    <div style="display:flex;gap:12px;">
-                        <button id="adminPasswordConfirmCancel" style="flex:1;padding:12px;background:var(--bg,#f3f4f6);border:1px solid var(--border,#e5e7eb);border-radius:12px;color:var(--text,#4b5563);font-size:14px;font-weight:700;cursor:pointer;">Cancel</button>
-                        <button id="adminPasswordConfirmSubmit" style="flex:1;padding:12px;background:#dc2626;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Confirm</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- USER SUSPENSION MODAL (ADMIN VIEW) -->
-        <!-- ========================================== -->
-        <div id="adminSuspendUserModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:90000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:var(--surface,#fff);border-radius:24px;width:100%;max-width:400px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;">
-                <!-- Header -->
-                <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:24px;position:relative;text-align:center;">
-                    <button onclick="closeSuspendModal()"
-                        style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"></button>
-                    <div style="width:64px;height:64px;border-radius:50%;background:#fff;color:#10b981;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">Ãƒâ€šÃ‚Â </div>
-                    <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0;">Suspend Resident</h3>
-                    <p style="color:rgba(255,255,255,0.9);font-size:13px;margin:4px 0 0;" id="suspendModalUsername"></p>
-                </div>
-                
-                <!-- Body -->
-                <div style="padding:24px;">
-                    <p style="font-size:14px;color:var(--muted,#4b5563);margin:0 0 16px;text-align:center;">
-                        Progressive discipline enforces fair usage of Barangay assets. Select the suspension tier based on the user's current offenses.
-                    </p>
-                    
-                    <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:16px;margin-bottom:20px;">
-                        <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:4px;text-transform:uppercase;">Current Record</div>
-                        <div style="font-size:15px;color:#b45309;font-weight:700;"><span id="suspendModalOffensesCount">0</span> Prior Offenses</div>
-                    </div>
-
-                    <div style="margin-bottom:24px;">
-                        <label style="display:block;font-size:13px;font-weight:700;color:var(--text,#374151);margin-bottom:8px;">Select Penalty Tier</label>
-                        <select id="suspendPenaltyTier" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border,#d1d5db);background:var(--bg,#f9fafb);font-size:14px;color:var(--text,#111827);outline:none;transition:all 0.2s;" onchange="this.style.borderColor='#f59e0b';this.style.boxShadow='0 0 0 3px rgba(245,158,11,0.1)'" onblur="this.style.borderColor='var(--border,#d1d5db)'">
-                            <option value="1">1st Offense: 1 Week Suspension</option>
-                            <option value="2">2nd Offense: 2 Weeks Suspension</option>
-                            <option value="3">3rd Offense: 1 Month Suspension</option>
-                            <option value="4" style="color:#10b981;font-weight:bold;">4th Offense: Ban & Delete Account</option>
-                        </select>
-                    </div>
-
-                    <div style="display:flex;gap:12px;">
-                        <button onclick="closeSuspendModal()"
-                            style="flex:1;padding:12px;background:var(--bg,#f3f4f6);border:1px solid var(--border,#e5e7eb);border-radius:12px;color:var(--text,#4b5563);font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;"
-                            onmouseover="this.style.background='var(--border,#e5e7eb)';this.style.color='var(--text,#1f2937)'"
-                            onmouseout="this.style.background='var(--bg,#f3f4f6)';this.style.color='var(--text,#4b5563)'">Cancel</button>
-                        <button onclick="confirmSuspendUser()"
-                            style="flex:1;padding:12px;background:linear-gradient(to right,#d97706,#b45309);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(217,119,6,0.3);transition:all 0.2s;"
-                            onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(217,119,6,0.4)'"
-                            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(217,119,6,0.3)'">Enforce Penalty</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- USER PROFILE MODAL (ADMIN VIEW) -->
-        <!-- ========================================== -->
-        <div id="adminUserProfileModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:var(--surface);border-radius:24px;width:100%;max-width:450px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;">
-                <!-- Header -->
-                <div style="background:linear-gradient(135deg,#047857,#059669);padding:24px;position:relative;">
-                    <button onclick="document.getElementById('adminUserProfileModal').style.display='none'"
-                        style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.35)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"></button>
-                    <div style="display:flex;align-items:center;gap:16px;">
-                        <div style="width:64px;height:64px;border-radius:50%;background:var(--surface);color:#059669;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
-                        <div>
-                            <h3 id="upmName" style="color:#fff;font-size:22px;font-weight:800;margin:0 0 4px 0;line-height:1.2;"></h3>
-                            <span id="upmRole" style="display:inline-block;background:rgba(255,255,255,0.2);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;"></span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Body -->
-                <div style="padding:24px;">
-                    <div style="display:flex;flex-direction:column;gap:16px;">
-                        <!-- Detail Row -->
-                        <div style="display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-                            <div style="width:36px;height:36px;border-radius:10px;background:var(--panel-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"></div>
-                            <div style="flex:1;">
-                                <p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin:0 0 2px 0;letter-spacing:0.5px;">Email Address</p>
-                                <p id="upmEmail" style="font-size:14px;color:var(--text);margin:0;font-weight:500;"></p>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-                            <div style="width:36px;height:36px;border-radius:10px;background:var(--panel-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"></div>
-                            <div style="flex:1;">
-                                <p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin:0 0 2px 0;letter-spacing:0.5px;">Phone Number</p>
-                                <p id="upmPhone" style="font-size:14px;color:var(--text);margin:0;font-weight:500;"></p>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-                            <div style="width:36px;height:36px;border-radius:10px;background:var(--panel-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"></div>
-                            <div style="flex:1;">
-                                <p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin:0 0 2px 0;letter-spacing:0.5px;">Address</p>
-                                <p id="upmAddress" style="font-size:14px;color:var(--text);margin:0;font-weight:500;"></p>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:flex-start;gap:12px;">
-                            <div style="width:36px;height:36px;border-radius:10px;background:var(--panel-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"></div>
-                            <div style="flex:1;">
-                                <p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin:0 0 2px 0;letter-spacing:0.5px;">Joined Date</p>
-                                <p id="upmJoined" style="font-size:14px;color:var(--text);margin:0;font-weight:500;"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer -->
-                <div style="padding:16px 24px;background:var(--panel-bg);border-top:1px solid var(--border);">
-                    <button onclick="document.getElementById('adminUserProfileModal').style.display='none'"
-                        style="width:100%;padding:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;font-weight:700;color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;transition:background 0.2s;"
-                        onmouseover="this.style.background='var(--panel-bg)'" onmouseout="this.style.background='var(--surface)'">
-                        Close Profile
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- ACTION MODAL FOR CALENDAR CLICK (Bookings vs Event) -->
-        <!-- ========================================== -->
-        <div id="adminEventActionModal"
-            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
-            <div style="background:#fff;border-radius:24px;width:100%;max-width:480px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);padding:32px;">
-                <h3 style="font-size:22px;font-weight:800;color:#111;margin-bottom:12px;text-align:center;"> Date Selected</h3>
-                <p style="font-size:15px;color:#4b5563;margin-bottom:28px;text-align:center;">What would you like to do on <strong id="actionModalDateText"></strong>?</p>
-                <div style="display:flex;flex-direction:column;gap:14px;">
-                    <button onclick="openAdminCancelBookingsEventFlow()"
-                        style="padding:16px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-                        Ãƒâ€šÃ‚Â  Cancel Existing Bookings & Add Event
-                    </button>
-                    <button onclick="openAdminJustAddEventFlow()"
-                        style="padding:16px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;box-shadow:0 4px 12px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-                         Just Add an Event
-                    </button>
-                    <button onclick="document.getElementById('adminEventActionModal').style.display='none'"
-                        style="padding:14px;background:#f3f4f6;color:#4b5563;border:none;border-radius:14px;font-weight:600;cursor:pointer;font-family:inherit;font-size:15px;margin-top:8px;transition:all 0.2s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <script src="js/darkmode.js" style="display:none"></script>
-
-        <!--  BOTTOM TAB BAR (MOBILE ONLY)  -->
-        <nav class="bottom-tab-nav" style="display: none;" id="mobileBottomNav">
-            <button class="tab-btn active" onclick="mobileSwitchSection('overview'); activateBottomTab(this)">
-                <span class="tab-icon"><i class="bi bi-grid-1x2-fill"></i></span>
-                <span class="tab-label">Home</span>
-            </button>
-            <button class="tab-btn" onclick="mobileSwitchSection('court-bookings'); activateBottomTab(this)">
-                <span class="tab-icon"><i class="bi bi-calendar-check-fill"></i></span>
-                <span class="tab-label">Reservations</span>
-            </button>
-            <button class="tab-btn" onclick="mobileSwitchSection('requests'); activateBottomTab(this)">
-                <span class="tab-icon"><i class="bi bi-box-fill"></i></span>
-                <span class="tab-label">Requests</span>
-            </button>
-            <button class="tab-btn" onclick="mobileSwitchSection('concerns'); activateBottomTab(this)">
-                <span class="tab-icon"><i class="bi bi-megaphone-fill"></i></span>
-                <span class="tab-label">Concerns</span>
-            </button>
-            <button class="tab-btn" onclick="openMobileSidebar()">
-                <span class="tab-icon"><i class="bi bi-list"></i></span>
-                <span class="tab-label">Menu</span>
-            </button>
-        </nav>
-
-        <style>
-            @media (max-width: 768px) {
-                #mobileBottomNav {
-                    display: flex !important;
-                }
-                .left-sidebar {
-                    display: none !important;
-                }
-                
-                /* Bottom Tab Nav Styling matched with User Dashboard */
-                .bottom-tab-nav {
-                    position: fixed;
-                    bottom: 0; left: 0; width: 100%;
-                    background: #ffffff;
-                    border-top: 1px solid #e2e8f0;
-                    display: flex; justify-content: space-around; align-items: center;
-                    padding: 0; /* padding logic deferred to bottom safe area */
-                    height: calc(65px + env(safe-area-inset-bottom));
-                    padding-bottom: env(safe-area-inset-bottom);
-                    z-index: 1500;
-                    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-                }
-                [data-theme="dark"] .bottom-tab-nav {
-                    background: #1a1d27;
-                    border-top: 1px solid #2d3148;
-                }
-                .tab-btn {
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    flex: 1; background: transparent; border: none; color: #64748b;
-                    cursor: pointer; transition: color 0.2s ease; gap: 4px;
-                    padding: 0; margin: 0; outline: none;
-                }
-                [data-theme="dark"] .tab-btn { color: #94a3b8; }
-                .tab-btn .tab-icon { font-size: 20px; line-height: 1; display:flex; align-items:center; justify-content:center; }
-                .tab-btn span.tab-label { font-size: 10px; font-weight: 600; font-family: inherit; }
-                .tab-btn.active { color: #10b981; }
-                
-                .main { padding-bottom: calc(85px + env(safe-area-inset-bottom)) !important; }
-            }
-        </style>
-        <script>
-            function activateBottomTab(element) {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                element.classList.add('active');
-            }
         
-            // ==========================================
-            // ADMIN BELL NOTIFICATIONS (matches user portal design)
-            // ==========================================
-            function toggleAdminBell(e) {
-                if (e) e.stopPropagation();
-                const drop = document.getElementById('adminBellDropdown');
-                if (!drop) return;
-                const isOpen = drop.style.display === 'flex';
-                drop.style.display = isOpen ? 'none' : 'flex';
-                if (!isOpen) refreshAdminBell();
-            }
-
-            document.addEventListener('click', function(e) {
-                const drop = document.getElementById('adminBellDropdown');
-                const wrap = document.getElementById('adminBellWrapper');
-                if (drop && wrap && drop.style.display === 'flex' && !wrap.contains(e.target)) {
-                    drop.style.display = 'none';
-                }
-            });
-
-            // Track which notification IDs have been dismissed by admin
-            const ADMIN_BELL_DISMISSED_KEY = 'adminBellDismissed';
-            function getAdminDismissed() {
-                try { return new Set(JSON.parse(localStorage.getItem(ADMIN_BELL_DISMISSED_KEY)) || []); } catch { return new Set(); }
-            }
-            function saveAdminDismissed(set) {
-                localStorage.setItem(ADMIN_BELL_DISMISSED_KEY, JSON.stringify([...set]));
-            }
-            function dismissAdminNotif(id) {
-                const d = getAdminDismissed();
-                d.add(id);
-                saveAdminDismissed(d);
-                refreshAdminBell();
-            }
-            function dismissAllAdminNotifs() {
-                const d = getAdminDismissed();
-                // Add all currently shown ids
-                document.querySelectorAll('.admin-bell-item[data-notif-id]').forEach(el => d.add(el.dataset.notifId));
-                saveAdminDismissed(d);
-                refreshAdminBell();
-            }
-
-            async function refreshAdminBell() {
-                const list = document.getElementById('adminBellList');
-                const badge = document.getElementById('adminBellBadge');
-                if (!list || !badge) return;
-
-                let items = [];
-
-                try {
-                    const supabaseOk = typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable();
-                    if (supabaseOk) {
-                        // Query all three tables for recent pending activity
-                        const [bookingsRes, borrowingsRes, concernsRes] = await Promise.all([
-                            supabase.from('facility_reservations').select('id, user_id, date, time, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('borrowings').select('id, user_id, equipment, quantity, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('concerns').select('id, user_id, title, description, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20)
-                        ]);
-
-                        (bookingsRes.data || []).forEach(b => items.push({
-                            id: 'booking_' + b.id,
-                            refId: b.id,
-                            type: 'booking',
-                            icon: '<i class="bi bi-calendar-check-fill"></i>',
-                            message: 'New facility reservation on ' + b.date,
-                            createdAt: b.created_at
-                        }));
-                        (borrowingsRes.data || []).forEach(b => items.push({
-                            id: 'borrow_' + b.id,
-                            refId: b.id,
-                            type: 'borrow',
-                            icon: '<i class="bi bi-box-seam"></i>',
-                            message: 'Equipment request: ' + b.quantity + 'x ' + b.equipment,
-                            createdAt: b.created_at
-                        }));
-                        (concernsRes.data || []).forEach(c => items.push({
-                            id: 'concern_' + c.id,
-                            refId: c.id,
-                            type: 'concern',
-                            icon: '<i class="bi bi-megaphone-fill"></i>',
-                            message: 'New concern: ' + (c.title || 'Untitled'),
-                            createdAt: c.created_at
-                        }));
-                    } else {
-                        // LocalStorage fallback
-                        const bookings = (JSON.parse(localStorage.getItem('courtBookings')) || []).filter(b => b.status === 'pending');
-                        const borrowings = (JSON.parse(localStorage.getItem('courtBorrowings')) || []).filter(b => b.status === 'pending');
-                        const concerns = (JSON.parse(localStorage.getItem('barangayConcerns')) || []).filter(c => c.status === 'pending');
-                        bookings.forEach(b => items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking', icon: '<i class="bi bi-calendar-check-fill"></i>', message: 'Pending facility reservation on ' + b.date, createdAt: b.createdAt }));
-                        borrowings.forEach(b => items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow', icon: '<i class="bi bi-box-seam"></i>', message: 'Equipment request: ' + (b.quantity || 1) + 'x ' + b.equipment, createdAt: b.createdAt }));
-                        concerns.forEach(c => items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern', icon: '<i class="bi bi-megaphone-fill"></i>', message: 'New concern: ' + (c.title || 'Untitled'), createdAt: c.createdAt }));
-                    }
-                } catch(e) { console.warn('Admin bell error:', e); }
-
-                // Sort newest first & filter dismissed
-                items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                const dismissed = getAdminDismissed();
-                const visible = items.filter(n => !dismissed.has(n.id));
-                const total = visible.length;
-
-                if (total > 0) {
-                    badge.style.display = 'flex';
-                    badge.textContent = total > 99 ? '99+' : total;
-                } else {
-                    badge.style.display = 'none';
-                }
-
-                if (total === 0) {
-                    list.innerHTML = '<div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No pending actions</div>';
-                    return;
-                }
-
-                list.innerHTML = visible.slice(0, 30).map(n => {
-                    const timeStr = n.createdAt
-                        ? new Date(n.createdAt).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-                        : 'Just now';
-                    return `<div class="admin-bell-item is-unread" data-notif-id="${n.id}" onclick="handleAdminBellClick('${n.id}', '${n.type}')">
-                        <div class="admin-bell-icon-circle">${n.icon}</div>
-                        <div style="flex:1;min-width:0;padding-right:12px;">
-                            <p class="admin-bell-msg">${n.message}</p>
-                            <div class="admin-bell-time">${timeStr}</div>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
-
-            async function handleAdminBellClick(id, type) {
-                dismissAdminNotif(id);
-                document.getElementById('adminBellDropdown').style.display = 'none';
-                const sectionMap = { 'borrow': 'requests', 'booking': 'court-bookings', 'concern': 'concerns' };
-                const target = sectionMap[type];
-                if (target) {
-                    const btn = document.querySelector(`.sidebar-btn[onclick*="${target}"]`);
-                    switchSection(target, btn);
-                }
-                refreshAdminBell();
-            }
-
-            async function markAllAdminBellRead() {
-                dismissAllAdminNotifs();
-            }
-
-            setInterval(refreshAdminBell, 30000);
-
-        </script>
-        
-        <!-- Audit Details Modal -->
-        <div id="auditDetailsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-            <div style="background:var(--surface,#fff);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">
-                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text);">Audit Log Details</h3>
-                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--muted);cursor:pointer;">&times;</button>
-                </div>
-                <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:70vh;">
-                    <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;">
-                        <span style="font-weight:600;color:var(--muted);">Timestamp:</span>
-                        <span id="auditModalTimestamp" style="color:var(--text);"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Performed By:</span>
-                        <span id="auditModalUser" style="color:var(--text);font-weight:600;"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Role:</span>
-                        <span id="auditModalRole" style="color:var(--text);"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Action:</span>
-                        <span id="auditModalAction" style="color:var(--text);font-weight:600;"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Module:</span>
-                        <span id="auditModalModule" style="color:var(--text);"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Status:</span>
-                        <span id="auditModalStatus" style="color:var(--text);"></span>
-                    </div>
-                    <div>
-                        <div style="font-weight:600;color:var(--muted);font-size:13px;margin-bottom:8px;">Details:</div>
-                        <div id="auditModalDetails" style="background:var(--panel-bg,#f8fafc);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text);white-space:pre-wrap;word-break:break-word;"></div>
-                    </div>
-                </div>
-                <div style="padding:16px 20px;border-top:1px solid var(--border);text-align:right;">
-                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text);color:var(--surface,#fff);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
-                </div>
-            </div>
-        </div>
-</body>
-
-</html>
-

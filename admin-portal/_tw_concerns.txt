@@ -1,0 +1,46 @@
+                    <div id="concerns-section" class="section-container" style="display: none;">
+
+                        <!-- PAGE HEADING -->
+                        <div style="margin-bottom:20px;">
+                            <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                                <i class="bi bi-megaphone-fill"></i> CITIZEN ENGAGEMENT
+                            </p>
+                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Citizen Concerns</h1>
+                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Respond to and track concerns submitted by residents.</p>
+                        </div>
+
+                        <!-- FILTER + SEARCH BAR -->
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px;">
+                            <span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;">Filter:</span>
+                            <select id="concernStatusFilter" onchange="applyConcernFilter()" style="padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                                <option value="all">All Status</option>
+                                <option value="open">Submitted</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <div style="position:relative;flex:1;min-width:180px;max-width:340px;">
+                                <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
+                                <input type="text" id="concernSearch" placeholder="Search citizen or concern..." oninput="applyConcernFilter()" style="width:100%;padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                            </div>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                            <table class="data-table" style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1A3A6B;">
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Citizen</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Address</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Category</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Title</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Date</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="concernsTable"></tbody>
+                            </table>
+                            <div id="concernsPg" class="pg-controls" style="display:none;padding:12px;"></div>
+                        </div>
+                    </div>
