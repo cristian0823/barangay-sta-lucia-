@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿                var dateFrom=(document.getElementById('concernDateFrom')||{}).value||''; var dateTo=(document.getElementById('concernDateTo')||{}).value||'';
+                if (dateFrom || dateTo) { list = list.filter(function(c){ var d=new Date(c.createdAt||c.created_at); if(isNaN(d)) return true; var ds=d.toISOString().slice(0,10); if(dateFrom&&ds<dateFrom) return false; if(dateTo&&ds>dateTo) return false; return true; }); }
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -728,20 +730,27 @@
 
                         <!-- FILTER + SEARCH BAR -->
                         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px;">
-                            <span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;">Filter:</span>
-                            <select id="concernStatusFilter" onchange="applyConcernFilter()" style="padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                            <select id="concernStatusFilter" onchange="applyConcernFilter()" style="height:36px;padding:0 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;background:#fff;cursor:pointer;outline:none;">
                                 <option value="all">All Status</option>
-                                <option value="open">Submitted</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="resolved">Resolved</option>
-                                <option value="rejected">Rejected</option>
+                                <option value="Submitted">Submitted</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                                <option value="Rejected">Rejected</option>
                             </select>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <label style="font-size:12px;font-weight:600;color:#6B7280;white-space:nowrap;">From:</label>
+                                <input type="date" id="concernDateFrom" onchange="applyConcernFilter()" style="height:36px;padding:0 10px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;background:#fff;">
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <label style="font-size:12px;font-weight:600;color:#6B7280;white-space:nowrap;">To:</label>
+                                <input type="date" id="concernDateTo" onchange="applyConcernFilter()" style="height:36px;padding:0 10px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;background:#fff;">
+                            </div>
+                            <button onclick="document.getElementById('concernDateFrom').value='';document.getElementById('concernDateTo').value='';document.getElementById('concernStatusFilter').value='all';document.getElementById('concernSearch').value='';applyConcernFilter();" style="height:36px;padding:0 14px;border:1px solid #D1D5DB;border-radius:6px;font-size:12px;font-weight:600;color:#6B7280;background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.borderColor='#1A3A6B';this.style.color='#1A3A6B'" onmouseout="this.style.borderColor='#D1D5DB';this.style.color='#6B7280'"><i class="bi bi-x-circle" style="margin-right:4px;"></i>Clear</button>
                             <div style="position:relative;flex:1;min-width:180px;max-width:340px;">
-                                <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
-                                <input type="text" id="concernSearch" placeholder="Search citizen or concern..." oninput="applyConcernFilter()" style="width:100%;padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                                <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:13px;pointer-events:none;"></i>
+                                <input type="text" id="concernSearch" placeholder="Search by name or title..." oninput="applyConcernFilter()" style="width:100%;height:36px;padding:0 12px 0 32px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                             </div>
                         </div>
-
                         <!-- TABLE -->
                         <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
                             <table class="data-table" style="width:100%;border-collapse:collapse;">
@@ -2801,7 +2810,7 @@
                     const data = JSON.parse(decodeURIComponent(encodedData));
                     document.getElementById('auditModalTimestamp').textContent = data.timestamp;
                     document.getElementById('auditModalUser').textContent = data.who;
-                    document.getElementById('auditModalRole').textContent = data.role;
+                    document.getElementById('auditModalRole').innerHTML = data.role;
                     document.getElementById('auditModalAction').textContent = data.action;
                     document.getElementById('auditModalModule').textContent = data.module;
                     document.getElementById('auditModalStatus').textContent = data.status;
@@ -3322,6 +3331,9 @@
                     list = list.filter(c => _adminConcernStatusLabel(c.status) === _adminConcernStatusLabel(_pgConcernFilter) || c.status === _pgConcernFilter);
                 }
                 if (_q) list = list.filter(c => (c.full_name||c.userName||c.username||'').toLowerCase().includes(_q) || (c.title||c.description||'').toLowerCase().includes(_q));
+                var _dateFrom=(document.getElementById('concernDateFrom')||{}).value||'';
+                var _dateTo=(document.getElementById('concernDateTo')||{}).value||'';
+                if (_dateFrom||_dateTo) { list=list.filter(function(c){ var d=new Date(c.createdAt||c.created_at); if(isNaN(d)) return true; var ds=d.toISOString().slice(0,10); if(_dateFrom&&ds<_dateFrom) return false; if(_dateTo&&ds>_dateTo) return false; return true; }); }
                 if (!list.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">No concerns found</td></tr>'; const pg=document.getElementById('concernsPg'); if(pg) pg.style.display='none'; return; }
                 const slice = list.slice((_pgConcernsPage-1)*PG_SIZE, _pgConcernsPage*PG_SIZE);
                 tbody.innerHTML = slice.map(c => {
@@ -4748,7 +4760,7 @@
                             +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:'+(broken>0?'700':'400')+';color:'+(broken>0?'#c2410c':'#9CA3AF')+';">'+broken+'</td>'
                             +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:'+(disposal>0?'700':'400')+';color:'+(disposal>0?'#991b1b':'#9CA3AF')+';">'+disposal+'</td>'
                             +'<td style="padding:12px 18px;text-align:center;">'+statusBadge+'</td>'
-                            +'<td style="padding:12px 18px;text-align:center;"><div style="display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap;">'+delivToggle
+                            +'<td style="padding:12px 18px;text-align:center;"><div style="display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:nowrap;">'+delivToggle
                             +'<button onclick="openEditEquipmentModal('+e.id+')" title="Edit" style="width:32px;height:32px;padding:0;border:1px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background=\'#1A3A6B\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#1A3A6B\'"><i class="bi bi-pencil" style="font-size:13px;"></i></button>'
                             +'<button onclick="handleDeleteEquipment('+e.id+')" title="Delete" style="width:32px;height:32px;padding:0;border:1px solid #CE1126;border-radius:6px;background:transparent;color:#CE1126;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background=\'#CE1126\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#CE1126\'"><i class="bi bi-trash3" style="font-size:13px;"></i></button>'
                             +'</div></td></tr>';
@@ -7650,8 +7662,6 @@
                 ['newUserBarangayId','newUserFullName','newUserPhone','newUserEmail','newUserAddress'].forEach(function(id){
                     var el=document.getElementById(id); if(el) el.value='';
                 });
-                var p1=document.getElementById('newUserPassword'); if(p1){p1.value='';p1.type='password';}
-                var p2=document.getElementById('newUserConfirmPassword'); if(p2){p2.value='';p2.type='password';}
             }
 
             function closeAddUserModal() {
@@ -7664,17 +7674,11 @@
                 var phone = (document.getElementById('newUserPhone').value||'').trim();
                 var email = (document.getElementById('newUserEmail').value||'').trim();
                 var addr = (document.getElementById('newUserAddress').value||'').trim();
-                var pwd = (document.getElementById('newUserPassword').value||'');
-                var cpwd = (document.getElementById('newUserConfirmPassword').value||'');
                 var errEl = document.getElementById('addUserError');
                 var showErr = function(msg){errEl.textContent=msg;errEl.style.display='block';};
                 errEl.style.display='none';
                 if (!bid) return showErr('Barangay ID is required.');
                 if (!name) return showErr('Full Name is required.');
-                if (!email) return showErr('Email is required.');
-                if (!pwd) return showErr('Password is required.');
-                if (pwd.length<8) return showErr('Password must be at least 8 characters.');
-                if (pwd!==cpwd) return showErr('Passwords do not match.');
                 var btn=document.getElementById('addUserSubmitBtn');
                 var orig=btn.innerHTML;
                 btn.innerHTML='<i class="bi bi-hourglass-split" style="margin-right:6px;"></i>Adding...';
@@ -7682,10 +7686,7 @@
                 try {
                     var chk=await supabase.from('residents').select('id').eq('barangay_id',bid);
                     if(chk.data&&chk.data.length>0){btn.innerHTML=orig;btn.disabled=false;return showErr('Barangay ID "'+bid+'" already exists.');}
-                    var authRes=await supabase.auth.signUp({email:email,password:pwd,options:{data:{full_name:name,role:'resident'}}});
-                    if(authRes.error){btn.innerHTML=orig;btn.disabled=false;return showErr('Auth error: '+authRes.error.message);}
-                    var uid=authRes.data&&authRes.data.user?authRes.data.user.id:null;
-                    var ins=await supabase.from('residents').insert([{barangay_id:bid,full_name:name,phone:phone||null,email:email,address:addr||null,auth_uid:uid,role:'resident'}]);
+                    var ins=await supabase.from('residents').insert([{barangay_id:bid,full_name:name,phone:phone||null,email:email||null,address:addr||null,role:'resident'}]);
                     if(ins.error){btn.innerHTML=orig;btn.disabled=false;return showErr('Insert error: '+ins.error.message);}
                     closeAddUserModal();
                     showAlert('User "'+name+'" added successfully.','success');
@@ -7697,39 +7698,40 @@
         </script>
         
         <!-- Audit Details Modal -->
-        <div id="auditDetailsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-            <div style="background:var(--surface,#fff);border-radius:12px;width:100%;max-width:500px;box-shadow:0 10px 25px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">
-                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text);">Audit Log Details</h3>
-                    <button onclick="closeAuditDetails()" style="background:transparent;border:none;font-size:20px;color:var(--muted);cursor:pointer;">&times;</button>
-                </div>
-                <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:70vh;">
-                    <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;">
-                        <span style="font-weight:600;color:var(--muted);">Timestamp:</span>
-                        <span id="auditModalTimestamp" style="color:var(--text);"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Performed By:</span>
-                        <span id="auditModalUser" style="color:var(--text);font-weight:600;"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Role:</span>
-                        <span id="auditModalRole" style="color:var(--text);"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Action:</span>
-                        <span id="auditModalAction" style="color:var(--text);font-weight:600;"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Module:</span>
-                        <span id="auditModalModule" style="color:var(--text);"></span>
-                        
-                        <span style="font-weight:600;color:var(--muted);">Status:</span>
-                        <span id="auditModalStatus" style="color:var(--text);"></span>
+        <div id="auditDetailsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:#ffffff;border-radius:12px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,0.25);display:flex;flex-direction:column;overflow:hidden;max-height:88vh;">
+                <!-- Header -->
+                <div style="background:#1A3A6B;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:32px;height:32px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-journal-text" style="font-size:16px;color:#FDB913;"></i></div>
+                        <div style="font-size:15px;font-weight:700;color:#fff;">Audit Log Details</div>
                     </div>
-                    <div>
-                        <div style="font-weight:600;color:var(--muted);font-size:13px;margin-bottom:8px;">Details:</div>
-                        <div id="auditModalDetails" style="background:var(--panel-bg,#f8fafc);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text);white-space:pre-wrap;word-break:break-word;"></div>
-                    </div>
+                    <button onclick="closeAuditDetails()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
                 </div>
-                <div style="padding:16px 20px;border-top:1px solid var(--border);text-align:right;">
-                    <button onclick="closeAuditDetails()" style="padding:8px 16px;background:var(--text);color:var(--surface,#fff);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+                <!-- Body -->
+                <div style="padding:20px;overflow-y:auto;flex:1;">
+                    <!-- Info grid -->
+                    <div style="display:grid;grid-template-columns:120px 1fr;gap:10px 16px;font-size:13px;background:#F8FAFF;border:1px solid #E5E7EB;border-radius:8px;padding:16px;margin-bottom:16px;">
+                        <span style="font-weight:700;color:#6B7280;align-self:center;">Timestamp</span>
+                        <span id="auditModalTimestamp" style="color:#1A1A2E;font-weight:600;"></span>
+                        <span style="font-weight:700;color:#6B7280;align-self:center;">Performed By</span>
+                        <span id="auditModalUser" style="color:#1A1A2E;font-weight:700;"></span>
+                        <span style="font-weight:700;color:#6B7280;align-self:center;">Role</span>
+                        <span id="auditModalRole" style="color:#1A1A2E;"></span>
+                        <span style="font-weight:700;color:#6B7280;align-self:center;">Action</span>
+                        <span id="auditModalAction" style="color:#1A1A2E;font-weight:700;"></span>
+                        <span style="font-weight:700;color:#6B7280;align-self:center;">Module</span>
+                        <span id="auditModalModule" style="color:#1A1A2E;"></span>
+                        <span style="font-weight:700;color:#6B7280;align-self:center;">Status</span>
+                        <span id="auditModalStatus" style="color:#1A1A2E;"></span>
+                    </div>
+                    <!-- Details box -->
+                    <div style="font-size:12px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Details</div>
+                    <div id="auditModalDetails" style="background:#F9FAFB;padding:14px;border-radius:8px;border:1px solid #E5E7EB;font-size:13px;color:#1A1A2E;white-space:pre-wrap;word-break:break-word;line-height:1.6;"></div>
+                </div>
+                <!-- Footer -->
+                <div style="padding:14px 20px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;justify-content:flex-end;flex-shrink:0;">
+                    <button onclick="closeAuditDetails()" style="height:38px;padding:0 20px;background:#1A3A6B;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Close</button>
                 </div>
             </div>
         </div>
@@ -7806,22 +7808,6 @@
                 <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Address</label>
                 <textarea id="newUserAddress" placeholder="123 Rizal St., Brgy. Sta. Lucia" rows="2" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-                <div>
-                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Password *</label>
-                    <div style="position:relative;">
-                        <input type="password" id="newUserPassword" placeholder="Min. 8 characters" style="width:100%;padding:9px 36px 9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
-                        <button type="button" onclick="var f=document.getElementById('newUserPassword');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6B7280;padding:0;font-size:15px;"><i class="bi bi-eye"></i></button>
-                    </div>
-                </div>
-                <div>
-                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Confirm Password *</label>
-                    <div style="position:relative;">
-                        <input type="password" id="newUserConfirmPassword" placeholder="Re-enter password" style="width:100%;padding:9px 36px 9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
-                        <button type="button" onclick="var f=document.getElementById('newUserConfirmPassword');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6B7280;padding:0;font-size:15px;"><i class="bi bi-eye"></i></button>
-                    </div>
-                </div>
-            </div>
         </div>
         <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
             <button onclick="closeAddUserModal()" style="height:40px;padding:0 20px;border:1.5px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Cancel</button>
@@ -7832,4 +7818,3 @@
 </body>
 
 </html>
-
