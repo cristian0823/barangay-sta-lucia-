@@ -191,8 +191,9 @@
       .form-input:focus { border-color: #1A3A6B; box-shadow: 0 0 0 3px rgba(26,58,107,0.12); }
 
       /* ── Modals ──────────────────────────────────────────── */
-      .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
-        display: flex; align-items: center; justify-content: center; padding: 20px; }
+      .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
+        align-items: center; justify-content: center; padding: 20px; }
+      .modal.active { display: flex; }
       .modal-content { background: #fff; border-radius: 10px; width: 100%; max-width: 560px;
         max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
       .modal-header { display: flex; align-items: center; justify-content: space-between;
