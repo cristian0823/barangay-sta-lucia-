@@ -1,0 +1,151 @@
+
+<body style="font-family:'Inter',sans-serif;background:#EDEEF2;margin:0;padding:0;">
+
+<!-- Mobile Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- Mobile Sidebar Drawer -->
+<div class="mobile-sidebar" id="mobileSidebar">
+    <div class="mobile-sidebar-header">
+        <span><i class="bi bi-layout-sidebar"></i> Admin Menu</span>
+        <button class="mobile-sidebar-close" onclick="closeMobileSidebar()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="mobile-sidebar-nav" id="mobileSidebarNav">
+        <button onclick="mobileSwitchSection('overview')"><i class="bi bi-grid-1x2-fill"></i> Overview</button>
+        <button onclick="mobileSwitchSection('court-bookings')"><i class="bi bi-calendar-check-fill"></i> Facility Reservations</button>
+        <button onclick="mobileSwitchSection('requests')"><i class="bi bi-box-seam"></i> Equipment Requests</button>
+        <button onclick="mobileSwitchSection('concerns')"><i class="bi bi-megaphone-fill"></i> Concerns</button>
+        <button onclick="mobileSwitchSection('users')"><i class="bi bi-people-fill"></i> Manage Users</button>
+        <button onclick="mobileSwitchSection('events')"><i class="bi bi-calendar-event-fill"></i> Court Events</button>
+        <button onclick="mobileSwitchSection('equipment')"><i class="bi bi-box-seam-fill"></i> Inventory</button>
+        <button onclick="mobileSwitchSection('audit-log')"><i class="bi bi-journal-text"></i> Audit Log</button>
+        <button onclick="mobileSwitchSection('security-log')"><i class="bi bi-shield-lock-fill"></i> Security Log</button>
+        <div style="height:1px;background:rgba(255,255,255,0.1);margin:8px 0;"></div>
+        <button onclick="window.location.href='admin-settings.html'"><i class="bi bi-gear-fill"></i> Settings</button>
+        <button onclick="logoutUser()" style="color:#FCA5A5;"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</div>
+
+<!-- Fixed Topbar -->
+<header style="position:fixed;top:0;left:0;right:0;height:64px;background:#1A3A6B;border-bottom:3px solid #FDB913;display:flex;align-items:center;padding:0 24px;z-index:100;box-shadow:0 2px 8px rgba(15,37,71,0.35);">
+    <!-- Hamburger (mobile only) -->
+    <button id="hamburgerBtn" onclick="openMobileSidebar()" aria-label="Menu" style="display:none;flex-direction:column;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:8px;cursor:pointer;margin-right:12px;">
+        <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
+        <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
+        <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
+    </button>
+    <!-- Logo + System Name -->
+    <div style="display:flex;align-items:center;gap:12px;">
+        <img src="barangay-sun-logo.jpg" alt="Seal" style="width:38px;height:38px;border-radius:50%;border:2px solid rgba(253,185,19,0.5);object-fit:cover;flex-shrink:0;">
+        <div style="line-height:1.3;">
+            <div style="font-size:15px;font-weight:700;color:#fff;letter-spacing:0.01em;">Barangay Sta. Lucia Admin Portal</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:400;">Official Administrative System</div>
+        </div>
+    </div>
+    <!-- Right Controls -->
+    <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+        <!-- Notification Bell -->
+        <div style="position:relative;display:flex;align-items:center;" id="adminBellWrapper">
+            <button onclick="toggleAdminBell(event)" title="Notifications" id="adminBellBtn" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:6px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;flex-shrink:0;transition:background 0.15s;">
+                <i class="bi bi-bell-fill"></i>
+            </button>
+            <span id="adminBellBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:#CE1126;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;line-height:1;border:2px solid #1A3A6B;pointer-events:none;z-index:10;"></span>
+            <div class="admin-bell-dropdown" id="adminBellDropdown">
+                <div class="admin-bell-header">
+                    <h3>Notifications</h3>
+                    <button class="admin-bell-markall" onclick="markAllAdminBellRead(); event.stopPropagation();"><i class="bi bi-check-all"></i> Mark all read</button>
+                </div>
+                <div class="admin-bell-list" id="adminBellList" onclick="event.stopPropagation()">
+                    <div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>
+                </div>
+                <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">See all activity in Audit Log</div>
+            </div>
+        </div>
+        <!-- Divider -->
+        <div style="width:1px;height:28px;background:rgba(255,255,255,0.20);flex-shrink:0;"></div>
+        <!-- Avatar + Name -->
+        <div style="display:flex;align-items:center;gap:8px;">
+            <div id="userAvatar" style="width:34px;height:34px;border-radius:50%;background:#FDB913;color:#0F2547;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(253,185,19,0.4);">A</div>
+            <div style="line-height:1.3;">
+                <div id="userName" style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;">Administrator</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.6);">Official</div>
+            </div>
+        </div>
+        <!-- Settings -->
+        <a href="admin-settings.html" style="text-decoration:none;display:flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid rgba(255,255,255,0.30);border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:transparent;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">
+            <i class="bi bi-gear" style="font-size:13px;"></i> Settings
+        </a>
+        <!-- Logout -->
+        <button onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border:none;border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:#CE1126;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#a50e1f'" onmouseout="this.style.background='#CE1126'">
+            <i class="bi bi-box-arrow-right" style="font-size:13px;"></i> Logout
+        </button>
+    </div>
+</header>
+
+<!-- Fixed Desktop Sidebar -->
+<aside style="position:fixed;top:64px;left:0;bottom:0;width:240px;background:#0F2547;overflow-y:auto;z-index:90;display:flex;flex-direction:column;">
+    <!-- Brand Header -->
+    <div style="display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
+        <img src="barangay-sun-logo.jpg" alt="Logo" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;">
+        <div style="min-width:0;">
+            <div style="font-size:13px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Brgy. Sta. Lucia</div>
+            <div style="font-size:10px;font-weight:600;color:#FDB913;letter-spacing:0.5px;margin-top:1px;">Admin Panel</div>
+        </div>
+    </div>
+
+    <!-- Nav: MAIN -->
+    <div style="padding:8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Main</div>
+        <button class="sidebar-btn active" onclick="switchSection('overview', this)">
+            <i class="bi bi-grid-1x2-fill"></i> Overview
+        </button>
+    </div>
+
+    <!-- Nav: MANAGEMENT -->
+    <div style="padding:0 8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Management</div>
+        <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">
+            <i class="bi bi-calendar-check-fill"></i> Facility Reservations
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('requests', this)">
+            <i class="bi bi-box-seam"></i> Equipment Requests
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('concerns', this)">
+            <i class="bi bi-megaphone-fill"></i> Concerns
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('users', this)">
+            <i class="bi bi-people-fill"></i> Manage Users
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('events', this)">
+            <i class="bi bi-calendar-event-fill"></i> Court Events
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('equipment', this)">
+            <i class="bi bi-box-seam-fill"></i> Inventory
+        </button>
+    </div>
+
+    <!-- Nav: SECURITY -->
+    <div style="padding:0 8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Security</div>
+        <button class="sidebar-btn" onclick="switchSection('audit-log', this)">
+            <i class="bi bi-journal-text"></i> Audit Log
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('security-log', this)">
+            <i class="bi bi-shield-lock-fill"></i> Security Log
+        </button>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div style="margin-top:auto;padding:12px 8px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
+        <a href="admin-settings.html" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:rgba(255,255,255,0.72);font-size:13px;font-weight:500;text-decoration:none;transition:all 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.72)'">
+            <i class="bi bi-gear-fill"></i> Settings
+        </a>
+        <button onclick="logoutUser()" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:rgba(255,255,255,0.72);font-size:13px;font-weight:500;background:transparent;border:none;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:all 0.18s;" onmouseover="this.style.background='rgba(206,17,38,0.15)';this.style.color='#FCA5A5'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.72)'">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- Main Content Area -->
+<div style="margin-left:240px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
+    <div style="padding:28px;">
