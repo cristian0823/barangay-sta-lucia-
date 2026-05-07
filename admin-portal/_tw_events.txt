@@ -1,0 +1,63 @@
+                    <div id="events-section" class="section-container" style="display: none;">
+
+                        <input type="hidden" id="adminSelectedVenue" value="basketball">
+
+                        <!-- PAGE HEADING -->
+                        <div style="margin-bottom:20px;">
+                            <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                                <i class="bi bi-calendar-event-fill"></i> SCHEDULING
+                            </p>
+                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Court Events</h1>
+                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">View and schedule barangay events on the basketball court calendar.</p>
+                        </div>
+
+                        <!-- Calendar Card -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+                            <!-- Calendar Header (navy) -->
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:#1A3A6B;">
+                                <button onclick="changeAdminMonth(-1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&lt;</button>
+                                <h2 id="adminCalendarMonth" style="font-size:18px;font-weight:700;color:#fff;margin:0;letter-spacing:0;"></h2>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <button onclick="jumpToToday()" style="padding:6px 14px;height:36px;border-radius:8px;border:none;background:#FDB913;cursor:pointer;font-size:12px;font-weight:700;color:#0F2547;transition:background 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='#fbbf24'" onmouseout="this.style.background='#FDB913'">Today</button>
+                                    <button onclick="changeAdminMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&gt;</button>
+                                </div>
+                            </div>
+
+                            <!-- Day Labels (darker navy) -->
+                            <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#0F2547;">
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sun</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Mon</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Tue</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Wed</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Thu</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Fri</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sat</div>
+                            </div>
+
+                            <!-- Calendar Grid (populated by JS) -->
+                            <div id="adminCalendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
+
+                            <!-- Legend -->
+                            <div style="display:flex;justify-content:center;gap:24px;padding:14px 20px;border-top:1px solid #F3F4F6;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-available" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DCFCE7;border:1px solid #86EFAC;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Available</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-event" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#FEF3C7;border:1px solid #FCD34D;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Brgy Event</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-booked" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DBEAFE;border:1px solid #93C5FD;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Booked</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-past" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#F3F4F6;border:1px solid #D1D5DB;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Past</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Overview Card -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
+                            <div style="padding:14px 20px;background:#1A3A6B;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-list-check" style="font-size:18px;color:#FDB913;"></i></div>
+                                <div>
+                                    <div style="font-size:15px;font-weight:700;color:#fff;">Schedule Overview</div>
+                                    <div style="font-size:12px;color:rgba(255,255,255,0.7);">Click any date on the calendar to view its schedule and add events.</div>
+                                </div>
+                            </div>
+                            <div style="padding:16px 20px;">
+                                <h3 style="font-size:13px;font-weight:600;color:#1A3A6B;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;">All Active Bookings &amp; Events</h3>
+                                <div id="adminAllBookingsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+                            </div>
+                        </div>
+                    </div>

@@ -1,0 +1,44 @@
+                    <div id="equipment-section" class="section-container" style="display: none;">
+
+                        <!-- PAGE HEADING -->
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                                        <i class="bi bi-box-seam-fill"></i> ASSET MANAGEMENT
+                                    </p>
+                                    <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Inventory</h1>
+                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Manage equipment stock, repairs, and maintenance history.</p>
+                                </div>
+                                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                    <button onclick="printEquipmentReport()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1px solid #1A3A6B;border-radius:6px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">
+                                        <i class="bi bi-printer"></i> Print
+                                    </button>
+                                    <button onclick="toggleMaintenanceLog()" id="maintenanceLogToggle" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1px solid #1A3A6B;border-radius:6px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">
+                                        <i class="bi bi-clipboard2-pulse"></i> Maintenance Log
+                                    </button>
+                                    <button onclick="openAddEquipmentModal()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;font-family:inherit;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">
+                                        <i class="bi bi-plus-lg"></i> Add Item
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                            <table class="data-table" style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1A3A6B;">
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Equipment</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Total</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Available</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Under Repair</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">For Disposal</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Status</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="equipmentTable"></tbody>
+                            </table>
+                        </div>
+                    </div>

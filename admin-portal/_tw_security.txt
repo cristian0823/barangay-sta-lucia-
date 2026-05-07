@@ -1,0 +1,121 @@
+<div class="section-container" id="security-log-section" style="display:none;">
+
+    <!-- PAGE HEADING -->
+    <div style="margin-bottom:20px;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+            <i class="bi bi-shield-lock-fill"></i> SECURITY
+        </p>
+        <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Security Log</h1>
+        <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Authentication &amp; session events &mdash; OWASP A09:2021 compliant monitoring.</p>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;">
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #1A3A6B;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Events Today</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(26,58,107,0.1);display:flex;align-items:center;justify-content:center;color:#1A3A6B;"><i class="bi bi-shield-fill-check"></i></div>
+            </div>
+            <div id="secStatEventsToday" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">security events</div>
+        </div>
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #FDB913;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Failed Attempts</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(253,185,19,0.15);display:flex;align-items:center;justify-content:center;color:#D97706;"><i class="bi bi-key-fill"></i></div>
+            </div>
+            <div id="secStatFailed" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">login failures today</div>
+        </div>
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #CE1126;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Anomalies Today</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(206,17,38,0.1);display:flex;align-items:center;justify-content:center;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            </div>
+            <div id="secStatAnomalies" style="font-size:32px;font-weight:700;color:#CE1126;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">requires review</div>
+        </div>
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #16A34A;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Total Records</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(22,163,74,0.1);display:flex;align-items:center;justify-content:center;color:#16A34A;"><i class="bi bi-database-fill"></i></div>
+            </div>
+            <div id="secStatTotal" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">total log entries</div>
+        </div>
+    </div>
+
+    <!-- QUICK FILTER TABS (navy active) -->
+    <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;margin-bottom:16px;flex-wrap:wrap;">
+        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding:6px 14px;border-radius:6px;border:none;background:#1A3A6B;color:#fff;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">Login Events</button>
+        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">All Events</button>
+        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Failed Only</button>
+        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Anomalies</button>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div style="background:#fff;padding:16px 20px;border-radius:12px;border:1px solid #D1D5DB;margin-bottom:20px;display:flex;gap:14px;align-items:flex-end;box-shadow:0 1px 3px rgba(0,0,0,0.05);flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Event Type</label>
+            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
+                <option value="all">All Events</option>
+                <option value="logins" selected>Login Events Only</option>
+                <option value="success">Success Only</option>
+                <option value="failed">Failed Attempts</option>
+                <option value="anomaly">Anomalies</option>
+            </select>
+        </div>
+        <div style="flex:1;min-width:150px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Auth Method</label>
+            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
+                <option value="all">All Methods</option>
+                <option value="Password">Password</option>
+                <option value="Google">Google</option>
+            </select>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;">
+                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width:16px;height:16px;cursor:pointer;accent-color:#CE1126;"> Only Anomalies
+            </label>
+        </div>
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">From</label>
+            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
+        </div>
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">To</label>
+            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
+        </div>
+        <div style="flex:2;min-width:200px;position:relative;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Search</label>
+            <div style="display:flex;">
+                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width:100%;padding:8px 12px;border-radius:6px 0 0 6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
+                <button onclick="renderSecurityLog(true)" style="background:#1A3A6B;color:#fff;border:none;padding:0 16px;border-radius:0 6px 6px 0;cursor:pointer;"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #D1D5DB;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px;" id="securityLogTable">
+            <thead>
+                <tr style="background:#1A3A6B;">
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;width:40px;"></th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Timestamp</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Email / User</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Event</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Auth</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">IP Address</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Device</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Details</th>
+                </tr>
+            </thead>
+            <tbody id="securityList"></tbody>
+        </table>
+        <div id="securityPagination" class="pagination-controls" style="display:flex;justify-content:center;gap:10px;padding:14px;align-items:center;border-top:1px solid #F3F4F6;">
+            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Previous</button>
+            <span id="securityPageInfo" style="font-size:13px;color:#6B7280;">Page 1 of 1</span>
+            <button id="securityNextBtn" onclick="changeSecurityPage(1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Next</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+<div class="section-container" id="audit-log-section" style="display:none;">
+
+    <!-- PAGE HEADING -->
+    <div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div>
+                <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                    <i class="bi bi-journal-text"></i> SECURITY
+                </p>
+                <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Audit Log</h1>
+                <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">System operational tracking for reservations, requests, and concerns.</p>
+            </div>
+            <div>
+                <button onclick="printAuditLog()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div style="background:#fff;padding:16px 20px;border-radius:12px;border:1px solid #D1D5DB;margin-bottom:20px;display:flex;gap:14px;align-items:flex-end;box-shadow:0 1px 3px rgba(0,0,0,0.05);flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Action</label>
+            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                <option value="all">All Actions</option>
+                <option value="Borrow">Borrow Equipment</option>
+                <option value="Reserve">Facility Reservation</option>
+                <option value="Concern">Concerns</option>
+                <option value="Event">Events</option>
+            </select>
+        </div>
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">From</label>
+            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+        </div>
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">To</label>
+            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+        </div>
+        <div style="flex:2;min-width:200px;position:relative;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Search</label>
+            <div style="display:flex;">
+                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width:100%;padding:8px 12px;border-radius:6px 0 0 6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                <button onclick="renderAuditLog(true)" style="background:#1A3A6B;color:#fff;border:none;padding:0 16px;border-radius:0 6px 6px 0;cursor:pointer;"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #D1D5DB;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px;" id="auditLogTable">
+            <thead>
+                <tr style="background:#1A3A6B;">
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Timestamp</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Performed By</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Role</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Action</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Module</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Status</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Details</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:right;"></th>
+                </tr>
+            </thead>
+            <tbody id="auditList"></tbody>
+        </table>
+        <!-- Audit Log Pagination Controls -->
+        <div id="auditPagination" class="pagination-controls" style="display:flex;justify-content:center;gap:10px;padding:14px;align-items:center;border-top:1px solid #F3F4F6;">
+            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Previous</button>
+            <span id="auditPageInfo" style="font-size:13px;color:#6B7280;">Page 1 of 1</span>
+            <button id="auditNextBtn" onclick="changeAuditPage(1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Next</button>
+        </div>
+    </div>
+</div>

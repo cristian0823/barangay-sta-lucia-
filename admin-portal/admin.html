@@ -826,94 +826,112 @@
                     </div>
 
                     <div id="events-section" class="section-container" style="display: none;">
-                        <div class="section-content" style="padding: 24px;">
 
-                            <input type="hidden" id="adminSelectedVenue" value="basketball">
+                        <input type="hidden" id="adminSelectedVenue" value="basketball">
 
-                            <!-- Top/Bottom Layout -->
-                            <div class="admin-cal-grid" style="display:flex; flex-direction:column; gap:32px; align-items:stretch;">
+                        <!-- PAGE HEADING -->
+                        <div style="margin-bottom:20px;">
+                            <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                                <i class="bi bi-calendar-event-fill"></i> SCHEDULING
+                            </p>
+                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Court Events</h1>
+                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">View and schedule barangay events on the basketball court calendar.</p>
+                        </div>
 
-                                <!-- Calendar Card (Left Side) -->
-                                <div style="background:var(--surface, #fff); border-radius:24px; padding:32px; box-shadow:0 12px 40px rgba(0,0,0,0.06); border:1px solid var(--border, #f1f5f9); position:relative; overflow:hidden;">
-                                    <!-- Month Header -->
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; position:relative; z-index:10;">
-                                        <h2 id="adminCalendarMonth" style="font-size:24px; font-weight:800; color:var(--text, #0f172a); margin:0; letter-spacing:-0.02em;"></h2>
-                                        <div style="display:flex; gap:8px; align-items:center;">
-                                            <button onclick="changeAdminMonth(-1)" style="width:40px;height:40px;border-radius:12px;border:1px solid var(--border, #e2e8f0);background:var(--surface, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:var(--muted, #64748b);" onmouseover="this.style.background='var(--panel-bg, #f8fafc)';this.style.color='var(--text, #0f172a)';this.style.borderColor='var(--border, #cbd5e1)';" onmouseout="this.style.background='var(--surface, #fff)';this.style.color='var(--muted, #64748b)';this.style.borderColor='var(--border, #e2e8f0)';">&lt;</button>
-                                            <button onclick="jumpToToday()" style="padding:0 14px;height:40px;border-radius:12px;border:1px solid var(--border, #e2e8f0);background:var(--surface, #fff);cursor:pointer;font-size:12px;font-weight:700;color:#a855f7;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;letter-spacing:0.02em;" onmouseover="this.style.background='var(--panel-bg, #faf5ff)';this.style.borderColor='var(--border, #e9d5ff)';" onmouseout="this.style.background='var(--surface, #fff)';this.style.borderColor='var(--border, #e2e8f0)';">Today</button>
-                                            <button onclick="changeAdminMonth(1)" style="width:40px;height:40px;border-radius:12px;border:1px solid var(--border, #e2e8f0);background:var(--surface, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:all 0.2s;font-size:16px;color:var(--muted, #64748b);" onmouseover="this.style.background='var(--panel-bg, #f8fafc)';this.style.color='var(--text, #0f172a)';this.style.borderColor='var(--border, #cbd5e1)';" onmouseout="this.style.background='var(--surface, #fff)';this.style.color='var(--muted, #64748b)';this.style.borderColor='var(--border, #e2e8f0)';">&gt;</button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Day Labels -->
-                                    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:12px; position:relative; z-index:10; padding-bottom:12px;">
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Sun</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Mon</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Tue</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Wed</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Thu</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Fri</div>
-                                        <div style="text-align:center;font-size:12px;font-weight:700;color:var(--muted, #9ca3af);letter-spacing:0.02em;">Sat</div>
-                                    </div>
-                                    <div id="adminCalendarGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px; position:relative; z-index:10;"></div>
-
-                                    <!-- Legend -->
-                                    <div style="display:flex; justify-content:center; gap:20px; margin-top:32px; padding-top:24px; border-top:1px solid var(--border, #f1f5f9); position:relative; z-index:10;">
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-available" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Available</span></div>
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-event" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Brgy Event</span></div>
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-booked" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Booked</span></div>
-                                        <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-past" style="width:14px;height:14px;border-radius:4px;display:inline-block;"></span><span style="font-size:13px;font-weight:500;color:var(--text, #334155);">Past</span></div>
-                                    </div>
-                                </div>
-
-                                <!-- Right Panel: Schedule Overview -->
-                                <div style="min-width:0; background:var(--surface, #fff); border-radius:24px; border:1px solid var(--border, #f1f5f9); box-shadow:0 12px 40px rgba(0,0,0,0.06); display:flex; flex-direction:column; overflow:hidden;">
-                                    <div style="padding:24px 24px 0 24px; flex-shrink:0;">
-                                        <h2 style="font-size:20px; font-weight:800; color:var(--text, #0f172a); margin:0 0 6px 0; letter-spacing:-0.02em;">Schedule Overview</h2>
-                                        <p style="font-size:13px; color:var(--muted, #64748b); margin:0;">Click any date to view its schedule and add events.</p>
-                                    </div>
-
-                                    <div style="padding:20px 24px 24px 24px; flex-grow:1; display:flex; flex-direction:column;">
-
-                                        <!-- All Bookings List -->
-                                        <h3 style="font-size:14px;font-weight:700;color:var(--text, #1e293b);margin:0 0 10px;"> All Active Bookings & Events</h3>
-                                        <div id="adminAllBookingsList" style="display:flex;flex-direction:column;gap:8px;"></div>
-                                    </div>
+                        <!-- Calendar Card -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+                            <!-- Calendar Header (navy) -->
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:#1A3A6B;">
+                                <button onclick="changeAdminMonth(-1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&lt;</button>
+                                <h2 id="adminCalendarMonth" style="font-size:18px;font-weight:700;color:#fff;margin:0;letter-spacing:0;"></h2>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <button onclick="jumpToToday()" style="padding:6px 14px;height:36px;border-radius:8px;border:none;background:#FDB913;cursor:pointer;font-size:12px;font-weight:700;color:#0F2547;transition:background 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='#fbbf24'" onmouseout="this.style.background='#FDB913'">Today</button>
+                                    <button onclick="changeAdminMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&gt;</button>
                                 </div>
                             </div>
 
+                            <!-- Day Labels (darker navy) -->
+                            <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#0F2547;">
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sun</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Mon</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Tue</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Wed</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Thu</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Fri</div>
+                                <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sat</div>
+                            </div>
+
+                            <!-- Calendar Grid (populated by JS) -->
+                            <div id="adminCalendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
+
+                            <!-- Legend -->
+                            <div style="display:flex;justify-content:center;gap:24px;padding:14px 20px;border-top:1px solid #F3F4F6;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-available" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DCFCE7;border:1px solid #86EFAC;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Available</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-event" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#FEF3C7;border:1px solid #FCD34D;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Brgy Event</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-booked" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DBEAFE;border:1px solid #93C5FD;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Booked</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-past" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#F3F4F6;border:1px solid #D1D5DB;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Past</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Overview Card -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
+                            <div style="padding:14px 20px;background:#1A3A6B;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-list-check" style="font-size:18px;color:#FDB913;"></i></div>
+                                <div>
+                                    <div style="font-size:15px;font-weight:700;color:#fff;">Schedule Overview</div>
+                                    <div style="font-size:12px;color:rgba(255,255,255,0.7);">Click any date on the calendar to view its schedule and add events.</div>
+                                </div>
+                            </div>
+                            <div style="padding:16px 20px;">
+                                <h3 style="font-size:13px;font-weight:600;color:#1A3A6B;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;">All Active Bookings &amp; Events</h3>
+                                <div id="adminAllBookingsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+                            </div>
                         </div>
                     </div>
                     <div id="equipment-section" class="section-container" style="display: none;">
-                        <div class="section-header">
-                            <h3>Inventory</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-small btn-light"
-                                    onclick="printEquipmentReport()">
-                                    Print</button>
-                                <button class="btn btn-small btn-light" onclick="openAddEquipmentModal()">+ Add Item</button>
-                    <button class="btn btn-small btn-light" onclick="toggleMaintenanceLog()" id="maintenanceLogToggle"><i class="bi bi-clipboard2-pulse"></i> Maintenance Log</button>
+
+                        <!-- PAGE HEADING -->
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                                        <i class="bi bi-box-seam-fill"></i> ASSET MANAGEMENT
+                                    </p>
+                                    <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Inventory</h1>
+                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Manage equipment stock, repairs, and maintenance history.</p>
+                                </div>
+                                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                    <button onclick="printEquipmentReport()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1px solid #1A3A6B;border-radius:6px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">
+                                        <i class="bi bi-printer"></i> Print
+                                    </button>
+                                    <button onclick="toggleMaintenanceLog()" id="maintenanceLogToggle" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1px solid #1A3A6B;border-radius:6px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">
+                                        <i class="bi bi-clipboard2-pulse"></i> Maintenance Log
+                                    </button>
+                                    <button onclick="openAddEquipmentModal()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;font-family:inherit;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">
+                                        <i class="bi bi-plus-lg"></i> Add Item
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="section-content" style="padding: 16px 26px 26px;">
-                            <div class="admin-tables">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: left;">Equipment</th>
-                                            <th style="text-align: center;">Total</th>
-                                            <th style="text-align: center;">Available</th>
-                                            <th style="text-align: center;">Under Repair</th>
-                                            <th style="text-align: center;">For Disposal</th>
-                                            <th style="text-align: center;">Status</th>
-                                            <th style="text-align: right;">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="equipmentTable"></tbody>
-                                </table>
-                            </div>
+
+                        <!-- TABLE -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                            <table class="data-table" style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1A3A6B;">
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Equipment</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Total</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Available</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Under Repair</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">For Disposal</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Status</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="equipmentTable"></tbody>
+                            </table>
                         </div>
-                    </div> 
+                    </div>
 
                     <!-- MAINTENANCE LOG PANEL -->
                     <div id="maintenanceLogPanel" style="display:none; padding: 0 26px 26px;">
@@ -1025,20 +1043,31 @@
 
                     <!-- Activity Log Section (Premium) -->
                     
-<div class="section-container" id="audit-log-section" style="display:none; padding: 24px;">
-    <div class="section-header" style="margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-            <i class="bi bi-receipt-cutoff" style="color: #6366f1; font-size: 28px;"></i>
-            <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Audit Log</h2>
+<div class="section-container" id="audit-log-section" style="display:none;">
+
+    <!-- PAGE HEADING -->
+    <div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div>
+                <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+                    <i class="bi bi-journal-text"></i> SECURITY
+                </p>
+                <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Audit Log</h1>
+                <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">System operational tracking for reservations, requests, and concerns.</p>
+            </div>
+            <div>
+                <button onclick="printAuditLog()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+            </div>
         </div>
-        <p style="color: var(--muted); font-size: 14px; margin: 0;">System operational tracking for reservations, requests, and concerns.</p>
     </div>
 
-    <!-- Filter Bar -->
-    <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">ACTION</label>
-            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+    <!-- FILTER BAR -->
+    <div style="background:#fff;padding:16px 20px;border-radius:12px;border:1px solid #D1D5DB;margin-bottom:20px;display:flex;gap:14px;align-items:flex-end;box-shadow:0 1px 3px rgba(0,0,0,0.05);flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Action</label>
+            <select id="auditFilterAction" onchange="renderAuditLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
                 <option value="all">All Actions</option>
                 <option value="Borrow">Borrow Equipment</option>
                 <option value="Reserve">Facility Reservation</option>
@@ -1046,100 +1075,109 @@
                 <option value="Event">Events</option>
             </select>
         </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">From</label>
+            <input type="date" id="auditFilterFrom" onchange="renderAuditLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
         </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">To</label>
+            <input type="date" id="auditFilterTo" onchange="renderAuditLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
         </div>
-        <div style="flex: 2; min-width: 200px; position: relative;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
-            <div style="display: flex;">
-                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <button onclick="renderAuditLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+        <div style="flex:2;min-width:200px;position:relative;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Search</label>
+            <div style="display:flex;">
+                <input type="text" id="auditFilterSearch" onkeyup="renderAuditLog(true)" placeholder="user, details, entity..." style="width:100%;padding:8px 12px;border-radius:6px 0 0 6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#1A3A6B';this.style.boxShadow='0 0 0 3px rgba(26,58,107,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
+                <button onclick="renderAuditLog(true)" style="background:#1A3A6B;color:#fff;border:none;padding:0 16px;border-radius:0 6px 6px 0;cursor:pointer;"><i class="bi bi-search"></i></button>
             </div>
-        </div>
-        <div>
-            <button onclick="printAuditLog()" style="padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <i class="bi bi-printer"></i> Print
-            </button>
         </div>
     </div>
 
-    <!-- Table -->
-    <div style="background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div class="table-responsive">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="auditLogTable">
-                <thead>
-                    <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">TIMESTAMP</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">PERFORMED BY</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">ROLE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">ACTION</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">MODULE</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;">STATUS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DETAILS</th>
-                        <th style="padding: 14px 12px; font-size: 11px; font-weight: 700; color: var(--muted); text-align: right;"></th>
-                    </tr>
-                </thead>
-                <tbody id="auditList">
-                    <!-- Loaded dynamically -->
-                </tbody>
-            </table>
-        </div>
+    <!-- TABLE -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #D1D5DB;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px;" id="auditLogTable">
+            <thead>
+                <tr style="background:#1A3A6B;">
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Timestamp</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Performed By</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Role</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Action</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Module</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Status</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Details</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:right;"></th>
+                </tr>
+            </thead>
+            <tbody id="auditList"></tbody>
+        </table>
         <!-- Audit Log Pagination Controls -->
-        <div id="auditPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
-            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
-            <span id="auditPageInfo" style="font-size: 13px; color: var(--muted);">Page 1 of 1</span>
-            <button id="auditNextBtn" onclick="changeAuditPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
+        <div id="auditPagination" class="pagination-controls" style="display:flex;justify-content:center;gap:10px;padding:14px;align-items:center;border-top:1px solid #F3F4F6;">
+            <button id="auditPrevBtn" onclick="changeAuditPage(-1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Previous</button>
+            <span id="auditPageInfo" style="font-size:13px;color:#6B7280;">Page 1 of 1</span>
+            <button id="auditNextBtn" onclick="changeAuditPage(1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Next</button>
         </div>
     </div>
 </div>
 
-<div class="section-container" id="security-log-section" style="display:none; padding: 24px;">
-    <div class="section-header" style="margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-            <i class="bi bi-shield-fill-check" style="color: #ef4444; font-size: 28px;"></i>
-            <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Security Log</h2>
-        </div>
-        <p style="color: var(--muted); font-size: 14px; margin: 0;">Authentication &amp; session events &mdash; OWASP A09:2021 compliant monitoring.</p>
+<div class="section-container" id="security-log-section" style="display:none;">
+
+    <!-- PAGE HEADING -->
+    <div style="margin-bottom:20px;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
+            <i class="bi bi-shield-lock-fill"></i> SECURITY
+        </p>
+        <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Security Log</h1>
+        <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Authentication &amp; session events &mdash; OWASP A09:2021 compliant monitoring.</p>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="stats-grid" style="gap: 16px; margin-bottom: 24px;">
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">EVENTS TODAY</div>
-            <div id="secStatEventsToday" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
+    <!-- KPI CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;">
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #1A3A6B;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Events Today</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(26,58,107,0.1);display:flex;align-items:center;justify-content:center;color:#1A3A6B;"><i class="bi bi-shield-fill-check"></i></div>
+            </div>
+            <div id="secStatEventsToday" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">security events</div>
         </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">FAILED ATTEMPTS TODAY</div>
-            <div id="secStatFailed" style="font-size: 28px; font-weight: 800; color: #eab308;">0</div>
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #FDB913;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Failed Attempts</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(253,185,19,0.15);display:flex;align-items:center;justify-content:center;color:#D97706;"><i class="bi bi-key-fill"></i></div>
+            </div>
+            <div id="secStatFailed" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">login failures today</div>
         </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="bi bi-exclamation-triangle-fill"></i> ANOMALIES TODAY</div>
-            <div id="secStatAnomalies" style="font-size: 28px; font-weight: 800; color: #ef4444;">0</div>
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #CE1126;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Anomalies Today</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(206,17,38,0.1);display:flex;align-items:center;justify-content:center;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            </div>
+            <div id="secStatAnomalies" style="font-size:32px;font-weight:700;color:#CE1126;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">requires review</div>
         </div>
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">TOTAL RECORDS</div>
-            <div id="secStatTotal" style="font-size: 28px; font-weight: 800; color: var(--text);">0</div>
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #16A34A;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Total Records</span>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(22,163,74,0.1);display:flex;align-items:center;justify-content:center;color:#16A34A;"><i class="bi bi-database-fill"></i></div>
+            </div>
+            <div id="secStatTotal" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">total log entries</div>
         </div>
     </div>
 
-    <!-- Quick Filter Tabs -->
-    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                                <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding: 7px 18px; border-radius: 20px; border: 2px solid #10b981; background: #10b981; color: white; font-weight: 700; font-size: 13px; cursor: pointer;">🔵 Login Events</button>
-                                <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">📋 All Events</button>
-                                <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">❌ Failed Only</button>
-                                <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding: 7px 18px; border-radius: 20px; border: 2px solid var(--border); background: transparent; color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;">⚠️ Anomalies</button>
+    <!-- QUICK FILTER TABS (navy active) -->
+    <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;margin-bottom:16px;flex-wrap:wrap;">
+        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding:6px 14px;border-radius:6px;border:none;background:#1A3A6B;color:#fff;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">Login Events</button>
+        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">All Events</button>
+        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Failed Only</button>
+        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Anomalies</button>
     </div>
 
-    <!-- Filter Bar -->
-    <div style="background: var(--card-bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">EVENT TYPE</label>
-            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+    <!-- FILTER BAR -->
+    <div style="background:#fff;padding:16px 20px;border-radius:12px;border:1px solid #D1D5DB;margin-bottom:20px;display:flex;gap:14px;align-items:flex-end;box-shadow:0 1px 3px rgba(0,0,0,0.05);flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Event Type</label>
+            <select id="secFilterType" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
                 <option value="all">All Events</option>
                 <option value="logins" selected>Login Events Only</option>
                 <option value="success">Success Only</option>
@@ -1147,62 +1185,57 @@
                 <option value="anomaly">Anomalies</option>
             </select>
         </div>
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">AUTH METHOD</label>
-            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+        <div style="flex:1;min-width:150px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Auth Method</label>
+            <select id="secFilterAuth" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
                 <option value="all">All Methods</option>
                 <option value="Password">Password</option>
                 <option value="Google">Google</option>
             </select>
         </div>
-        <div style="display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 8px;">
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;">
-                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444;"> Only Anomalies
+        <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;">
+                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width:16px;height:16px;cursor:pointer;accent-color:#CE1126;"> Only Anomalies
             </label>
         </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">FROM</label>
-            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">From</label>
+            <input type="date" id="secFilterFrom" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
         </div>
-        <div style="flex: 1; min-width: 130px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">TO</label>
-            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
+        <div style="flex:1;min-width:130px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">To</label>
+            <input type="date" id="secFilterTo" onchange="renderSecurityLog(true)" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
         </div>
-        <div style="flex: 2; min-width: 200px; position: relative;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">SEARCH</label>
-            <div style="display: flex;">
-                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width: 100%; padding: 8px 12px; border-radius: 8px 0 0 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;">
-                <button onclick="renderSecurityLog(true)" style="background: var(--text); color: var(--card-bg); border: none; padding: 0 16px; border-radius: 0 8px 8px 0; cursor: pointer;"><i class="bi bi-search"></i></button>
+        <div style="flex:2;min-width:200px;position:relative;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Search</label>
+            <div style="display:flex;">
+                <input type="text" id="secFilterSearch" onkeyup="renderSecurityLog(true)" placeholder="email, IP, details..." style="width:100%;padding:8px 12px;border-radius:6px 0 0 6px;border:1px solid #D1D5DB;background:#fff;color:#1A1A2E;font-size:13px;outline:none;font-family:inherit;">
+                <button onclick="renderSecurityLog(true)" style="background:#1A3A6B;color:#fff;border:none;padding:0 16px;border-radius:0 6px 6px 0;cursor:pointer;"><i class="bi bi-search"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- Table -->
-    <div style="background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div class="table-responsive">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;" id="securityLogTable">
-                <thead>
-                    <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted); width: 40px;"></th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">TIMESTAMP</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">EMAIL / USER</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">EVENT</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">AUTH</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">IP ADDRESS</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DEVICE</th>
-                        <th style="padding: 16px 12px; font-size: 11px; font-weight: 700; color: var(--muted);">DETAILS</th>
-                    </tr>
-                </thead>
-                <tbody id="securityList">
-                    <!-- Loaded dynamically -->
-                </tbody>
-            </table>
-        </div>
-        <!-- Security Log Pagination Controls -->
-        <div id="securityPagination" class="pagination-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;">
-            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Previous</button>
-            <span id="securityPageInfo" style="font-size: 13px; color: var(--muted);">Page 1 of 1</span>
-            <button id="securityNextBtn" onclick="changeSecurityPage(1)" class="btn" style="padding: 6px 12px; font-size: 13px; background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">Next</button>
+    <!-- TABLE -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #D1D5DB;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px;" id="securityLogTable">
+            <thead>
+                <tr style="background:#1A3A6B;">
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;width:40px;"></th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Timestamp</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Email / User</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Event</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Auth</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">IP Address</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Device</th>
+                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Details</th>
+                </tr>
+            </thead>
+            <tbody id="securityList"></tbody>
+        </table>
+        <div id="securityPagination" class="pagination-controls" style="display:flex;justify-content:center;gap:10px;padding:14px;align-items:center;border-top:1px solid #F3F4F6;">
+            <button id="securityPrevBtn" onclick="changeSecurityPage(-1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Previous</button>
+            <span id="securityPageInfo" style="font-size:13px;color:#6B7280;">Page 1 of 1</span>
+            <button id="securityNextBtn" onclick="changeSecurityPage(1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Next</button>
         </div>
     </div>
 </div>
@@ -1323,7 +1356,7 @@
                             style="margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
                             <h3
                                 style="font-size: 28px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px;">
-                                <i class="bi bi-hdd-network" style="color: #6366f1;"></i> System Analytics
+                                <i class="bi bi-hdd-network" style="color: #1A3A6B;"></i> System Analytics
                             </h3>
                             <span style="font-size: 14px; color: var(--muted); font-weight: 500;">Real-time overview of
                                 platform statistics and infrastructure details.</span>
@@ -2212,7 +2245,7 @@
                                 <div>
                                     <div style="font-size:13px;font-weight:700;color:var(--text, #0f172a);margin-bottom:2px;">${item.label}</div>
                                     <div style="font-size:12px;color:var(--muted, #64748b);margin-bottom:4px;">${item.sub}</div>
-                                    <div style="font-weight:700;font-size:11px;color:${isEv ? '#a855f7' : '#ef4444'};">${dateFmt}  ${item.time}</div>
+                                    <div style="font-weight:700;font-size:11px;color:${isEv ? '#D97706' : '#CE1126'};">${dateFmt}  ${item.time}</div>
                                 </div>
                             </div>`;
                         }).join('');
@@ -2697,8 +2730,8 @@
                     const status      = getStatus(a.action, a.details);
 
                     // Action badge colour
-                    let actColor = '#6366f1', actBg = 'rgba(99,102,241,0.15)';
-                    if (actionLabel === 'Approved' || actionLabel === 'Returned') { actColor = '#10b981'; actBg = 'rgba(16,185,129,0.15)'; }
+                    let actColor = '#1A3A6B', actBg = 'rgba(26,58,107,0.10)';
+                    if (actionLabel === 'Approved' || actionLabel === 'Returned') { actColor = '#16A34A'; actBg = 'rgba(22,163,74,0.10)'; }
                     else if (actionLabel === 'Rejected' || actionLabel === 'Deleted') { actColor = '#ef4444'; actBg = 'rgba(239,68,68,0.15)'; }
                     else if (actionLabel === 'Pending' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#f59e0b'; actBg = 'rgba(245,158,11,0.15)'; }
 
@@ -2845,9 +2878,9 @@
                     const btn = document.getElementById('sqf_' + t);
                     if (!btn) return;
                     if (t === type) {
-                        const colors = { logins:'#10b981', all:'#3b82f6', failed:'#f97316', anomaly:'#ef4444' };
-                        btn.style.background = colors[t] || '#6366f1';
-                        btn.style.borderColor = colors[t] || '#6366f1';
+                        const colors = { logins:'#1A3A6B', all:'#1A3A6B', failed:'#1A3A6B', anomaly:'#1A3A6B' };
+                        btn.style.background = colors[t] || '#1A3A6B';
+                        btn.style.borderColor = colors[t] || '#1A3A6B';
                         btn.style.color = '#fff';
                     } else {
                         btn.style.background = 'transparent';
@@ -2971,7 +3004,7 @@
                     } else if (ev === 'Account Locked') {
                         rowBg = 'background:rgba(239,68,68,0.07);border-left:4px solid #ef4444;';
                         icon = '<i class="bi bi-shield-lock-fill" style="color:#ef4444;"></i>';
-                        bdg = 'background:#fee2e2;color:#10b981;';
+                        bdg = 'background:#FEE2E2;color:#991B1B;';
                     } else if (ev === 'Login Failed') {
                         rowBg = 'background:rgba(249,115,22,0.06);border-left:4px solid #f97316;';
                         icon = '<i class="bi bi-x-circle-fill" style="color:#f97316;"></i>';
@@ -2979,7 +3012,7 @@
                     } else if (s.severity === 'critical' || ev.includes('Suspend')) {
                         rowBg = 'background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;';
                         icon = '<i class="bi bi-exclamation-triangle-fill" style="color:#ef4444;"></i>';
-                        bdg = 'background:#fee2e2;color:#10b981;';
+                        bdg = 'background:#FEE2E2;color:#991B1B;';
                     }
 
                     const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
@@ -3539,14 +3572,14 @@
                 tbody.innerHTML = users.map(u => {
                     const isSuspended = u.suspended_until && new Date(u.suspended_until) > new Date();
                     const statusBadge = isSuspended
-                        ? '<span style="background:#fee2e2;color:#10b981;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
+                        ? '<span style="background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Suspended</span>'
                         : '<span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;">Active</span>';
                     const displayName = u.fullName || u.full_name || u.username;
                     const phone = u.phone || u.contact_number || u.contactNumber || '';
                     const address = u.address || '';
                     const actionHtml = isSuspended 
                         ? `<button onclick="liftSuspension('${u.id}', '${displayName}')" style="background:var(--green-xl);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Lift Ban</button>`
-                        : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:#10b981;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Suspend</button>
+                        : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:transparent;color:#CE1126;border:1px solid #CE1126;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Suspend</button>
                            <button onclick="adminDeleteUserConfirm('${u.id}', '${displayName}')" style="background:#dc2626;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Delete</button>`;
 
                     return `<tr>
@@ -4589,18 +4622,19 @@
                     let statusBadge;
                     // Repurposed category as status override
                     const disposal = parseInt(e.category) || 0; 
+                    const badgeBase = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
                     if (e.isArchived) {
-                        statusBadge = '<span class="status-badge" style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;"> Archived</span>';
+                        statusBadge = '<span style="'+badgeBase+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">Archived</span>';
                     } else if (broken > 0 && e.available === 0) {
-                        statusBadge = '<span class="status-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;"> Under Repair</span>';
+                        statusBadge = '<span style="'+badgeBase+'background:#FFEDD5;color:#9A3412;border:1px solid #FED7AA;">Under Repair</span>';
                     } else if (broken > 0) {
-                        statusBadge = '<span class="status-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;"> Partial/Repair</span>';
+                        statusBadge = '<span style="'+badgeBase+'background:#FFEDD5;color:#9A3412;border:1px solid #FED7AA;">Partial/Repair</span>';
                     } else if (e.available === 0) {
-                        statusBadge = '<span class="status-badge status-borrowed"> In Use</span>';
+                        statusBadge = '<span style="'+badgeBase+'background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD;">In Use</span>';
                     } else if (inUse > 0) {
-                        statusBadge = '<span class="status-badge status-pending"> Partially Used</span>';
+                        statusBadge = '<span style="'+badgeBase+'background:#FEF9C3;color:#854D0E;border:1px solid #FDE047;">Partially Used</span>';
                     } else {
-                        statusBadge = '<span class="status-badge status-approved"> Available</span>';
+                        statusBadge = '<span style="'+badgeBase+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Available</span>';
                     }
                     const iconDef = EQUIP_ICON_MAP[e.name];
                     const iconHtml = iconDef ? iconDef.html : (e.icon || '');
@@ -4616,7 +4650,7 @@
                             >
                                 ${e.image_url 
                                     ? `<img src="${e.image_url}" alt="${e.name}" style="width:100%;height:100%;object-fit:cover;">` 
-                                    : `<div style="text-align:center;padding:4px;"><div style="font-size:16px;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â·</div><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;">Upload</div></div>`
+                                    : `<div style="text-align:center;padding:4px;"><i class="bi bi-camera-fill" style="font-size:18px;color:#9ca3af;"></i><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;margin-top:2px;">Upload</div></div>`
                                 }
                                 <input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange(${e.id}, this)">
                             </div>
@@ -4636,13 +4670,13 @@
                             ${(()=>{
                                 const lower = e.name.toLowerCase();
                                 const isPickupOnly = ['table','tent'].some(kw=>lower.includes(kw));
-                                if (isPickupOnly) return '<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">&#127963; Pickup Only</span>';
+                                if (isPickupOnly) return '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
                                 const delSettings = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
                                 const deliveryOn = delSettings[lower] !== false;
-                                return `<button onclick="toggleDeliveryAdmin('${lower}')" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid ${deliveryOn?'#bbf7d0':'#e2e8f0'};background:${deliveryOn?'#f0fdf4':'#f8fafc'};color:${deliveryOn?'#166534':'#64748b'};">${deliveryOn?'&#128666; Delivery ON':'&#127963; Delivery OFF'}</button>`;
+                                return `<button onclick="toggleDeliveryAdmin('${lower}')" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:0.04em;background:${deliveryOn?'#DBEAFE':'#F3F4F6'};color:${deliveryOn?'#1E40AF':'#6B7280'};font-family:inherit;">${deliveryOn?'Delivery':'No Delivery'}</button>`;
                             })()}
-                            <button class="btn btn-smaller btn-light" onclick="openEditEquipmentModal(${e.id})">Edit</button>
-                            <button class="btn btn-smaller btn-danger" onclick="handleDeleteEquipment(${e.id})">Delete</button>
+                            <button onclick="openEditEquipmentModal(${e.id})" style="padding:5px 12px;font-size:12px;font-weight:500;color:#1A3A6B;background:transparent;border:1px solid #1A3A6B;border-radius:6px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Edit</button>
+                            <button onclick="handleDeleteEquipment(${e.id})" style="padding:5px 12px;font-size:12px;font-weight:500;color:#CE1126;background:transparent;border:1px solid #CE1126;border-radius:6px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#CE1126';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#CE1126'">Delete</button>
                         </div>
                     </td>
                 </tr>`;
