@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -273,15 +273,15 @@
       #toast.show    { transform: translateY(0); }
 
       /* ── Admin Calendar ─────────────────────────────────── */
-      .cal-box-available { background:#DCFCE7;border:1px solid #86EFAC;color:#166534; }
-      .cal-box-event     { background:#FEF3C7;border:1px solid #FCD34D;color:#854D0E; }
-      .cal-box-booked    { background:#DBEAFE;border:1px solid #93C5FD;color:#1E40AF; }
-      .cal-box-past      { background:#F3F4F6;border:1px solid #D1D5DB;color:#9CA3AF; }
+      .cal-box-available { background:#fff;border:0.5px solid #e2e8f0;color:#1A1A2E; }
+      .cal-box-event     { background:#fff;border:0.5px solid #e2e8f0;color:#1A1A2E; }
+      .cal-box-booked    { background:#fff;border:0.5px solid #e2e8f0;color:#1A1A2E; }
+      .cal-box-past      { background:#FAFAFA;border:0.5px solid #e2e8f0;color:#9CA3AF;cursor:default; }
       .cal-box-today     { outline:3px solid #1A3A6B;outline-offset:-2px; }
       .cal-box-selected  { outline:3px solid #FDB913;outline-offset:-2px; }
       .cal-day-num { font-size:13px;font-weight:700;line-height:1; }
       .cal-pill { font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;margin-top:2px; }
-      .cal-pill-event  { background:#FDB913;color:#0F2547; }
+      .cal-pill-event  { background:#1A3A6B;color:#fff; }
       .cal-pill-booked { background:#1A3A6B;color:#fff; }
 
       /* ── Misc ────────────────────────────────────────────── */
@@ -582,11 +582,11 @@
                         <!-- FILTER + SEARCH BAR -->
                         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
                             <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="reqFilterTabs">
-                                <button class="req-tab-btn active-tab" onclick="setReqTab('all', this)">All</button>
-                                <button class="req-tab-btn" onclick="setReqTab('pending', this)">Pending</button>
-                                <button class="req-tab-btn" onclick="setReqTab('approved', this)">Approved</button>
-                                <button class="req-tab-btn" onclick="setReqTab('returned', this)">Returned</button>
-                                <button class="req-tab-btn" onclick="setReqTab('rejected', this)">Rejected</button>
+                                <button class="req-tab-btn active-tab" onclick="setReqTab('all', this)">All <span id="reqCntAll" style="background:rgba(0,0,0,0.15);border-radius:20px;padding:1px 7px;font-size:11px;margin-left:2px;font-weight:700;"></span></button>
+                                <button class="req-tab-btn" onclick="setReqTab('pending', this)">Pending <span id="reqCntPending" style="background:rgba(0,0,0,0.15);border-radius:20px;padding:1px 7px;font-size:11px;margin-left:2px;font-weight:700;"></span></button>
+                                <button class="req-tab-btn" onclick="setReqTab('approved', this)">Approved <span id="reqCntApproved" style="background:rgba(0,0,0,0.15);border-radius:20px;padding:1px 7px;font-size:11px;margin-left:2px;font-weight:700;"></span></button>
+                                <button class="req-tab-btn" onclick="setReqTab('returned', this)">Returned <span id="reqCntReturned" style="background:rgba(0,0,0,0.15);border-radius:20px;padding:1px 7px;font-size:11px;margin-left:2px;font-weight:700;"></span></button>
+                                <button class="req-tab-btn" onclick="setReqTab('rejected', this)">Rejected <span id="reqCntRejected" style="background:rgba(0,0,0,0.15);border-radius:20px;padding:1px 7px;font-size:11px;margin-left:2px;font-weight:700;"></span></button>
                             </div>
                             <div style="position:relative;">
                                 <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
@@ -606,14 +606,15 @@
                                         <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Purpose</th>
                                         <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
                                     </tr>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Actions</th>
                                 </thead>
                                 <tbody id="requestsTable"></tbody>
                             </table>
                             <div id="requestsPg" class="pg-controls" style="display:none;padding:12px;"></div>
-                            <div id="noRequests" class="empty-state" style="padding:60px 20px;text-align:center;">
-                                <div class="empty-state-icon" style="width:56px;height:56px;background:rgba(26,58,107,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1A3A6B;margin:0 auto 12px;"><i class="bi bi-inbox"></i></div>
-                                <p style="color:#6B7280;font-size:13px;">No pending requests</p>
-                            </div>
+                            <div id="noRequests" style="display:none;padding:60px 20px;text-align:center;">
+                                <i class="bi bi-inbox" style="font-size:36px;color:#D1D5DB;display:block;margin-bottom:12px;"></i>
+                                <div style="font-size:15px;font-weight:600;color:#6B7280;margin-bottom:4px;">No requests found</div>
+                                <div style="font-size:13px;color:#9CA3AF;">Try adjusting your filter or search</div>
                         </div>
                     </div>
 
@@ -780,7 +781,8 @@
                                 <button onclick="changeAdminMonth(-1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&lt;</button>
                                 <h2 id="adminCalendarMonth" style="font-size:18px;font-weight:700;color:#fff;margin:0;letter-spacing:0;"></h2>
                                 <div style="display:flex;gap:8px;align-items:center;">
-                                    <button onclick="jumpToToday()" style="padding:6px 14px;height:36px;border-radius:8px;border:none;background:#FDB913;cursor:pointer;font-size:12px;font-weight:700;color:#0F2547;transition:background 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='#fbbf24'" onmouseout="this.style.background='#FDB913'">Today</button>
+                                    <button onclick="jumpToToday()" style="padding:6px 14px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.7);background:transparent;cursor:pointer;font-size:12px;font-weight:700;color:#fff;transition:all 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='#fff'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,0.7)'">Today</button>
+                                    <button onclick="openAdsEventModal()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.15);cursor:pointer;font-size:12px;font-weight:700;color:#fff;transition:background 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'"><i class="bi bi-plus-lg"></i> Add Event</button>
                                     <button onclick="changeAdminMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&gt;</button>
                                 </div>
                             </div>
@@ -849,6 +851,42 @@
                             </div>
                         </div>
 
+                        <!-- STAT PILLS -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-archive-fill" style="color:#1A3A6B;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Total Items</div><div style="font-size:22px;font-weight:700;color:#1A1A2E;line-height:1.2;" id="statTotalItems">&#8212;</div></div>
+                            </div>
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#DCFCE7;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-check-circle-fill" style="color:#16a34a;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Available</div><div style="font-size:22px;font-weight:700;color:#166534;line-height:1.2;" id="statAvailable">&#8212;</div></div>
+                            </div>
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#FFEDD5;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-wrench-adjustable" style="color:#c2410c;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Under Repair</div><div style="font-size:22px;font-weight:700;color:#9A3412;line-height:1.2;" id="statUnderRepair">&#8212;</div></div>
+                            </div>
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-trash3-fill" style="color:#CE1126;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">For Disposal</div><div style="font-size:22px;font-weight:700;color:#991b1b;line-height:1.2;" id="statForDisposal">&#8212;</div></div>
+                            </div>
+                        </div>
+
+                        <!-- SEARCH + FILTER -->
+                        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+                            <div style="position:relative;flex:1;min-width:200px;">
+                                <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:13px;pointer-events:none;"></i>
+                                <input type="text" id="equipSearch" placeholder="Search equipment..." oninput="renderEquipmentPg()" style="width:100%;padding:8px 12px 8px 32px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <select id="equipFilter" onchange="renderEquipmentPg()" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;background:#fff;cursor:pointer;outline:none;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                <option value="">All Status</option>
+                                <option value="available">Available</option>
+                                <option value="low">Low Stock</option>
+                                <option value="out">Out of Stock</option>
+                                <option value="repair">Under Repair</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
                         <!-- TABLE -->
                         <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
                             <table class="data-table" style="width:100%;border-collapse:collapse;">
@@ -860,11 +898,16 @@
                                         <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Under Repair</th>
                                         <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">For Disposal</th>
                                         <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Status</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:right;">Actions</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="equipmentTable"></tbody>
                             </table>
+                        </div>
+                        <!-- PAGINATION -->
+                        <div id="equipPagRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;flex-wrap:wrap;gap:8px;">
+                            <div id="equipPagInfo" style="font-size:12px;color:#6B7280;"></div>
+                            <div id="equipPagBtns" style="display:flex;gap:6px;"></div>
                         </div>
                     </div>
                     <!-- USERS SECTION -->
@@ -876,6 +919,7 @@
                             </div>
                             <div style="display:flex;gap:8px;">
                                 <a href="data:text/csv;charset=utf-8,barangay_id%2Cfull_name%2Cemail%2Cphone%2Caddress%0ABGY-001%2CJuan%20dela%20Cruz%2Cjuan%40email.com%2C09171234567%2C123%20Rizal%20St." download="resident_template.csv" class="btn btn-small btn-light" style="text-decoration:none;"> Download Template</a>
+                                <button onclick="openAddUserModal()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-person-plus"></i> Add User</button>
                                 <button class="btn btn-small btn-primary" onclick="document.getElementById('batchUploadModal').classList.add('active')"> Upload Excel / CSV</button>
                             </div>
                         </div>
@@ -906,41 +950,67 @@
                     </div><!-- Users Section -->
 
                     <!-- BATCH UPLOAD MODAL -->
-                    <div id="batchUploadModal" class="modal">
-                        <div class="modal-content" style="max-width:560px;">
-                            <div class="modal-header">
-                                <h3> Batch Upload Residents</h3>
-                                <button class="modal-close" onclick="document.getElementById('batchUploadModal').classList.remove('active')">&times;</button>
-                            </div>
-                            <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Upload an <strong>Excel (.xlsx)</strong> or <strong>CSV</strong> file. Required columns: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">barangay_id, full_name</code>. Optional: <code style="background:var(--green-50);padding:2px 6px;border-radius:5px;font-size:12px;color:var(--green-xl);">email, phone, address</code></p>
-                            
-                            <div id="batchDropZone" style="border:2px dashed var(--border);border-radius:14px;padding:36px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--panel-bg);" onclick="document.getElementById('batchFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#10b981';this.style.background='var(--green-50)';" ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';" ondrop="event.preventDefault();this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';handleBatchFileDrop(event)">
-                                <div style="font-size:36px;margin-bottom:8px;"></div>
-                                <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Drop Excel or CSV file here</p>
-                                <p style="font-size:12px;color:var(--muted);">or click to browse &mdash; supports .xlsx, .xls, .csv</p>
-                                <input type="file" id="batchFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="previewBatchFile(this.files[0])">
-                            </div>
-
-                            <div id="batchPreview" style="display:none;margin-top:16px;">
-                                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;">Preview <span id="batchRowCount" style="color:var(--green);"></span></div>
-                                <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
-                                    <table class="data-table" style="font-size:12px;">
-                                        <thead>
-                                            <tr><th>Barangay ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Address</th></tr>
-                                        </thead>
-                                        <tbody id="batchPreviewRows"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div id="batchUploadResult" style="display:none;margin-top:12px;font-size:13px;padding:10px 14px;border-radius:10px;"></div>
-
-                            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
-                                <button class="btn btn-light" onclick="document.getElementById('batchUploadModal').classList.remove('active');resetBatchUpload()">Cancel</button>
-                                <button class="btn btn-primary" id="batchUploadBtn" onclick="submitBatchUpload()" disabled>Upload Residents</button>
-                            </div>
-                        </div>
+<div id="batchUploadModal" class="modal">
+    <div class="modal-content" style="max-width:520px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+        <!-- Header -->
+        <div style="background:#1A3A6B;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-file-earmark-arrow-up-fill" style="font-size:17px;color:#FDB913;"></i></div>
+                <div style="font-size:15px;font-weight:700;color:#fff;">Batch Upload Residents</div>
+            </div>
+            <button onclick="document.getElementById('batchUploadModal').classList.remove('active')" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+        </div>
+        <!-- Body -->
+        <div style="padding:20px 22px;overflow-y:auto;flex:1;">
+            <!-- Info box -->
+            <div style="background:#eff6ff;border-left:3px solid #3b82f6;border-radius:6px;padding:12px 14px;margin-bottom:18px;">
+                <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px;">Required columns</div>
+                <div style="font-family:monospace;font-size:12px;color:#1e40af;line-height:1.8;">
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">barangay_id</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">full_name</span>
+                    <span style="color:#60a5fa;font-style:italic;">Optional:</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">email</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">phone</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;">address</span>
+                </div>
+            </div>
+            <!-- Drop zone -->
+            <div id="batchDropZone" style="border:1.5px dashed #cbd5e1;border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fff;" onclick="document.getElementById('batchFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A3A6B';this.style.background='#EFF6FF';" ondragleave="this.style.borderColor='#cbd5e1';this.style.background='#fff';" ondrop="event.preventDefault();this.style.borderColor='#cbd5e1';this.style.background='#fff';handleBatchFileDrop(event)">
+                <div id="batchDropDefault">
+                    <i class="bi bi-cloud-upload" style="font-size:38px;color:#1A3A6B;display:block;margin-bottom:10px;"></i>
+                    <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">Drop Excel or CSV file here</div>
+                    <div style="font-size:12px;color:#6B7280;">or click to browse &mdash; supports .xlsx, .xls, .csv</div>
+                </div>
+                <div id="batchDropFileInfo" style="display:none;align-items:center;justify-content:center;gap:12px;">
+                    <i class="bi bi-file-earmark-spreadsheet-fill" style="font-size:28px;color:#1A3A6B;flex-shrink:0;"></i>
+                    <div style="text-align:left;">
+                        <div id="batchDropFileName" style="font-size:13px;font-weight:700;color:#1A1A2E;"></div>
+                        <div id="batchDropFileSize" style="font-size:11px;color:#6B7280;margin-top:2px;"></div>
                     </div>
+                    <button onclick="event.stopPropagation();resetBatchUpload()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E5E7EB;background:#fff;color:#6B7280;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;" onmouseover="this.style.borderColor='#CE1126';this.style.color='#CE1126'" onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#6B7280'">&times;</button>
+                </div>
+                <input type="file" id="batchFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="previewBatchFile(this.files[0])">
+            </div>
+            <!-- Preview -->
+            <div id="batchPreview" style="display:none;margin-top:16px;">
+                <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:8px;">Preview <span id="batchRowCount" style="color:#166534;"></span></div>
+                <div style="max-height:180px;overflow-y:auto;border:1px solid #E5E7EB;border-radius:8px;">
+                    <table class="data-table" style="font-size:12px;">
+                        <thead><tr><th>Barangay ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead>
+                        <tbody id="batchPreviewRows"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Result -->
+            <div id="batchUploadResult" style="display:none;margin-top:12px;font-size:13px;padding:10px 14px;border-radius:8px;"></div>
+        </div>
+        <!-- Footer -->
+        <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
+            <button onclick="document.getElementById('batchUploadModal').classList.remove('active');resetBatchUpload()" style="height:40px;padding:0 20px;border:1.5px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Cancel</button>
+            <button id="batchUploadBtn" onclick="submitBatchUpload()" disabled style="height:40px;padding:0 20px;border:none;border-radius:6px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;opacity:0.5;" onmouseover="if(!this.disabled)this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Upload Residents</button>
+        </div>
+    </div>
+</div>
 
                     <!-- Activity Log Section (Premium) -->
                     
@@ -2094,7 +2164,7 @@
                     const isPast = dateObj < today;
 
                     const dayEl = document.createElement('div');
-                    dayEl.style.cssText = 'min-height:64px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 3px 4px;transition:all 0.15s;cursor:pointer;overflow:hidden;';
+                    dayEl.style.cssText = 'min-height:64px;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 3px 4px;transition:all 0.15s;cursor:pointer;overflow:hidden;border:0.5px solid #e2e8f0;';
 
                     let baseClass = '';
 
@@ -3312,46 +3382,66 @@
 
             function gotoRequestsPage(p) { _pgReqPage=p; renderReqPg(); }
             function renderReqPg() {
-                const tbody = document.getElementById('requestsTable');
-                const noEl = document.getElementById('noRequests');
+                var tbody = document.getElementById('requestsTable');
+                var noEl = document.getElementById('noRequests');
                 if (!tbody) return;
-                if (!_pgReqList.length) { tbody.innerHTML=''; if(noEl) noEl.style.display='block'; const pg=document.getElementById('requestsPg'); if(pg) pg.style.display='none'; return; }
+                if (!_pgReqList.length) {
+                    tbody.innerHTML='';
+                    if(noEl) noEl.style.display='block';
+                    var pg=document.getElementById('requestsPg'); if(pg) pg.style.display='none';
+                    return;
+                }
                 if(noEl) noEl.style.display='none';
-                const slice = _pgReqList.slice((_pgReqPage-1)*PG_SIZE, _pgReqPage*PG_SIZE);
-                tbody.innerHTML = slice.map(b => {
-                    const dt = b.created_at||b.createdAt ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
-                    const rd = '<div style="line-height:1.2;"><strong style="color:var(--text);">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:var(--muted);font-size:11px;">'+dt+'</small></div>';
-                    
-                    let cleanPurpose = b.purpose || '';
-                    let deliveryBadgeHtml = '';
-                    if(cleanPurpose.includes('| Delivery:')) {
-                        const dm = cleanPurpose.match(/\| Delivery:\s*([^|]+)/);
-                        if(dm) {
-                            const isDelivery = dm[1].trim().toLowerCase().startsWith('delivery');
-                            deliveryBadgeHtml = isDelivery
+                var slice = _pgReqList.slice((_pgReqPage-1)*PG_SIZE, _pgReqPage*PG_SIZE);
+                var rows = '';
+                for (var ri=0; ri<slice.length; ri++) {
+                    var b = slice[ri];
+                    var dt = (b.created_at||b.createdAt) ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
+                    var rd = '<div style="line-height:1.2;"><strong style="color:#1A1A2E;">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:#6B7280;font-size:11px;">'+dt+'</small></div>';
+                    var cleanPurpose = b.purpose || '';
+                    var deliveryBadgeHtml = '';
+                    if (cleanPurpose.indexOf('| Delivery:')>=0) {
+                        var dm = cleanPurpose.match(/\| Delivery:\s*([^|]+)/);
+                        if (dm) {
+                            var isDeliv = dm[1].trim().toLowerCase().indexOf('delivery')===0;
+                            deliveryBadgeHtml = isDeliv
                                 ? '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;white-space:nowrap;">&#128666; Delivery</span>'
                                 : '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;white-space:nowrap;">&#127963; Pickup</span>';
                         }
                     }
-                    if(cleanPurpose.includes('| Purpose:')) {
-                        const m = cleanPurpose.match(/Purpose:\s*([^|]+)/);
-                        if(m) cleanPurpose = m[1].trim();
+                    if (cleanPurpose.indexOf('| Purpose:')>=0) {
+                        var pm = cleanPurpose.match(/Purpose:\s*([^|]+)/);
+                        if (pm) cleanPurpose = pm[1].trim();
                     }
-                    if(cleanPurpose.length > 50) cleanPurpose = cleanPurpose.substring(0, 50) + '...';
-
-                    const purposeHtml = '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'+deliveryBadgeHtml+'<span style="color:var(--text);font-size:13px;">'+cleanPurpose+'</span></div><button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">View Details</button></div>';
-
-                    return '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(16,185,129,0.06)\'" onmouseout="this.style.background=\'\'">'
-                        +'<td>'+rd+'</td>'
-                        +'<td><strong style="color:var(--text);">'+(b.equipment||'')+'</strong></td>'
-                        +'<td style="font-weight:bold;color:var(--text);">'+(b.quantity||1)+'</td>'
-                        +'<td style="white-space:nowrap;color:var(--muted);font-size:12px;">'+(b.borrowDate||'')+'<br>to '+(b.returnDate||'')+'</td>'
-                        +'<td style="width:300px;">'+purposeHtml+'</td>'
-                        +'<td>'+getStatusBadge(b.status)+'</td></tr>';
-                }).join('');
+                    if (cleanPurpose.length>50) cleanPurpose = cleanPurpose.substring(0,50)+'...';
+                    var fmtD = function(d) {
+                        if (!d) return '';
+                        var x = new Date(d);
+                        return isNaN(x) ? d : x.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+                    };
+                    var dateStr = fmtD(b.borrowDate)+' → '+fmtD(b.returnDate);
+                    var st = (b.status||'pending').toLowerCase();
+                    var bb = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
+                    var statusBadge;
+                    if(st==='pending') statusBadge='<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Pending</span>';
+                    else if(st==='approved') statusBadge='<span style="'+bb+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Approved</span>';
+                    else if(st==='rejected') statusBadge='<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Rejected</span>';
+                    else if(st==='returned') statusBadge='<span style="'+bb+'background:#DBEAFE;color:#1e40af;border:1px solid #93C5FD;">Returned</span>';
+                    else statusBadge='<span style="'+bb+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">'+(b.status||'')+'</span>';
+                    var purposeHtml = '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'+deliveryBadgeHtml+'<span style="color:#1A1A2E;font-size:13px;">'+cleanPurpose+'</span></div>';
+                    rows += '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="border-top:1px solid #F3F4F6;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'#F8FAFF\'" onmouseout="this.style.background=\'\'">'
+                        +'<td style="padding:12px 18px;">'+rd+'</td>'
+                        +'<td style="padding:12px 18px;"><strong style="font-size:14px;color:#1A1A2E;">'+(b.equipment||'')+'</strong></td>'
+                        +'<td style="padding:12px 18px;text-align:center;font-weight:700;font-size:14px;color:#374151;">'+(b.quantity||1)+'</td>'
+                        +'<td style="padding:12px 18px;white-space:nowrap;font-size:13px;color:#6B7280;">'+dateStr+'</td>'
+                        +'<td style="padding:12px 18px;width:240px;">'+purposeHtml+'</td>'
+                        +'<td style="padding:12px 18px;">'+statusBadge+'</td>'
+                        +'<td style="padding:12px 18px;text-align:center;"><button onclick="event.stopPropagation();openRequestRespond('+b.id+')" style="padding:4px 14px;height:32px;border:1px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background=\'#1A3A6B\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#1A3A6B\'">View</button></td>'
+                        +'</tr>';
+                }
+                tbody.innerHTML = rows;
                 renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
             }
-
             // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Court Bookings ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
             function gotoCourtPage(p) { _pgCourtPage=p; renderCourtPg(); }
             function renderCourtPg() {
@@ -3592,12 +3682,17 @@
                 </tr>`).join('');
                 document.getElementById('batchPreview').style.display = rows.length > 0 ? 'block' : 'none';
                 document.getElementById('batchRowCount').textContent = `(${rows.length} residents)`;
-                document.getElementById('batchUploadBtn').disabled = rows.length === 0;
+                var btnEl=document.getElementById('batchUploadBtn'); if(btnEl){btnEl.disabled=rows.length===0;btnEl.style.opacity=rows.length===0?'0.5':'1';}
                 document.getElementById('batchUploadResult').style.display = 'none';
             }
 
             function previewBatchFile(file) {
                 if (!file) return;
+                // Update drop zone to show file info
+                var dz = document.getElementById('batchDropDefault'); if(dz) dz.style.display='none';
+                var fi = document.getElementById('batchDropFileInfo'); if(fi) fi.style.display='flex';
+                var fn = document.getElementById('batchDropFileName'); if(fn) fn.textContent=file.name;
+                var fs = document.getElementById('batchDropFileSize'); if(fs) fs.textContent=(file.size/1024).toFixed(1)+' KB';
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -3715,6 +3810,8 @@
 
             function resetBatchUpload() {
                 _batchRows = [];
+                var fi2=document.getElementById('batchDropFileInfo');if(fi2)fi2.style.display='none';
+                var dz2=document.getElementById('batchDropDefault');if(dz2)dz2.style.display='block';
                 document.getElementById('batchPreview').style.display = 'none';
                 document.getElementById('batchUploadResult').style.display = 'none';
                 document.getElementById('batchUploadBtn').disabled = true;
@@ -3962,6 +4059,10 @@
                 });
 
                 _allAdminRequestsList = borrowings;
+                var cntAll=borrowings.length,cntPending=0,cntApproved=0,cntReturned=0,cntRejected=0;
+                borrowings.forEach(function(b){var s=(b.status||'pending').toLowerCase();if(s==='pending')cntPending++;else if(s==='approved')cntApproved++;else if(s==='returned')cntReturned++;else if(s==='rejected')cntRejected++;});
+                var sc=function(id,n){var el=document.getElementById(id);if(el)el.textContent=n;};
+                sc('reqCntAll',cntAll);sc('reqCntPending',cntPending);sc('reqCntApproved',cntApproved);sc('reqCntReturned',cntReturned);sc('reqCntRejected',cntRejected);
                 applyReqFilter();
             }
 
@@ -4560,88 +4661,133 @@
         }
         // ========== END MAINTENANCE LOG UI ==========
 
-        async function loadEquipment() {
-                // Bootstrap Icon map by equipment name
-                const EQUIP_ICON_MAP = {
-                    'Chairs': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="6" y="2" width="12" height="10" rx="1.5"/><rect x="4" y="13" width="16" height="3" rx="1.5"/><rect x="6" y="17" width="3" height="5" rx="1"/><rect x="15" y="17" width="3" height="5" rx="1"/></svg>`, cls: 'eq-Chairs' },
-                    'Tables': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`, cls: 'eq-Tables' },
-                    'Tents': { html: `<i class="bi bi-house-door-fill" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Tents' },
-                    'Ladder': { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#10b981"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`, cls: 'eq-Ladder' },
-                    'Microphone': { html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Microphone' },
-                    'Speaker': { html: `<i class="bi bi-speaker-fill" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Speaker' },
-                    'Electric Fan': { html: `<i class="bi bi-fan" style="font-size:20px;color:#10b981;"></i>`, cls: 'eq-Fan' }
-                };
+        var _pgEquipList = [];
+        var _pgEquipPage = 1;
+        var _pgEquipPerPage = 10;
 
+        async function loadEquipment() {
                 const equipment = await getEquipment();
-                const container = document.getElementById('equipmentTable');
-                container.innerHTML = equipment.map(e => {
-                    e.available = Math.min(e.available || 0, e.quantity || 1);
-                    const broken = e.broken || 0;
-                    const inUse = Math.max(0, e.quantity - e.available - broken);
-                    let statusBadge;
-                    // Repurposed category as status override
-                    const disposal = parseInt(e.category) || 0; 
-                    const badgeBase = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
-                    if (e.isArchived) {
-                        statusBadge = '<span style="'+badgeBase+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">Archived</span>';
-                    } else if (broken > 0 && e.available === 0) {
-                        statusBadge = '<span style="'+badgeBase+'background:#FFEDD5;color:#9A3412;border:1px solid #FED7AA;">Under Repair</span>';
-                    } else if (broken > 0) {
-                        statusBadge = '<span style="'+badgeBase+'background:#FFEDD5;color:#9A3412;border:1px solid #FED7AA;">Partial/Repair</span>';
-                    } else if (e.available === 0) {
-                        statusBadge = '<span style="'+badgeBase+'background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD;">In Use</span>';
-                    } else if (inUse > 0) {
-                        statusBadge = '<span style="'+badgeBase+'background:#FEF9C3;color:#854D0E;border:1px solid #FDE047;">Partially Used</span>';
-                    } else {
-                        statusBadge = '<span style="'+badgeBase+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Available</span>';
-                    }
-                    const iconDef = EQUIP_ICON_MAP[e.name];
-                    const iconHtml = iconDef ? iconDef.html : (e.icon || '');
-                    const iconCls = iconDef ? iconDef.cls : 'eq-Default';
-                    return `
-                <tr style="${e.isArchived ? 'opacity: 0.6;' : ''}">
-                    <td>
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <div onclick="quickUploadEquipImage(${e.id}, this)" title="Click to upload photo"
-                                style="width:48px;height:48px;border-radius:12px;overflow:hidden;cursor:pointer;border:2px dashed ${e.image_url ? 'transparent' : 'var(--border)'};background:${e.image_url ? 'transparent' : 'var(--panel-bg)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.2s;position:relative;"
-                                onmouseover="if(!this.querySelector('img')){this.style.borderColor='#10b981';this.style.background='#ecfdf5';}" 
-                                onmouseout="if(!this.querySelector('img')){this.style.borderColor='var(--border)';this.style.background='var(--panel-bg)';}"
-                            >
-                                ${e.image_url 
-                                    ? `<img src="${e.image_url}" alt="${e.name}" style="width:100%;height:100%;object-fit:cover;">` 
-                                    : `<div style="text-align:center;padding:4px;"><i class="bi bi-camera-fill" style="font-size:18px;color:#9ca3af;"></i><div style="font-size:9px;color:#9ca3af;font-weight:600;line-height:1.2;margin-top:2px;">Upload</div></div>`
-                                }
-                                <input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange(${e.id}, this)">
-                            </div>
-                            <div>
-                                <strong style="font-size:14px;color:var(--text);">${e.name}</strong>
-                                ${e.description ? `<br><span style="font-size:12px;color:#9ca3af;">${e.description}</span>` : ''}
-                            </div>
-                        </div>
-                    </td>
-                    <td style="text-align: center;">${e.quantity}</td>
-                    <td style="text-align: center; font-weight:700;color:#16a34a;">${e.available}</td>
-                    <td style="text-align: center; color:${broken > 0 ? '#c2410c' : '#9ca3af'};font-weight:${broken > 0 ? '700' : '400'}">${broken}</td>
-                    <td style="text-align: center; color:${disposal > 0 ? '#991b1b' : '#9ca3af'};font-weight:${disposal > 0 ? '700' : '400'}">${disposal}</td>
-                    <td style="text-align: center;">${statusBadge}</td>
-                    <td style="text-align: right;">
-                        <div style="display:flex; gap:8px; justify-content:flex-end; align-items:center; flex-wrap:wrap;">
-                            ${(()=>{
-                                const lower = e.name.toLowerCase();
-                                const isPickupOnly = ['table','tent'].some(kw=>lower.includes(kw));
-                                if (isPickupOnly) return '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
-                                const delSettings = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
-                                const deliveryOn = delSettings[lower] !== false;
-                                return `<button onclick="toggleDeliveryAdmin('${lower}')" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:0.04em;background:${deliveryOn?'#DBEAFE':'#F3F4F6'};color:${deliveryOn?'#1E40AF':'#6B7280'};font-family:inherit;">${deliveryOn?'Delivery':'No Delivery'}</button>`;
-                            })()}
-                            <button onclick="openEditEquipmentModal(${e.id})" style="padding:5px 12px;font-size:12px;font-weight:500;color:#1A3A6B;background:transparent;border:1px solid #1A3A6B;border-radius:6px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Edit</button>
-                            <button onclick="handleDeleteEquipment(${e.id})" style="padding:5px 12px;font-size:12px;font-weight:500;color:#CE1126;background:transparent;border:1px solid #CE1126;border-radius:6px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#CE1126';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#CE1126'">Delete</button>
-                        </div>
-                    </td>
-                </tr>`;
-                }).join('');
+                _pgEquipList = equipment;
+                _pgEquipPage = 1;
+                // Update stat pills
+                var nonArchived = equipment.filter(function(e){return !e.isArchived;});
+                var totalItems = nonArchived.length;
+                var totalAvail = nonArchived.reduce(function(s,e){return s+Math.min(e.available||0,e.quantity||1);},0);
+                var totalRepair = nonArchived.reduce(function(s,e){return s+(e.broken||0);},0);
+                var totalDisposal = nonArchived.reduce(function(s,e){return s+(parseInt(e.category)||0);},0);
+                var tEl=document.getElementById('statTotalItems'); if(tEl) tEl.textContent=totalItems;
+                var aEl=document.getElementById('statAvailable'); if(aEl) aEl.textContent=totalAvail;
+                var rEl=document.getElementById('statUnderRepair'); if(rEl) rEl.textContent=totalRepair;
+                var dEl=document.getElementById('statForDisposal'); if(dEl) dEl.textContent=totalDisposal;
+                renderEquipmentPg();
             }
 
+        function renderEquipmentPg() {
+                var srch = ((document.getElementById('equipSearch')||{}).value||'').toLowerCase().trim();
+                var filt = ((document.getElementById('equipFilter')||{}).value||'');
+                var list = _pgEquipList.filter(function(e) {
+                    var avail = Math.min(e.available||0, e.quantity||1);
+                    var broken = e.broken||0;
+                    var ms = !srch || (e.name||'').toLowerCase().indexOf(srch)>=0 || (e.description||'').toLowerCase().indexOf(srch)>=0;
+                    var mf = true;
+                    if (filt==='available') mf = !e.isArchived && avail===(e.quantity||1);
+                    else if (filt==='low') mf = !e.isArchived && avail>0 && avail<(e.quantity||1);
+                    else if (filt==='out') mf = !e.isArchived && avail===0;
+                    else if (filt==='repair') mf = !e.isArchived && broken>0;
+                    else if (filt==='archived') mf = !!e.isArchived;
+                    return ms && mf;
+                });
+                var total = list.length;
+                var perPage = _pgEquipPerPage;
+                var totalPages = Math.max(1, Math.ceil(total/perPage));
+                if (_pgEquipPage > totalPages) _pgEquipPage = totalPages;
+                var start = (_pgEquipPage-1)*perPage;
+                var end = Math.min(start+perPage, total);
+                var pageItems = list.slice(start, end);
+                var container = document.getElementById('equipmentTable');
+                if (!container) return;
+                if (pageItems.length===0) {
+                    container.innerHTML = '<tr><td colspan="7" style="padding:48px;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;"><i class="bi bi-box-seam" style="font-size:32px;color:#D1D5DB;"></i><div style="font-size:14px;font-weight:600;color:#6B7280;">No equipment found</div><div style="font-size:12px;color:#9CA3AF;">Try adjusting your search or filter</div></div></td></tr>';
+                } else {
+                    var rows = '';
+                    for (var ri=0;ri<pageItems.length;ri++) {
+                        var e = pageItems[ri];
+                        var avail = Math.min(e.available||0, e.quantity||1);
+                        var broken = e.broken||0;
+                        var disposal = parseInt(e.category)||0;
+                        var qty = e.quantity||1;
+                        var availColor = avail===qty ? '#166534' : (avail>0 ? '#92400e' : '#991b1b');
+                        var availBg = avail===qty ? '#DCFCE7' : (avail>0 ? '#FEF3C7' : '#FEE2E2');
+                        var bb = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
+                        var statusBadge;
+                        if (e.isArchived) statusBadge = '<span style="'+bb+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">Archived</span>';
+                        else if (avail===0) statusBadge = '<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Out of Stock</span>';
+                        else if (avail<qty) statusBadge = '<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Low Stock</span>';
+                        else statusBadge = '<span style="'+bb+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Available</span>';
+                        var photoCell;
+                        if (e.image_url) {
+                            photoCell = '<div onclick="quickUploadEquipImage('+e.id+',this)" title="Click to change photo" style="width:40px;height:40px;border-radius:8px;overflow:hidden;cursor:pointer;border:1px solid #E5E7EB;flex-shrink:0;position:relative;"><img src="'+e.image_url+'" style="width:100%;height:100%;object-fit:cover;" alt="'+e.name+'"><input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange('+e.id+',this)"></div>';
+                        } else {
+                            photoCell = '<div onclick="quickUploadEquipImage('+e.id+',this)" title="Upload photo" style="width:40px;height:40px;border-radius:8px;border:1.5px dashed #D1D5DB;background:#F9FAFB;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;position:relative;"><i class="bi bi-camera" style="font-size:16px;color:#9CA3AF;"></i><input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange('+e.id+',this)"></div>';
+                        }
+                        var lower = (e.name||'').toLowerCase();
+                        var isPickupOnly = ['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
+                        var delivToggle;
+                        if (isPickupOnly) {
+                            delivToggle = '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
+                        } else {
+                            var ds = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
+                            var don = ds[lower]!==false;
+                            delivToggle = '<button onclick="toggleDeliveryAdmin(\''+lower+'\')" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:0.04em;background:'+(don?'#DBEAFE':'#F3F4F6')+';color:'+(don?'#1E40AF':'#6B7280')+';font-family:inherit;">'+(don?'Delivery':'No Delivery')+'</button>';
+                        }
+                        rows += '<tr style="border-top:1px solid #F3F4F6;'+(e.isArchived?'opacity:0.55;':'')+'">'
+                            +'<td style="padding:12px 18px;"><div style="display:flex;align-items:center;gap:12px;">'+photoCell+'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+(e.name||'')+'</div>'+(e.description?'<div style="font-size:12px;color:#9CA3AF;margin-top:1px;">'+e.description+'</div>':'')+'</div></div></td>'
+                            +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:600;color:#374151;">'+qty+'</td>'
+                            +'<td style="padding:12px 18px;text-align:center;"><span style="font-size:14px;font-weight:700;color:'+availColor+';background:'+availBg+';padding:2px 10px;border-radius:20px;">'+avail+'</span></td>'
+                            +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:'+(broken>0?'700':'400')+';color:'+(broken>0?'#c2410c':'#9CA3AF')+';">'+broken+'</td>'
+                            +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:'+(disposal>0?'700':'400')+';color:'+(disposal>0?'#991b1b':'#9CA3AF')+';">'+disposal+'</td>'
+                            +'<td style="padding:12px 18px;text-align:center;">'+statusBadge+'</td>'
+                            +'<td style="padding:12px 18px;text-align:center;"><div style="display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap;">'+delivToggle
+                            +'<button onclick="openEditEquipmentModal('+e.id+')" title="Edit" style="width:32px;height:32px;padding:0;border:1px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background=\'#1A3A6B\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#1A3A6B\'"><i class="bi bi-pencil" style="font-size:13px;"></i></button>'
+                            +'<button onclick="handleDeleteEquipment('+e.id+')" title="Delete" style="width:32px;height:32px;padding:0;border:1px solid #CE1126;border-radius:6px;background:transparent;color:#CE1126;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background=\'#CE1126\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#CE1126\'"><i class="bi bi-trash3" style="font-size:13px;"></i></button>'
+                            +'</div></td></tr>';
+                    }
+                    container.innerHTML = rows;
+                }
+                var infoEl = document.getElementById('equipPagInfo');
+                if (infoEl) infoEl.textContent = total===0 ? '' : 'Showing '+(start+1)+'–'+end+' of '+total+' items';
+                var btnsEl = document.getElementById('equipPagBtns');
+                if (btnsEl) {
+                    if (totalPages<=1){btnsEl.innerHTML='';return;}
+                    var bh='';
+                    var bs='min-width:32px;height:32px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #D1D5DB;background:#fff;color:#374151;font-family:inherit;';
+                    var ba='min-width:32px;height:32px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #1A3A6B;background:#1A3A6B;color:#fff;font-family:inherit;';
+                    var prevDis=_pgEquipPage===1?' disabled':''
+                    bh+='<button onclick="_equipGoPage('+(_pgEquipPage-1)+')" style="'+bs+(_pgEquipPage===1?'opacity:0.4;cursor:not-allowed;':'')+'"'+prevDis+'>&#8249;</button>';
+                    for (var p=1;p<=totalPages;p++) bh+='<button onclick="_equipGoPage('+p+')" style="'+(p===_pgEquipPage?ba:bs)+'">'+p+'</button>';
+                    var nextDis=_pgEquipPage===totalPages?' disabled':''
+                    bh+='<button onclick="_equipGoPage('+(_pgEquipPage+1)+')" style="'+bs+(_pgEquipPage===totalPages?'opacity:0.4;cursor:not-allowed;':'')+'"'+nextDis+'>&#8250;</button>';
+                    btnsEl.innerHTML=bh;
+                }
+            }
+
+        function _equipGoPage(pg) {
+                var srch = ((document.getElementById('equipSearch')||{}).value||'').toLowerCase().trim();
+                var filt = ((document.getElementById('equipFilter')||{}).value||'');
+                var list = _pgEquipList.filter(function(e) {
+                    var avail=Math.min(e.available||0,e.quantity||1), broken=e.broken||0;
+                    var ms=!srch||(e.name||'').toLowerCase().indexOf(srch)>=0||(e.description||'').toLowerCase().indexOf(srch)>=0;
+                    var mf=true;
+                    if(filt==='available') mf=!e.isArchived&&avail===(e.quantity||1);
+                    else if(filt==='low') mf=!e.isArchived&&avail>0&&avail<(e.quantity||1);
+                    else if(filt==='out') mf=!e.isArchived&&avail===0;
+                    else if(filt==='repair') mf=!e.isArchived&&broken>0;
+                    else if(filt==='archived') mf=!!e.isArchived;
+                    return ms&&mf;
+                });
+                _pgEquipPage = Math.max(1, Math.min(pg, Math.max(1,Math.ceil(list.length/_pgEquipPerPage))));
+                renderEquipmentPg();
+            }
             function toggleDeliveryAdmin(itemNameLower) {
                 try {
                     const s = JSON.parse(localStorage.getItem('brgy_delivery_settings') || '{}');
@@ -6336,7 +6482,7 @@
                     renderConcernsPg();
                 } catch (e) {
                     console.error("loadConcerns crash:", e);
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">Ãƒâ€šÃ‚Â  Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#ef4444;font-weight:bold;">Error loading concerns:<br/><span style="font-size:12px;font-weight:normal;">${e.message}</span></td></tr>`;
                 }
             }
 
@@ -6363,7 +6509,7 @@
                 // Header subtitle
                 const submittedShort = concern.createdAt||concern.created_at ? new Date(concern.createdAt||concern.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
                 const headerSub = document.getElementById('adminConcernHeaderSub');
-                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' Ãƒâ€šÃ‚Â· ' + (concern.address||'') + ' Ãƒâ€šÃ‚Â· ' + submittedShort;
+                if (headerSub) headerSub.textContent = (concern.userName||'Resident') + ' · ' + (concern.address||'') + ' · ' + submittedShort;
 
                 // Status dropdown
                 const sel = document.getElementById('adminConcernStatusSelect');
@@ -6383,19 +6529,19 @@
                         actualDesc = parts[0].replace(/Usern/g, '').trim();
                         imageUrl = parts[1].replace(/Usern/g, '').trim();
                     }
-                    let html = '<div style="background:var(--panel-bg);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:14px;">'
+                    let html = '<div style="background:#F8FAFF;border-radius:12px;padding:14px;border:1px solid #E5E7EB;margin-bottom:14px;">'
                         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Citizen</p><p style="margin:0;font-size:14px;font-weight:700;color:var(--text);">'+(concern.userName||'')+'</p></div>'
-                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Address</p><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">'+(concern.address||'')+'</p></div>'
-                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Category</p><p style="margin:0;font-size:14px;font-weight:600;color:var(--text);">'+(concern.category||'')+'</p></div>'
-                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Submitted</p><p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">'+submittedShort+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Citizen</p><p style="margin:0;font-size:14px;font-weight:700;color:#1A1A2E;">'+(concern.userName||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Address</p><p style="margin:0;font-size:13px;font-weight:600;color:#1A1A2E;">'+(concern.address||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Category</p><p style="margin:0;font-size:14px;font-weight:600;color:#1A1A2E;">'+(concern.category||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 2px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Submitted</p><p style="margin:0;font-size:13px;font-weight:600;color:#1A1A2E;">'+submittedShort+'</p></div>'
                         + '</div>'
-                        + '<div style="margin-bottom:10px;"><p style="margin:0 0 3px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Title</p><p style="margin:0;font-size:15px;font-weight:700;color:var(--text);">'+(concern.title||'')+'</p></div>'
-                        + '<div><p style="margin:0 0 3px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Description</p><p style="margin:0;font-size:13px;color:var(--text);line-height:1.6;">'+actualDesc+'</p></div>'
+                        + '<div style="margin-bottom:10px;"><p style="margin:0 0 3px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Title</p><p style="margin:0;font-size:15px;font-weight:700;color:#1A1A2E;">'+(concern.title||'')+'</p></div>'
+                        + '<div><p style="margin:0 0 3px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Description</p><p style="margin:0;font-size:13px;color:#1A1A2E;line-height:1.6;">'+actualDesc+'</p></div>'
                         + '</div>';
                     if (imageUrl) {
-                        html += '<div style="margin-bottom:14px;"><p style="margin:0 0 8px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Attached Photo</p>'
-                            + '<div onclick="openAdminImageLightbox(\''+imageUrl+'\')" style="cursor:pointer;"><img src="'+imageUrl+'" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1.5px solid var(--border);display:block;" alt="Concern photo" /></div></div>';
+                        html += '<div style="margin-bottom:14px;"><p style="margin:0 0 8px;font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Attached Photo</p>'
+                            + '<div onclick="openAdminImageLightbox(\''+imageUrl+'\')" style="cursor:pointer;"><img src="'+imageUrl+'" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1.5px solid #E5E7EB;display:block;" alt="Concern photo" /></div></div>';
                     }
                     detailsDiv.innerHTML = html;
                 }
@@ -6420,18 +6566,18 @@
                         if (entry.action === 'replied') items.push({dot:'#3b82f6', title:'Reply sent to citizen', by:entry.by||'', ts});
                     });
                     const itemsHtml = items.map((item, idx) =>
-                        '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;'+(idx<items.length-1?'border-bottom:1px solid var(--border);':'')+'">'
+                        '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;'+(idx<items.length-1?'border-bottom:1px solid #E5E7EB;':'')+'">'
                         + '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:2px;">'
                         + '<div style="width:10px;height:10px;border-radius:50%;background:'+item.dot+';box-shadow:0 0 6px '+item.dot+'66;flex-shrink:0;"></div>'
-                        + (idx<items.length-1 ? '<div style="width:1px;flex:1;min-height:14px;background:var(--border);margin-top:4px;"></div>' : '')
+                        + (idx<items.length-1 ? '<div style="width:1px;flex:1;min-height:14px;background:#E5E7EB;margin-top:4px;"></div>' : '')
                         + '</div>'
-                        + '<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text);">'+item.title+'</div>'
-                        + (item.by ? '<div style="font-size:11px;color:var(--muted);margin-top:1px;">By '+item.by+'</div>' : '')
-                        + '<div style="font-size:11px;color:var(--muted);margin-top:1px;">'+item.ts+'</div></div>'
+                        + '<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#1A1A2E;">'+item.title+'</div>'
+                        + (item.by ? '<div style="font-size:11px;color:#6B7280;margin-top:1px;">By '+item.by+'</div>' : '')
+                        + '<div style="font-size:11px;color:#6B7280;margin-top:1px;">'+item.ts+'</div></div>'
                         + '</div>'
                     ).join('');
-                    auditDiv.innerHTML = '<div style="border-top:1px solid var(--border);padding-top:16px;">'
-                        + '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Audit Log</div>'
+                    auditDiv.innerHTML = '<div style="border-top:1px solid #E5E7EB;padding-top:16px;">'
+                        + '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6B7280;margin-bottom:12px;">Audit Log</div>'
                         + itemsHtml + '</div>';
                 }
 
@@ -6779,45 +6925,46 @@
         </script>
 
         <!-- Admin Concern Respond Modal -->
-        <div id="adminConcernModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(8px); z-index:9000; align-items:center; justify-content:center; padding:16px;">
-            <div style="background:var(--surface); border-radius:20px; width:100%; max-width:600px; box-shadow:0 32px 80px rgba(0,0,0,0.35); max-height:92vh; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; position:relative;">
-
-                <!-- Modal Header -->
-                <div style="padding:20px 24px 16px; border-bottom:1px solid var(--border); flex-shrink:0; position:sticky; top:0; background:var(--surface); z-index:1; border-radius:20px 20px 0 0;">
-                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:16px;right:16px;background:var(--bg);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
-                    <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Admin &mdash; Respond &amp; Update Status</div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
-                        <h3 id="adminConcernTitle" style="margin:0;font-size:17px;font-weight:800;color:var(--text);">Concern</h3>
+        <div id="adminConcernModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:#ffffff;border-radius:12px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:88vh;overflow:hidden;display:flex;flex-direction:column;position:relative;">
+                <!-- Header -->
+                <div style="padding:20px 24px 16px;border-bottom:1px solid #E5E7EB;flex-shrink:0;background:#ffffff;">
+                    <button onclick="closeAdminConcernModal()" style="position:absolute;top:14px;right:14px;background:#F3F4F6;border:none;color:#6B7280;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background 0.15s;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">&times;</button>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;padding-right:36px;">
+                        <h3 id="adminConcernTitle" style="margin:0;font-size:20px;font-weight:500;color:#1A3A6B;">Concern</h3>
                         <span id="adminConcernStatusBadge"></span>
                     </div>
-                    <p style="color:var(--muted);font-size:13px;margin:0;" id="adminConcernHeaderSub"></p>
+                    <p style="color:#6B7280;font-size:13px;margin:0;" id="adminConcernHeaderSub"></p>
                 </div>
-
-                <!-- Concern Details -->
-                <div style="padding:16px 24px 0;" id="adminConcernDetailsDiv"></div>
-
-                <!-- Update Status + Response form -->
-                <div style="padding:16px 24px;">
-                    <div style="margin-bottom:14px;">
-                        <label style="display:block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Update Status</label>
-                        <select id="adminConcernStatusSelect" onchange="onConcernStatusSelectChange()" style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;color:var(--text);background:var(--bg);outline:none;cursor:pointer;">
-                            <option value="open">Submitted</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
+                <!-- Scrollable Body -->
+                <div style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px;background:#ffffff;">
+                    <div id="adminConcernDetailsDiv"></div>
+                    <!-- Response Form -->
+                    <div style="background:#F8FAFF;border:1px solid #E5E9F5;border-radius:10px;padding:16px 20px;">
+                        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#1A3A6B;text-transform:uppercase;margin-bottom:12px;">Update Status &amp; Respond</div>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Status</label>
+                            <select id="adminConcernStatusSelect" onchange="onConcernStatusSelectChange()" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;font-weight:600;color:#1A1A2E;background:#fff;outline:none;cursor:pointer;font-family:inherit;">
+                                <option value="open">Submitted</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label id="adminConcernResponseLabel" style="display:block;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Write a Response</label>
+                            <textarea id="adminConcernResponseText" rows="3" placeholder="Type your response (optional for status updates)..." style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;line-height:1.5;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+                            <p id="adminConcernRejectNote" style="display:none;margin:5px 0 0;font-size:12px;color:#CE1126;font-weight:600;">* Rejection reason is required and will be shared with the citizen.</p>
+                        </div>
                     </div>
-                    <div style="margin-bottom:14px;">
-                        <label id="adminConcernResponseLabel" style="display:block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Write a Response</label>
-                        <textarea id="adminConcernResponseText" rows="4" placeholder="Type your response to the citizen (optional for status updates)..." style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;color:var(--text);background:var(--bg);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;line-height:1.5;transition:border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='var(--border)'"></textarea>
-                        <p id="adminConcernRejectNote" style="display:none;margin:6px 0 0;font-size:12px;color:#ef4444;font-weight:600;">* Rejection reason is required and will be shared with the citizen.</p>
-                    </div>
-                    <button onclick="sendAdminConcernResponse()" id="adminConcernSendBtn" style="width:100%;padding:13px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.3px;margin-bottom:8px;transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">Send response &amp; update status</button>
-                    <button onclick="closeAdminConcernModal()" style="width:100%;padding:11px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);">Close</button>
+                    <!-- Audit Log -->
+                    <div id="adminConcernAuditLogDiv"></div>
                 </div>
-
-                <!-- Audit Log -->
-                <div id="adminConcernAuditLogDiv" style="padding:0 24px 24px;"></div>
+                <!-- Footer -->
+                <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
+                    <button onclick="closeAdminConcernModal()" style="padding:8px 18px;border-radius:6px;border:1px solid #1A3A6B;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#EEF2FF'" onmouseout="this.style.background='transparent'">Close</button>
+                    <button onclick="sendAdminConcernResponse()" id="adminConcernSendBtn" style="padding:8px 18px;border-radius:6px;border:none;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Send Response &amp; Update</button>
+                </div>
             </div>
         </div>
 
@@ -7496,6 +7643,56 @@
 
             setInterval(refreshAdminBell, 30000);
 
+            function openAddUserModal() {
+                document.getElementById('addUserModal').classList.add('active');
+                document.getElementById('addUserError').style.display = 'none';
+                ['newUserBarangayId','newUserFullName','newUserPhone','newUserEmail','newUserAddress'].forEach(function(id){
+                    var el=document.getElementById(id); if(el) el.value='';
+                });
+                var p1=document.getElementById('newUserPassword'); if(p1){p1.value='';p1.type='password';}
+                var p2=document.getElementById('newUserConfirmPassword'); if(p2){p2.value='';p2.type='password';}
+            }
+
+            function closeAddUserModal() {
+                document.getElementById('addUserModal').classList.remove('active');
+            }
+
+            async function submitAddUser() {
+                var bid = (document.getElementById('newUserBarangayId').value||'').trim();
+                var name = (document.getElementById('newUserFullName').value||'').trim();
+                var phone = (document.getElementById('newUserPhone').value||'').trim();
+                var email = (document.getElementById('newUserEmail').value||'').trim();
+                var addr = (document.getElementById('newUserAddress').value||'').trim();
+                var pwd = (document.getElementById('newUserPassword').value||'');
+                var cpwd = (document.getElementById('newUserConfirmPassword').value||'');
+                var errEl = document.getElementById('addUserError');
+                var showErr = function(msg){errEl.textContent=msg;errEl.style.display='block';};
+                errEl.style.display='none';
+                if (!bid) return showErr('Barangay ID is required.');
+                if (!name) return showErr('Full Name is required.');
+                if (!email) return showErr('Email is required.');
+                if (!pwd) return showErr('Password is required.');
+                if (pwd.length<8) return showErr('Password must be at least 8 characters.');
+                if (pwd!==cpwd) return showErr('Passwords do not match.');
+                var btn=document.getElementById('addUserSubmitBtn');
+                var orig=btn.innerHTML;
+                btn.innerHTML='<i class="bi bi-hourglass-split" style="margin-right:6px;"></i>Adding...';
+                btn.disabled=true;
+                try {
+                    var chk=await supabase.from('residents').select('id').eq('barangay_id',bid);
+                    if(chk.data&&chk.data.length>0){btn.innerHTML=orig;btn.disabled=false;return showErr('Barangay ID "'+bid+'" already exists.');}
+                    var authRes=await supabase.auth.signUp({email:email,password:pwd,options:{data:{full_name:name,role:'resident'}}});
+                    if(authRes.error){btn.innerHTML=orig;btn.disabled=false;return showErr('Auth error: '+authRes.error.message);}
+                    var uid=authRes.data&&authRes.data.user?authRes.data.user.id:null;
+                    var ins=await supabase.from('residents').insert([{barangay_id:bid,full_name:name,phone:phone||null,email:email,address:addr||null,auth_uid:uid,role:'resident'}]);
+                    if(ins.error){btn.innerHTML=orig;btn.disabled=false;return showErr('Insert error: '+ins.error.message);}
+                    closeAddUserModal();
+                    showAlert('User "'+name+'" added successfully.','success');
+                    loadUsers();
+                } catch(e) {
+                    btn.innerHTML=orig;btn.disabled=false;showErr('Unexpected error: '+e.message);
+                }
+            }
         </script>
         
         <!-- Audit Details Modal -->
@@ -7571,6 +7768,65 @@
         </table>
     </div>
     <div style="padding:10px 16px;border-top:1px solid #F3F4F6;background:#FAFAFA;font-size:12px;color:#6B7280;flex-shrink:0;text-align:center;" id="maintDrawerFooter"></div>
+</div>
+<div id="addUserModal" class="modal">
+    <div class="modal-content" style="max-width:540px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+        <div style="background:#1A3A6B;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-person-plus-fill" style="font-size:17px;color:#FDB913;"></i></div>
+                <div style="font-size:15px;font-weight:700;color:#fff;">Add User</div>
+            </div>
+            <button onclick="closeAddUserModal()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+        </div>
+        <div style="padding:20px 22px;overflow-y:auto;flex:1;">
+            <div id="addUserError" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:6px;padding:10px 14px;font-size:13px;color:#991b1b;margin-bottom:16px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                <div>
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Barangay ID *</label>
+                    <input type="text" id="newUserBarangayId" placeholder="e.g. BGY-001" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    <div style="font-size:11px;color:#6B7280;margin-top:4px;">Unique resident identifier</div>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Full Name *</label>
+                    <input type="text" id="newUserFullName" placeholder="Juan dela Cruz" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                <div>
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Phone</label>
+                    <input type="text" id="newUserPhone" placeholder="09171234567" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Email *</label>
+                    <input type="email" id="newUserEmail" placeholder="juan@email.com" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                </div>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Address</label>
+                <textarea id="newUserAddress" placeholder="123 Rizal St., Brgy. Sta. Lucia" rows="2" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                <div>
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Password *</label>
+                    <div style="position:relative;">
+                        <input type="password" id="newUserPassword" placeholder="Min. 8 characters" style="width:100%;padding:9px 36px 9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <button type="button" onclick="var f=document.getElementById('newUserPassword');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6B7280;padding:0;font-size:15px;"><i class="bi bi-eye"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Confirm Password *</label>
+                    <div style="position:relative;">
+                        <input type="password" id="newUserConfirmPassword" placeholder="Re-enter password" style="width:100%;padding:9px 36px 9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <button type="button" onclick="var f=document.getElementById('newUserConfirmPassword');f.type=f.type==='password'?'text':'password';" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6B7280;padding:0;font-size:15px;"><i class="bi bi-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
+            <button onclick="closeAddUserModal()" style="height:40px;padding:0 20px;border:1.5px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Cancel</button>
+            <button id="addUserSubmitBtn" onclick="submitAddUser()" style="height:40px;padding:0 20px;border:none;border-radius:6px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-person-plus" style="margin-right:6px;"></i>Add User</button>
+        </div>
+    </div>
 </div>
 </body>
 
