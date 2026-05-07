@@ -2478,16 +2478,16 @@
         font-family: 'Inter', 'Segoe UI', sans-serif !important;
     }
 
-    .dashboard {
-        display: grid !important;
-        grid-template-rows: var(--topbar-height) 1fr !important;
-        grid-template-columns: var(--sidebar-width) 1fr !important;
-        min-height: 100vh !important;
-    }
+    /* .dashboard uses original flex layout - no grid override */
+
+
+
+
+
 
     /* ---- Topbar ---- */
     .dashboard-header {
-        grid-column: 1 / -1 !important;
+        /* no grid-column - header uses natural flow */
         background: #FFFFFF !important;
         border-bottom: 1px solid var(--gov-border) !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
@@ -2641,6 +2641,24 @@
         justify-content: center !important;
         font-size: 14px !important;
         flex-shrink: 0 !important;
+    }
+
+    /* Override base CSS nav-icon-box background for dark sidebar */
+    .sidebar-btn .nav-icon-box {
+        background: rgba(255,255,255,0.10) !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        color: rgba(255,255,255,0.72) !important;
+        height: 22px !important;
+    }
+    .sidebar-btn:hover .nav-icon-box {
+        background: rgba(255,255,255,0.16) !important;
+        border-color: rgba(255,255,255,0.25) !important;
+        color: #fff !important;
+    }
+    .sidebar-btn.active .nav-icon-box {
+        background: rgba(15,37,71,0.25) !important;
+        border-color: rgba(15,37,71,0.3) !important;
+        color: #0F2547 !important;
     }
 
     /* ---- Main content ---- */
@@ -2885,7 +2903,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn" style="background:#F0F4FF;border:1px solid #D1D5DB;border-radius:6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;">&#9790;</button>
+                <button class="admin-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="adminDarkBtn" style="background:#F0F4FF;border:1px solid #D1D5DB;border-radius:6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;"><i class="bi bi-moon-stars-fill" style="font-size:14px;color:#6B7280;"></i></button>
                 <a href="admin-settings.html" class="logout-btn" style="text-decoration:none;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;font-weight:600;color:#1A1A2E;">Settings</a>
                 <button class="logout-btn" onclick="logoutUser()">Logout</button>
             </div>
