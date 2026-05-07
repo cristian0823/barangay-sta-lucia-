@@ -85,8 +85,8 @@
         transition: all 0.15s;
       }
       .sidebar-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-      .sidebar-btn.active { background: #FDB913; color: #0F2547; font-weight: 700; }
-      .sidebar-btn.active i { color: #0F2547; }
+      .sidebar-btn.active { background: #1e2a4a; color: #fff; font-weight: 700; }
+      .sidebar-btn.active i { color: rgba(255,255,255,0.9); }
 
       /* ── Mobile sidebar ─────────────────────────────────── */
       .mobile-sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 260px;
@@ -109,7 +109,7 @@
       /* ── Bell dropdown ───────────────────────────────────── */
       .admin-bell-dropdown { position: absolute; top: calc(100% + 8px); right: 0;
         background: #fff; border: 1px solid #D1D5DB; border-radius: 12px;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.15); width: 320px; z-index: 200;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.15); width: 360px; z-index: 200;
         display: none; overflow: hidden; }
       .admin-bell-header { display: flex; align-items: center; justify-content: space-between;
         padding: 12px 16px; background: #1A3A6B; }
@@ -134,6 +134,25 @@
         margin: 0 0 2px; line-height: 1.35; }
       .admin-bell-time { font-size: 10px; color: #6B7280; }
 
+      /* ── Profile dropdown ───────────────────────────────── */
+      .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0;
+        background: #fff; border: 1px solid #D1D5DB; border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.18); width: 260px; z-index: 200;
+        display: none; overflow: hidden; }
+      .profile-dropdown.open { display: block; animation: dropdownIn 0.15s ease-out; }
+      @keyframes dropdownIn {
+        from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .profile-dropdown-header { padding: 16px; border-bottom: 1px solid #F3F4F6; }
+      .profile-dropdown-item { display: flex; align-items: center; gap: 10px;
+        padding: 10px 16px; font-size: 13px; font-weight: 500; color: #374151;
+        cursor: pointer; transition: background 0.12s; text-decoration: none;
+        width: 100%; border: none; background: transparent; font-family: inherit; text-align: left; }
+      .profile-dropdown-item:hover { background: #F3F4F6; }
+      .profile-dropdown-item.danger { color: #CE1126; }
+      .profile-dropdown-item.danger:hover { background: #FEE2E2; }
+
       /* ── Data tables ─────────────────────────────────────── */
       .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
       .data-table th { background: #1A3A6B; color: #fff; padding: 10px 14px; text-align: left;
@@ -156,12 +175,13 @@
         display: inline-block; text-transform: uppercase; letter-spacing: 0.04em; }
 
       /* ── Pagination ──────────────────────────────────────── */
-      .pg-controls { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; }
+      .pg-controls { display: flex; align-items: center; padding: 12px 16px;
+        border-top: 1px solid #F3F4F6; background: #FAFAFA; }
       .pg-btn { padding: 5px 12px; border: 1px solid #D1D5DB; border-radius: 6px;
         font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: #1A3A6B;
         transition: all 0.15s; font-family: inherit; }
-      .pg-btn:hover, .pg-btn.active { background: #1A3A6B; color: #fff; border-color: #1A3A6B; }
-      .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      .pg-btn:hover { background: #1A3A6B; color: #fff; border-color: #1A3A6B; }
+      .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
       /* ── Section layout ──────────────────────────────────── */
       .section-container { background: transparent; }
@@ -281,9 +301,6 @@
         <button onclick="mobileSwitchSection('equipment')"><i class="bi bi-box-seam-fill"></i> Inventory</button>
         <button onclick="mobileSwitchSection('audit-log')"><i class="bi bi-journal-text"></i> Audit Log</button>
         <button onclick="mobileSwitchSection('security-log')"><i class="bi bi-shield-lock-fill"></i> Security Log</button>
-        <div style="height:1px;background:rgba(255,255,255,0.1);margin:8px 0;"></div>
-        <button onclick="window.location.href='admin-settings.html'"><i class="bi bi-gear-fill"></i> Settings</button>
-        <button onclick="logoutUser()" style="color:#FCA5A5;"><i class="bi bi-box-arrow-right"></i> Logout</button>
     </div>
 </div>
 
@@ -319,38 +336,62 @@
                 <div class="admin-bell-list" id="adminBellList" onclick="event.stopPropagation()">
                     <div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>
                 </div>
-                <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">See all activity in Audit Log →</div>
+                <div class="admin-bell-footer" onclick="switchSection('audit-log'); document.getElementById('adminBellDropdown').style.display='none';">See all activity in Audit Log &rarr;</div>
             </div>
         </div>
         <!-- Divider -->
         <div style="width:1px;height:28px;background:rgba(255,255,255,0.20);flex-shrink:0;"></div>
-        <!-- Avatar + Name -->
-        <div style="display:flex;align-items:center;gap:8px;">
-            <div id="userAvatar" style="width:34px;height:34px;border-radius:50%;background:#FDB913;color:#0F2547;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(253,185,19,0.4);">A</div>
-            <div style="line-height:1.3;">
-                <div id="userName" style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;">Administrator</div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.6);">Official</div>
+        <!-- Profile Button + Dropdown -->
+        <div style="position:relative;" id="profileWrapper">
+            <button onclick="toggleProfileDropdown(event)" id="profileBtn" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:5px 10px 5px 5px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                <div id="userAvatar" style="width:34px;height:34px;border-radius:50%;background:#FDB913;color:#0F2547;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">A</div>
+                <div style="line-height:1.3;text-align:left;">
+                    <div id="userName" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;">Administrator</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.6);">Official</div>
+                </div>
+                <i class="bi bi-chevron-down" id="profileChevron" style="font-size:11px;color:rgba(255,255,255,0.6);transition:transform 0.15s;margin-left:2px;"></i>
+            </button>
+            <!-- Profile Dropdown Card -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-dropdown-header">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                        <div id="profileDropdownAvatar" style="width:40px;height:40px;border-radius:50%;background:#FDB913;color:#0F2547;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">A</div>
+                        <div>
+                            <div id="profileDropdownName" style="font-size:14px;font-weight:700;color:#1A1A2E;">Administrator</div>
+                            <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                                <span style="font-size:11px;font-weight:600;color:#1A3A6B;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:4px;padding:1px 7px;">Official</span>
+                                <span style="display:flex;align-items:center;gap:3px;font-size:11px;color:#16A34A;font-weight:500;"><span style="width:6px;height:6px;background:#16A34A;border-radius:50%;display:inline-block;"></span>Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:6px 0;">
+                    <a href="admin-settings.html?tab=profile" class="profile-dropdown-item">
+                        <i class="bi bi-person-fill" style="font-size:15px;color:#6B7280;width:18px;text-align:center;"></i>
+                        <span>View Profile</span>
+                    </a>
+                    <a href="admin-settings.html" class="profile-dropdown-item">
+                        <i class="bi bi-gear-fill" style="font-size:15px;color:#6B7280;width:18px;text-align:center;"></i>
+                        <span>Settings</span>
+                    </a>
+                    <div style="height:1px;background:#F3F4F6;margin:4px 0;"></div>
+                    <button onclick="logoutUser()" class="profile-dropdown-item danger">
+                        <i class="bi bi-box-arrow-right" style="font-size:15px;width:18px;text-align:center;"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
         </div>
-        <!-- Settings -->
-        <a href="admin-settings.html" style="text-decoration:none;display:flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid rgba(255,255,255,0.30);border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:transparent;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">
-            <i class="bi bi-gear" style="font-size:13px;"></i> Settings
-        </a>
-        <!-- Logout -->
-        <button onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border:none;border-radius:6px;font-size:13px;font-weight:600;color:#fff;background:#CE1126;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#a50e1f'" onmouseout="this.style.background='#CE1126'">
-            <i class="bi bi-box-arrow-right" style="font-size:13px;"></i> Logout
-        </button>
     </div>
 </header>
 
 <!-- Fixed Desktop Sidebar -->
-<aside style="position:fixed;top:64px;left:0;bottom:0;width:240px;background:#0F2547;overflow-y:auto;z-index:90;display:flex;flex-direction:column;">
+<aside style="position:fixed;top:64px;left:0;bottom:0;width:220px;background:#0F2547;overflow:hidden;z-index:90;display:flex;flex-direction:column;">
     <!-- Brand Header -->
-    <div style="display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
-        <img src="barangay-sun-logo.jpg" alt="Logo" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
+        <img src="barangay-sun-logo.jpg" alt="Logo" style="width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0;">
         <div style="min-width:0;">
             <div style="font-size:13px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Brgy. Sta. Lucia</div>
-            <div style="font-size:10px;font-weight:600;color:#FDB913;letter-spacing:0.5px;margin-top:1px;">Admin Panel</div>
         </div>
     </div>
 
@@ -395,20 +436,10 @@
             <i class="bi bi-shield-lock-fill"></i> Security Log
         </button>
     </div>
-
-    <!-- Sidebar Footer -->
-    <div style="margin-top:auto;padding:12px 8px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
-        <a href="admin-settings.html" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:rgba(255,255,255,0.72);font-size:13px;font-weight:500;text-decoration:none;transition:all 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.72)'">
-            <i class="bi bi-gear-fill"></i> Settings
-        </a>
-        <button onclick="logoutUser()" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:rgba(255,255,255,0.72);font-size:13px;font-weight:500;background:transparent;border:none;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:all 0.18s;" onmouseover="this.style.background='rgba(206,17,38,0.15)';this.style.color='#FCA5A5'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.72)'">
-            <i class="bi bi-box-arrow-right"></i> Logout
-        </button>
-    </div>
 </aside>
 
 <!-- Main Content Area -->
-<div style="margin-left:240px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
+<div style="margin-left:220px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
     <div style="padding:28px;">
                     <!-- Overview Section -->
                     <!-- Overview Section -->
@@ -444,42 +475,43 @@
                             </div>
                         </div>
 
+
                         <!-- KPI STAT CARDS -->
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px;">
 
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                                     <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Equipment Requests</div>
                                     <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-box-seam-fill" style="font-size:20px;color:#1A3A6B;"></i></div>
                                 </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingRequests">—</div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingRequests">&#8212;</div>
                                 <div style="font-size:12px;color:#6B7280;margin-top:2px;">pending</div>
                             </div>
 
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #FDB913;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                                     <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Open Concerns</div>
-                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-megaphone-fill" style="font-size:20px;color:#B8860B;"></i></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-megaphone-fill" style="font-size:20px;color:#1A3A6B;"></i></div>
                                 </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingConcerns">—</div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="pendingConcerns">&#8212;</div>
                                 <div style="font-size:12px;color:#6B7280;margin-top:2px;">unresolved</div>
                             </div>
 
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #16A34A;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                                     <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Upcoming Events</div>
-                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-calendar-check-fill" style="font-size:20px;color:#16A34A;"></i></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-calendar-check-fill" style="font-size:20px;color:#1A3A6B;"></i></div>
                                 </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="upcomingEvents">—</div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="upcomingEvents">&#8212;</div>
                                 <div style="font-size:12px;color:#6B7280;margin-top:2px;">scheduled</div>
                             </div>
 
-                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #CE1126;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
+                            <div class="gov-stat-card" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)';this.style.transform=''">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                                     <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Registered Users</div>
-                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-people-fill" style="font-size:20px;color:#CE1126;"></i></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-people-fill" style="font-size:20px;color:#1A3A6B;"></i></div>
                                 </div>
-                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="totalUsers">—</div>
+                                <div class="stat-number" style="font-size:36px;font-weight:700;color:#1A1A2E;line-height:1;margin-top:8px;" id="totalUsers">&#8212;</div>
                                 <div style="font-size:12px;color:#6B7280;margin-top:2px;">residents</div>
                             </div>
 
@@ -490,8 +522,7 @@
                             <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:#6B7280;text-transform:uppercase;margin-bottom:12px;">Quick Access</div>
                             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
 
-                                <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <!-- Diagonal stripe pattern -->
+                                <button onclick="switchSection('court-bookings', document.querySelectorAll('.sidebar-btn')[1])" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
                                     <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(26,58,107,0.05) 0px,rgba(26,58,107,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
                                     <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-check-fill" style="font-size:22px;color:#1A3A6B;"></i></div>
                                     <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Reservations</div>
@@ -499,33 +530,32 @@
                                     <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#1A3A6B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
-                                <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #FDB913;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#d4a017';this.style.boxShadow='0 4px 14px rgba(253,185,19,0.2)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#FDB913';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(253,185,19,0.07) 0px,rgba(253,185,19,0.07) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(253,185,19,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-box-seam" style="font-size:22px;color:#B8860B;"></i></div>
+                                <button onclick="switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(26,58,107,0.05) 0px,rgba(26,58,107,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-box-seam" style="font-size:22px;color:#1A3A6B;"></i></div>
                                     <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Equipment</div>
                                     <div style="font-size:13px;color:#6B7280;">Review requests</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#B8860B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#1A3A6B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
-                                <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #CE1126;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#a50e1f';this.style.boxShadow='0 4px 14px rgba(206,17,38,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#CE1126';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(206,17,38,0.05) 0px,rgba(206,17,38,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-megaphone-fill" style="font-size:22px;color:#CE1126;"></i></div>
+                                <button onclick="switchSection('concerns', document.querySelectorAll('.sidebar-btn')[3])" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(26,58,107,0.05) 0px,rgba(26,58,107,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-megaphone-fill" style="font-size:22px;color:#1A3A6B;"></i></div>
                                     <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Concerns</div>
                                     <div style="font-size:13px;color:#6B7280;">Respond to reports</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#CE1126;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#1A3A6B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
-                                <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:#fff;border:1px solid #D1D5DB;border-left:4px solid #16A34A;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#15803d';this.style.boxShadow='0 4px 14px rgba(22,163,74,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#16A34A';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
-                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(22,163,74,0.05) 0px,rgba(22,163,74,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
-                                    <div style="width:40px;height:40px;background:rgba(22,163,74,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-event-fill" style="font-size:22px;color:#16A34A;"></i></div>
+                                <button onclick="switchSection('events', document.querySelectorAll('.sidebar-btn')[5])" style="background:#fff;border:1px solid #D1D5DB;border-left:3px solid #1A3A6B;border-radius:8px;padding:20px;cursor:pointer;text-align:left;font-family:inherit;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:all 0.2s;" onmouseover="this.style.borderLeftColor='#0F2547';this.style.boxShadow='0 4px 14px rgba(26,58,107,0.15)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderLeftColor='#1A3A6B';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';this.style.transform='';">
+                                    <div style="position:absolute;bottom:0;right:0;width:60px;height:60px;background:repeating-linear-gradient(45deg,rgba(26,58,107,0.05) 0px,rgba(26,58,107,0.05) 2px,transparent 2px,transparent 8px);pointer-events:none;"></div>
+                                    <div style="width:40px;height:40px;background:rgba(26,58,107,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="bi bi-calendar-event-fill" style="font-size:22px;color:#1A3A6B;"></i></div>
                                     <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">Court Events</div>
                                     <div style="font-size:13px;color:#6B7280;">Schedule &amp; manage</div>
-                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#16A34A;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
+                                    <i class="bi bi-arrow-right" style="position:absolute;bottom:16px;right:16px;color:#1A3A6B;font-size:16px;opacity:0.5;transition:transform 0.15s;"></i>
                                 </button>
 
                             </div>
                         </div>
-
                         <!-- BOTTOM ROW: Pending Actions + Recent Activity -->
                         <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-bottom:22px;">
 
@@ -3206,7 +3236,7 @@
 
 
             // ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â PAGINATION ENGINE ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â
-            const PG_SIZE = 8;
+            const PG_SIZE = 10;
             let _pgUsersPage = 1, _pgUsersList = [];
             let _pgConcernsPage = 1, _pgConcernsList = [], _pgConcernFilter = 'all';
             let _pgReqPage = 1, _pgReqList = [];
@@ -3217,21 +3247,20 @@
             function renderPg(containerId, total, perPage, page, cbName) {
                 const el = document.getElementById(containerId);
                 if (!el) return;
-                const totalPages = Math.ceil(total / perPage);
-                if (totalPages <= 1) { el.style.display = 'none'; return; }
-                el.style.display = 'flex';
+                const totalPages = Math.max(1, Math.ceil(total / perPage));
+                el.style.display = (total === 0) ? "none" : "flex";
+                if (total === 0) return;
                 const s = (page - 1) * perPage + 1;
                 const e = Math.min(page * perPage, total);
-                let btns = '';
-                for (let p = 1; p <= totalPages; p++) {
-                    if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - page) > 1) {
-                        if (p === 3 || p === totalPages - 2) btns += '<span style="color:var(--muted,#9ca3af);padding:0 4px;">ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</span>';
-                        continue;
-                    }
-                    btns += '<button class="pg-btn' + (p === page ? ' pg-active' : '') + '" onclick="' + cbName + '(' + p + ')">' + p + '</button>';
-                }
-                el.innerHTML = '<span class="pg-info">Showing ' + s + ' - ' + e + ' of ' + total + '</span>'
-                    + '<div class="pg-btns"><button class="pg-btn" onclick="' + cbName + '(' + (page - 1) + ')"' + (page <= 1 ? ' disabled' : '') + '>&#8250;</button>' + btns + '<button class="pg-btn" onclick="' + cbName + '(' + (page + 1) + ')"' + (page >= totalPages ? ' disabled' : '') + '>&lsaquo;</button></div>';
+                el.style.justifyContent = "space-between";
+                el.style.alignItems = "center";
+                el.innerHTML =
+                    `<span style="font-size:12px;color:#6B7280;">Showing ${s}&ndash;${e} of ${total} results</span>` +
+                    `<div style="display:flex;align-items:center;gap:8px;">` +
+                    `<button class="pg-btn" onclick="${cbName}(${page - 1})" ${page <= 1 ? "disabled" : ""} style="padding:5px 12px;font-size:12px;">&#8592; Previous</button>` +
+                    `<span style="font-size:12px;color:#6B7280;white-space:nowrap;">Page ${page} of ${totalPages}</span>` +
+                    `<button class="pg-btn" onclick="${cbName}(${page + 1})" ${page >= totalPages ? "disabled" : ""} style="padding:5px 12px;font-size:12px;">Next &#8594;</button>` +
+                    `</div>`;
             }
 
             // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Users ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
@@ -6233,12 +6262,21 @@
                         userNameEl.textContent = adminUser.fullName || adminUser.name || adminUser.username || 'Administrator';
                     }
                     const avatarEl = document.getElementById('userAvatar');
+                    const dispName = adminUser.fullName || adminUser.name || adminUser.username || 'Admin';
+                    const avatarImg = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(dispName)}&background=FDB913&color=0F2547&bold=true&rounded=true" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Avatar">`;
                     if (avatarEl) {
-                        const dispName = adminUser.fullName || adminUser.name || adminUser.username || 'Admin';
-                        avatarEl.innerHTML = `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(dispName)}&background=10b981&color=fff&bold=true&rounded=true" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Avatar">`;
+                        avatarEl.innerHTML = avatarImg;
                         avatarEl.style.padding = "0";
                         avatarEl.style.border = "none";
                     }
+                    const ddAvatar = document.getElementById('profileDropdownAvatar');
+                    if (ddAvatar) {
+                        ddAvatar.innerHTML = avatarImg;
+                        ddAvatar.style.padding = "0";
+                        ddAvatar.style.border = "none";
+                    }
+                    const ddName = document.getElementById('profileDropdownName');
+                    if (ddName) ddName.textContent = dispName;
                 }
                 initWelcomeClock();
                 loadOverview();
@@ -7295,7 +7333,31 @@
                 if (drop && wrap && drop.style.display === 'flex' && !wrap.contains(e.target)) {
                     drop.style.display = 'none';
                 }
+                const pdrop = document.getElementById('profileDropdown');
+                const pwrap = document.getElementById('profileWrapper');
+                if (pdrop && pwrap && pdrop.classList.contains('open') && !pwrap.contains(e.target)) {
+                    pdrop.classList.remove('open');
+                    const chev = document.getElementById('profileChevron');
+                    if (chev) chev.style.transform = '';
+                }
             });
+
+            function toggleProfileDropdown(e) {
+                if (e) e.stopPropagation();
+                const drop = document.getElementById('profileDropdown');
+                const chev = document.getElementById('profileChevron');
+                const bellDrop = document.getElementById('adminBellDropdown');
+                if (bellDrop) bellDrop.style.display = 'none';
+                if (!drop) return;
+                const isOpen = drop.classList.contains('open');
+                if (isOpen) {
+                    drop.classList.remove('open');
+                    if (chev) chev.style.transform = '';
+                } else {
+                    drop.classList.add('open');
+                    if (chev) chev.style.transform = 'rotate(180deg)';
+                }
+            }
 
             // Track which notification IDs have been dismissed by admin
             const ADMIN_BELL_DISMISSED_KEY = 'adminBellDismissed';
@@ -7385,11 +7447,11 @@
                 }
 
                 if (total === 0) {
-                    list.innerHTML = '<div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No pending actions</div>';
+                    list.innerHTML = '<div class="admin-bell-empty"><i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>No new notifications</div>';
                     return;
                 }
 
-                list.innerHTML = visible.slice(0, 30).map(n => {
+                list.innerHTML = visible.slice(0, 5).map(n => {
                     const timeStr = n.createdAt
                         ? new Date(n.createdAt).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
                         : 'Just now';
