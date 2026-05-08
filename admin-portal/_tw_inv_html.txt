@@ -1,0 +1,59 @@
+
+                        <!-- STAT PILLS -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-archive-fill" style="color:#1A3A6B;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Total Items</div><div style="font-size:22px;font-weight:700;color:#1A1A2E;line-height:1.2;" id="statTotalItems">&#8212;</div></div>
+                            </div>
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#DCFCE7;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-check-circle-fill" style="color:#16a34a;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Available</div><div style="font-size:22px;font-weight:700;color:#166534;line-height:1.2;" id="statAvailable">&#8212;</div></div>
+                            </div>
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#FFEDD5;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-wrench-adjustable" style="color:#c2410c;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Under Repair</div><div style="font-size:22px;font-weight:700;color:#9A3412;line-height:1.2;" id="statUnderRepair">&#8212;</div></div>
+                            </div>
+                            <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-trash3-fill" style="color:#CE1126;font-size:16px;"></i></div>
+                                <div><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">For Disposal</div><div style="font-size:22px;font-weight:700;color:#991b1b;line-height:1.2;" id="statForDisposal">&#8212;</div></div>
+                            </div>
+                        </div>
+
+                        <!-- SEARCH + FILTER -->
+                        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+                            <div style="position:relative;flex:1;min-width:200px;">
+                                <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:13px;pointer-events:none;"></i>
+                                <input type="text" id="equipSearch" placeholder="Search equipment..." oninput="renderEquipmentPg()" style="width:100%;padding:8px 12px 8px 32px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <select id="equipFilter" onchange="renderEquipmentPg()" style="padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;background:#fff;cursor:pointer;outline:none;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                <option value="">All Status</option>
+                                <option value="available">Available</option>
+                                <option value="low">Low Stock</option>
+                                <option value="out">Out of Stock</option>
+                                <option value="repair">Under Repair</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                            <table class="data-table" style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1A3A6B;">
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Equipment</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Total</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Available</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Under Repair</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">For Disposal</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Status</th>
+                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="equipmentTable"></tbody>
+                            </table>
+                        </div>
+                        <!-- PAGINATION -->
+                        <div id="equipPagRow" style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;flex-wrap:wrap;gap:8px;">
+                            <div id="equipPagInfo" style="font-size:12px;color:#6B7280;"></div>
+                            <div id="equipPagBtns" style="display:flex;gap:6px;"></div>
+                        </div>

@@ -1,0 +1,52 @@
+<!-- Fixed Desktop Sidebar -->
+<aside style="position:fixed;top:64px;left:0;bottom:0;width:220px;background:#0F2547;overflow:hidden;z-index:90;display:flex;flex-direction:column;">
+    <!-- Brand Header -->
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
+        <img src="barangay-sun-logo.jpg" alt="Logo" style="width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0;">
+        <div style="min-width:0;">
+            <div style="font-size:13px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Brgy. Sta. Lucia</div>
+        </div>
+    </div>
+
+    <!-- Nav: MAIN -->
+    <div style="padding:8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Main</div>
+        <button class="sidebar-btn active" onclick="switchSection('overview', this)">
+            <i class="bi bi-grid-1x2-fill"></i> Overview
+        </button>
+    </div>
+
+    <!-- Nav: MANAGEMENT -->
+    <div style="padding:0 8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Management</div>
+        <button class="sidebar-btn" onclick="switchSection('court-bookings', this)">
+            <i class="bi bi-calendar-check-fill"></i> Facility Reservations
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('requests', this)">
+            <i class="bi bi-box-seam"></i> Equipment Requests
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('concerns', this)">
+            <i class="bi bi-megaphone-fill"></i> Concerns
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('users', this)">
+            <i class="bi bi-people-fill"></i> Manage Users
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('events', this)">
+            <i class="bi bi-calendar-event-fill"></i> Court Events
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('equipment', this)">
+            <i class="bi bi-box-seam-fill"></i> Inventory
+        </button>
+    </div>
+
+    <!-- Nav: SECURITY -->
+    <div style="padding:0 8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Security</div>
+        <button class="sidebar-btn" onclick="switchSection('audit-log', this)">
+            <i class="bi bi-journal-text"></i> Audit Log
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('security-log', this)">
+            <i class="bi bi-shield-lock-fill"></i> Security Log
+        </button>
+    </div>
+</aside>

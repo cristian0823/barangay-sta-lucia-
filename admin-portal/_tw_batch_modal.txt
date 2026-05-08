@@ -1,0 +1,61 @@
+<div id="batchUploadModal" class="modal">
+    <div class="modal-content" style="max-width:520px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+        <!-- Header -->
+        <div style="background:#1A3A6B;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-file-earmark-arrow-up-fill" style="font-size:17px;color:#FDB913;"></i></div>
+                <div style="font-size:15px;font-weight:700;color:#fff;">Batch Upload Residents</div>
+            </div>
+            <button onclick="document.getElementById('batchUploadModal').classList.remove('active')" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+        </div>
+        <!-- Body -->
+        <div style="padding:20px 22px;overflow-y:auto;flex:1;">
+            <!-- Info box -->
+            <div style="background:#eff6ff;border-left:3px solid #3b82f6;border-radius:6px;padding:12px 14px;margin-bottom:18px;">
+                <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px;">Required columns</div>
+                <div style="font-family:monospace;font-size:12px;color:#1e40af;line-height:1.8;">
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">barangay_id</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">full_name</span>
+                    <span style="color:#60a5fa;font-style:italic;">Optional:</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">email</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;margin-right:4px;">phone</span>
+                    <span style="background:#dbeafe;padding:1px 6px;border-radius:4px;">address</span>
+                </div>
+            </div>
+            <!-- Drop zone -->
+            <div id="batchDropZone" style="border:1.5px dashed #cbd5e1;border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fff;" onclick="document.getElementById('batchFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#1A3A6B';this.style.background='#EFF6FF';" ondragleave="this.style.borderColor='#cbd5e1';this.style.background='#fff';" ondrop="event.preventDefault();this.style.borderColor='#cbd5e1';this.style.background='#fff';handleBatchFileDrop(event)">
+                <div id="batchDropDefault">
+                    <i class="bi bi-cloud-upload" style="font-size:38px;color:#1A3A6B;display:block;margin-bottom:10px;"></i>
+                    <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">Drop Excel or CSV file here</div>
+                    <div style="font-size:12px;color:#6B7280;">or click to browse &mdash; supports .xlsx, .xls, .csv</div>
+                </div>
+                <div id="batchDropFileInfo" style="display:none;align-items:center;justify-content:center;gap:12px;">
+                    <i class="bi bi-file-earmark-spreadsheet-fill" style="font-size:28px;color:#1A3A6B;flex-shrink:0;"></i>
+                    <div style="text-align:left;">
+                        <div id="batchDropFileName" style="font-size:13px;font-weight:700;color:#1A1A2E;"></div>
+                        <div id="batchDropFileSize" style="font-size:11px;color:#6B7280;margin-top:2px;"></div>
+                    </div>
+                    <button onclick="event.stopPropagation();resetBatchUpload()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E5E7EB;background:#fff;color:#6B7280;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;flex-shrink:0;" onmouseover="this.style.borderColor='#CE1126';this.style.color='#CE1126'" onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#6B7280'">&times;</button>
+                </div>
+                <input type="file" id="batchFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="previewBatchFile(this.files[0])">
+            </div>
+            <!-- Preview -->
+            <div id="batchPreview" style="display:none;margin-top:16px;">
+                <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:8px;">Preview <span id="batchRowCount" style="color:#166534;"></span></div>
+                <div style="max-height:180px;overflow-y:auto;border:1px solid #E5E7EB;border-radius:8px;">
+                    <table class="data-table" style="font-size:12px;">
+                        <thead><tr><th>Barangay ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead>
+                        <tbody id="batchPreviewRows"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Result -->
+            <div id="batchUploadResult" style="display:none;margin-top:12px;font-size:13px;padding:10px 14px;border-radius:8px;"></div>
+        </div>
+        <!-- Footer -->
+        <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
+            <button onclick="document.getElementById('batchUploadModal').classList.remove('active');resetBatchUpload()" style="height:40px;padding:0 20px;border:1.5px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Cancel</button>
+            <button id="batchUploadBtn" onclick="submitBatchUpload()" disabled style="height:40px;padding:0 20px;border:none;border-radius:6px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;opacity:0.5;" onmouseover="if(!this.disabled)this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Upload Residents</button>
+        </div>
+    </div>
+</div>

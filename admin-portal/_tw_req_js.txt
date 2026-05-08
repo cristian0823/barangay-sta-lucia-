@@ -1,0 +1,62 @@
+            function gotoRequestsPage(p) { _pgReqPage=p; renderReqPg(); }
+            function renderReqPg() {
+                var tbody = document.getElementById('requestsTable');
+                var noEl = document.getElementById('noRequests');
+                if (!tbody) return;
+                if (!_pgReqList.length) {
+                    tbody.innerHTML='';
+                    if(noEl) noEl.style.display='block';
+                    var pg=document.getElementById('requestsPg'); if(pg) pg.style.display='none';
+                    return;
+                }
+                if(noEl) noEl.style.display='none';
+                var slice = _pgReqList.slice((_pgReqPage-1)*PG_SIZE, _pgReqPage*PG_SIZE);
+                var rows = '';
+                for (var ri=0; ri<slice.length; ri++) {
+                    var b = slice[ri];
+                    var dt = (b.created_at||b.createdAt) ? new Date(b.created_at||b.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
+                    var rd = '<div style="line-height:1.2;"><strong style="color:#1A1A2E;">'+(b.userName||b.user_name||'')+'</strong><br><small style="color:#6B7280;font-size:11px;">'+dt+'</small></div>';
+                    var cleanPurpose = b.purpose || '';
+                    var deliveryBadgeHtml = '';
+                    if (cleanPurpose.indexOf('| Delivery:')>=0) {
+                        var dm = cleanPurpose.match(/\| Delivery:\s*([^|]+)/);
+                        if (dm) {
+                            var isDeliv = dm[1].trim().toLowerCase().indexOf('delivery')===0;
+                            deliveryBadgeHtml = isDeliv
+                                ? '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;white-space:nowrap;">&#128666; Delivery</span>'
+                                : '<span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;white-space:nowrap;">&#127963; Pickup</span>';
+                        }
+                    }
+                    if (cleanPurpose.indexOf('| Purpose:')>=0) {
+                        var pm = cleanPurpose.match(/Purpose:\s*([^|]+)/);
+                        if (pm) cleanPurpose = pm[1].trim();
+                    }
+                    if (cleanPurpose.length>50) cleanPurpose = cleanPurpose.substring(0,50)+'...';
+                    var fmtD = function(d) {
+                        if (!d) return '';
+                        var x = new Date(d);
+                        return isNaN(x) ? d : x.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+                    };
+                    var dateStr = fmtD(b.borrowDate)+' → '+fmtD(b.returnDate);
+                    var st = (b.status||'pending').toLowerCase();
+                    var bb = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
+                    var statusBadge;
+                    if(st==='pending') statusBadge='<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Pending</span>';
+                    else if(st==='approved') statusBadge='<span style="'+bb+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Approved</span>';
+                    else if(st==='rejected') statusBadge='<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Rejected</span>';
+                    else if(st==='returned') statusBadge='<span style="'+bb+'background:#DBEAFE;color:#1e40af;border:1px solid #93C5FD;">Returned</span>';
+                    else statusBadge='<span style="'+bb+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">'+(b.status||'')+'</span>';
+                    var purposeHtml = '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'+deliveryBadgeHtml+'<span style="color:#1A1A2E;font-size:13px;">'+cleanPurpose+'</span></div>';
+                    rows += '<tr data-req-id="'+b.id+'" onclick="openRequestRespond('+b.id+')" style="border-top:1px solid #F3F4F6;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'#F8FAFF\'" onmouseout="this.style.background=\'\'">'
+                        +'<td style="padding:12px 18px;">'+rd+'</td>'
+                        +'<td style="padding:12px 18px;"><strong style="font-size:14px;color:#1A1A2E;">'+(b.equipment||'')+'</strong></td>'
+                        +'<td style="padding:12px 18px;text-align:center;font-weight:700;font-size:14px;color:#374151;">'+(b.quantity||1)+'</td>'
+                        +'<td style="padding:12px 18px;white-space:nowrap;font-size:13px;color:#6B7280;">'+dateStr+'</td>'
+                        +'<td style="padding:12px 18px;width:240px;">'+purposeHtml+'</td>'
+                        +'<td style="padding:12px 18px;">'+statusBadge+'</td>'
+                        +'<td style="padding:12px 18px;text-align:center;"><button onclick="event.stopPropagation();openRequestRespond('+b.id+')" style="padding:4px 14px;height:32px;border:1px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s;" onmouseover="this.style.background=\'#1A3A6B\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#1A3A6B\'">View</button></td>'
+                        +'</tr>';
+                }
+                tbody.innerHTML = rows;
+                renderPg('requestsPg', _pgReqList.length, PG_SIZE, _pgReqPage, 'gotoRequestsPage');
+            }
