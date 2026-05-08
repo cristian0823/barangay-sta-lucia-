@@ -956,9 +956,6 @@
         <button class="mobile-section-tab"
             onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');"><i class="bi bi-bar-chart-fill"></i>
             System</button>
-        <button class="mobile-section-tab"
-            onclick="showSection('operating-hours'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');"><i class="bi bi-clock-fill"></i>
-            Hours</button>
     </div>
 
     <div class="layout">
@@ -976,9 +973,6 @@
                 </button>
                 <button class="nav-item" onclick="showSection('system')" id="systemBtn">
                     <i class="bi bi-bar-chart-fill"></i> System Info
-                </button>
-                <button class="nav-item" onclick="showSection('operating-hours')" id="operatingHoursBtn">
-                    <i class="bi bi-clock-fill"></i> Operating Hours
                 </button>
             </nav>
         </aside>
@@ -1208,65 +1202,6 @@
                 </div>
             </div>
 
-            <!-- ── OPERATING HOURS ── -->
-            <div id="operating-hours-section" class="hidden">
-                <div class="section-hero" style="background:#1e2a4a;">
-                    <div class="section-hero-content">
-                        <div class="section-hero-icon" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);">🕐</div>
-                        <div>
-                            <div class="section-hero-title" style="color:#fff;">Operating Hours</div>
-                            <div class="section-hero-sub" style="color:rgba(255,255,255,0.65);">Control when residents can submit borrow and facility requests</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="ohSyncStatus" style="display:none;"></div>
-
-                <div class="profile-grid">
-                    <div class="card">
-                        <div class="card-head">
-                            <div class="card-head-title"><i class="bi bi-box-seam"></i> Equipment Borrowing Hours</div>
-                        </div>
-                        <div class="card-body">
-                            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Residents can only submit borrow requests within these hours (Asia/Manila).</p>
-                            <div class="form-group">
-                                <label class="form-label">Opening Time</label>
-                                <input type="time" id="equipOpenTime" class="form-input" value="08:00">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Closing Time</label>
-                                <input type="time" id="equipCloseTime" class="form-input" value="17:00">
-                            </div>
-                            <div id="equipHoursStatus" style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--green-50);border-radius:8px;border:1px solid var(--green-100);"></div>
-                            <button onclick="saveEquipHours()" class="btn-submit navy">
-                                <i class="bi bi-check2-circle"></i> Save Equipment Hours
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-head">
-                            <div class="card-head-title"><i class="bi bi-calendar-event"></i> Facility Reservation Hours</div>
-                        </div>
-                        <div class="card-body">
-                            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Residents can only submit facility reservation requests within these hours (Asia/Manila).</p>
-                            <div class="form-group">
-                                <label class="form-label">Opening Time</label>
-                                <input type="time" id="facilityOpenTime" class="form-input" value="06:00">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Closing Time</label>
-                                <input type="time" id="facilityCloseTime" class="form-input" value="21:00">
-                            </div>
-                            <div id="facilityHoursStatus" style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--green-50);border-radius:8px;border:1px solid var(--green-100);"></div>
-                            <button onclick="saveFacilityHours()" class="btn-submit navy">
-                                <i class="bi bi-check2-circle"></i> Save Facility Hours
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </main>
     </div>
 
@@ -1302,15 +1237,13 @@
         }
 
         function showSection(section) {
-            ['profile', 'security', 'system', 'operating-hours'].forEach(s => {
+            ['profile', 'security', 'system'].forEach(s => {
                 const el = document.getElementById(s + '-section');
                 if (el) el.classList.toggle('hidden', s !== section);
-                const btnId = s === 'operating-hours' ? 'operatingHoursBtn' : s + 'Btn';
-                const btn = document.getElementById(btnId);
+                const btn = document.getElementById(s + 'Btn');
                 if (btn) btn.classList.toggle('active', s === section);
             });
             if (section === 'security') loadAdminTOTPStatus();
-            if (section === 'operating-hours') loadOperatingHoursAdmin();
         }
 
         async function loadAdminTOTPStatus() {
@@ -1461,145 +1394,6 @@
         }
         init();
 
-        // ── OPERATING HOURS ─────────────────────────────────────────
-        function fmtHourLabel(h) {
-            if (h === 0) return '12:00 AM'; if (h < 12) return h + ':00 AM';
-            if (h === 12) return '12:00 PM'; return (h-12) + ':00 PM';
-        }
-
-        const LS_HOURS_KEY = 'brgy_operating_hours';
-
-        function _getStoredHours() {
-            try { return JSON.parse(localStorage.getItem(LS_HOURS_KEY)) || {}; } catch(e) { return {}; }
-        }
-
-        function _setStoredHours(patch) {
-            const cur = _getStoredHours();
-            localStorage.setItem(LS_HOURS_KEY, JSON.stringify(Object.assign(cur, patch)));
-        }
-
-        async function loadOperatingHoursAdmin() {
-            // 1. Load from localStorage first (always available)
-            const stored = _getStoredHours();
-            const eo = stored.equipment_open_hour  != null ? stored.equipment_open_hour  : 8;
-            const ec = stored.equipment_close_hour != null ? stored.equipment_close_hour : 17;
-            const fo = stored.facility_open_hour   != null ? stored.facility_open_hour   : 6;
-            const fc = stored.facility_close_hour  != null ? stored.facility_close_hour  : 21;
-            document.getElementById('equipOpenTime').value    = String(eo).padStart(2,'0') + ':00';
-            document.getElementById('equipCloseTime').value   = String(ec).padStart(2,'0') + ':00';
-            document.getElementById('facilityOpenTime').value = String(fo).padStart(2,'0') + ':00';
-            document.getElementById('facilityCloseTime').value= String(fc).padStart(2,'0') + ':00';
-            updateStatusLabels(eo, ec, fo, fc);
-
-            // 2. Try Supabase to get latest (optional — cross-device sync)
-            const syncEl = document.getElementById('ohSyncStatus');
-            try {
-                const { data, error } = await supabase.from('site_settings').select('key,value');
-                if (!error && data && data.length) {
-                    const get = k => { const r = data.find(x=>x.key===k); return r ? parseInt(r.value) : null; };
-                    const seo = get('equipment_open_hour'), sec = get('equipment_close_hour');
-                    const sfo = get('facility_open_hour'),  sfc = get('facility_close_hour');
-                    const patch = {};
-                    if (seo !== null) patch.equipment_open_hour  = seo;
-                    if (sec !== null) patch.equipment_close_hour = sec;
-                    if (sfo !== null) patch.facility_open_hour   = sfo;
-                    if (sfc !== null) patch.facility_close_hour  = sfc;
-                    if (Object.keys(patch).length) {
-                        _setStoredHours(patch);
-                        const neo = patch.equipment_open_hour  ?? eo;
-                        const nec = patch.equipment_close_hour ?? ec;
-                        const nfo = patch.facility_open_hour   ?? fo;
-                        const nfc = patch.facility_close_hour  ?? fc;
-                        document.getElementById('equipOpenTime').value    = String(neo).padStart(2,'0') + ':00';
-                        document.getElementById('equipCloseTime').value   = String(nec).padStart(2,'0') + ':00';
-                        document.getElementById('facilityOpenTime').value = String(nfo).padStart(2,'0') + ':00';
-                        document.getElementById('facilityCloseTime').value= String(nfc).padStart(2,'0') + ':00';
-                        updateStatusLabels(neo, nec, nfo, nfc);
-                    }
-                    if (syncEl) syncEl.innerHTML = '<span style="color:#059669;">✔ Synced with Supabase</span>';
-                } else {
-                    if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Supabase table not set up — hours saved locally only.</span>';
-                }
-            } catch(e) {
-                if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Supabase unreachable — hours saved locally only.</span>';
-            }
-        }
-
-        function updateStatusLabels(eo, ec, fo, fc) {
-            const now = parseInt(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Manila',hour:'numeric',hour12:false}).format(new Date()));
-            const equipOpen = now >= eo && now < ec;
-            const facOpen   = now >= fo && now < fc;
-            const el = document.getElementById('equipHoursStatus');
-            const fl = document.getElementById('facilityHoursStatus');
-            if (el) el.innerHTML = '🕐 Current schedule: <strong>' + fmtHourLabel(eo) + ' – ' + fmtHourLabel(ec) + '</strong> &nbsp;|&nbsp; Status: <strong style="color:' + (equipOpen?'#059669':'#dc2626') + '">' + (equipOpen?'🟢 Open':'🔴 Closed') + '</strong>';
-            if (fl) fl.innerHTML = '🕐 Current schedule: <strong>' + fmtHourLabel(fo) + ' – ' + fmtHourLabel(fc) + '</strong> &nbsp;|&nbsp; Status: <strong style="color:' + (facOpen?'#059669':'#dc2626') + '">' + (facOpen?'🟢 Open':'🔴 Closed') + '</strong>';
-        }
-
-        function showHoursError(msg) {
-            let el = document.getElementById('_hoursErrToast');
-            if (!el) {
-                el = document.createElement('div');
-                el.id = '_hoursErrToast';
-                el.style.cssText = 'position:fixed;bottom:24px;right:24px;width:320px;background:#fff;border-left:3px solid #CE1126;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.14);padding:14px 16px;display:flex;align-items:flex-start;gap:10px;z-index:9999;font-family:inherit;transition:opacity 0.3s;';
-                document.body.appendChild(el);
-            }
-            el.innerHTML = '<i class="bi bi-exclamation-circle-fill" style="color:#CE1126;font-size:16px;flex-shrink:0;margin-top:1px;"></i><div style="flex:1;font-size:13px;color:#1A1A2E;font-weight:500;">'+msg+'</div><button onclick="this.closest(\'div\').style.opacity=0;setTimeout(()=>this.closest(\'div\').remove(),300)" style="background:none;border:none;cursor:pointer;color:#6B7280;font-size:16px;line-height:1;padding:0;margin-left:4px;">&times;</button>';
-            el.style.opacity = '1';
-            clearTimeout(el._tid);
-            el._tid = setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 4000);
-        }
-
-        async function saveHours(openKey, closeKey, openInputId, closeInputId, statusLabelRefresh) {
-            const openVal  = parseInt(document.getElementById(openInputId).value.split(':')[0]);
-            const closeVal = parseInt(document.getElementById(closeInputId).value.split(':')[0]);
-            if (isNaN(openVal) || isNaN(closeVal) || openVal >= closeVal) {
-                showHoursError('Invalid hours: opening time must be before closing time.'); return;
-            }
-
-            // Always save to localStorage immediately
-            _setStoredHours({ [openKey]: openVal, [closeKey]: closeVal });
-            statusLabelRefresh();
-            showToast('Hours saved.', 'success');
-
-            // Try Supabase as optional secondary sync
-            const syncEl = document.getElementById('ohSyncStatus');
-            try {
-                const { error } = await supabase.from('site_settings').upsert([
-                    { key: openKey,  value: String(openVal),  updated_at: new Date().toISOString() },
-                    { key: closeKey, value: String(closeVal), updated_at: new Date().toISOString() }
-                ], { onConflict: 'key' });
-                if (!error) {
-                    if (syncEl) syncEl.innerHTML = '<span style="color:#059669;">✔ Synced with Supabase</span>';
-                } else {
-                    if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Saved locally. Supabase sync unavailable.</span>';
-                }
-            } catch(e) {
-                if (syncEl) syncEl.innerHTML = '<span style="color:#64748b;">Saved locally. Supabase sync unavailable.</span>';
-            }
-        }
-
-        function saveEquipHours() {
-            const s = _getStoredHours();
-            saveHours('equipment_open_hour','equipment_close_hour','equipOpenTime','equipCloseTime', () => {
-                const eo = parseInt(document.getElementById('equipOpenTime').value.split(':')[0]);
-                const ec = parseInt(document.getElementById('equipCloseTime').value.split(':')[0]);
-                const fo = s.facility_open_hour  ?? 6;
-                const fc = s.facility_close_hour ?? 21;
-                updateStatusLabels(eo, ec, fo, fc);
-            });
-        }
-
-        function saveFacilityHours() {
-            const s = _getStoredHours();
-            saveHours('facility_open_hour','facility_close_hour','facilityOpenTime','facilityCloseTime', () => {
-                const eo = s.equipment_open_hour  ?? 8;
-                const ec = s.equipment_close_hour ?? 17;
-                const fo = parseInt(document.getElementById('facilityOpenTime').value.split(':')[0]);
-                const fc = parseInt(document.getElementById('facilityCloseTime').value.split(':')[0]);
-                updateStatusLabels(eo, ec, fo, fc);
-            });
-        }
-        // ────────────────────────────────────────────────────────────
     </script>
 </body>
 
