@@ -1142,6 +1142,21 @@
                                 <strong>Reminder:</strong> If you break the item or equipment, you will pay or replace it.
                             </div>
                         </div>
+                        <!-- Borrowing Rules Agreement -->
+                        <div id="borrowRulesSection" style="display:none;margin-top:4px;">
+                            <div style="border:1px solid #D1D5DB;border-radius:10px;overflow:hidden;">
+                                <div style="background:#1A3A6B;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+                                    <i class="bi bi-journal-text" style="color:#FDB913;font-size:13px;"></i>
+                                    <span style="font-size:13px;font-weight:700;color:#fff;">Borrowing Rules &amp; Policies</span>
+                                </div>
+                                <div id="borrowRulesListItems" style="padding:12px 14px;max-height:200px;overflow-y:auto;background:#F9FAFB;font-size:12px;color:#374151;line-height:1.6;"></div>
+                            </div>
+                            <label style="display:flex;align-items:flex-start;gap:10px;margin-top:10px;cursor:pointer;padding:11px 13px;background:#EEF2FF;border:1.5px solid #C7D2FE;border-radius:8px;">
+                                <input type="checkbox" id="borrowAgreeCheck" onchange="updateBorrowSubmitButton()" style="width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:#1A3A6B;">
+                                <span style="font-size:12px;font-weight:600;color:#1A1A2E;line-height:1.5;">I have read and agree to the <strong>Barangay Borrowing Rules and Policies</strong> listed above.</span>
+                            </label>
+                        </div>
+
                         <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;">
                             Submit Borrow Request
                         </button>
@@ -2402,6 +2417,8 @@
             document.getElementById('borrowModal').classList.add('hidden');
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
             currentBorrowPurpose = null;
+            const _agreeChk = document.getElementById('borrowAgreeCheck'); if (_agreeChk) _agreeChk.checked = false;
+            const _rulesSection = document.getElementById('borrowRulesSection'); if (_rulesSection) _rulesSection.style.display = 'none';
             const body = document.getElementById('borrowFormBody');
             if (body) body.style.display = 'none';
             const evBtn = document.getElementById('purposeBtnEvent');
@@ -2477,11 +2494,45 @@
             const deliveryPickup = document.getElementById('deliveryPickup');
             const deliveryDelivery = document.getElementById('deliveryDelivery');
             const deliveryMethodSelected = (deliveryPickup && deliveryPickup.checked) || (deliveryDelivery && deliveryDelivery.checked);
-            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected);
+            const rulesSection = document.getElementById('borrowRulesSection');
+            const agreeCheck = document.getElementById('borrowAgreeCheck');
+            const rulesVisible = rulesSection && rulesSection.style.display !== 'none';
+            const rulesAgreed = !rulesVisible || (agreeCheck && agreeCheck.checked);
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected && rulesAgreed);
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowerFullName')?.addEventListener('input', updateBorrowSubmitButton);
+
+        async function loadBorrowRulesForUser() {
+            let rules = [];
+            try {
+                const { data, error } = await supabase.from('site_settings').select('value').eq('key','borrowing_rules').single();
+                if (!error && data) {
+                    rules = JSON.parse(data.value || '[]');
+                    localStorage.setItem('brgy_borrowing_rules', JSON.stringify(rules));
+                } else {
+                    rules = JSON.parse(localStorage.getItem('brgy_borrowing_rules') || '[]');
+                }
+            } catch(e) {
+                rules = JSON.parse(localStorage.getItem('brgy_borrowing_rules') || '[]');
+            }
+            const section   = document.getElementById('borrowRulesSection');
+            const listEl    = document.getElementById('borrowRulesListItems');
+            const agreeChk  = document.getElementById('borrowAgreeCheck');
+            if (!section || !listEl) return;
+            if (!rules.length) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+            if (agreeChk) agreeChk.checked = false;
+            const _e = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            listEl.innerHTML = rules.map((r, i) =>
+                '<div style="margin-bottom:'+(i < rules.length-1 ? '10px' : '0')+';padding-bottom:'+(i < rules.length-1 ? '10px' : '0')+';border-bottom:'+(i < rules.length-1 ? '1px solid #E5E7EB' : 'none')+';">'
+                + '<div style="font-weight:700;color:#1A1A2E;margin-bottom:2px;">'+(i+1)+'. '+_e(r.title)+'</div>'
+                + '<div style="color:#6B7280;">'+_e(r.content)+'</div>'
+                + '</div>'
+            ).join('');
+            updateBorrowSubmitButton();
+        }
         document.getElementById('borrowerContact')?.addEventListener('input', updateBorrowSubmitButton);
 
         function updateBorrowDateDisplays() {
@@ -3333,6 +3384,7 @@
             renderExistingBookings();
             renderBorrowCalendar();
             updateBorrowLockState();
+            await loadBorrowRulesForUser();
             document.getElementById('borrowModal').classList.remove('hidden');
         }
 
