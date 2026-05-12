@@ -60,14 +60,16 @@
         [data-theme="dark"] #availableItemsForPurpose > div > div:first-child { color: #64748b !important; }
         [data-theme="dark"] .dashboard-header { background-color: #060e1a !important; border-color: #1e3a6b !important; box-shadow: none; }
         [data-theme="dark"] .sidebar { background-color: #060e1a !important; border-color: #1e3a6b !important; }
-        /* Two-column panels responsive */
+        /* Responsive equipment grid */
         @media (max-width: 900px) {
-            #panel-equipment > div[style*="display:flex"],
+            #equipmentGrid { grid-template-columns: repeat(2,1fr) !important; }
             #panel-concerns > div[style*="display:flex"],
             #panel-booking > div[style*="display:flex"] { flex-direction:column !important; }
-            #panel-equipment > div > div:last-child,
             #panel-concerns > div > div:last-child,
             #panel-booking > div > div:last-child { position:static !important; flex:1 1 100% !important; min-width:0 !important; }
+        }
+        @media (max-width: 560px) {
+            #equipmentGrid { grid-template-columns: repeat(1,1fr) !important; }
         }
         .equip-borrow-btn { opacity:1 !important; visibility:visible !important; }
         .badge-approved,.badge-resolved { display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#d1fae5;color:#065f46; }
@@ -660,63 +662,59 @@
 
             <!-- PANEL 2: EQUIPMENT -->
             <div id="panel-equipment" class="content-panel">
-                <div class="mb-8 border-b pb-6 flex justify-between items-end flex-wrap gap-4" style="border-color: var(--border-color);">
-                    <div>
-                        <h2 class="text-3xl font-extrabold text-slate-700 mb-2"><i class="bi bi-box-seam mr-2"></i>Equipment Borrowing</h2>
-                        <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
-                    </div>
+                <!-- Page header -->
+                <div class="mb-5 border-b pb-5" style="border-color:var(--border-color);">
+                    <h2 style="font-size:26px;font-weight:800;color:#0f1f3d;margin:0 0 4px 0;"><i class="bi bi-box-seam" style="margin-right:8px;"></i>Equipment Borrowing</h2>
+                    <p style="color:var(--text-muted);font-size:14px;margin:0;">Request to borrow barangay equipment for your activities.</p>
                 </div>
-                
 
-                <div style="display:flex;gap:20px;align-items:flex-start;">
-                    <!-- LEFT: Equipment Catalog -->
-                    <div style="flex:1 1 60%;min-width:0;">
-                        <div class="mb-5">
-                            <div style="position:relative;">
-                                <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;color:#6b7280;"><i class="bi bi-search"></i></span>
-                                <input
-                                    id="equipmentSearchInput"
-                                    type="text"
-                                    placeholder="Search equipment by name or category..."
-                                    oninput="filterEquipmentGrid()"
-                                    style="width:100%;padding:12px 16px 12px 44px;border:2px solid #e8edf5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(245,166,35,0.07);transition:border-color 0.2s;"
-                                    onfocus="this.style.borderColor='#0f1f3d'"
-                                    onblur="this.style.borderColor='#e8edf5'"
-                                >
-                            </div>
-                            <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
-                        </div>
-                        <div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;" id="equipmentGrid"></div></div>
+                <!-- TAB BUTTONS -->
+                <div style="display:flex;gap:10px;margin-bottom:20px;">
+                    <button id="tab-btn-catalog" onclick="switchEquipTab('catalog')"
+                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #f59e0b;background:#f59e0b;color:#1a1a1a;transition:all 0.2s;font-family:inherit;">
+                        <i class="bi bi-boxes"></i> Equipment
+                    </button>
+                    <button id="tab-btn-history" onclick="switchEquipTab('history')"
+                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #0f1f3d;background:transparent;color:#0f1f3d;transition:all 0.2s;font-family:inherit;">
+                        <i class="bi bi-card-list"></i> My Borrowing History
+                    </button>
+                </div>
+
+                <!-- TAB: Equipment Catalog -->
+                <div id="equip-tab-catalog">
+                    <div style="position:relative;margin-bottom:18px;">
+                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;color:#6b7280;"><i class="bi bi-search"></i></span>
+                        <input
+                            id="equipmentSearchInput"
+                            type="text"
+                            placeholder="Search equipment by name or category..."
+                            oninput="filterEquipmentGrid()"
+                            style="width:100%;padding:12px 16px 12px 44px;border:2px solid #e8edf5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(245,166,35,0.07);transition:border-color 0.2s;box-sizing:border-box;"
+                            onfocus="this.style.borderColor='#0f1f3d'"
+                            onblur="this.style.borderColor='#e8edf5'"
+                        >
                     </div>
-                    <!-- RIGHT: Borrowing History -->
-                    <div style="flex:0 0 38%;min-width:280px;position:sticky;top:20px;">
-                        <div class="glass-card overflow-hidden" style="max-height:calc(100vh - 130px);display:flex;flex-direction:column;">
-                            <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#0f1f3d,#1a3a6b);flex-shrink:0;">
-                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                    <div style="width:34px;height:34px;border-radius:10px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#f5a623;"><i class="bi bi-card-list"></i></div>
-                                    <div>
-                                        <div style="font-size:14px;font-weight:800;color:#fff;">My Borrowing History</div>
-                                        <div style="font-size:11px;color:rgba(245,166,35,0.8);">Track all your equipment requests</div>
-                                    </div>
-                                </div>
-                                <div style="position:relative;">
-                                    <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;color:rgba(255,255,255,0.5);"><i class="bi bi-search"></i></span>
-                                    <input
-                                        id="borrowingSearchInput"
-                                        type="text"
-                                        placeholder="Search borrowings..."
-                                        oninput="filterBorrowingsList()"
-                                        style="width:100%;padding:8px 12px 8px 32px;border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:rgba(255,255,255,0.08);color:#fff;box-sizing:border-box;transition:border-color 0.2s;"
-                                        onfocus="this.style.borderColor='#f5a623'"
-                                        onblur="this.style.borderColor='rgba(255,255,255,0.15)'"
-                                    >
-                                </div>
-                            </div>
-                            <div style="padding:14px;overflow-y:auto;flex:1;">
-                                <p id="borrowingSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No borrowing records match your search.</p>
-                                <div id="myBorrowingsList" style="display:flex;flex-direction:column;gap:10px;"><p style="color:#9ca3af;font-style:italic;font-size:13px;text-align:center;padding:20px 0;">No borrowing history yet.</p></div>
-                            </div>
-                        </div>
+                    <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" id="equipmentGrid"></div>
+                </div>
+
+                <!-- TAB: Borrowing History -->
+                <div id="equip-tab-history" style="display:none;">
+                    <div style="position:relative;margin-bottom:16px;">
+                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;color:#6b7280;"><i class="bi bi-search"></i></span>
+                        <input
+                            id="borrowingSearchInput"
+                            type="text"
+                            placeholder="Search your borrowing records..."
+                            oninput="filterBorrowingsList()"
+                            style="width:100%;padding:11px 16px 11px 42px;border:2px solid #e8edf5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(245,166,35,0.07);transition:border-color 0.2s;box-sizing:border-box;"
+                            onfocus="this.style.borderColor='#0f1f3d'"
+                            onblur="this.style.borderColor='#e8edf5'"
+                        >
+                    </div>
+                    <p id="borrowingSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No borrowing records match your search.</p>
+                    <div id="myBorrowingsList" style="display:flex;flex-direction:column;gap:12px;">
+                        <p style="color:#9ca3af;font-style:italic;font-size:13px;text-align:center;padding:40px 0;">No borrowing history yet.</p>
                     </div>
                 </div>
             </div>
@@ -1776,6 +1774,26 @@
         setInterval(updateDashboardClock, 30000);
 
         // Panel routing
+        // ---- Equipment tab switcher ----
+        function switchEquipTab(tab) {
+            const catalogPane = document.getElementById('equip-tab-catalog');
+            const historyPane = document.getElementById('equip-tab-history');
+            const btnCatalog  = document.getElementById('tab-btn-catalog');
+            const btnHistory  = document.getElementById('tab-btn-history');
+            if (!catalogPane || !historyPane) return;
+            if (tab === 'catalog') {
+                catalogPane.style.display = '';
+                historyPane.style.display = 'none';
+                btnCatalog.style.background = '#f59e0b'; btnCatalog.style.color = '#1a1a1a'; btnCatalog.style.borderColor = '#f59e0b';
+                btnHistory.style.background = 'transparent'; btnHistory.style.color = '#0f1f3d'; btnHistory.style.borderColor = '#0f1f3d';
+            } else {
+                catalogPane.style.display = 'none';
+                historyPane.style.display = '';
+                btnHistory.style.background = '#f59e0b'; btnHistory.style.color = '#1a1a1a'; btnHistory.style.borderColor = '#f59e0b';
+                btnCatalog.style.background = 'transparent'; btnCatalog.style.color = '#0f1f3d'; btnCatalog.style.borderColor = '#0f1f3d';
+                loadMyBorrowingsList();
+            }
+        }
         function showPanel(panelId) {
             document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
