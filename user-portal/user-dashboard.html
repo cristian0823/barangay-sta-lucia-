@@ -3697,45 +3697,63 @@
                 const hasEvent = eventDates[dateStr];
                 const dayDiv = document.createElement('div');
                 
-                // Base styles (inline, matching admin calendar palette)
-                dayDiv.style.cssText = 'padding:12px 4px;text-align:center;font-weight:700;font-size:13px;cursor:default;transition:all 0.15s;border-bottom:1px solid #F3F4F6;border-right:1px solid #F3F4F6;';
+                // Cell base — matches admin calendar style
+                dayDiv.style.cssText = 'min-height:64px;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 3px 4px;transition:all 0.15s;overflow:hidden;border:0.5px solid #e2e8f0;';
 
-                if (dateObj < today) {
-                    dayDiv.style.background = '#F3F4F6';
+                const isPast = dateObj < today;
+                const isToday = dateObj.getTime() === today.getTime();
+
+                if (isPast) {
+                    dayDiv.style.background = '#FAFAFA';
                     dayDiv.style.color = '#9CA3AF';
-                }
-                else if (hasEvent) {
-                    dayDiv.style.background = '#FEF3C7';
-                    dayDiv.style.color = '#92400E';
+                    dayDiv.style.cursor = 'default';
+                } else {
+                    dayDiv.style.background = '#fff';
+                    dayDiv.style.color = '#1A1A2E';
                     dayDiv.style.cursor = 'pointer';
-                    dayDiv.title = 'Brgy Event: ' + hasEvent.title + '. Click to view schedule & book available slots.';
-                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
-                }
-                else if (bookedDates.includes(dateStr)) {
-                    dayDiv.style.background = '#DBEAFE';
-                    dayDiv.style.color = '#1E40AF';
-                    dayDiv.style.cursor = 'pointer';
-                    dayDiv.title = 'Has Bookings. Click to see schedule.';
-                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
-                }
-                else {
-                    dayDiv.style.background = '#DCFCE7';
-                    dayDiv.style.color = '#166534';
-                    dayDiv.style.cursor = 'pointer';
-                    dayDiv.onclick = () => openDaySchedulePopup(dateStr);
+                    if (hasEvent) {
+                        dayDiv.title = 'Brgy Event: ' + hasEvent.title + '. Click to view schedule & book available slots.';
+                        dayDiv.onclick = () => openDaySchedulePopup(dateStr);
+                    } else if (bookedDates.includes(dateStr)) {
+                        dayDiv.title = 'Has Bookings. Click to see schedule.';
+                        dayDiv.onclick = () => openDaySchedulePopup(dateStr);
+                    } else {
+                        dayDiv.onclick = () => openDaySchedulePopup(dateStr);
+                    }
                 }
 
-                if (dateObj.getTime() === today.getTime() && !selectedDate) {
-                    dayDiv.style.outline = '2.5px solid #2563eb';
-                    dayDiv.style.outlineOffset = '2px';
+                if (isToday && !selectedDate) {
+                    dayDiv.style.outline = '3px solid #1A3A6B';
+                    dayDiv.style.outlineOffset = '-2px';
+                }
+                if (selectedDate === dateStr) {
+                    dayDiv.style.outline = '3px solid #F59E0B';
+                    dayDiv.style.outlineOffset = '-2px';
                 }
 
-                if (selectedDate === dateStr && !hasEvent) {
-                    dayDiv.style.background = '#1e3a5f';
-                    dayDiv.style.color = '#fff';
+                // Day number element
+                const numEl = document.createElement('div');
+                if (isToday && !selectedDate) {
+                    numEl.style.cssText = 'width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;';
+                } else {
+                    numEl.style.cssText = 'font-size:13px;font-weight:700;line-height:1;';
                 }
-                
-                dayDiv.textContent = day;
+                numEl.textContent = day;
+                dayDiv.appendChild(numEl);
+
+                // Indicator pills (event or booked)
+                if (!isPast && hasEvent) {
+                    const pill = document.createElement('div');
+                    pill.style.cssText = 'font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;margin-top:3px;background:#1A3A6B;color:#fff;';
+                    pill.textContent = hasEvent.title || 'Brgy Event';
+                    dayDiv.appendChild(pill);
+                } else if (!isPast && bookedDates.includes(dateStr)) {
+                    const pill = document.createElement('div');
+                    pill.style.cssText = 'font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;margin-top:3px;background:#1A3A6B;color:#fff;';
+                    pill.textContent = 'Booked';
+                    dayDiv.appendChild(pill);
+                }
+
                 grid.appendChild(dayDiv);
             }
             const myContainer = document.getElementById('myReservationsList');
