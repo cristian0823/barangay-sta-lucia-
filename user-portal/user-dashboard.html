@@ -452,12 +452,12 @@
                     <div class="absolute -top-2 right-[120px] md:right-[15px] w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45 dark:bg-slate-800 dark:border-slate-700 hidden md:block"></div>
                     <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 relative z-10 w-full" onclick="event.stopPropagation()">
                         <h3 class="font-bold text-gray-800 text-[15px] dark:text-gray-100">Notifications</h3>
-                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" class="text-xs text-slate-700 hover:underline font-semibold flex items-center gap-1"><span class="text-sm"><i class="bi bi-check-all"></i></span> Mark all read</button>
+                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" style="font-size:12px;color:#2563eb;background:none;border:none;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;font-family:inherit;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><i class="bi bi-check-all"></i> Mark all read</button>
                     </div>
                     <div id="bellDropdownList" class="max-h-[380px] overflow-y-auto flex flex-col relative z-10 w-full" onclick="event.stopPropagation()">
                         <p id="bellEmptyState" class="text-center text-sm text-gray-500 py-6 hidden dark:text-gray-400">No new notifications.</p>
                     </div>
-                    <div class="px-4 py-2 bg-gray-50 text-center border-t border-gray-100 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-100 dark:bg-slate-900/50 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-gray-400 transition relative z-10 w-full" onclick="showPanel('history'); document.getElementById('bellDropdownContainer').classList.add('hidden');">See all activity in history</div>
+                    <div style="padding:10px 16px;background:#eff6ff;text-align:center;border-top:1px solid #bfdbfe;font-size:12px;font-weight:600;color:#2563eb;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'" onclick="showPanel('history'); document.getElementById('bellDropdownContainer').classList.add('hidden');">See all activity in history &#8594;</div>
                 
     </header>
 
@@ -543,11 +543,11 @@
                         <div id="stat-bookings" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
                         <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Upcoming Reservations</div>
                     </div>
-                    <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);position:relative;overflow:hidden;">
+                    <div onclick="showPanel('history')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(30,58,95,0.13)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
                         <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1e3a5f;border-radius:16px 0 0 16px;"></div>
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                             <div style="width:40px;height:40px;background:rgba(30,58,95,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1e3a5f;"><i class="bi bi-clipboard2-data-fill"></i></div>
-                            <span style="font-size:10px;font-weight:700;color:#1e3a5f;background:rgba(30,58,95,0.08);padding:2px 8px;border-radius:20px;">ALL-TIME</span>
+                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
                         </div>
                         <div id="stat-totalreq" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
                         <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Total Requests</div>
@@ -642,11 +642,11 @@
                             <form id="concernForm" class="space-y-4">
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Title <span class="text-red-500">*</span></label>
-                                    <input type="text" id="concernTitle" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none" placeholder="e.g. Broken street light">
+                                    <input type="text" id="concernTitle" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-slate-500 transition-all outline-none" placeholder="e.g. Broken street light">
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Category <span class="text-red-500">*</span></label>
-                                    <select id="concernCategory" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all outline-none">
+                                    <select id="concernCategory" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all outline-none">
                                         <option value="" disabled selected>Select a category...</option>
                                         <option value="Road Issue"> Road Issue / Pothole</option>
                                         <option value="Electric"> Electric / Power Outage</option>
@@ -657,11 +657,11 @@
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Specific Location <span class="text-red-500">*</span></label>
-                                    <input type="text" id="concernLocation" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
+                                    <input type="text" id="concernLocation" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-slate-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Detailed Description <span class="text-red-500">*</span></label>
-                                    <textarea id="concernDescription" required rows="4" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
+                                    <textarea id="concernDescription" required rows="4" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-slate-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
                                 </div>
                                 <div class="space-y-1.5 p-4 bg-slate-50 text-slate-900 dark:bg-navy-900/20 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-200">
                                     <label class="block text-sm font-bold mb-1"><i class="bi bi-camera-fill mr-2"></i>Attach Photo <span class="text-red-500">*</span></label>
@@ -710,8 +710,8 @@
                     <!-- Venue selector row -->
                     <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
                         <div class="flex p-1.5 rounded-2xl gap-1" style="background-color:var(--input-bg);border:1px solid var(--border-color);box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);">
-                            <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95" style="background:#0f1f3d;"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
-                            <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color:var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
+                            <button onclick="switchVenue('basketball')" id="sel-basketball" style="padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#fff;background:#1e3a5f;border:none;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;"><i class="bi bi-dribbble"></i>Basketball Court</button>
+                            <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" style="padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#1e3a5f;background:#fff;border:1.5px solid #1e3a5f;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;"><i class="bi bi-building"></i>Multi-Purpose Hall</button>
                         </div>
                     </div>
                     <!-- Calendar -->
@@ -913,14 +913,14 @@
                 
                 <div class="glass-card p-6 min-h-[500px]">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                        <select id="historyFilter" onchange="currentPageHistory = 1; renderHistory()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-semibold shadow-sm w-full md:w-auto">
+                        <select id="historyFilter" onchange="currentPageHistory = 1; renderHistory()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold shadow-sm w-full md:w-auto">
                             <option value="all">All Activities</option>
                             <option value="borrowing">Borrowings</option>
                             <option value="concern">Concerns</option>
                             <option value="facility reservation">Facility Reservations</option>
                         </select>
-                        <button onclick="loadHistoryView()" class="px-5 py-2 w-full md:w-auto justify-center bg-gradient-to-r from-slate-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-slate-50 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
-                            &#128260; Refresh Log
+                        <button onclick="loadHistoryView()" style="padding:8px 20px;background:#1e3a5f;color:#fff;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:6px;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#1e3a5f'">
+                            <i class="bi bi-arrow-repeat"></i> Refresh Log
                         </button>
                     </div>
                     <div id="unifiedHistoryList" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
@@ -1148,8 +1148,8 @@
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]" style="max-height:90vh;">
 
             <!-- Header -->
-            <div class="bg-gradient-to-br from-slate-50 to-emerald-500 p-6 relative flex-shrink-0">
-                <button onclick="closeDayScheduleModal()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition"><i class="bi bi-x-lg"></i></button>
+            <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:24px;position:relative;flex-shrink:0;">
+                <button onclick="closeDayScheduleModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'"><i class="bi bi-x-lg"></i></button>
                 <div class="text-3xl mb-2">&#128197;</div>
                 <h3 id="dsModalDate" class="text-xl font-extrabold text-white mb-0.5">Select a Date</h3>
                 <p id="dsModalVenue" class="text-sm text-white/80 m-0"></p>
@@ -1170,8 +1170,8 @@
                 <!-- Add Booking Section -->
                 <div class="border-t border-gray-100 dark:border-gray-700 mt-4 pt-4">
                     <!-- Toggle Button -->
-                    <button id="dsToggleFormBtn" onclick="openDsBookingModal()" class="w-full py-3 bg-gradient-to-r from-slate-50 to-emerald-700 hover:from-slate-50 hover:to-emerald-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
-                        <span> Add Facility Reservation</span>
+                    <button id="dsToggleFormBtn" onclick="openDsBookingModal()" style="width:100%;padding:12px;background:#2563eb;color:#fff;font-weight:700;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                        <i class="bi bi-plus-circle-fill"></i><span>Add Facility Reservation</span>
                     </button>
                 </div>
             </div>
@@ -1181,8 +1181,8 @@
     <!-- ===== ADD COURT BOOKING MODAL ===== -->
     <div id="dsBookingModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]">
-            <div class="bg-gradient-to-br from-slate-50 to-emerald-500 p-6 relative flex-shrink-0">
-                <button onclick="closeDsBookingModal()" type="button" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition"></button>
+            <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:24px;position:relative;flex-shrink:0;">
+                <button onclick="closeDsBookingModal()" type="button" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#10005;</button>
                 <div class="text-3xl mb-2"></div>
                 <h3 class="text-xl font-extrabold text-white mb-0.5">Add Facility Reservation</h3>
                 <p class="text-sm text-white/80 m-0">Fill out details to reserve a slot</p>
@@ -1195,22 +1195,22 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Start Time</label>
-                            <select id="dsStartTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"></select>
+                            <select id="dsStartTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"></select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">End Time</label>
-                            <select id="dsEndTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"></select>
+                            <select id="dsEndTime" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"></select>
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Reserved By</label>
-                        <input type="text" id="dsName" required placeholder="Full Name" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-emerald-400">
+                        <input type="text" id="dsName" required placeholder="Full Name" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Purpose</label>
-                        <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-emerald-400">
+                        <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div class="mt-2 text-[10px] leading-relaxed text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-200 shadow-sm flex items-start gap-2 mb-3">
@@ -1220,8 +1220,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-slate-500 to-emerald-600 hover:from-slate-50 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
-                         Confirm Reservation
+                    <button type="submit" id="dsSubmitBtn" style="width:100%;padding:12px;background:#2563eb;color:#fff;font-weight:700;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                        <i class="bi bi-check-circle-fill" style="margin-right:6px;"></i> Confirm Reservation
                     </button>
                 </form>
             </div>
@@ -1287,7 +1287,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Quantity</label>
-                    <input type="number" id="editBorrowingQty" min="1" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" style="color: var(--text-main); background: var(--input-bg);">
+                    <input type="number" id="editBorrowingQty" min="1" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" style="color: var(--text-main); background: var(--input-bg);">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -1301,7 +1301,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1" style="color: var(--text-main);">Purpose</label>
-                    <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" rows="3" style="color: var(--text-main); background: var(--input-bg);"></textarea>
+                    <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" rows="3" style="color: var(--text-main); background: var(--input-bg);"></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" onclick="closeEditBorrowingModal()" style="padding:8px 18px;background:#ffffff;color:#1f2937;border:2px solid #d1d5db;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#f3f4f6';this.style.borderColor='#f5a623';this.style.color='#065f46'" onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1d5db';this.style.color='#1f2937'">Cancel</button>
@@ -2033,20 +2033,18 @@
                 
                 const timeStr = n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Just now';
 
+                let iconBg = '#f1f5f9', iconColor = '#64748b';
                 let iconHtml = '<i class="bi bi-bell-fill"></i>';
-                                if (n.type === 'booking_approved') iconHtml = '';
-                if (n.type === 'booking_rejected' || n.type === 'equipment_rejected') iconHtml = '&#10060;';
-                if (n.type === 'concern_resolved') iconHtml = '';
-                if (n.type === 'concern_in_progress') iconHtml = '&#128296;';
-                if (n.type === 'concern_rejected') iconHtml = '&#10060;';
-                if (n.type === 'equipment_approved') iconHtml = '&#128230;';
-                if (n.type === 'booking_cancelled' || n.type === 'event_conflict') iconHtml = '¸Â';
-                if (n.type === 'event_added') iconHtml = '&#128197;';
+                if (n.type === 'booking_approved' || n.type === 'equipment_approved' || n.type === 'concern_resolved') { iconHtml = '<i class="bi bi-check-circle-fill"></i>'; iconBg = '#dcfce7'; iconColor = '#16a34a'; }
+                else if (n.type === 'booking_rejected' || n.type === 'equipment_rejected' || n.type === 'concern_rejected') { iconHtml = '<i class="bi bi-x-circle-fill"></i>'; iconBg = '#fee2e2'; iconColor = '#dc2626'; }
+                else if (n.type === 'concern_in_progress') { iconHtml = '<i class="bi bi-arrow-repeat"></i>'; iconBg = '#dbeafe'; iconColor = '#2563eb'; }
+                else if (n.type === 'booking_cancelled' || n.type === 'event_conflict') { iconHtml = '<i class="bi bi-calendar-x-fill"></i>'; iconBg = '#fef3c7'; iconColor = '#d97706'; }
+                else if (n.type === 'event_added') { iconHtml = '<i class="bi bi-calendar-event-fill"></i>'; iconBg = '#dbeafe'; iconColor = '#2563eb'; }
 
                 const html = `
                     <div class="${containerCss}" onclick="handleBellClick('${n.id}')">
                         ${isUnread ? '<div class="absolute w-2 h-2 rounded-full bg-slate-500 top-4 right-4"></div>' : ''}
-                        <div class="text-xl bg-gray-100 dark:bg-slate-700 w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+                        <div style="width:38px;height:38px;border-radius:50%;background:${iconBg};display:flex;align-items:center;justify-content:center;font-size:18px;color:${iconColor};flex-shrink:0;">
                             ${iconHtml}
                         </div>
                         <div class="flex-1 min-w-0 pr-4 cursor-pointer">
@@ -3550,15 +3548,15 @@
         // ==========================================
         function switchVenue(venue) {
             selectedVenue = venue;
-            
-            const activeClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-navy-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95';
-            const inactiveClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800';
-
-            document.getElementById('sel-basketball').className = venue === 'basketball' ? activeClass : inactiveClass;
-            document.getElementById('sel-multipurpose').className = venue === 'multipurpose' ? activeClass : inactiveClass;
-            
-            document.getElementById('sel-basketball').style.color = venue === 'basketball' ? '' : 'var(--text-muted)';
-            document.getElementById('sel-multipurpose').style.color = venue === 'multipurpose' ? '' : 'var(--text-muted)';
+            const bball = document.getElementById('sel-basketball');
+            const multi = document.getElementById('sel-multipurpose');
+            if (venue === 'basketball') {
+                bball.style.cssText = 'padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#fff;background:#1e3a5f;border:none;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;';
+                multi.style.cssText = 'padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#1e3a5f;background:#fff;border:1.5px solid #1e3a5f;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;';
+            } else {
+                multi.style.cssText = 'padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#fff;background:#1e3a5f;border:none;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;';
+                bball.style.cssText = 'padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#1e3a5f;background:#fff;border:1.5px solid #1e3a5f;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;';
+            }
             // Update panel title dynamically
             const titleEl = document.getElementById('bookingPanelTitle');
             const subtitleEl = document.getElementById('bookingPanelSubtitle');
@@ -3662,7 +3660,7 @@
                 }
                 
                 if (dateObj.getTime() === today.getTime() && !selectedDate) { 
-                    dayDiv.className += ' ring-2 ring-emerald-500 ring-offset-2'; 
+                    dayDiv.style.outline = '2.5px solid #2563eb'; dayDiv.style.outlineOffset = '2px'; 
                 }
                 
                 if (selectedDate === dateStr && !hasEvent) { 

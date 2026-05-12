@@ -1101,26 +1101,26 @@
             <div id="secStatEventsToday" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
             <div style="font-size:12px;color:#6B7280;margin-top:4px;">security events</div>
         </div>
-        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #FDB913;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #2563eb;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                 <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Failed Attempts</span>
-                <div style="width:36px;height:36px;border-radius:50%;background:rgba(253,185,19,0.15);display:flex;align-items:center;justify-content:center;color:#D97706;"><i class="bi bi-key-fill"></i></div>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;color:#2563eb;"><i class="bi bi-key-fill"></i></div>
             </div>
             <div id="secStatFailed" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
             <div style="font-size:12px;color:#6B7280;margin-top:4px;">login failures today</div>
         </div>
-        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #CE1126;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #2563eb;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                 <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Anomalies Today</span>
-                <div style="width:36px;height:36px;border-radius:50%;background:rgba(206,17,38,0.1);display:flex;align-items:center;justify-content:center;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;color:#2563eb;"><i class="bi bi-exclamation-triangle-fill"></i></div>
             </div>
-            <div id="secStatAnomalies" style="font-size:32px;font-weight:700;color:#CE1126;line-height:1;">0</div>
+            <div id="secStatAnomalies" style="font-size:32px;font-weight:700;color:#1e3a5f;line-height:1;">0</div>
             <div style="font-size:12px;color:#6B7280;margin-top:4px;">requires review</div>
         </div>
-        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #16A34A;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <div style="background:#fff;border:1px solid #D1D5DB;border-top:4px solid #2563eb;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                 <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;">Total Records</span>
-                <div style="width:36px;height:36px;border-radius:50%;background:rgba(22,163,74,0.1);display:flex;align-items:center;justify-content:center;color:#16A34A;"><i class="bi bi-database-fill"></i></div>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;color:#2563eb;"><i class="bi bi-database-fill"></i></div>
             </div>
             <div id="secStatTotal" style="font-size:32px;font-weight:700;color:#1A1A2E;line-height:1;">0</div>
             <div style="font-size:12px;color:#6B7280;margin-top:4px;">total log entries</div>
@@ -1129,11 +1129,11 @@
 
     <!-- QUICK FILTER TABS (navy active) -->
     <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;margin-bottom:16px;flex-wrap:wrap;">
-        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding:6px 14px;border-radius:6px;border:none;background:#1A3A6B;color:#fff;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">Login Events</button>
-        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">All Events</button>
-        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Failed Only</button>
-        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Anomalies</button>
-        <button onclick="setSecQuickFilter('residents')" id="sqf_residents" style="padding:6px 14px;border-radius:6px;border:none;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Residents</button>
+        <button onclick="setSecQuickFilter('logins')" id="sqf_logins" style="padding:6px 14px;border-radius:6px;border:1.5px solid #2563eb;background:#2563eb;color:#fff;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">Login Events</button>
+        <button onclick="setSecQuickFilter('all')" id="sqf_all" style="padding:6px 14px;border-radius:6px;border:1.5px solid #e2e8f0;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">All Events</button>
+        <button onclick="setSecQuickFilter('failed')" id="sqf_failed" style="padding:6px 14px;border-radius:6px;border:1.5px solid #e2e8f0;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Failed Only</button>
+        <button onclick="setSecQuickFilter('anomaly')" id="sqf_anomaly" style="padding:6px 14px;border-radius:6px;border:1.5px solid #e2e8f0;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Anomalies</button>
+        <button onclick="setSecQuickFilter('residents')" id="sqf_residents" style="padding:6px 14px;border-radius:6px;border:1.5px solid #e2e8f0;background:transparent;color:#6B7280;font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;">Residents</button>
     </div>
 
     <!-- FILTER BAR -->
@@ -1158,7 +1158,7 @@
         </div>
         <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:8px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;">
-                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width:16px;height:16px;cursor:pointer;accent-color:#CE1126;"> Only Anomalies
+                <input type="checkbox" id="secFilterAnomaly" onchange="renderSecurityLog(true)" style="width:16px;height:16px;cursor:pointer;accent-color:#2563eb;"> Only Anomalies
             </label>
         </div>
         <div style="flex:1;min-width:130px;">
@@ -3033,13 +3033,15 @@
                     const btn = document.getElementById('sqf_' + t);
                     if (!btn) return;
                     if (t === type) {
-                        btn.style.background = '#1A3A6B';
+                        btn.style.background = '#2563eb';
                         btn.style.color = '#fff';
                         btn.style.fontWeight = '600';
+                        btn.style.border = '1.5px solid #2563eb';
                     } else {
                         btn.style.background = 'transparent';
                         btn.style.color = '#6B7280';
                         btn.style.fontWeight = '500';
+                        btn.style.border = '1.5px solid #e2e8f0';
                     }
                 });
                 renderSecurityLog();
