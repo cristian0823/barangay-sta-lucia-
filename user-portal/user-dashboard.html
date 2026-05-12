@@ -285,10 +285,14 @@
             .grid:not(.grid-cols-7):not(.grid-cols-2) { grid-template-columns: 1fr !important; }
             .user-stats-grid { grid-template-columns: 1fr !important; }
 
+            /* Dashboard metric & quick grids */
+            .dash-metric-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .dash-quick-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
             /* Status summary row */
             #panel-dashboard > div:last-child { grid-template-columns: 1fr !important; }
 
-            /* Quick action grid */
+            /* Quick action grid (legacy fallback) */
             #panel-dashboard > div:nth-child(3) { grid-template-columns: repeat(2, 1fr) !important; }
 
             /* Bottom Tab Nav */
@@ -480,133 +484,153 @@
             <div id="panel-dashboard" class="content-panel active">
 
                 <!-- Welcome Banner -->
-                <div style="background-image:linear-gradient(135deg, rgba(5,150,105,0.85), rgba(4,120,87,0.85)), url('brgy.png');background-size:cover;background-position:center;border-radius:20px;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;box-shadow:0 6px 24px rgba(5,150,105,0.22);position:relative;overflow:hidden;">
-                    <div style="position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:rgba(16,185,129,0.15);border-radius:50%;"></div>
-                    <div style="position:absolute;bottom:-40px;left:40%;width:220px;height:110px;background:radial-gradient(ellipse,rgba(20,184,166,0.15) 0%,transparent 70%);"></div>
+                <div style="background:linear-gradient(135deg,#0F2547 0%,#1A3A6B 60%,#1e4a8a 100%);border-radius:20px;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,37,71,0.28);position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:-40px;right:80px;width:200px;height:200px;background:rgba(253,185,19,0.07);border-radius:50%;pointer-events:none;"></div>
+                    <div style="position:absolute;bottom:-60px;right:-20px;width:240px;height:240px;background:rgba(255,255,255,0.04);border-radius:50%;pointer-events:none;"></div>
+                    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.06;border-radius:20px;pointer-events:none;"></div>
                     <div style="position:relative;z-index:1;">
-                        <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0;">Welcome back, <span id="welcomeName">Resident</span>! </h2>
+                        <div style="font-size:11px;font-weight:700;color:#FDB913;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;">Barangay Resident Portal</div>
+                        <h2 id="dashGreeting" style="font-size:24px;font-weight:800;color:#fff;margin:0 0 4px 0;">Good morning, <span id="welcomeName">Resident</span>!</h2>
+                        <div id="dashDate" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;"></div>
+                    </div>
+                    <div style="position:relative;z-index:1;text-align:right;">
+                        <div id="dashClock" style="font-size:34px;font-weight:800;color:#fff;letter-spacing:2px;font-variant-numeric:tabular-nums;line-height:1;">--:--</div>
+                        <div style="font-size:11px;color:#FDB913;font-weight:700;letter-spacing:1px;margin-top:4px;">LOCAL TIME</div>
                     </div>
                 </div>
 
-                <!-- Stats Grid (admin-style colored border cards) -->
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;" class="user-stats-grid">
-                    <div class="user-stat-card" onclick="showPanel('equipment')" style="border-left:4px solid var(--green-xl);">
-                        <div class="user-stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-check-fill"></i></div>
-                        <div>
-                            <div class="user-stat-label">Active Borrowings</div>
-                            <div class="user-stat-value" id="stat-equipment" style="color:var(--text);">0</div>
+                <!-- Metric Cards -->
+                <div class="dash-metric-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;">
+                    <div onclick="showPanel('equipment')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(26,58,107,0.13)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
+                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1A3A6B;border-radius:16px 0 0 16px;"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;background:rgba(26,58,107,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1A3A6B;"><i class="bi bi-box-seam-fill"></i></div>
+                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
                         </div>
+                        <div id="stat-equipment" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Active Borrowings</div>
                     </div>
-                    <div class="user-stat-card" onclick="showPanel('concerns')" style="border-left:4px solid var(--green-xl);">
-                        <div class="user-stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-box-fill"></i></div>
-                        <div>
-                            <div class="user-stat-label">Pending Concerns</div>
-                            <div class="user-stat-value" id="stat-concerns" style="color:var(--text);">0</div>
+                    <div onclick="showPanel('concerns')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(253,185,19,0.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
+                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#FDB913;border-radius:16px 0 0 16px;"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;background:rgba(253,185,19,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#d97706;"><i class="bi bi-megaphone-fill"></i></div>
+                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
                         </div>
+                        <div id="stat-concerns" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Pending Concerns</div>
                     </div>
-                    <div class="user-stat-card" onclick="showPanel('booking')" style="border-left:4px solid var(--green-xl);">
-                        <div class="user-stat-icon" style="background:var(--input-bg);border:1px solid var(--border); color:var(--green-xl); display:flex; align-items:center; justify-content:center; font-size:24px;"><i class="bi bi-calendar-event-fill"></i></div>
-                        <div>
-                            <div class="user-stat-label">Upcoming Reservations</div>
-                            <div class="user-stat-value" id="stat-bookings" style="color:var(--text);">0</div>
+                    <div onclick="showPanel('booking')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(5,150,105,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
+                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#059669;border-radius:16px 0 0 16px;"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;background:rgba(5,150,105,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#059669;"><i class="bi bi-calendar-check-fill"></i></div>
+                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
                         </div>
+                        <div id="stat-bookings" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Upcoming Reservations</div>
+                    </div>
+                    <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);position:relative;overflow:hidden;">
+                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#CE1126;border-radius:16px 0 0 16px;"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;background:rgba(206,17,38,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#CE1126;"><i class="bi bi-clipboard2-data-fill"></i></div>
+                            <span style="font-size:10px;font-weight:700;color:#CE1126;background:rgba(206,17,38,0.08);padding:2px 8px;border-radius:20px;">ALL-TIME</span>
+                        </div>
+                        <div id="stat-totalreq" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Total Requests</div>
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px;">
-                    <button onclick="showPanel('equipment')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-box-seam"></i></span>
-                        <div class="uqa-label">Borrow Equipment</div>
-                        <div class="uqa-sub">Request barangay items</div>
-                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
-                    </button>
-                    <button onclick="showPanel('concerns')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-chat-left-text-fill"></i></span>
-                        <div class="uqa-label">Report a Concern</div>
-                        <div class="uqa-sub">Submit issues or feedback</div>
-                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
-                    </button>
-                    <button onclick="showPanel('booking')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-calendar-check-fill"></i></span>
-                        <div class="uqa-label">Reserve the Court</div>
-                        <div class="uqa-sub">Reserve a time slot</div>
-                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
-                    </button>
-                    <button onclick="showPanel('events')" class="user-quick-card" style="--uqa-color:var(--green-xl);">
-                        <span class="uqa-icon" style="color:var(--green-xl);"><i class="bi bi-calendar-event-fill"></i></span>
-                        <div class="uqa-label">Upcoming Events</div>
-                        <div class="uqa-sub">Barangay activities</div>
-                        <span class="uqa-arrow"><i class="bi bi-arrow-right"></i></span>
-                    </button>
+                <!-- Quick Services -->
+                <div style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                        <div style="width:4px;height:20px;background:#FDB913;border-radius:2px;"></div>
+                        <div style="font-size:13px;font-weight:800;color:#0F2547;text-transform:uppercase;letter-spacing:0.8px;">Quick Services</div>
+                    </div>
+                    <div class="dash-quick-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+                        <button onclick="showPanel('equipment')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 16px;cursor:pointer;text-align:center;transition:all 0.25s;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.background='#1A3A6B';this.style.borderColor='#1A3A6B';this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 24px rgba(26,58,107,0.2)';this.querySelector('.dqs-icon').style.background='rgba(253,185,19,0.15)';this.querySelector('.dqs-icon').style.color='#FDB913';this.querySelector('.dqs-label').style.color='#fff';this.querySelector('.dqs-sub').style.color='rgba(255,255,255,0.65)';" onmouseout="this.style.background='#fff';this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';this.querySelector('.dqs-icon').style.background='rgba(26,58,107,0.08)';this.querySelector('.dqs-icon').style.color='#1A3A6B';this.querySelector('.dqs-label').style.color='#0F2547';this.querySelector('.dqs-sub').style.color='#64748b';">
+                            <div class="dqs-icon" style="width:48px;height:48px;background:rgba(26,58,107,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#1A3A6B;margin:0 auto 12px;transition:all 0.25s;"><i class="bi bi-box-seam-fill"></i></div>
+                            <div class="dqs-label" style="font-size:13px;font-weight:700;color:#0F2547;margin-bottom:4px;transition:color 0.25s;">Borrow Equipment</div>
+                            <div class="dqs-sub" style="font-size:11px;color:#64748b;transition:color 0.25s;">Request barangay items</div>
+                        </button>
+                        <button onclick="showPanel('concerns')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 16px;cursor:pointer;text-align:center;transition:all 0.25s;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.background='#1A3A6B';this.style.borderColor='#1A3A6B';this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 24px rgba(26,58,107,0.2)';this.querySelector('.dqs-icon').style.background='rgba(253,185,19,0.15)';this.querySelector('.dqs-icon').style.color='#FDB913';this.querySelector('.dqs-label').style.color='#fff';this.querySelector('.dqs-sub').style.color='rgba(255,255,255,0.65)';" onmouseout="this.style.background='#fff';this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';this.querySelector('.dqs-icon').style.background='rgba(26,58,107,0.08)';this.querySelector('.dqs-icon').style.color='#1A3A6B';this.querySelector('.dqs-label').style.color='#0F2547';this.querySelector('.dqs-sub').style.color='#64748b';">
+                            <div class="dqs-icon" style="width:48px;height:48px;background:rgba(26,58,107,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#1A3A6B;margin:0 auto 12px;transition:all 0.25s;"><i class="bi bi-chat-left-text-fill"></i></div>
+                            <div class="dqs-label" style="font-size:13px;font-weight:700;color:#0F2547;margin-bottom:4px;transition:color 0.25s;">Report a Concern</div>
+                            <div class="dqs-sub" style="font-size:11px;color:#64748b;transition:color 0.25s;">Submit issues or feedback</div>
+                        </button>
+                        <button onclick="showPanel('booking')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 16px;cursor:pointer;text-align:center;transition:all 0.25s;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.background='#1A3A6B';this.style.borderColor='#1A3A6B';this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 24px rgba(26,58,107,0.2)';this.querySelector('.dqs-icon').style.background='rgba(253,185,19,0.15)';this.querySelector('.dqs-icon').style.color='#FDB913';this.querySelector('.dqs-label').style.color='#fff';this.querySelector('.dqs-sub').style.color='rgba(255,255,255,0.65)';" onmouseout="this.style.background='#fff';this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';this.querySelector('.dqs-icon').style.background='rgba(26,58,107,0.08)';this.querySelector('.dqs-icon').style.color='#1A3A6B';this.querySelector('.dqs-label').style.color='#0F2547';this.querySelector('.dqs-sub').style.color='#64748b';">
+                            <div class="dqs-icon" style="width:48px;height:48px;background:rgba(26,58,107,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#1A3A6B;margin:0 auto 12px;transition:all 0.25s;"><i class="bi bi-calendar-check-fill"></i></div>
+                            <div class="dqs-label" style="font-size:13px;font-weight:700;color:#0F2547;margin-bottom:4px;transition:color 0.25s;">Reserve the Court</div>
+                            <div class="dqs-sub" style="font-size:11px;color:#64748b;transition:color 0.25s;">Reserve a time slot</div>
+                        </button>
+                        <button onclick="showPanel('events')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px 16px;cursor:pointer;text-align:center;transition:all 0.25s;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.background='#1A3A6B';this.style.borderColor='#1A3A6B';this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 24px rgba(26,58,107,0.2)';this.querySelector('.dqs-icon').style.background='rgba(253,185,19,0.15)';this.querySelector('.dqs-icon').style.color='#FDB913';this.querySelector('.dqs-label').style.color='#fff';this.querySelector('.dqs-sub').style.color='rgba(255,255,255,0.65)';" onmouseout="this.style.background='#fff';this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';this.querySelector('.dqs-icon').style.background='rgba(26,58,107,0.08)';this.querySelector('.dqs-icon').style.color='#1A3A6B';this.querySelector('.dqs-label').style.color='#0F2547';this.querySelector('.dqs-sub').style.color='#64748b';">
+                            <div class="dqs-icon" style="width:48px;height:48px;background:rgba(26,58,107,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#1A3A6B;margin:0 auto 12px;transition:all 0.25s;"><i class="bi bi-calendar-event-fill"></i></div>
+                            <div class="dqs-label" style="font-size:13px;font-weight:700;color:#0F2547;margin-bottom:4px;transition:color 0.25s;">Upcoming Events</div>
+                            <div class="dqs-sub" style="font-size:11px;color:#64748b;transition:color 0.25s;">Barangay activities</div>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Status Summary Row -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                    <!-- My Status Card -->
-                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-                            <div style="width:36px;height:36px;background:var(--input-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-bar-chart-fill" style="color:var(--green-xl);"></i></div>
+                    <!-- My Overview Card -->
+                    <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f1f5f9;">
+                            <div style="width:38px;height:38px;background:#1A3A6B;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#FDB913;"><i class="bi bi-bar-chart-fill"></i></div>
                             <div>
-                                <div style="font-size:14px;font-weight:700;color:var(--text-main);">My Overview</div>
-                                <div style="font-size:11px;color:var(--text-muted);">Your service activity</div>
+                                <div style="font-size:14px;font-weight:700;color:#0F2547;">My Overview</div>
+                                <div style="font-size:11px;color:#64748b;">Your service activity</div>
                             </div>
                         </div>
-                            <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('equipment')">
-                                <div class="px-4 py-3 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-box-seam" style="color:var(--green-xl);"></i></span>Active Borrowings</span>
-                                    <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:var(--text-main);"></span>
-                                </div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div onclick="showPanel('equipment')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(26,58,107,0.05)';this.style.borderColor='#1A3A6B';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
+                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1e293b;"><i class="bi bi-box-seam-fill" style="color:#1A3A6B;font-size:14px;"></i>Active Borrowings</span>
+                                <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(26,58,107,0.08);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
                             </div>
-                            <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('concerns')">
-                                <div class="px-4 py-3 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-megaphone-fill" style="color:var(--green-xl);"></i></span>Open Concerns</span>
-                                    <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:var(--text-main);"></span>
-                                </div>
+                            <div onclick="showPanel('concerns')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,185,19,0.05)';this.style.borderColor='#FDB913';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
+                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1e293b;"><i class="bi bi-megaphone-fill" style="color:#d97706;font-size:14px;"></i>Open Concerns</span>
+                                <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(253,185,19,0.12);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
                             </div>
-                            <div class="cursor-pointer transition-all duration-200 border rounded-xl" style="background:var(--input-bg); border-color:var(--border-color);" onclick="showPanel('booking')">
-                                <div class="px-4 py-3 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                                    <span style="font-size:13px;font-weight:600;color:var(--text-main);"><span class="mr-2"><i class="bi bi-calendar-check-fill" style="color:var(--green-xl);"></i></span>Upcoming Reservations</span>
-                                    <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:var(--text-main);"></span>
-                                </div>
+                            <div onclick="showPanel('booking')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(5,150,105,0.05)';this.style.borderColor='#059669';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
+                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1e293b;"><i class="bi bi-calendar-check-fill" style="color:#059669;font-size:14px;"></i>Upcoming Reservations</span>
+                                <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(5,150,105,0.1);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
                             </div>
+                        </div>
                     </div>
-                    <!-- Quick Info Card -->
-                    <div style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                    <!-- Barangay Services Card -->
+                    <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f1f5f9;">
                             <div style="display:flex;align-items:center;gap:10px;">
-                                <div style="width:36px;height:36px;background:var(--input-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-houses-fill" style="color:var(--green-xl);"></i></div>
+                                <div style="width:38px;height:38px;background:#1A3A6B;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#FDB913;"><i class="bi bi-houses-fill"></i></div>
                                 <div>
-                                    <div style="font-size:14px;font-weight:700;color:var(--text-main);">Barangay Services</div>
-                                    <div style="font-size:11px;color:var(--text-muted);">Available to residents</div>
+                                    <div style="font-size:14px;font-weight:700;color:#0F2547;">Barangay Services</div>
+                                    <div style="font-size:11px;color:#64748b;">Available to residents</div>
                                 </div>
                             </div>
-                            <span style="font-size:10px;background:var(--input-bg);color:#475569;padding:3px 10px;border-radius:50px;font-weight:700;border:1px solid var(--border);">ACTIVE</span>
+                            <span style="font-size:10px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:3px 10px;border-radius:20px;border:1px solid rgba(5,150,105,0.2);">ACTIVE</span>
                         </div>
-                        <div style="display:flex;flex-direction:column;gap:10px;">
-                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
-                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-box-seam" style="color:var(--green-xl);"></i></div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#1A3A6B;display:flex;align-items:center;justify-content:center;font-size:16px;color:#FDB913;flex-shrink:0;"><i class="bi bi-box-seam-fill"></i></div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Equipment Lending</div>
-                                    <div style="font-size:11px;color:var(--text-muted);">Chairs, tables & more</div>
+                                    <div style="font-size:13px;font-weight:700;color:#1e293b;">Equipment Lending</div>
+                                    <div style="font-size:11px;color:#64748b;">Chairs, tables &amp; more</div>
                                 </div>
-                                <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                                <span style="font-size:11px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:2px 9px;border-radius:20px;">Open</span>
                             </div>
-                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
-                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-dribbble" style="color:var(--green-xl);"></i></div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#1A3A6B;display:flex;align-items:center;justify-content:center;font-size:16px;color:#FDB913;flex-shrink:0;"><i class="bi bi-dribbble"></i></div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Facility Reservations</div>
-                                    <div style="font-size:11px;color:var(--text-muted);">Basketball & Multi-purpose</div>
+                                    <div style="font-size:13px;font-weight:700;color:#1e293b;">Facility Reservations</div>
+                                    <div style="font-size:11px;color:#64748b;">Basketball &amp; Multi-purpose</div>
                                 </div>
-                                <span style="font-size:11px;background:var(--input-bg);color:#475569;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                                <span style="font-size:11px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:2px 9px;border-radius:20px;">Open</span>
                             </div>
-                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border-color);">
-                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="bi bi-chat-left-text-fill" style="color:var(--green-xl);"></i></div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#1A3A6B;display:flex;align-items:center;justify-content:center;font-size:16px;color:#FDB913;flex-shrink:0;"><i class="bi bi-chat-left-text-fill"></i></div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:var(--text-main);">Citizen Concerns</div>
-                                    <div style="font-size:11px;color:var(--text-muted);">Report issues 24/7</div>
+                                    <div style="font-size:13px;font-weight:700;color:#1e293b;">Citizen Concerns</div>
+                                    <div style="font-size:11px;color:#64748b;">Report issues 24/7</div>
                                 </div>
-                                <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 9px;border-radius:20px;font-weight:700;">Open</span>
+                                <span style="font-size:11px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:2px 9px;border-radius:20px;">Open</span>
                             </div>
                         </div>
                     </div>
@@ -1809,12 +1833,41 @@
                 const booEl = document.getElementById('dash-statBookings');
                 if (booEl) booEl.textContent = upcomingCount;
 
+                // All-time total requests (borrowings + concerns + bookings)
+                const totalReq = (eqReqs ? eqReqs.length : 0) + (concerns ? concerns.length : 0) + (bookingsRaw ? bookingsRaw.filter(b => String(b.user_id) === resolvedStatUid || String(b.userId) === resolvedStatUid).length : 0);
+                const totEl = document.getElementById('stat-totalreq');
+                if (totEl) totEl.textContent = totalReq;
+
                 // Check for generic notifications (Facebook style)
                 await pollBellNotifications();
                 // Check for event conflict notifications
                 await checkConflictNotifications();
             } catch (e) { console.error("Error loading stats", e); }
         }
+
+        // ==========================================
+        // DASHBOARD CLOCK
+        // ==========================================
+        function _updateDashClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const clockEl = document.getElementById('dashClock');
+            if (clockEl) clockEl.textContent = `${h}:${m}:${s}`;
+            const dateEl = document.getElementById('dashDate');
+            if (dateEl) dateEl.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const greetEl = document.getElementById('dashGreeting');
+            if (greetEl) {
+                const hr = now.getHours();
+                const period = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+                const nameSpan = greetEl.querySelector('#welcomeName');
+                greetEl.childNodes[0].textContent = period + ', ';
+                if (!nameSpan) greetEl.textContent = period + ', Resident!';
+            }
+        }
+        _updateDashClock();
+        setInterval(_updateDashClock, 1000);
 
         // ==========================================
         // FACEBOOK-STYLE NOTIFICATION LOGIC
