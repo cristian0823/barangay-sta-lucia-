@@ -60,6 +60,20 @@
         [data-theme="dark"] #availableItemsForPurpose > div > div:first-child { color: #64748b !important; }
         [data-theme="dark"] .dashboard-header { background-color: #060e1a !important; border-color: #1e3a6b !important; box-shadow: none; }
         [data-theme="dark"] .sidebar { background-color: #060e1a !important; border-color: #1e3a6b !important; }
+        /* Two-column panels responsive */
+        @media (max-width: 900px) {
+            #panel-equipment > div[style*="display:flex"],
+            #panel-concerns > div[style*="display:flex"],
+            #panel-booking > div[style*="display:flex"] { flex-direction:column !important; }
+            #panel-equipment > div > div:last-child,
+            #panel-concerns > div > div:last-child,
+            #panel-booking > div > div:last-child { position:static !important; flex:1 1 100% !important; min-width:0 !important; }
+        }
+        .equip-borrow-btn { opacity:1 !important; visibility:visible !important; }
+        .badge-approved,.badge-resolved { display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#d1fae5;color:#065f46; }
+        .badge-pending  { display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#fef3c7;color:#92400e; }
+        .badge-rejected { display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#fee2e2;color:#991b1b; }
+        .badge-replied  { display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#dbeafe;color:#1e40af; }
         [data-theme="dark"] .nav-item { color: rgba(255,255,255,0.75); }
         [data-theme="dark"] .nav-item:hover { background-color: rgba(245,166,35,0.08); color: #f5a623; }
         [data-theme="dark"] .nav-item .nav-icon { background-color: rgba(245,166,35,0.08); color: #f5a623; }
@@ -461,23 +475,29 @@
                 <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(245,166,35,0.7);padding:0 8px;display:block;">Navigation</span>
             </div>
             <nav style="padding: 4px 10px; display:flex; flex-direction:column; gap:4px; flex:1;">
-                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left active" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-grid-1x2-fill"></i></div> Dashboard
+                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left active" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-grid-1x2-fill"></i></div>
+                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Dashboard</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Overview &amp; stats</div></div>
                 </button>
-                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-box-seam"></i></div> Equipment
+                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-box-seam"></i></div>
+                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Equipment</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Borrow barangay items</div></div>
                 </button>
-                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-megaphone-fill"></i></div> Concerns
+                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-megaphone-fill"></i></div>
+                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Concerns</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Report issues</div></div>
                 </button>
-                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Facility Reservation
+                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-calendar-check-fill"></i></div>
+                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Facility</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Reserve court &amp; hall</div></div>
                 </button>
-                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></div> Events
+                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-calendar-event-fill"></i></div>
+                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Events</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Upcoming activities</div></div>
                 </button>
-                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box"><i class="bi bi-clock-history"></i></div> My Activity
+                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
+                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-clock-history"></i></div>
+                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">My Activity</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">All your requests</div></div>
                 </button>
             </nav>
         </aside>
@@ -648,43 +668,56 @@
                 </div>
                 
 
-                <div class="mb-6">
-                    <div style="position:relative;">
-                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;"><i class="bi bi-search"></i></span>
-                        <input
-                            id="equipmentSearchInput"
-                            type="text"
-                            placeholder="Search equipment by name or category..."
-                            oninput="filterEquipmentGrid()"
-                            style="width:100%;padding:12px 16px 12px 44px;border:2px solid #e8edf5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(245,166,35,0.07);transition:border-color 0.2s;"
-                            onfocus="this.style.borderColor='#0f1f3d'"
-                            onblur="this.style.borderColor='#e8edf5'"
-                        >
-                    </div>
-                    <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
-                </div>
-                <div class="mb-8"><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;" id="equipmentGrid"></div></div>
-                <div class="glass-card p-6">
-                    <div class="flex items-center justify-between mb-4" style="gap:12px;flex-wrap:wrap;">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-xl"><i class="bi bi-card-list"></i></div>
-                            <div><h3 class="text-xl font-bold text-gray-800 dark:text-white">My Borrowing History</h3><p class="text-xs text-gray-500">Track all your equipment requests</p></div>
+                <div style="display:flex;gap:20px;align-items:flex-start;">
+                    <!-- LEFT: Equipment Catalog -->
+                    <div style="flex:1 1 60%;min-width:0;">
+                        <div class="mb-5">
+                            <div style="position:relative;">
+                                <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;color:#6b7280;"><i class="bi bi-search"></i></span>
+                                <input
+                                    id="equipmentSearchInput"
+                                    type="text"
+                                    placeholder="Search equipment by name or category..."
+                                    oninput="filterEquipmentGrid()"
+                                    style="width:100%;padding:12px 16px 12px 44px;border:2px solid #e8edf5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(245,166,35,0.07);transition:border-color 0.2s;"
+                                    onfocus="this.style.borderColor='#0f1f3d'"
+                                    onblur="this.style.borderColor='#e8edf5'"
+                                >
+                            </div>
+                            <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
                         </div>
-                        <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
-                            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;"><i class="bi bi-search"></i></span>
-                            <input
-                                id="borrowingSearchInput"
-                                type="text"
-                                placeholder="Search borrowings..."
-                                oninput="filterBorrowingsList()"
-                                style="width:100%;padding:9px 12px 9px 36px;border:2px solid #e8edf5;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#111;box-sizing:border-box;transition:border-color 0.2s;"
-                                onfocus="this.style.borderColor='#0f1f3d'"
-                                onblur="this.style.borderColor='#e8edf5'"
-                            >
+                        <div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;" id="equipmentGrid"></div></div>
+                    </div>
+                    <!-- RIGHT: Borrowing History -->
+                    <div style="flex:0 0 38%;min-width:280px;position:sticky;top:20px;">
+                        <div class="glass-card overflow-hidden" style="max-height:calc(100vh - 130px);display:flex;flex-direction:column;">
+                            <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#0f1f3d,#1a3a6b);flex-shrink:0;">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                                    <div style="width:34px;height:34px;border-radius:10px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;color:#f5a623;"><i class="bi bi-card-list"></i></div>
+                                    <div>
+                                        <div style="font-size:14px;font-weight:800;color:#fff;">My Borrowing History</div>
+                                        <div style="font-size:11px;color:rgba(245,166,35,0.8);">Track all your equipment requests</div>
+                                    </div>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;color:rgba(255,255,255,0.5);"><i class="bi bi-search"></i></span>
+                                    <input
+                                        id="borrowingSearchInput"
+                                        type="text"
+                                        placeholder="Search borrowings..."
+                                        oninput="filterBorrowingsList()"
+                                        style="width:100%;padding:8px 12px 8px 32px;border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:rgba(255,255,255,0.08);color:#fff;box-sizing:border-box;transition:border-color 0.2s;"
+                                        onfocus="this.style.borderColor='#f5a623'"
+                                        onblur="this.style.borderColor='rgba(255,255,255,0.15)'"
+                                    >
+                                </div>
+                            </div>
+                            <div style="padding:14px;overflow-y:auto;flex:1;">
+                                <p id="borrowingSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No borrowing records match your search.</p>
+                                <div id="myBorrowingsList" style="display:flex;flex-direction:column;gap:10px;"><p style="color:#9ca3af;font-style:italic;font-size:13px;text-align:center;padding:20px 0;">No borrowing history yet.</p></div>
+                            </div>
                         </div>
                     </div>
-                    <p id="borrowingSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No borrowing records match your search.</p>
-                    <div id="myBorrowingsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"><p class="text-gray-500 italic col-span-full">No borrowing history yet.</p></div>
                 </div>
             </div>
 
@@ -695,13 +728,13 @@
                     <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
                 </div>
                 
-                <div class="flex flex-col gap-8 items-stretch">
-                    
-                    <!-- Form Secton -->
-                    <div class="w-full glass-card overflow-hidden">
-                        <div class="bg-gradient-to-r from-slate-50 to-emerald-700 p-5 border-b" style="border-color: var(--border-color);">
-                            <h3 class="text-base font-extrabold text-white"><i class="bi bi-pencil-square mr-2"></i>New Report</h3>
-                            <p class="text-xs text-slate-100 mt-0.5">Please provide details about your concern.</p>
+                <div style="display:flex;gap:20px;align-items:flex-start;">
+                    <!-- LEFT: Submit Form -->
+                    <div style="flex:1 1 55%;min-width:0;">
+                    <div class="glass-card overflow-hidden">
+                        <div style="background:linear-gradient(135deg,#0f1f3d,#1a3a6b);padding:16px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-size:14px;font-weight:800;color:#fff;"><i class="bi bi-pencil-square mr-2"></i>New Report</h3>
+                            <p style="font-size:11px;color:rgba(245,166,35,0.9);margin-top:2px;">Please provide details about your concern.</p>
                         </div>
                         <div class="p-5">
                             <form id="concernForm" class="space-y-4">
@@ -738,25 +771,33 @@
                                     <input type="file" id="concernImage" required accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white dark:file:bg-gray-800 file:text-slate-700 dark:file:text-slate-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
                                 </div>
                                 
-                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl text-white bg-navy-600 hover:bg-amber-500 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none">
-                                    Submit Report <i class="bi bi-arrow-right"></i>
+                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none" style="background:#f59e0b;color:#1a1a1a;">
+                                    <i class="bi bi-send-fill mr-2"></i>Submit Report
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    <!-- History Section -->
-                    <div class="w-full glass-card overflow-hidden">
-                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(245,166,35,0.05), transparent);">
-                            <h3 class="text-base font-bold" style="color: var(--text-main);"><i class="bi bi-card-list"></i> Report History</h3>
-                            <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
-                        </div>
-                        <div class="p-6">
-                            <div id="myConcernsList" class="flex flex-col gap-4"></div>
-                            <div id="concernsPaginationRow"></div>
+                    </div><!-- end form card -->
+                    </div><!-- end left col -->
+                    <!-- RIGHT: Report History -->
+                    <div style="flex:0 0 43%;min-width:260px;position:sticky;top:20px;">
+                        <div class="glass-card overflow-hidden" style="max-height:calc(100vh - 130px);display:flex;flex-direction:column;">
+                            <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#0f1f3d,#1a3a6b);flex-shrink:0;">
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div style="width:32px;height:32px;border-radius:10px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:15px;color:#f5a623;"><i class="bi bi-card-list"></i></div>
+                                    <div>
+                                        <div style="font-size:14px;font-weight:800;color:#fff;">Report History</div>
+                                        <div style="font-size:11px;color:rgba(245,166,35,0.8);">Status updates on your concerns</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding:14px;overflow-y:auto;flex:1;">
+                                <div id="myConcernsList" class="flex flex-col gap-4"></div>
+                                <div id="concernsPaginationRow"></div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -768,14 +809,17 @@
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-navy-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95" style="background:#0f1f3d;"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
                         <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
                     </div>
                 </div>
 
 
 
-                <div class="glass-card p-6 mb-8">
+                <div style="display:flex;gap:20px;align-items:flex-start;">
+                <!-- LEFT: Calendar -->
+                <div style="flex:1 1 58%;min-width:0;">
+                <div class="glass-card p-6 mb-5">
                     <div class="flex justify-between items-center mb-6">
                         <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
                         <div class="flex gap-2">
@@ -801,15 +845,25 @@
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
                     </div>
                 </div>
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-5 border-b" style="border-color: var(--border-color);">
-                        <h3 class="text-base font-bold" style="color: var(--text-main);"><i class="bi bi-card-list"></i> My Active Reservations</h3>
-                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Track and manage your upcoming facility reservations.</p>
-                    </div>
-                    <div class="p-6">
-                        <div id="myReservationsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"></div>
+                </div><!-- end left col -->
+                <!-- RIGHT: Reservation History -->
+                <div style="flex:0 0 40%;min-width:260px;position:sticky;top:20px;">
+                    <div class="glass-card overflow-hidden" style="max-height:calc(100vh - 130px);display:flex;flex-direction:column;">
+                        <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#0f1f3d,#1a3a6b);flex-shrink:0;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:32px;height:32px;border-radius:10px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:15px;color:#f5a623;"><i class="bi bi-calendar-check-fill"></i></div>
+                                <div>
+                                    <div style="font-size:14px;font-weight:800;color:#fff;">My Reservations</div>
+                                    <div style="font-size:11px;color:rgba(245,166,35,0.8);">Your active &amp; past bookings</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:14px;overflow-y:auto;flex:1;">
+                            <div id="myReservationsList" style="display:flex;flex-direction:column;gap:10px;"></div>
+                        </div>
                     </div>
                 </div>
+                </div><!-- end 2col -->
 
             </div>
 
@@ -2277,7 +2331,7 @@
                 } else if (ok) {
                     actionBtn = `
                         <div class="equip-borrow-btn-container" data-id="${item.id}">
-                            <button onclick="openBorrowModalWithEquip(${item.id})" class="equip-borrow-btn w-full py-3 bg-navy-600 hover:bg-amber-500 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>
+                            <button onclick="openBorrowModalWithEquip(${item.id})" class="equip-borrow-btn w-full py-3 text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2" style="background:#f59e0b;color:#1a1a1a;"><i class="bi bi-pencil-square"></i> Request to Borrow</button>
                             <button disabled class="equip-closed-msg hidden w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm cursor-not-allowed flex flex-col justify-center items-center gap-0.5">
                                 <div class="text-[13px] text-gray-700 dark:text-gray-200 flex items-center gap-1.5"><i class="bi bi-clock-fill"></i> Borrowing Closed</div>
                                 <div class="text-[11px] font-medium text-gray-500 dark:text-gray-400">Opens <span class="eq-open-txt"></span> to <span class="eq-close-txt"></span></div>
