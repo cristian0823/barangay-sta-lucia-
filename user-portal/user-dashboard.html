@@ -32,40 +32,40 @@
     })();
     </script>
     <!-- ¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬ -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+Pro:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script><script>tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }</script>
     <style>
         :root {
-            --bg-color: #f0fdf4; --sidebar-bg: #ffffff; --text-main: #1f2937;
-            --text-muted: #6b7280; --panel-bg: #ffffff; --border-color: #e5e7eb;
-            --primary: #10b981; --primary-hover: #059669; --nav-hover-bg: #ecfdf5;
-            --nav-active-bg: linear-gradient(135deg, #10b981, #059669); --nav-active-text: #ffffff;
-            --input-bg: #f9fafb; --input-border: #d1fae5; --input-focus: #059669;
-            --green-xl: #047857;
+            --bg-color: #f4f6f9; --sidebar-bg: #0f1f3d; --text-main: #1a2540;
+            --text-muted: #6b7280; --panel-bg: #ffffff; --border-color: #e2e8f0;
+            --primary: #f5a623; --primary-hover: #e09610; --nav-hover-bg: rgba(245,166,35,0.08);
+            --nav-active-bg: rgba(245,166,35,0.15); --nav-active-text: #f5a623;
+            --input-bg: #f8fafc; --input-border: #e2e8f0; --input-focus: #0f1f3d;
+            --green-xl: #f5a623;
         }
         [data-theme="dark"] {
-            --bg-color: #0f172a; --sidebar-bg: #1e293b; --text-main: #f1f5f9;
-            --text-muted: #94a3b8; --panel-bg: #1e293b; --border-color: #334155;
-            --primary: #10b981; --nav-hover-bg: #334155;
-            --nav-active-bg: linear-gradient(135deg, #059669, #047857); --nav-active-text: #ffffff;
-            --input-bg: #0f172a; --input-border: #334155; --input-focus: #10b981;
-            --green-xl: #34d399;
+            --bg-color: #0a1628; --sidebar-bg: #060e1a; --text-main: #f1f5f9;
+            --text-muted: #94a3b8; --panel-bg: #0f1f3d; --border-color: #1e3a6b;
+            --primary: #f5a623; --nav-hover-bg: rgba(245,166,35,0.1);
+            --nav-active-bg: rgba(245,166,35,0.2); --nav-active-text: #f5a623;
+            --input-bg: #0a1628; --input-border: #1e3a6b; --input-focus: #f5a623;
+            --green-xl: #f5a623;
         }
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
-        [data-theme="dark"] #purposeSelectorPanel { background: #0f172a; border-bottom: 1px solid #1e293b; }
+        [data-theme="dark"] #purposeSelectorPanel { background: #0a1628; border-bottom: 1px solid #0f1f3d; }
         [data-theme="dark"] #purposeSelectorPanel > div:first-child { color: #94a3b8 !important; }
-        [data-theme="dark"] #borrowDurationRules > div { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
+        [data-theme="dark"] #borrowDurationRules > div { background: #0f1f3d !important; border-color: #1e3a6b !important; color: #94a3b8 !important; }
         [data-theme="dark"] #availableItemsForPurpose > div > div:first-child { color: #64748b !important; }
-        [data-theme="dark"] .dashboard-header { background-color: #1e293b; border-color: #334155; box-shadow: none; }
-        [data-theme="dark"] .sidebar { background-color: #1e293b; border-color: #334155; }
-        [data-theme="dark"] .nav-item { color: #cbd5e1; }
-        [data-theme="dark"] .nav-item:hover { background-color: #334155; color: #e2e8f0; }
-        [data-theme="dark"] .nav-item .nav-icon { background-color: #0f172a; color: #10b981; }
-        [data-theme="dark"] .nav-item:hover .nav-icon { background-color: #1e3a5f; }
-        .nav-item.active { background: var(--nav-active-bg) !important; color: var(--nav-active-text) !important; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .nav-item.active .nav-icon { background: rgba(255,255,255,0.2) !important; color: white !important; }
+        [data-theme="dark"] .dashboard-header { background-color: #060e1a !important; border-color: #1e3a6b !important; box-shadow: none; }
+        [data-theme="dark"] .sidebar { background-color: #060e1a !important; border-color: #1e3a6b !important; }
+        [data-theme="dark"] .nav-item { color: rgba(255,255,255,0.75); }
+        [data-theme="dark"] .nav-item:hover { background-color: rgba(245,166,35,0.08); color: #f5a623; }
+        [data-theme="dark"] .nav-item .nav-icon { background-color: rgba(245,166,35,0.08); color: #f5a623; }
+        [data-theme="dark"] .nav-item:hover .nav-icon { background-color: rgba(245,166,35,0.15); }
+        .nav-item.active { background: var(--nav-active-bg) !important; color: var(--nav-active-text) !important; border-left: 3px solid #f5a623 !important; box-shadow: none; }
+        .nav-item.active .nav-icon { background: rgba(245,166,35,0.15) !important; color: #f5a623 !important; }
         .content-panel { display: none !important; animation: fadeIn 0.3s ease; }
         .content-panel.active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -143,10 +143,10 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 3px;
-            background: var(--uqa-color, #10b981);
+            background: var(--uqa-color, #f5a623);
         }
         .user-quick-card:hover {
-            border-color: var(--uqa-color, #10b981);
+            border-color: var(--uqa-color, #f5a623);
             transform: translateY(-3px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
         }
@@ -154,7 +154,7 @@
         .uqa-label { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
         .uqa-sub { font-size: 12px; color: var(--text-muted); }
         .uqa-arrow {
-            font-size: 20px; color: var(--uqa-color, #10b981);
+            font-size: 20px; color: var(--uqa-color, #f5a623);
             position: absolute; bottom: 12px; right: 12px;
             transition: transform 0.2s; display: block;
         }
@@ -164,76 +164,72 @@
         .nav-item .nav-icon-box {
             width: 38px; height: 38px;
             border-radius: 12px;
-            background: #f0fdf4;
-            border: 1.5px solid #bbf7d0;
+            background: rgba(245,166,35,0.08);
+            border: 1.5px solid rgba(245,166,35,0.2);
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; flex-shrink: 0;
             transition: all 0.2s ease;
         }
         [data-theme="dark"] .nav-item .nav-icon-box {
-            background: #1e293b; border-color: #334155;
+            background: rgba(245,166,35,0.1); border-color: rgba(245,166,35,0.25);
         }
-        .nav-item:hover .nav-icon-box { background: #dcfce7; border-color: #86efac; }
-        [data-theme="dark"] .nav-item:hover .nav-icon-box { background: #334155; border-color: #475569; }
-        .nav-item.active .nav-icon-box { background: rgba(255,255,255,0.25) !important; border-color: rgba(255,255,255,0.3) !important; }
+        .nav-item:hover .nav-icon-box { background: rgba(245,166,35,0.15); border-color: rgba(245,166,35,0.4); }
+        [data-theme="dark"] .nav-item:hover .nav-icon-box { background: rgba(245,166,35,0.2); border-color: rgba(245,166,35,0.4); }
+        .nav-item.active .nav-icon-box { background: rgba(245,166,35,0.2) !important; border-color: rgba(245,166,35,0.5) !important; color: #f5a623 !important; }
         /* Professional field styling */
         .form-field { display: flex; flex-direction: column; gap: 6px; }
         .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
         .form-input { width: 100%; padding: 11px 14px; background: var(--input-bg); border: 1.5px solid var(--input-border); border-radius: 12px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text-main); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-        .form-input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+        .form-input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(245,166,35,0.2); }
         .form-textarea { resize: none; min-height: 100px; }
         /* Section headers */
         .panel-header { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
         .panel-subheader { font-size: 14px; color: var(--text-muted); }
-        [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
-        [data-theme="dark"] .bg-white { background-color: #1e293b !important; }
+        [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: #0a1628 !important; color: #f1f5f9 !important; border-color: #1e3a6b !important; }
+        [data-theme="dark"] .bg-white { background-color: #0f1f3d !important; }
         [data-theme="dark"] .text-gray-800 { color: #f1f5f9 !important; }
         [data-theme="dark"] .text-gray-600 { color: #cbd5e1 !important; }
-        [data-theme="dark"] .bg-gray-50 { background-color: #0f172a !important; }
+        [data-theme="dark"] .bg-gray-50 { background-color: #0a1628 !important; }
 
-        /* ¢â€â‚¬ EXTRA DARK MODE FIXES (hardcoded inline style overrides) ¢â€â‚¬ */
-        /* Dashboard header */
-        [data-theme="dark"] .dashboard-header { background-color: #1e293b !important; border-color: #334155 !important; }
-        /* User stat cards */
-        [data-theme="dark"] .user-stat-card { background: #1e293b !important; }
+        /* — EXTRA DARK MODE FIXES — */
+        [data-theme="dark"] .user-stat-card { background: #0f1f3d !important; border-color: #1e3a6b !important; }
         [data-theme="dark"] .user-stat-label { color: #94a3b8 !important; }
-        /* Quick action cards */
-        [data-theme="dark"] .user-quick-card { background: #1e293b !important; border-color: #334155 !important; }
+        [data-theme="dark"] .user-quick-card { background: #0f1f3d !important; border-color: #1e3a6b !important; }
         /* Glass cards */
-        [data-theme="dark"] .glass-card { border-color: #334155 !important; }
+        [data-theme="dark"] .glass-card { border-color: #1e3a6b !important; }
         /* Text on glass cards */
         [data-theme="dark"] .glass-card h3,
         [data-theme="dark"] .glass-card .text-gray-800 { color: #f1f5f9 !important; }
         [data-theme="dark"] .glass-card .text-gray-500,
         [data-theme="dark"] .glass-card p { color: #94a3b8 !important; }
         /* Bottom tab nav */
-        [data-theme="dark"] .bottom-tab-nav { background: #1e293b !important; border-top-color: #334155 !important; }
+        [data-theme="dark"] .bottom-tab-nav { background: #0f1f3d !important; border-top-color: #1e3a6b !important; }
         /* Tailwind text color overrides */
         [data-theme="dark"] .text-gray-900 { color: #f1f5f9 !important; }
         [data-theme="dark"] .text-gray-700 { color: #cbd5e1 !important; }
         [data-theme="dark"] .text-gray-500 { color: #94a3b8 !important; }
         [data-theme="dark"] .text-gray-400 { color: #64748b !important; }
-        [data-theme="dark"] .bg-gray-100 { background-color: #1e293b !important; }
-        [data-theme="dark"] .border-gray-200 { border-color: #334155 !important; }
+        [data-theme="dark"] .bg-gray-100 { background-color: #0f1f3d !important; }
+        [data-theme="dark"] .border-gray-200 { border-color: #1e3a6b !important; }
         [data-theme="dark"] .border-gray-300 { border-color: #475569 !important; }
-        [data-theme="dark"] .divide-gray-100 > * + * { border-color: #334155 !important; }
+        [data-theme="dark"] .divide-gray-100 > * + * { border-color: #1e3a6b !important; }
         /* Modal in dark mode */
         [data-theme="dark"] .modal-content,
-        [data-theme="dark"] [class*="modal"] { background: #1e293b !important; border-color: #334155 !important; }
+        [data-theme="dark"] [class*="modal"] { background: #0f1f3d !important; border-color: #1e3a6b !important; }
         /* Notification bell dropdown */
-        [data-theme="dark"] #bellDropdownContainer { background: #1e293b !important; border-color: #334155 !important; }
+        [data-theme="dark"] #bellDropdownContainer { background: #0f1f3d !important; border-color: #1e3a6b !important; }
         [data-theme="dark"] #bellDropdownContainer h3 { color: #f1f5f9 !important; }
         /* Override inline white button backgrounds in modals */
         [data-theme="dark"] button[style*="background:#ffffff"],
         [data-theme="dark"] button[style*="background: #ffffff"] {
-            background: #334155 !important;
+            background: #1e3a6b !important;
             color: #e2e8f0 !important;
             border-color: #475569 !important;
         }
         /* Status badges */
-        [data-theme="dark"] .text-emerald-800 { color: #34d399 !important; }
-        [data-theme="dark"] .bg-emerald-50 { background-color: rgba(16,185,129,0.08) !important; }
-        [data-theme="dark"] .border-emerald-200 { border-color: rgba(16,185,129,0.25) !important; }
+        [data-theme="dark"] .text-slate-800 { color: #f5a623 !important; }
+        [data-theme="dark"] .bg-slate-50 { background-color: rgba(245,166,35,0.08) !important; }
+        [data-theme="dark"] .border-slate-200 { border-color: rgba(245,166,35,0.25) !important; }
 
         /* ¢â€â‚¬ MOBILE HEADER CONTROLS ¢â€â‚¬ */
         .mobile-header-controls {
@@ -261,7 +257,7 @@
         .mobile-header-avatar {
             width: 36px; height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #f5a623, #0f1f3d);
             color: #fff;
             display: flex; align-items: center; justify-content: center;
             font-weight: 800; font-size: 14px;
@@ -328,37 +324,37 @@
         /* ¢â€â‚¬ Equipment icon boxes (matches admin inventory) ¢â€â‚¬ */
         .eq-icon { width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .eq-Chairs    { background: #eff6ff; border-color: #bfdbfe; }
-        .eq-Tables    { background: #f0fdf4; border-color: #6ee7b7; }
+        .eq-Tables    { background: #f4f6f9; border-color: #f5a623; }
         .eq-Tents     { background: #fdf4ff; border-color: #e9d5ff; }
         .eq-Ladder    { background: #fff7ed; border-color: #fed7aa; }
         .eq-Microphone{ background: #fef2f2; border-color: #fca5a5; }
         .eq-Speaker   { background: #faf5ff; border-color: #c4b5fd; }
         .eq-Fan       { background: #eff6ff; border-color: #bfdbfe; }
-        .eq-Default   { background: #f0fdf4; border-color: #bbf7d0; }
+        .eq-Default   { background: #f4f6f9; border-color: #dce5f5; }
         [data-theme="dark"] .eq-Chairs     { background: rgba(59,130,246,0.12) !important; border-color: rgba(59,130,246,0.25) !important; }
-        [data-theme="dark"] .eq-Tables     { background: rgba(16,185,129,0.12) !important; border-color: rgba(16,185,129,0.25) !important; }
+        [data-theme="dark"] .eq-Tables     { background: rgba(245,166,35,0.12) !important; border-color: rgba(245,166,35,0.25) !important; }
         [data-theme="dark"] .eq-Tents      { background: rgba(217,70,239,0.12) !important;  border-color: rgba(217,70,239,0.25) !important;  }
         [data-theme="dark"] .eq-Ladder     { background: rgba(245,158,11,0.12) !important;  border-color: rgba(245,158,11,0.25) !important;  }
         [data-theme="dark"] .eq-Microphone { background: rgba(239,68,68,0.12) !important;   border-color: rgba(239,68,68,0.25) !important;   }
         [data-theme="dark"] .eq-Speaker    { background: rgba(139,92,246,0.12) !important;  border-color: rgba(139,92,246,0.25) !important;  }
         [data-theme="dark"] .eq-Fan        { background: rgba(59,130,246,0.12) !important;  border-color: rgba(59,130,246,0.25) !important;  }
-        [data-theme="dark"] .eq-Default    { background: rgba(16,185,129,0.12) !important;  border-color: rgba(16,185,129,0.25) !important;  }
+        [data-theme="dark"] .eq-Default    { background: rgba(245,166,35,0.12) !important;  border-color: rgba(245,166,35,0.25) !important;  }
 
         /* ¢â€â‚¬ EXTRA DARK MODE FIXES ¢â€â‚¬ */
-        [data-theme="dark"] div[style*="background:#d1fae5"],
+        [data-theme="dark"] div[style*="background:#e8edf5"],
         [data-theme="dark"] div[style*="background:#dbeafe"],
-        [data-theme="dark"] div[style*="background:#fef3c7"] { background: #1e293b !important; }
-        [data-theme="dark"] span[style*="background:#f0fdf4"] { background: rgba(16,185,129,0.15) !important; color: #34d399 !important; border-color: rgba(16,185,129,0.3) !important; }
-        [data-theme="dark"] span[style*="background:#d1fae5"] { background: rgba(16,185,129,0.15) !important; color: #34d399 !important; }
+        [data-theme="dark"] div[style*="background:#fef3c7"] { background: #0f1f3d !important; }
+        [data-theme="dark"] span[style*="background:#f4f6f9"] { background: rgba(245,166,35,0.15) !important; color: #f5a623 !important; border-color: rgba(245,166,35,0.3) !important; }
+        [data-theme="dark"] span[style*="background:#e8edf5"] { background: rgba(245,166,35,0.15) !important; color: #f5a623 !important; }
         [data-theme="dark"] span[style*="background:#dbeafe"] { background: rgba(59,130,246,0.15) !important; color: #93c5fd !important; }
         [data-theme="dark"] span[style*="background:#fef3c7"] { background: rgba(245,158,11,0.15) !important; color: #fcd34d !important; }
-        [data-theme="dark"] #upcomingEventsContainer > div { background: #1e293b !important; border-color: #334155 !important; }
+        [data-theme="dark"] #upcomingEventsContainer > div { background: #0f1f3d !important; border-color: #1e3a6b !important; }
         [data-theme="dark"] #myBorrowingsList > div,
-        [data-theme="dark"] #myReservationsList > div { background: #1e293b !important; border-color: #334155 !important; }
-        [data-theme="dark"] td, [data-theme="dark"] th { color: #e2e8f0 !important; border-color: #334155 !important; }
+        [data-theme="dark"] #myReservationsList > div { background: #0f1f3d !important; border-color: #1e3a6b !important; }
+        [data-theme="dark"] td, [data-theme="dark"] th { color: #e2e8f0 !important; border-color: #1e3a6b !important; }
         [data-theme="dark"] tbody tr:hover td { background: rgba(51,65,85,0.4) !important; }
-        [data-theme="dark"] ::-webkit-scrollbar-track { background: #0f172a; }
-        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        [data-theme="dark"] ::-webkit-scrollbar-track { background: #0a1628; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #1e3a6b; border-radius: 4px; }
         [data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
     <link rel="icon" type="image/jpeg" href="barangay-sun-logo.jpg">
@@ -366,17 +362,17 @@
 <body class="flex flex-col h-screen w-full">
 
     <!-- HEADER -->
-    <header class="dashboard-header bg-white border-b border-emerald-200 px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100] shadow-sm">
+    <header class="dashboard-header px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100]" style="background:#0f1f3d;border-bottom:3px solid #f5a623;box-shadow:0 2px 16px rgba(0,0,0,0.25);">
         <div class="header-left flex items-center gap-4">
             <img src="barangay-sun-logo.jpg" alt="Logo" class="w-[46px] h-[46px] object-contain">
             <!-- Mobile name shown next to logo -->
             <div class="flex flex-col md:hidden">
-                <span class="text-[13px] font-extrabold text-emerald-800 leading-tight" id="mobileUserName">Resident</span>
-                <span class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Resident Portal</span>
+                <span class="text-[13px] font-extrabold text-white leading-tight" id="mobileUserName">Resident</span>
+                <span style="font-size:10px;color:#f5a623;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Resident Portal</span>
             </div>
             <div class="header-brand flex flex-col hidden md:flex">
-                <span class="brand text-[18px] font-extrabold text-emerald-800">Barangay Sta. Lucia</span>
-                <span class="subtitle text-[11px] text-gray-500 uppercase tracking-widest font-semibold">Resident Portal</span>
+                <span class="brand text-[18px] font-extrabold" style="color:#fff;">Barangay Sta. Lucia</span>
+                <span class="subtitle text-[11px] uppercase tracking-widest font-semibold" style="color:#f5a623;">Resident Portal</span>
             </div>
             <!-- MOBILE RIGHT CONTROLS -->
             <div class="mobile-header-controls">
@@ -385,7 +381,7 @@
                 <!-- Mobile Profile Dropdown -->
                 <div id="mobileProfileDropdownContainer" class="hidden absolute top-[48px] right-0 w-[180px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
                     <div class="py-1 bg-white dark:bg-slate-800">
-                        <button onclick="showPanel('profile'); document.getElementById('mobileProfileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
+                        <button onclick="showPanel('profile'); document.getElementById('mobileProfileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-slate-50 hover:text-slate-700 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
                     </div>
                     <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
                         <button onclick="logoutUser()" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-red-50 hover:text-red-600 dark:text-gray-100 py-3 px-4 transition-colors">Logout</button>
@@ -404,29 +400,29 @@
         <div class="header-right flex items-center gap-4 hidden md:flex">
             <!-- Desktop Bell -->
             <div class="relative flex items-center justify-center">
-                <button onclick="toggleBellDropdown(event)" id="desktopBellBtn" title="Notifications" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg relative">
+                <button onclick="toggleBellDropdown(event)" id="desktopBellBtn" title="Notifications" class="w-[38px] h-[38px] flex items-center justify-center rounded-xl transition-all duration-200 text-lg relative" style="border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;">
                     <i class="bi bi-bell-fill"></i>
                     <span id="bellBadgeDesktop" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
                 </button>
             </div>
 
-            <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 text-gray-600 hover:text-emerald-600 transition-all duration-200 text-lg"><i class="bi bi-moon-fill"></i></button>
+            <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle Dark Mode" class="dark-mode-toggle w-[38px] h-[38px] flex items-center justify-center rounded-xl transition-all duration-200 text-lg" style="border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;"><i class="bi bi-moon-fill"></i></button>
 
             
             
             <div class="user-menu flex items-center cursor-pointer relative" onclick="toggleProfileDropdown(event)" id="topProfileMenuBtn">
-                <div class="user-avatar w-[40px] h-[40px] rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center font-extrabold text-[15px] border-[3px] border-emerald-200 mr-3">
+                <div class="user-avatar w-[40px] h-[40px] rounded-full text-white flex items-center justify-center font-extrabold text-[15px] mr-3" style="background:#f5a623;color:#0f1f3d;border:2px solid rgba(245,166,35,0.5);">
                     <span id="userInitial">U</span>
                 </div>
                 <div class="user-info text-left">
-                    <div class="user-name text-[14px] font-bold text-gray-800" id="sidebarUserName">User</div>
-                    <div class="user-role text-[11px] text-emerald-500 font-semibold uppercase">Resident</div>
+                    <div class="user-name text-[14px] font-bold" style="color:#fff;" id="sidebarUserName">User</div>
+                    <div class="user-role text-[11px] font-semibold uppercase" style="color:#f5a623;">Resident</div>
                 </div>
 
                 <!-- Profile Dropdown -->
                 <div id="profileDropdownContainer" class="hidden absolute top-[52px] right-0 w-[180px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
                     <div class="py-1 bg-white dark:bg-slate-800">
-                        <button onclick="showPanel('profile'); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
+                        <button onclick="showPanel('profile'); event.stopPropagation(); document.getElementById('profileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-slate-50 hover:text-slate-700 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
                     </div>
                     <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
                         <button onclick="logoutUser()" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-red-50 hover:text-red-600 dark:text-gray-100 py-3 px-4 transition-colors">Logout</button>
@@ -439,7 +435,7 @@
                     <div class="absolute -top-2 right-[120px] md:right-[15px] w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45 dark:bg-slate-800 dark:border-slate-700 hidden md:block"></div>
                     <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 relative z-10 w-full" onclick="event.stopPropagation()">
                         <h3 class="font-bold text-gray-800 text-[15px] dark:text-gray-100">Notifications</h3>
-                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" class="text-xs text-emerald-600 hover:underline font-semibold flex items-center gap-1"><span class="text-sm"><i class="bi bi-check-all"></i></span> Mark all read</button>
+                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" class="text-xs text-slate-700 hover:underline font-semibold flex items-center gap-1"><span class="text-sm"><i class="bi bi-check-all"></i></span> Mark all read</button>
                     </div>
                     <div id="bellDropdownList" class="max-h-[380px] overflow-y-auto flex flex-col relative z-10 w-full" onclick="event.stopPropagation()">
                         <p id="bellEmptyState" class="text-center text-sm text-gray-500 py-6 hidden dark:text-gray-400">No new notifications.</p>
@@ -451,51 +447,56 @@
     <!-- DASHBOARD CONTAINER -->
     <div class="dashboard-container flex flex-1 overflow-hidden">
         <!-- SIDEBAR -->
-        <aside class="sidebar w-[240px] border-r flex flex-col gap-1 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background: var(--sidebar-bg); border-color: var(--border-color);">
-            <div style="padding: 18px 14px 8px;">
-                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:0 8px;display:block;">Navigation</span>
+        <aside class="sidebar w-[240px] flex flex-col gap-1 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background:#0f1f3d; border-right:1px solid #1a3a6b;">
+            <div style="padding:16px 14px 12px;border-bottom:1px solid rgba(245,166,35,0.2);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <img src="barangay-sun-logo.jpg" alt="Logo" style="width:36px;height:36px;border-radius:10px;border:2px solid rgba(245,166,35,0.4);object-fit:cover;">
+                    <div>
+                        <div style="font-size:14px;font-weight:800;color:#ffffff;line-height:1.2;">Barangay Sta. Lucia</div>
+                        <div style="font-size:10px;font-weight:700;color:#f5a623;text-transform:uppercase;letter-spacing:1px;">Resident Portal</div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 14px 14px 4px;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(245,166,35,0.7);padding:0 8px;display:block;">Navigation</span>
             </div>
             <nav style="padding: 4px 10px; display:flex; flex-direction:column; gap:4px; flex:1;">
-                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left active" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left active" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-grid-1x2-fill"></i></div> Dashboard
                 </button>
-                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-box-seam"></i></div> Equipment
                 </button>
-                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-megaphone-fill"></i></div> Concerns
                 </button>
-                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-calendar-check-fill"></i></div> Facility Reservation
                 </button>
-                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-calendar-event-fill"></i></div> Events
                 </button>
-                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:var(--text-muted);background:transparent;border:none;font-family:inherit;">
+                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3.5 px-3 py-3 rounded-2xl cursor-pointer transition-all duration-200 text-[14px] font-semibold w-full text-left" style="color:rgba(255,255,255,0.7);background:transparent;border:none;font-family:inherit;">
                     <div class="nav-icon-box"><i class="bi bi-clock-history"></i></div> My Activity
                 </button>
             </nav>
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="main-content flex-1 p-8 overflow-y-auto bg-green-50/30" style="background-color: var(--bg-color);">
+        <main class="main-content flex-1 p-8 overflow-y-auto" style="background-color: var(--bg-color);">
 
             <!-- PANEL 1: DASHBOARD -->
             <div id="panel-dashboard" class="content-panel active">
 
                 <!-- Welcome Banner -->
-                <div style="background:linear-gradient(135deg,#0F2547 0%,#1A3A6B 60%,#1e4a8a 100%);border-radius:20px;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,37,71,0.28);position:relative;overflow:hidden;">
-                    <div style="position:absolute;top:-40px;right:80px;width:200px;height:200px;background:rgba(253,185,19,0.07);border-radius:50%;pointer-events:none;"></div>
-                    <div style="position:absolute;bottom:-60px;right:-20px;width:240px;height:240px;background:rgba(255,255,255,0.04);border-radius:50%;pointer-events:none;"></div>
-                    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.06;border-radius:20px;pointer-events:none;"></div>
+                <div style="background:linear-gradient(135deg,#0f1f3d 0%,#1a3a6b 100%);border-radius:20px;padding:28px 36px;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,31,61,0.3);position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:-40px;right:80px;width:200px;height:200px;background:rgba(245,166,35,0.06);border-radius:50%;pointer-events:none;"></div>
+                    <div style="position:absolute;bottom:-60px;right:-20px;width:240px;height:240px;background:rgba(255,255,255,0.03);border-radius:50%;pointer-events:none;"></div>
+                    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background-image:url('brgy.png');background-size:cover;background-position:center;opacity:0.05;border-radius:20px;pointer-events:none;"></div>
                     <div style="position:relative;z-index:1;">
-                        <div style="font-size:11px;font-weight:700;color:#FDB913;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;">Barangay Resident Portal</div>
-                        <h2 id="dashGreeting" style="font-size:24px;font-weight:800;color:#fff;margin:0 0 4px 0;">Good morning, <span id="welcomeName">Resident</span>!</h2>
-                        <div id="dashDate" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;"></div>
-                    </div>
-                    <div style="position:relative;z-index:1;text-align:right;">
-                        <div id="dashClock" style="font-size:34px;font-weight:800;color:#fff;letter-spacing:2px;font-variant-numeric:tabular-nums;line-height:1;">--:--</div>
-                        <div style="font-size:11px;color:#FDB913;font-weight:700;letter-spacing:1px;margin-top:4px;">LOCAL TIME</div>
+                        <div style="font-size:11px;font-weight:700;color:#f5a623;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;">Barangay Resident Portal</div>
+                        <h2 id="dashGreeting" style="font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:#fff;margin:0 0 6px 0;">Good morning, <span id="welcomeName">Resident</span>!</h2>
+                        <div id="dashDate" style="font-size:13px;color:#f5a623;font-weight:600;"></div>
                     </div>
                 </div>
 
@@ -519,10 +520,10 @@
                         <div id="stat-concerns" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
                         <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Pending Concerns</div>
                     </div>
-                    <div onclick="showPanel('booking')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(5,150,105,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
-                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#059669;border-radius:16px 0 0 16px;"></div>
+                    <div onclick="showPanel('booking')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(15,31,61,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
+                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#0f1f3d;border-radius:16px 0 0 16px;"></div>
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                            <div style="width:40px;height:40px;background:rgba(5,150,105,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#059669;"><i class="bi bi-calendar-check-fill"></i></div>
+                            <div style="width:40px;height:40px;background:rgba(15,31,61,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#0f1f3d;"><i class="bi bi-calendar-check-fill"></i></div>
                             <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
                         </div>
                         <div id="stat-bookings" style="font-size:32px;font-weight:800;color:#0F2547;line-height:1;margin-bottom:4px;">0</div>
@@ -582,16 +583,16 @@
                         </div>
                         <div style="display:flex;flex-direction:column;gap:8px;">
                             <div onclick="showPanel('equipment')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(26,58,107,0.05)';this.style.borderColor='#1A3A6B';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
-                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1e293b;"><i class="bi bi-box-seam-fill" style="color:#1A3A6B;font-size:14px;"></i>Active Borrowings</span>
+                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#0f1f3d;"><i class="bi bi-box-seam-fill" style="color:#1A3A6B;font-size:14px;"></i>Active Borrowings</span>
                                 <span id="dash-statEquip" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(26,58,107,0.08);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
                             </div>
                             <div onclick="showPanel('concerns')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,185,19,0.05)';this.style.borderColor='#FDB913';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
-                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1e293b;"><i class="bi bi-megaphone-fill" style="color:#d97706;font-size:14px;"></i>Open Concerns</span>
+                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#0f1f3d;"><i class="bi bi-megaphone-fill" style="color:#d97706;font-size:14px;"></i>Open Concerns</span>
                                 <span id="dash-statConcerns" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(253,185,19,0.12);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
                             </div>
-                            <div onclick="showPanel('booking')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(5,150,105,0.05)';this.style.borderColor='#059669';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
-                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1e293b;"><i class="bi bi-calendar-check-fill" style="color:#059669;font-size:14px;"></i>Upcoming Reservations</span>
-                                <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(5,150,105,0.1);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
+                            <div onclick="showPanel('booking')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(15,31,61,0.05)';this.style.borderColor='#0f1f3d';" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
+                                <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#0f1f3d;"><i class="bi bi-calendar-check-fill" style="color:#0f1f3d;font-size:14px;"></i>Upcoming Reservations</span>
+                                <span id="dash-statBookings" style="font-weight:800;font-size:15px;color:#0F2547;background:rgba(15,31,61,0.1);padding:2px 10px;border-radius:20px;min-width:32px;text-align:center;"></span>
                             </div>
                         </div>
                     </div>
@@ -605,32 +606,32 @@
                                     <div style="font-size:11px;color:#64748b;">Available to residents</div>
                                 </div>
                             </div>
-                            <span style="font-size:10px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:3px 10px;border-radius:20px;border:1px solid rgba(5,150,105,0.2);">ACTIVE</span>
+                            <span style="font-size:10px;font-weight:700;color:#0f1f3d;background:rgba(15,31,61,0.1);padding:3px 10px;border-radius:20px;border:1px solid rgba(15,31,61,0.2);">ACTIVE</span>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:8px;">
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
                                 <div style="width:34px;height:34px;border-radius:10px;background:#1A3A6B;display:flex;align-items:center;justify-content:center;font-size:16px;color:#FDB913;flex-shrink:0;"><i class="bi bi-box-seam-fill"></i></div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:#1e293b;">Equipment Lending</div>
+                                    <div style="font-size:13px;font-weight:700;color:#0f1f3d;">Equipment Lending</div>
                                     <div style="font-size:11px;color:#64748b;">Chairs, tables &amp; more</div>
                                 </div>
-                                <span style="font-size:11px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:2px 9px;border-radius:20px;">Open</span>
+                                <span style="font-size:11px;font-weight:700;color:#0f1f3d;background:rgba(15,31,61,0.1);padding:2px 9px;border-radius:20px;">Open</span>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
                                 <div style="width:34px;height:34px;border-radius:10px;background:#1A3A6B;display:flex;align-items:center;justify-content:center;font-size:16px;color:#FDB913;flex-shrink:0;"><i class="bi bi-dribbble"></i></div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:#1e293b;">Facility Reservations</div>
+                                    <div style="font-size:13px;font-weight:700;color:#0f1f3d;">Facility Reservations</div>
                                     <div style="font-size:11px;color:#64748b;">Basketball &amp; Multi-purpose</div>
                                 </div>
-                                <span style="font-size:11px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:2px 9px;border-radius:20px;">Open</span>
+                                <span style="font-size:11px;font-weight:700;color:#0f1f3d;background:rgba(15,31,61,0.1);padding:2px 9px;border-radius:20px;">Open</span>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
                                 <div style="width:34px;height:34px;border-radius:10px;background:#1A3A6B;display:flex;align-items:center;justify-content:center;font-size:16px;color:#FDB913;flex-shrink:0;"><i class="bi bi-chat-left-text-fill"></i></div>
                                 <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;color:#1e293b;">Citizen Concerns</div>
+                                    <div style="font-size:13px;font-weight:700;color:#0f1f3d;">Citizen Concerns</div>
                                     <div style="font-size:11px;color:#64748b;">Report issues 24/7</div>
                                 </div>
-                                <span style="font-size:11px;font-weight:700;color:#059669;background:rgba(5,150,105,0.1);padding:2px 9px;border-radius:20px;">Open</span>
+                                <span style="font-size:11px;font-weight:700;color:#0f1f3d;background:rgba(15,31,61,0.1);padding:2px 9px;border-radius:20px;">Open</span>
                             </div>
                         </div>
                     </div>
@@ -641,7 +642,7 @@
             <div id="panel-equipment" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-end flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 class="text-3xl font-extrabold text-emerald-600 mb-2"><i class="bi bi-box-seam mr-2"></i>Equipment Borrowing</h2>
+                        <h2 class="text-3xl font-extrabold text-slate-700 mb-2"><i class="bi bi-box-seam mr-2"></i>Equipment Borrowing</h2>
                         <p style="color: var(--text-muted);">Request to borrow barangay equipment for your activities.</p>
                     </div>
                 </div>
@@ -655,9 +656,9 @@
                             type="text"
                             placeholder="Search equipment by name or category..."
                             oninput="filterEquipmentGrid()"
-                            style="width:100%;padding:12px 16px 12px 44px;border:2px solid #d1fae5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(16,185,129,0.07);transition:border-color 0.2s;"
-                            onfocus="this.style.borderColor='#059669'"
-                            onblur="this.style.borderColor='#d1fae5'"
+                            style="width:100%;padding:12px 16px 12px 44px;border:2px solid #e8edf5;border-radius:14px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111;box-shadow:0 2px 8px rgba(245,166,35,0.07);transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='#0f1f3d'"
+                            onblur="this.style.borderColor='#e8edf5'"
                         >
                     </div>
                     <p id="equipmentSearchEmpty" style="display:none;text-align:center;color:#9ca3af;padding:20px 0;font-size:14px;">No equipment found. Try a different search.</p>
@@ -666,7 +667,7 @@
                 <div class="glass-card p-6">
                     <div class="flex items-center justify-between mb-4" style="gap:12px;flex-wrap:wrap;">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-xl"><i class="bi bi-card-list"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-xl"><i class="bi bi-card-list"></i></div>
                             <div><h3 class="text-xl font-bold text-gray-800 dark:text-white">My Borrowing History</h3><p class="text-xs text-gray-500">Track all your equipment requests</p></div>
                         </div>
                         <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
@@ -676,9 +677,9 @@
                                 type="text"
                                 placeholder="Search borrowings..."
                                 oninput="filterBorrowingsList()"
-                                style="width:100%;padding:9px 12px 9px 36px;border:2px solid #d1fae5;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#111;box-sizing:border-box;transition:border-color 0.2s;"
-                                onfocus="this.style.borderColor='#059669'"
-                                onblur="this.style.borderColor='#d1fae5'"
+                                style="width:100%;padding:9px 12px 9px 36px;border:2px solid #e8edf5;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#111;box-sizing:border-box;transition:border-color 0.2s;"
+                                onfocus="this.style.borderColor='#0f1f3d'"
+                                onblur="this.style.borderColor='#e8edf5'"
                             >
                         </div>
                     </div>
@@ -690,7 +691,7 @@
             <!-- PANEL 3: CONCERNS -->
             <div id="panel-concerns" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="panel-header text-emerald-600"><i class="bi bi-chat-left-text-fill mr-2"></i>Submit a Concern</h2>
+                    <h2 class="panel-header" style="color:#0f1f3d;"><i class="bi bi-chat-left-text-fill mr-2"></i>Submit a Concern</h2>
                     <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
                 </div>
                 
@@ -698,15 +699,15 @@
                     
                     <!-- Form Secton -->
                     <div class="w-full glass-card overflow-hidden">
-                        <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 p-5 border-b" style="border-color: var(--border-color);">
+                        <div class="bg-gradient-to-r from-slate-50 to-emerald-700 p-5 border-b" style="border-color: var(--border-color);">
                             <h3 class="text-base font-extrabold text-white"><i class="bi bi-pencil-square mr-2"></i>New Report</h3>
-                            <p class="text-xs text-emerald-100 mt-0.5">Please provide details about your concern.</p>
+                            <p class="text-xs text-slate-100 mt-0.5">Please provide details about your concern.</p>
                         </div>
                         <div class="p-5">
                             <form id="concernForm" class="space-y-4">
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Title <span class="text-red-500">*</span></label>
-                                    <input type="text" id="concernTitle" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none" placeholder="e.g. Broken street light">
+                                    <input type="text" id="concernTitle" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none" placeholder="e.g. Broken street light">
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Category <span class="text-red-500">*</span></label>
@@ -721,23 +722,23 @@
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Specific Location <span class="text-red-500">*</span></label>
-                                    <input type="text" id="concernLocation" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
+                                    <input type="text" id="concernLocation" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none" placeholder="e.g. Purok 4, intersection">
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Detailed Description <span class="text-red-500">*</span></label>
-                                    <textarea id="concernDescription" required rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
+                                    <textarea id="concernDescription" required rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
                                 </div>
-                                <div class="space-y-1.5 p-4 bg-emerald-50 text-emerald-900 dark:bg-emerald-900/20 dark:text-emerald-100 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                                <div class="space-y-1.5 p-4 bg-slate-50 text-slate-900 dark:bg-navy-900/20 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-200">
                                     <label class="block text-sm font-bold mb-1"><i class="bi bi-camera-fill mr-2"></i>Attach Photo <span class="text-red-500">*</span></label>
                                     <p class="text-[11px] opacity-80 mb-3 leading-relaxed">Adding an image helps the admin understand and address your concern faster.</p>
                                     <div id="imagePreviewContainer" class="hidden mb-3 relative inline-block">
-                                        <img id="concernImagePreview" src="" alt="Preview" class="max-w-full h-32 rounded-lg border-2 border-emerald-300 dark:border-emerald-600 shadow-sm object-cover">
+                                        <img id="concernImagePreview" src="" alt="Preview" class="max-w-full h-32 rounded-lg border-2 border-slate-300 dark:border-slate-600 shadow-sm object-cover">
                                         <button type="button" onclick="clearImagePreview()" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md"></button>
                                     </div>
-                                    <input type="file" id="concernImage" required accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white dark:file:bg-gray-800 file:text-emerald-600 dark:file:text-emerald-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
+                                    <input type="file" id="concernImage" required accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white dark:file:bg-gray-800 file:text-slate-700 dark:file:text-slate-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
                                 </div>
                                 
-                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none">
+                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl text-white bg-navy-600 hover:bg-amber-500 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none">
                                     Submit Report <i class="bi bi-arrow-right"></i>
                                 </button>
                             </form>
@@ -746,7 +747,7 @@
 
                     <!-- History Section -->
                     <div class="w-full glass-card overflow-hidden">
-                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(16,185,129,0.05), transparent);">
+                        <div class="px-6 py-5 border-b" style="border-color: var(--border-color); background: linear-gradient(to right, rgba(245,166,35,0.05), transparent);">
                             <h3 class="text-base font-bold" style="color: var(--text-main);"><i class="bi bi-card-list"></i> Report History</h3>
                             <p class="text-xs mt-0.5" style="color: var(--text-muted);">View the status and updates on your submitted concerns.</p>
                         </div>
@@ -763,11 +764,11 @@
             <div id="panel-booking" class="content-panel">
                 <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
                     <div>
-                        <h2 id="bookingPanelTitle" class="panel-header text-emerald-600"><i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation</h2>
+                        <h2 id="bookingPanelTitle" class="panel-header" style="color:#0f1f3d;"><i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation</h2>
                         <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
                     </div>
                     <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
+                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-navy-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
                         <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
                     </div>
                 </div>
@@ -779,7 +780,7 @@
                         <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
                         <div class="flex gap-2">
                             <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-left"></i></button>
-                            <button onclick="(function(){const t=new Date();bookingYear=t.getFullYear();bookingMonth=t.getMonth();renderBookingCalendar();})()" class="px-3 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition border border-emerald-400 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" style="min-width:52px;">Today</button>
+                            <button onclick="(function(){const t=new Date();bookingYear=t.getFullYear();bookingMonth=t.getMonth();renderBookingCalendar();})()" class="px-3 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition border border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100" style="min-width:52px;">Today</button>
                             <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-right"></i></button>
                         </div>
                     </div>
@@ -794,8 +795,8 @@
                     </div>
                     <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
                     <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>Available</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div>Brgy Event</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></div>Available</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></div>Brgy Event</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>Booked</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
                     </div>
@@ -815,7 +816,7 @@
             <!-- PANEL 5: EVENTS -->
             <div id="panel-events" class="content-panel">
                 <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="text-3xl font-extrabold text-emerald-600 mb-2"><i class="bi bi-calendar-event-fill mr-2"></i>Upcoming Court Events</h2>
+                    <h2 class="text-3xl font-extrabold text-slate-700 mb-2"><i class="bi bi-calendar-event-fill mr-2"></i>Upcoming Court Events</h2>
                     <p style="color: var(--text-muted);">Official barangay activities and tournaments.</p>
                 </div>
                 <div id="upcomingEventsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;"></div>
@@ -825,9 +826,9 @@
             <!-- PANEL: PROFILE -->
             <div id="panel-profile" class="content-panel container mt-6 max-w-5xl mx-auto px-4 lg:px-8">
                 <!-- Hero Banner -->
-                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#064e3b 0%,#047857 50%,#0f766e 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f1f3d 0%,#0f1f3d 50%,#0f766e 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-person-fill"></i></div>
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-person-fill"></i></div>
                         <div>
                             <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Profile</div>
                             <div style="font-size:13px;color:var(--muted);">Manage your personal and account information</div>
@@ -840,7 +841,7 @@
                 <div id="stab-content-profile">
                     <!-- Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
-                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(245,166,35,0.06),transparent);">
                             <span style="font-size:15px;"><i class="bi bi-person-fill"></i></span>
                             <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
                         </div>
@@ -849,25 +850,25 @@
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
                                     <div>
                                         <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Full Name</label>
-                                        <input type="text" id="p-fullName" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                        <input type="text" id="p-fullName" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#f5a623';this.style.boxShadow='0 0 0 3px rgba(245,166,35,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
                                     </div>
                                     <div>
                                         <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Email Address</label>
-                                        <input type="email" id="p-email" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                        <input type="email" id="p-email" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#f5a623';this.style.boxShadow='0 0 0 3px rgba(245,166,35,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
                                     </div>
                                 </div>
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
                                     <div>
                                         <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Contact Number</label>
-                                        <input type="text" id="p-phone" placeholder="09XX XXX XXXX" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                        <input type="text" id="p-phone" placeholder="09XX XXX XXXX" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#f5a623';this.style.boxShadow='0 0 0 3px rgba(245,166,35,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
                                     </div>
                                     <div>
                                         <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:7px;">Address / Location</label>
-                                        <input type="text" id="p-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#10b981';this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+                                        <input type="text" id="p-address" placeholder="e.g. Block 5, Purok 3" style="width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text-main);background:var(--input-bg);outline:none;transition:all 0.2s;" onfocus="this.style.borderColor='#f5a623';this.style.boxShadow='0 0 0 3px rgba(245,166,35,0.1)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
                                     </div>
                                 </div>
                                 
-                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.2s;"><i class="bi bi-check-circle mr-2"></i>Save Changes</button>
+                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#f5a623,#0f1f3d);color:#fff;box-shadow:0 4px 12px rgba(245,166,35,0.3);transition:all 0.2s;"><i class="bi bi-check-circle mr-2"></i>Save Changes</button>
                             </form>
                         </div>
                     </div>
@@ -906,18 +907,18 @@
                 <div id="stab-content-account" style="margin-top:30px;" class="hidden">
                     <!-- Account Details Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
-                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(16,185,129,0.06),transparent);">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(245,166,35,0.06),transparent);">
                             <span style="font-size:15px;"></span>
                             <span style="font-size:14px;font-weight:700;color:var(--text-main);">Account Details</span>
                         </div>
                         <div class="settings-card-body" style="padding:20px 22px;">
                             <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:10px;">
                                 <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Account Type</span>
-                                <span style="padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #bbf7d0;"><i class="bi bi-person-fill"></i> Resident</span>
+                                <span style="padding:4px 12px;background:#e8edf5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #dce5f5;"><i class="bi bi-person-fill"></i> Resident</span>
                             </div>
                             <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;margin-bottom:10px;">
                                 <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Status</span>
-                                <span style="padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #bbf7d0;"> Active</span>
+                                <span style="padding:4px 12px;background:#e8edf5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #dce5f5;"> Active</span>
                             </div>
                             <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--bg-color);border-radius:12px;">
                                 <span style="font-size:13px;color:var(--text-muted);font-weight:500;">Member Since</span>
@@ -952,9 +953,9 @@
 
             <!-- PANEL 7: HISTORY -->
             <div id="panel-history" class="content-panel">
-                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:24px; overflow:hidden;">
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0a1628 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:24px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-journal-text" style="color:#10b981;"></i></div>
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-journal-text" style="color:#f5a623;"></i></div>
                         <div>
                             <div class="settings-hero-title" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:3px;">My Activity Tracker</div>
                             <div style="font-size:13px;color:#cbd5e1;">A complete timeline of your interactions, requests, and reservations.</div>
@@ -970,7 +971,7 @@
                             <option value="concern">Concerns</option>
                             <option value="facility reservation">Facility Reservations</option>
                         </select>
-                        <button onclick="loadHistoryView()" class="px-5 py-2 w-full md:w-auto justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-emerald-600 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
+                        <button onclick="loadHistoryView()" class="px-5 py-2 w-full md:w-auto justify-center bg-gradient-to-r from-slate-500 to-emerald-600 text-white rounded-xl text-sm font-bold cursor-pointer hover:from-slate-50 hover:to-emerald-700 transition shadow-md border-none flex items-center gap-2">
                             &#128260; Refresh Log
                         </button>
                     </div>
@@ -1004,10 +1005,10 @@
                 <div class="absolute bottom-4 left-6 right-6 flex items-end justify-between">
                     <div>
                         <h3 class="text-3xl font-extrabold text-white drop-shadow-lg" id="borrowModalTitle">Borrow Item</h3>
-                        <p class="text-sm text-emerald-100 mt-1 drop-shadow-md font-medium">Select your dates and provide details below.</p>
+                        <p class="text-sm text-slate-100 mt-1 drop-shadow-md font-medium">Select your dates and provide details below.</p>
                     </div>
                     <div>
-                        <span id="borrowModalStockBadge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-emerald-500/90 text-white backdrop-blur-md">0 Available</span>
+                        <span id="borrowModalStockBadge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-slate-500/90 text-white backdrop-blur-md">0 Available</span>
                     </div>
                 </div>
             </div>
@@ -1020,8 +1021,8 @@
                             <span id="calRuleBadge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;"></span>
                         </div>
                         <div class="flex space-x-2">
-                            <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&larr;</button>
-                            <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-emerald-50 transition shadow-sm text-gray-600">&rarr;</button>
+                            <button type="button" onclick="changeBorrowMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-slate-50 transition shadow-sm text-gray-600">&larr;</button>
+                            <button type="button" onclick="changeBorrowMonth(1)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-slate-50 transition shadow-sm text-gray-600">&rarr;</button>
                         </div>
                     </div>
                     <div class="grid grid-cols-7 gap-1 mb-2">
@@ -1034,8 +1035,8 @@
                     <div class="flex flex-wrap justify-between items-center mt-6 p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 shadow-sm text-xs font-medium text-gray-600 dark:text-gray-300">
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-red-500 border border-red-600"></div> Fully booked</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-orange-500 border border-orange-600"></div> Partially booked</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded border border-emerald-500"></div> Available to advance-book</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-emerald-500 border border-emerald-600"></div> Selected range</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded border border-slate-500"></div> Available to advance-book</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-slate-500 border border-slate-600"></div> Selected range</div>
                     </div>
                 </div>
                 <!-- Right Column: Professional Form -->
@@ -1046,12 +1047,12 @@
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;" id="purposeBtnGrid">
                             <button type="button" onclick="selectBorrowPurpose('event')" id="purposeBtnEvent" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
                                 <span style="font-size:22px;">&#127881;</span>
-                                <span style="font-size:14px;font-weight:700;color:#0f172a;">Event</span>
+                                <span style="font-size:14px;font-weight:700;color:#0a1628;">Event</span>
                                 <span style="font-size:11px;color:#94a3b8;">Community gatherings</span>
                             </button>
                             <button type="button" onclick="selectBorrowPurpose('burol')" id="purposeBtnBurol" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
                                 <span style="font-size:22px;">&#128357;</span>
-                                <span style="font-size:14px;font-weight:700;color:#0f172a;">Funeral Viewing</span>
+                                <span style="font-size:14px;font-weight:700;color:#0a1628;">Funeral Viewing</span>
                                 <span style="font-size:11px;color:#94a3b8;">Wake and viewing</span>
                             </button>
                         </div>
@@ -1062,13 +1063,13 @@
                     <div id="borrowFormBody" style="display:none;padding:0 20px 24px;">
                     <div id="borrowModalAlerts" class="flex flex-col gap-3 mb-4 empty:hidden"></div>
                     <!-- Date Display -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-5 mb-6 relative overflow-visible">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-200/30 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
-                        <h5 class="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-2 flex items-center gap-2 relative z-10 w-full break-words">
-                            <span class="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">&#128197;</span> Selected Borrowing Period
+                    <div class="bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-200 rounded-2xl p-5 mb-6 relative overflow-visible">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
+                        <h5 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-300 mb-2 flex items-center gap-2 relative z-10 w-full break-words">
+                            <span class="w-8 h-8 bg-slate-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">&#128197;</span> Selected Borrowing Period
                         </h5>
                         <!-- EXISTING BOOKINGS PANEL -->
-                        <div class="mb-4 bg-white/50 dark:bg-gray-800/50 rounded-xl p-3 border border-emerald-100 dark:border-emerald-800">
+                        <div class="mb-4 bg-white/50 dark:bg-gray-800/50 rounded-xl p-3 border border-slate-200 dark:border-slate-200">
                             <h6 class="text-[10px] font-extrabold uppercase tracking-widest text-gray-500 mb-2">Existing Bookings</h6>
                             <div id="existingBookingsContainer" class="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
                                 <p class="text-xs text-gray-400 italic">No existing bookings.</p>
@@ -1076,27 +1077,27 @@
                         </div>
                         <div class="flex items-center justify-between gap-4 relative z-10 mt-2">
                             <div class="flex-1 text-center">
-                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Borrow Date</div>
-                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-emerald-100 dark:border-gray-600">
-                                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="dispStartDateDay">--</div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-700 dark:text-slate-400 font-bold mb-1">Borrow Date</div>
+                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-slate-200 dark:border-gray-600">
+                                    <div class="text-2xl font-extrabold text-slate-700 dark:text-slate-400" id="dispStartDateDay">--</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400" id="dispStartDateMonth">Select date</div>
                                 </div>
                             </div>
                             <div class="flex flex-col items-center">
-                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center"><span class="text-emerald-600 dark:text-emerald-300 text-xl"><i class="bi bi-arrow-right"></i></span></div>
-                                <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="borrowDuration">0 days</div>
+                                <div class="w-10 h-10 bg-slate-100 dark:bg-slate-100 rounded-full flex items-center justify-center"><span class="text-slate-700 dark:text-slate-300 text-xl"><i class="bi bi-arrow-right"></i></span></div>
+                                <div class="text-xs font-bold text-slate-700 dark:text-slate-400 mt-1" id="borrowDuration">0 days</div>
                             </div>
                             <div class="flex-1 text-center">
-                                <div class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">Return Date</div>
-                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-emerald-100 dark:border-gray-600">
-                                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="dispReturnDateDay">--</div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-700 dark:text-slate-400 font-bold mb-1">Return Date</div>
+                                <div class="bg-white dark:bg-gray-900 rounded-xl py-3 px-2 shadow-sm border border-slate-200 dark:border-gray-600">
+                                    <div class="text-2xl font-extrabold text-slate-700 dark:text-slate-400" id="dispReturnDateDay">--</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400" id="dispReturnDateMonth">Select date</div>
                                 </div>
                             </div>
                         </div>
-                        <div id="dateRangeDisplay" class="mt-4 text-center text-sm font-medium text-emerald-700 dark:text-emerald-300 bg-white/60 dark:bg-gray-900/40 py-2 rounded-lg">Please select your borrowing dates from the calendar</div>
+                        <div id="dateRangeDisplay" class="mt-4 text-center text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/60 dark:bg-gray-900/40 py-2 rounded-lg">Please select your borrowing dates from the calendar</div>
                         <button type="button" id="clearBorrowDatesBtn" onclick="clearBorrowDates()" style="display:none;width:100%;margin-top:8px;padding:8px 12px;border:1.5px solid #fca5a5;border-radius:9px;background:#fff5f5;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;align-items:center;justify-content:center;gap:5px;">🗑 Clear Dates</button>
-                        <div class="mt-3 text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-300 bg-emerald-100/50 dark:bg-emerald-900/30 p-2.5 rounded-lg border border-emerald-200/50 dark:border-emerald-700">
+                        <div class="mt-3 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300 bg-slate-100/50 dark:bg-navy-900/30 p-2.5 rounded-lg border border-slate-200/50 dark:border-slate-200">
                             <strong>Important:</strong> You must return the item exactly at the time you specified in the form. You have a <strong>+1 day extension</strong> to bring the item back.
                         </div>
                     </div>
@@ -1123,16 +1124,16 @@
                             <label class="form-label" style="margin-bottom:8px;">Delivery Method <span style="color:#ef4444;font-size:11px;">*</span></label>
                             <div style="display:flex;flex-direction:column;gap:8px;">
                                 <label id="deliveryPickupLabel" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:border-color .2s;" onclick="selectDeliveryMethod('pickup')">
-                                    <input type="radio" name="deliveryMethod" value="pickup" id="deliveryPickup" style="accent-color:#10b981;width:16px;height:16px;flex-shrink:0;">
+                                    <input type="radio" name="deliveryMethod" value="pickup" id="deliveryPickup" style="accent-color:#f5a623;width:16px;height:16px;flex-shrink:0;">
                                     <div>
-                                        <div style="font-size:13px;font-weight:700;color:var(--text-main,#0f172a);">&#127963; Pickup at Barangay Hall</div>
+                                        <div style="font-size:13px;font-weight:700;color:var(--text-main,#0a1628);">&#127963; Pickup at Barangay Hall</div>
                                         <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Come to the hall to pick up and return the item</div>
                                     </div>
                                 </label>
                                 <label id="deliveryToAddrLabel" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:border-color .2s;" onclick="selectDeliveryMethod('delivery')">
-                                    <input type="radio" name="deliveryMethod" value="delivery" id="deliveryDelivery" style="accent-color:#10b981;width:16px;height:16px;flex-shrink:0;">
+                                    <input type="radio" name="deliveryMethod" value="delivery" id="deliveryDelivery" style="accent-color:#f5a623;width:16px;height:16px;flex-shrink:0;">
                                     <div>
-                                        <div style="font-size:13px;font-weight:700;color:var(--text-main,#0f172a);">&#128666; Delivery to my address</div>
+                                        <div style="font-size:13px;font-weight:700;color:var(--text-main,#0a1628);">&#128666; Delivery to my address</div>
                                         <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Item delivered and collected from your location</div>
                                     </div>
                                 </label>
@@ -1181,7 +1182,7 @@
                             </label>
                         </div>
 
-                        <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;">
+                        <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-2 bg-gradient-to-r from-slate-500 to-emerald-600 hover:from-slate-50 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;">
                             Submit Borrow Request
                         </button>
                     </form>
@@ -1199,7 +1200,7 @@
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]" style="max-height:90vh;">
 
             <!-- Header -->
-            <div class="bg-gradient-to-br from-emerald-700 to-emerald-500 p-6 relative flex-shrink-0">
+            <div class="bg-gradient-to-br from-slate-50 to-emerald-500 p-6 relative flex-shrink-0">
                 <button onclick="closeDayScheduleModal()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition"><i class="bi bi-x-lg"></i></button>
                 <div class="text-3xl mb-2">&#128197;</div>
                 <h3 id="dsModalDate" class="text-xl font-extrabold text-white mb-0.5">Select a Date</h3>
@@ -1221,7 +1222,7 @@
                 <!-- Add Booking Section -->
                 <div class="border-t border-gray-100 dark:border-gray-700 mt-4 pt-4">
                     <!-- Toggle Button -->
-                    <button id="dsToggleFormBtn" onclick="openDsBookingModal()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
+                    <button id="dsToggleFormBtn" onclick="openDsBookingModal()" class="w-full py-3 bg-gradient-to-r from-slate-50 to-emerald-700 hover:from-slate-50 hover:to-emerald-800 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer">
                         <span> Add Facility Reservation</span>
                     </button>
                 </div>
@@ -1232,7 +1233,7 @@
     <!-- ===== ADD COURT BOOKING MODAL ===== -->
     <div id="dsBookingModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-[fadeIn_0.3s_ease]">
-            <div class="bg-gradient-to-br from-emerald-700 to-emerald-500 p-6 relative flex-shrink-0">
+            <div class="bg-gradient-to-br from-slate-50 to-emerald-500 p-6 relative flex-shrink-0">
                 <button onclick="closeDsBookingModal()" type="button" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 border-0 text-white w-8 h-8 rounded-full text-lg cursor-pointer flex items-center justify-center transition"></button>
                 <div class="text-3xl mb-2"></div>
                 <h3 class="text-xl font-extrabold text-white mb-0.5">Add Facility Reservation</h3>
@@ -1271,7 +1272,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
+                    <button type="submit" id="dsSubmitBtn" class="w-full py-3 bg-gradient-to-r from-slate-500 to-emerald-600 hover:from-slate-50 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-md border-none cursor-pointer">
                          Confirm Reservation
                     </button>
                 </form>
@@ -1282,7 +1283,7 @@
     <div id="conflictNotifModal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);">
         <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" style="animation:fadeInUp 0.3s ease;">
             <!-- Header -->
-            <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px 24px 24px;text-align:center;">
+            <div style="background:linear-gradient(135deg,#f5a623,#0f1f3d);padding:32px 24px 24px;text-align:center;">
                 <div style="font-size:48px;margin-bottom:12px;line-height:1;">¸Â</div>
                 <h3 style="font-size:22px;font-weight:800;color:#fff;margin:0 0 12px;letter-spacing:-0.02em;">Reservation Cancelled</h3>
                 <p id="conflictNotifMsg" style="font-size:14px;color:rgba(255,255,255,0.95);margin:0 auto;line-height:1.6;max-width:90%;"></p>
@@ -1290,7 +1291,7 @@
             <!-- Actions -->
             <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
                 <button id="conflictRescheduleBtn" onclick="handleConflictReschedule()"
-                    style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;font-size:14px;border-radius:14px;border:none;cursor:pointer;transition:all 0.2s;">
+                    style="width:100%;padding:14px;background:linear-gradient(135deg,#f5a623,#0f1f3d);color:#fff;font-weight:700;font-size:14px;border-radius:14px;border:none;cursor:pointer;transition:all 0.2s;">
                     &#128197; Reschedule My Reservation
                 </button>
                 <button id="conflictCancelBtn" onclick="handleConflictCancel()"
@@ -1355,8 +1356,8 @@
                     <textarea id="editBorrowingPurpose" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" rows="3" style="color: var(--text-main); background: var(--input-bg);"></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeEditBorrowingModal()" style="padding:8px 18px;background:#ffffff;color:#1f2937;border:2px solid #d1d5db;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#f3f4f6';this.style.borderColor='#10b981';this.style.color='#065f46'" onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1d5db';this.style.color='#1f2937'">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Changes</button>
+                    <button type="button" onclick="closeEditBorrowingModal()" style="padding:8px 18px;background:#ffffff;color:#1f2937;border:2px solid #d1d5db;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#f3f4f6';this.style.borderColor='#f5a623';this.style.color='#065f46'" onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1d5db';this.style.color='#1f2937'">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-navy-600 hover:bg-amber-500 text-white font-bold rounded-lg transition shadow-md">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -1669,6 +1670,17 @@
         document.getElementById('welcomeName').textContent = user.fullName || user.name || user.username || user.email.split('@')[0];
         document.getElementById('userInitial').textContent = (user.fullName || user.name || user.username || user.email)[0].toUpperCase();
 
+        // Set dashboard greeting and date (no clock)
+        (function() {
+            const now = new Date();
+            const hr = now.getHours();
+            const period = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+            const greetEl = document.getElementById('dashGreeting');
+            if (greetEl) { const nameSpan = greetEl.querySelector('#welcomeName'); if (greetEl.childNodes[0]) greetEl.childNodes[0].textContent = period + ', '; }
+            const dateEl = document.getElementById('dashDate');
+            if (dateEl) dateEl.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        })();
+
         const mobileAvatar = document.getElementById('mobileHeaderAvatar');
         if (mobileAvatar) mobileAvatar.textContent = (user.fullName || user.name || user.username || user.email)[0].toUpperCase();
         const mobileNameEl = document.getElementById('mobileUserName');
@@ -1770,7 +1782,7 @@
             try { const s = JSON.parse(localStorage.getItem(LS_DELIVERY_KEY) || '{}'); return s[lower] !== false; } catch(e) { return true; }
         }
         const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;';
-        const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #059669;background:#10b981;box-shadow:0 4px 14px rgba(16,185,129,.35);';
+        const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #0f1f3d;background:#f5a623;box-shadow:0 4px 14px rgba(245,166,35,.35);';
         const _BTN_INACTIVE = _BTN_BASE + 'border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;';
 
         // Toast
@@ -1790,7 +1802,7 @@
         function showToast(message, type = 'success') {
             let toast = document.getElementById('toast');
             if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; document.body.appendChild(toast); }
-            const colors = { success: 'bg-emerald-500', error: 'bg-red-500' };
+            const colors = { success: 'bg-slate-500', error: 'bg-red-500' };
             toast.className = 'fixed bottom-4 right-4 ' + (colors[type] || 'bg-gray-800') + ' text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 z-[9999] opacity-0 transform translate-y-10';
             toast.textContent = message;
             void toast.offsetWidth;
@@ -1845,29 +1857,7 @@
             } catch (e) { console.error("Error loading stats", e); }
         }
 
-        // ==========================================
-        // DASHBOARD CLOCK
-        // ==========================================
-        function _updateDashClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            const clockEl = document.getElementById('dashClock');
-            if (clockEl) clockEl.textContent = `${h}:${m}:${s}`;
-            const dateEl = document.getElementById('dashDate');
-            if (dateEl) dateEl.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const greetEl = document.getElementById('dashGreeting');
-            if (greetEl) {
-                const hr = now.getHours();
-                const period = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
-                const nameSpan = greetEl.querySelector('#welcomeName');
-                greetEl.childNodes[0].textContent = period + ', ';
-                if (!nameSpan) greetEl.textContent = period + ', Resident!';
-            }
-        }
-        _updateDashClock();
-        setInterval(_updateDashClock, 1000);
+        
 
         // ==========================================
         // FACEBOOK-STYLE NOTIFICATION LOGIC
@@ -2028,7 +2018,7 @@
             notifs.forEach(n => {
                 const isUnread = !n.isRead;
                 const containerCss = isUnread 
-                    ? "px-4 py-3 border-b border-gray-100 flex items-start gap-3 bg-emerald-50/50 hover:bg-emerald-100/50 cursor-pointer transition dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 relative" 
+                    ? "px-4 py-3 border-b border-gray-100 flex items-start gap-3 bg-slate-50/50 hover:bg-slate-100/50 cursor-pointer transition dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 relative" 
                     : "px-4 py-3 border-b border-gray-100 flex items-start gap-3 bg-white hover:bg-gray-50 cursor-pointer transition dark:bg-slate-900/50 dark:border-slate-700 dark:hover:bg-slate-800 relative";
 
                 const titleCss = isUnread 
@@ -2049,13 +2039,13 @@
 
                 const html = `
                     <div class="${containerCss}" onclick="handleBellClick('${n.id}')">
-                        ${isUnread ? '<div class="absolute w-2 h-2 rounded-full bg-emerald-500 top-4 right-4"></div>' : ''}
+                        ${isUnread ? '<div class="absolute w-2 h-2 rounded-full bg-slate-500 top-4 right-4"></div>' : ''}
                         <div class="text-xl bg-gray-100 dark:bg-slate-700 w-10 h-10 rounded-full flex items-center justify-center shrink-0">
                             ${iconHtml}
                         </div>
                         <div class="flex-1 min-w-0 pr-4 cursor-pointer">
                             <p class="${titleCss}">${n.message}</p>
-                            <span class="text-[11px] font-semibold text-emerald-600 mt-1 block cursor-pointer">${timeStr}</span>
+                            <span class="text-[11px] font-semibold text-slate-700 mt-1 block cursor-pointer">${timeStr}</span>
                         </div>
                     </div>
                 `;
@@ -2252,7 +2242,7 @@
                 // Sanity check
                 item.available = Math.min(item.available || 0, item.quantity || 1);
                 const pct = Math.min(100, Math.round((item.available / item.quantity) * 100));
-                let color = 'bg-emerald-500', statusColor = 'text-emerald-600', statusBg = 'bg-emerald-50', statusIcon = '&#10003;';
+                let color = 'bg-slate-500', statusColor = 'text-slate-700', statusBg = 'bg-slate-50', statusIcon = '&#10003;';
                 if (pct < 50) { color = 'bg-amber-500'; statusColor = 'text-amber-600'; statusBg = 'bg-amber-50'; statusIcon = '&#9888;'; }
                 if (pct < 25) { color = 'bg-red-500'; statusColor = 'text-red-600'; statusBg = 'bg-red-50'; statusIcon = '&#10005;'; }
                 const ok = item.available > 0;
@@ -2287,7 +2277,7 @@
                 } else if (ok) {
                     actionBtn = `
                         <div class="equip-borrow-btn-container" data-id="${item.id}">
-                            <button onclick="openBorrowModalWithEquip(${item.id})" class="equip-borrow-btn w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>
+                            <button onclick="openBorrowModalWithEquip(${item.id})" class="equip-borrow-btn w-full py-3 bg-navy-600 hover:bg-amber-500 text-white text-sm font-bold rounded-xl transition transform hover:-translate-y-1 shadow-md cursor-pointer border-none flex justify-center items-center gap-2"><i class="bi bi-pencil-square"></i> Request to Borrow</button>
                             <button disabled class="equip-closed-msg hidden w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm cursor-not-allowed flex flex-col justify-center items-center gap-0.5">
                                 <div class="text-[13px] text-gray-700 dark:text-gray-200 flex items-center gap-1.5"><i class="bi bi-clock-fill"></i> Borrowing Closed</div>
                                 <div class="text-[11px] font-medium text-gray-500 dark:text-gray-400">Opens <span class="eq-open-txt"></span> to <span class="eq-close-txt"></span></div>
@@ -2312,7 +2302,7 @@
                         <img src="${imageSrc}" alt="${item.name}" class="w-full h-full object-contain object-center bg-white dark:bg-gray-800 transition-transform duration-500 group-hover:scale-110" onerror="this.src='../barangay-sun-logo.jpg'; this.onerror=null;">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         <div class="absolute top-3 right-3 flex flex-col gap-2 items-end">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-emerald-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${statusText}</span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${ok ? 'bg-slate-500/90 text-white' : 'bg-red-500/90 text-white'}">${statusIcon} ${statusText}</span>
                             ${extraBadges}
                         </div>
                         ${item.isLocked ? '<div class="absolute top-3 left-3 bg-gray-900/80 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-md flex items-center gap-1"><i class="bi bi-lock-fill"></i> Locked</div>' : ''}
@@ -2402,8 +2392,8 @@
         function getEquipmentIcon(name) {
             // Exact same icon map as Admin Inventory
             const EQUIP_ICON_MAP = {
-                'Chairs':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="6" y="2" width="12" height="10" rx="1.5"/><rect x="4" y="13" width="16" height="3" rx="1.5"/><rect x="6" y="17" width="3" height="5" rx="1"/><rect x="15" y="17" width="3" height="5" rx="1"/></svg>`, cls: 'eq-Chairs' },
-                'Tables':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#059669"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`, cls: 'eq-Tables' },
+                'Chairs':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#0f1f3d"><rect x="6" y="2" width="12" height="10" rx="1.5"/><rect x="4" y="13" width="16" height="3" rx="1.5"/><rect x="6" y="17" width="3" height="5" rx="1"/><rect x="15" y="17" width="3" height="5" rx="1"/></svg>`, cls: 'eq-Chairs' },
+                'Tables':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#0f1f3d"><rect x="1" y="7" width="22" height="3" rx="1.5"/><rect x="3" y="10" width="2.5" height="10" rx="1.25"/><rect x="18.5" y="10" width="2.5" height="10" rx="1.25"/><rect x="5" y="10" width="14" height="1.5" rx="0.75"/></svg>`, cls: 'eq-Tables' },
                 'Tents':       { html: `<i class="bi bi-house-door-fill" style="font-size:20px;color:#d97706;"></i>`, cls: 'eq-Tents' },
                 'Ladder':      { html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#d97706"><rect x="5" y="1" width="2.5" height="22" rx="1.25"/><rect x="16.5" y="1" width="2.5" height="22" rx="1.25"/><rect x="5" y="4" width="14" height="2" rx="1"/><rect x="5" y="10" width="14" height="2" rx="1"/><rect x="5" y="16" width="14" height="2" rx="1"/></svg>`, cls: 'eq-Ladder' },
                 'Microphone':  { html: `<i class="bi bi-mic-fill" style="font-size:20px;color:#dc2626;"></i>`, cls: 'eq-Microphone' },
@@ -2411,7 +2401,7 @@
                 'Electric Fan':{ html: `<i class="bi bi-fan" style="font-size:20px;color:#3b82f6;"></i>`, cls: 'eq-Fan' }
             };
             const entry = name ? EQUIP_ICON_MAP[name.trim()] : null;
-            const iconHtml = entry ? entry.html : `<i class="bi bi-box-seam-fill" style="font-size:20px;color:#059669;"></i>`;
+            const iconHtml = entry ? entry.html : `<i class="bi bi-box-seam-fill" style="font-size:20px;color:#0f1f3d;"></i>`;
             const iconCls  = entry ? entry.cls  : 'eq-Default';
             return `<div class="eq-icon ${iconCls}">${iconHtml}</div>`;
         }
@@ -2430,9 +2420,9 @@
             }
             const sorted = [...list].sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
             container.innerHTML = sorted.map(b => {
-                let statusBadge = '', statusBorder = 'border-emerald-200';
+                let statusBadge = '', statusBorder = 'border-slate-200';
                 if (b.status === 'pending') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>Pending</span>'; statusBorder = 'border-amber-200'; }
-                if (b.status === 'approved') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>Approved</span>'; statusBorder = 'border-emerald-200'; }
+                if (b.status === 'approved') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-slate-50 text-slate-700"><span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>Approved</span>'; statusBorder = 'border-slate-200'; }
                 if (b.status === 'rejected') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-700"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>Rejected</span>'; statusBorder = 'border-red-200'; }
                 if (b.status === 'returned') { statusBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>Returned</span>'; statusBorder = 'border-blue-200'; }
                 const rejectionMsg = (b.status === 'rejected' && b.rejection_reason) ? '<div class="mt-3 text-xs bg-red-50 p-3 rounded-lg border border-red-100"><strong class="text-red-700">Reason:</strong> <span class="text-red-600">' + b.rejection_reason + '</span></div>' : '';
@@ -2443,7 +2433,7 @@
                         const isDelivery = dm[1].trim().toLowerCase().startsWith('delivery');
                         deliveryBadge = isDelivery
                             ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;margin-top:4px;">&#128666; Delivery</span>'
-                            : '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;margin-top:4px;">&#127963; Pickup</span>';
+                            : '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f4f6f9;color:#166534;border:1px solid #dce5f5;margin-top:4px;">&#127963; Pickup</span>';
                     }
                 }
                 const equipItem = (typeof allEquipmentList !== 'undefined' && allEquipmentList) ? allEquipmentList.find(e => e.name === b.equipment) : null;
@@ -2452,7 +2442,7 @@
                     : getEquipmentIcon(b.equipment);
                 return '<div class="group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-gray-800 border-2 ' + statusBorder + ' shadow-sm hover:shadow-md transition-all duration-300">' +
                     '<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div class="flex items-start gap-4">' + equipIcon + 
-                    '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-emerald-600 font-bold">x' + b.quantity + '</span></p>' + deliveryBadge + '</div></div>' +
+                    '<div><h4 class="font-bold text-lg text-gray-800 dark:text-white">' + b.equipment + '</h4><p class="text-sm text-gray-500 font-medium">Quantity: <span class="text-slate-700 font-bold">x' + b.quantity + '</span></p>' + deliveryBadge + '</div></div>' +
                     '<div class="flex flex-col items-end gap-2">' + statusBadge + '<div class="text-xs text-gray-400 flex items-center gap-1">&#128197; ' + formatDate(b.borrowDate) + ' <i class="bi bi-arrow-right"></i> ' + formatDate(b.returnDate) + '</div></div></div>' +
                     rejectionMsg +
                     (b.status === 'pending' ? '<div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between"><p class="text-xs text-amber-600 font-medium flex items-center gap-1"> Waiting for approval</p><div class="flex gap-2"><button onclick="cancelEqRequest(' + b.id + ')" class="px-4 py-2 rounded-lg text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Cancel</button></div></div>' : '') +
@@ -2603,15 +2593,15 @@
             if (borrowStartDate) {
                 const d = new Date(borrowStartDate);
                 if (bDisp) {
-                    bDisp.innerHTML = '<div class="text-lg font-bold text-emerald-700">' + fullMonths[d.getMonth()] + ' ' + d.getDate() + '</div><div class="text-xs text-emerald-500">' + d.getFullYear() + '</div>';
-                    bDisp.classList.add('border-emerald-400', 'bg-emerald-100');
+                    bDisp.innerHTML = '<div class="text-lg font-bold text-slate-700">' + fullMonths[d.getMonth()] + ' ' + d.getDate() + '</div><div class="text-xs text-slate-600">' + d.getFullYear() + '</div>';
+                    bDisp.classList.add('border-slate-400', 'bg-slate-100');
                 }
                 if (dpStartDay) { dpStartDay.textContent = d.getDate(); dpStartMonth.textContent = months[d.getMonth()] + ' ' + d.getFullYear(); }
                 if (rangeDisplay) rangeDisplay.textContent = 'Now select a return date from the calendar';
             } else {
                 if (bDisp) {
-                    bDisp.innerHTML = '<div class="text-lg font-bold text-emerald-700">Select date</div><div class="text-xs text-emerald-500">from calendar</div>';
-                    bDisp.classList.remove('border-emerald-400', 'bg-emerald-100');
+                    bDisp.innerHTML = '<div class="text-lg font-bold text-slate-700">Select date</div><div class="text-xs text-slate-600">from calendar</div>';
+                    bDisp.classList.remove('border-slate-400', 'bg-slate-100');
                 }
                 if (dpStartDay) { dpStartDay.textContent = '--'; dpStartMonth.textContent = 'Select date'; }
                 if (rangeDisplay) rangeDisplay.textContent = 'Please select your borrowing dates from the calendar';
@@ -2626,7 +2616,7 @@
                 const start = new Date(borrowStartDate);
                 const diffDays = Math.ceil(Math.abs(d - start) / (1000*60*60*24)) + 1;
                 if (durText) durText.textContent = diffDays + (diffDays > 1 ? ' days' : ' day');
-                if (rangeDisplay) rangeDisplay.innerHTML = '<span class="text-emerald-600">&#128197; ' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' <i class="bi bi-arrow-right"></i> ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
+                if (rangeDisplay) rangeDisplay.innerHTML = '<span class="text-slate-700">&#128197; ' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' <i class="bi bi-arrow-right"></i> ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-slate-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
             } else {
                 if (rDisp) {
                     rDisp.innerHTML = '<div class="text-lg font-bold text-teal-700">Select date</div><div class="text-xs text-teal-500">from calendar</div>';
@@ -2672,7 +2662,7 @@
             if (badge) {
                 badge.innerHTML = `${minAvail} Available`;
                 badge.className = minAvail > 0 
-                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-emerald-500/90 text-white backdrop-blur-md' 
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-slate-500/90 text-white backdrop-blur-md' 
                     : 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-red-500/90 text-white backdrop-blur-md';
             }
             
@@ -2717,15 +2707,15 @@
                     const nextYear = nextAvailableDate.getFullYear();
                     
                     html += `
-                    <div class="bg-emerald-50 dark:bg-[#13251c] border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-3 flex items-center justify-between gap-3 text-emerald-900 dark:text-emerald-200 shadow-sm relative overflow-hidden mt-1">
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-200 rounded-2xl p-3 flex items-center justify-between gap-3 text-slate-900 dark:text-slate-200 shadow-sm relative overflow-hidden mt-1">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-slate-500"></div>
                         <div class="flex items-center gap-3">
-                            <div class="ml-1 shrink-0 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                            <div class="ml-1 shrink-0 flex items-center justify-center text-slate-700 dark:text-slate-400">
                                 <i class="bi bi-clock-history"></i>
                             </div>
                             <p class="text-xs font-medium"><strong>${totalStock} ${itemName}</strong> will be fully free starting <strong>${nextDateFormatted}</strong> — tap to jump there</p>
                         </div>
-                        <button type="button" onclick="jumpToDate(${nextYear}, ${nextMonth})" class="shrink-0 px-4 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1a3326] hover:bg-emerald-50 dark:hover:bg-[#204030] text-emerald-700 dark:text-emerald-300 text-xs font-bold transition shadow-sm cursor-pointer">Show me</button>
+                        <button type="button" onclick="jumpToDate(${nextYear}, ${nextMonth})" class="shrink-0 px-4 py-1.5 rounded-lg border border-slate-300 dark:border-slate-200 bg-white dark:bg-[#1a3326] hover:bg-slate-50 dark:hover:bg-[#204030] text-slate-700 dark:text-slate-300 text-xs font-bold transition shadow-sm cursor-pointer">Show me</button>
                     </div>
                     `;
                 }
@@ -2760,7 +2750,7 @@
                 <div class="flex items-center justify-between bg-white dark:bg-gray-700 p-2 rounded-lg border border-gray-100 dark:border-gray-600 shadow-sm">
                     <div>
                         <div class="text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                            ${name} ${isYou ? '<span class="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500 text-white font-bold">You</span>' : ''}
+                            ${name} ${isYou ? '<span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-500 text-white font-bold">You</span>' : ''}
                         </div>
                         <div class="text-[10px] text-gray-500 dark:text-gray-400">${dateRange}</div>
                     </div>
@@ -2778,7 +2768,7 @@
             const deliveryLabel = document.getElementById('deliveryToAddrLabel');
             if (pickupRadio) pickupRadio.checked = method === 'pickup';
             if (deliveryRadio) deliveryRadio.checked = method === 'delivery';
-            const active = '2px solid #10b981', inactive = '2px solid #e2e8f0';
+            const active = '2px solid #f5a623', inactive = '2px solid #e2e8f0';
             if (pickupLabel) pickupLabel.style.border = method === 'pickup' ? active : inactive;
             if (deliveryLabel) deliveryLabel.style.border = method === 'delivery' ? active : inactive;
             updateBorrowSubmitButton();
@@ -2796,7 +2786,7 @@
             if (deliveryLabel) { deliveryLabel.style.display = allowed ? 'flex' : 'none'; deliveryLabel.style.border = '2px solid #e2e8f0'; }
             if (notice) notice.style.display = allowed ? 'none' : 'block';
             if (pickupLabel) pickupLabel.style.border = '2px solid #e2e8f0';
-            if (!allowed) { if (pickupRadio) pickupRadio.checked = true; if (pickupLabel) pickupLabel.style.border = '2px solid #10b981'; }
+            if (!allowed) { if (pickupRadio) pickupRadio.checked = true; if (pickupLabel) pickupLabel.style.border = '2px solid #f5a623'; }
         }
 
         function itemAllowsBurol(itemName) {
@@ -2811,12 +2801,12 @@
                 btn.style.cssText = _BTN_ACTIVE;
             } else {
                 btn.style.cssText = _BTN_BASE + (isDark
-                    ? 'border:2px solid #334155;background:#1e293b;box-shadow:none;'
+                    ? 'border:2px solid #1e3a6b;background:#0f1f3d;box-shadow:none;'
                     : 'border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;');
             }
             const nameEl = btn.querySelector('span:nth-child(2)');
             const subEl  = btn.querySelector('span:nth-child(3)');
-            if (nameEl) nameEl.style.color = active ? '#fff' : (isDark ? '#f1f5f9' : '#0f172a');
+            if (nameEl) nameEl.style.color = active ? '#fff' : (isDark ? '#f1f5f9' : '#0a1628');
             if (subEl)  subEl.style.color  = active ? 'rgba(255,255,255,.8)' : '#94a3b8';
         }
 
@@ -2853,7 +2843,7 @@
                 const excluded = !itemAllowsBurol(name);
                 const available = purpose === 'event' || !excluded;
                 if (available) {
-                    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;margin:2px;">' + name + '</span>';
+                    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#e8edf5;color:#065f46;border:1px solid #f5a623;margin:2px;">' + name + '</span>';
                 } else {
                     return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;text-decoration:line-through;opacity:.7;margin:2px;">' + name + '</span>';
                 }
@@ -2870,7 +2860,7 @@
             const _crb = document.getElementById('calRuleBadge');
             if (_crb) {
                 if (currentBorrowPurpose === 'event') {
-                    _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;';
+                    _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#e8edf5;color:#065f46;border:1px solid #f5a623;';
                     _crb.textContent = 'Next-day return';
                 } else if (currentBorrowPurpose === 'burol') {
                     _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
@@ -2923,9 +2913,9 @@
                         : 'background:#ef4444;color:#fff;cursor:not-allowed;opacity:0.9;';
                     dayDiv.title = "Fully Booked";
                 } else {
-                    let baseBg = isDark ? '#374151' : '#ecfdf5';
-                    let baseColor = isDark ? '#34d399' : '#047857';
-                    let baseBorder = isDark ? '1px solid #10b981' : '1px solid #10b981';
+                    let baseBg = isDark ? '#374151' : '#f0f4ff';
+                    let baseColor = isDark ? '#f5a623' : '#0f1f3d';
+                    let baseBorder = isDark ? '1px solid #f5a623' : '1px solid #f5a623';
                     let hoverBg = isDark ? '#4b5563' : '#a7f3d0';
                     
                     if (isPartiallyBooked) {
@@ -2946,12 +2936,12 @@
                     dayDiv.onclick = () => selectBorrowDate(dateStr, totalStock - borrowedCount);
                 }
                 
-                if (dateObj.getTime() === today.getTime() && !isFullyBooked) { dayDiv.style.outline = '2px solid #10b981'; dayDiv.style.outlineOffset = '2px'; }
-                if (borrowStartDate === dateStr) { dayDiv.style.cssText = 'background:#10b981;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.4);outline:2px solid #6ee7b7;outline-offset:0;'; }
+                if (dateObj.getTime() === today.getTime() && !isFullyBooked) { dayDiv.style.outline = '2px solid #f5a623'; dayDiv.style.outlineOffset = '2px'; }
+                if (borrowStartDate === dateStr) { dayDiv.style.cssText = 'background:#f5a623;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(245,166,35,0.4);outline:2px solid #f5a623;outline-offset:0;'; }
                 if (borrowReturnDate === dateStr) { dayDiv.style.cssText = 'background:#0d9488;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,0.4);outline:2px solid #5eead4;outline-offset:0;'; }
                 if (borrowStartDate && borrowReturnDate) {
                     const start = new Date(borrowStartDate); const end = new Date(borrowReturnDate);
-                    if (dateObj > start && dateObj < end) { dayDiv.style.background = isDark ? '#064e3b' : '#d1fae5'; dayDiv.style.color = isDark ? '#6ee7b7' : '#065f46'; }
+                    if (dateObj > start && dateObj < end) { dayDiv.style.background = isDark ? '#0f1f3d' : '#e8edf5'; dayDiv.style.color = isDark ? '#f5a623' : '#065f46'; }
                 }
                 dayDiv.textContent = day;
                 grid.appendChild(dayDiv);
@@ -3039,7 +3029,7 @@
             if (btn) btn.style.display = isLocked ? 'flex' : 'none';
             if (rangeDisplay && isLocked) {
                 rangeDisplay.style.fontWeight = '700';
-                rangeDisplay.style.background = 'rgba(16,185,129,0.12)';
+                rangeDisplay.style.background = 'rgba(245,166,35,0.12)';
             } else if (rangeDisplay) {
                 rangeDisplay.style.fontWeight = '';
                 rangeDisplay.style.background = '';
@@ -3164,7 +3154,7 @@
             const styles = {
                 'Submitted':   'background:#fef3c7;color:#92400e;border:1px solid #fde68a;',
                 'In Progress': 'background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;',
-                'Resolved':    'background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;',
+                'Resolved':    'background:#e8edf5;color:#065f46;border:1px solid #f5a623;',
                 'Rejected':    'background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;',
             };
             const s = styles[label] || 'background:#f1f5f9;color:#374151;border:1px solid #e2e8f0;';
@@ -3228,23 +3218,23 @@
                     }
                 });
                 const stepTs = [fmtTs(c.createdAt), inProgressTs||'—', finalTs||'—'];
-                const stepColors = {active:{ 0:'#f59e0b', 1:'#3b82f6', 2: statusLabel==='Rejected'?'#ef4444':'#10b981' }};
+                const stepColors = {active:{ 0:'#f59e0b', 1:'#3b82f6', 2: statusLabel==='Rejected'?'#ef4444':'#f5a623' }};
                 const stepsHtml = steps.map((step, i) => {
                     const done = i < activeIdx;
                     const active = i === activeIdx;
                     const notReached = i > activeIdx;
-                    const col = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'transparent');
-                    const border = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'var(--border-color)');
+                    const col = done ? '#f5a623' : (active ? (stepColors.active[i]||'#f5a623') : 'transparent');
+                    const border = done ? '#f5a623' : (active ? (stepColors.active[i]||'#f5a623') : 'var(--border-color)');
                     const icon = done ? '&#10003;' : (active && i === 0 ? '&#10003;' : active ? '&#9679;' : '');
-                    const textCol = done ? '#10b981' : (active ? (stepColors.active[i]||'#10b981') : 'var(--text-muted)');
+                    const textCol = done ? '#f5a623' : (active ? (stepColors.active[i]||'#f5a623') : 'var(--text-muted)');
                     return '<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:0;">'
                         + '<div style="width:30px;height:30px;border-radius:50%;background:'+col+';border:2px solid '+border+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:'+(notReached?'var(--text-muted)':'#fff')+';z-index:1;flex-shrink:0;">'+icon+'</div>'
                         + '<div style="font-size:11px;font-weight:700;color:'+textCol+';margin-top:6px;text-align:center;white-space:nowrap;">'+step+'</div>'
                         + '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;text-align:center;">'+stepTs[i]+'</div>'
                         + '</div>';
                 });
-                const line1 = activeIdx >= 1 ? 'background:linear-gradient(90deg,#10b981,'+stepColors.active[1]+')' : 'background:var(--border-color)';
-                const line2 = activeIdx >= 2 ? 'background:linear-gradient(90deg,'+stepColors.active[1]+','+(statusLabel==='Rejected'?'#ef4444':'#10b981')+')' : 'background:var(--border-color)';
+                const line1 = activeIdx >= 1 ? 'background:linear-gradient(90deg,#f5a623,'+stepColors.active[1]+')' : 'background:var(--border-color)';
+                const line2 = activeIdx >= 2 ? 'background:linear-gradient(90deg,'+stepColors.active[1]+','+(statusLabel==='Rejected'?'#ef4444':'#f5a623')+')' : 'background:var(--border-color)';
                 const timelineHtml = '<div style="margin:14px 0 10px;padding:14px 16px;background:var(--input-bg);border-radius:12px;border:1px solid var(--border-color);">'
                     + '<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;">Status Timeline</div>'
                     + '<div style="display:flex;align-items:flex-start;position:relative;">'
@@ -3256,11 +3246,11 @@
                     + '</div></div>';
 
                 // ACTIVITY LOG
-                const logItems = [{dot:'#10b981', title:'Concern submitted', desc:'Citizen submitted the concern via Resident Portal.', ts: fmtTs(c.createdAt)}];
+                const logItems = [{dot:'#f5a623', title:'Concern submitted', desc:'Citizen submitted the concern via Resident Portal.', ts: fmtTs(c.createdAt)}];
                 parsed.log.forEach(entry => {
                     if (entry.action === 'status_changed') {
                         const lbl = _concernStatusLabel(entry.status);
-                        const dot = lbl==='Resolved'?'#10b981':lbl==='Rejected'?'#ef4444':'#f59e0b';
+                        const dot = lbl==='Resolved'?'#f5a623':lbl==='Rejected'?'#ef4444':'#f59e0b';
                         logItems.push({dot, title:'Status updated to '+lbl, desc:(entry.by?'Updated by '+entry.by+'.':'Status changed.'), ts:fmtTs(entry.timestamp)});
                     }
                     if (entry.action === 'replied') logItems.push({dot:'#3b82f6', title:'Admin replied', desc:'A response was sent to your concern.', ts:fmtTs(entry.timestamp)});
@@ -3284,8 +3274,8 @@
                 // Admin reply box
                 const lastReply = parsed.log.filter(e=>e.action==='replied').slice(-1)[0];
                 const replyHtml = parsed.reply
-                    ? '<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:14px;">'
-                        + '<div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#10b981;margin-bottom:8px;">Admin reply</div>'
+                    ? '<div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.25);border-radius:12px;padding:14px;">'
+                        + '<div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f5a623;margin-bottom:8px;">Admin reply</div>'
                         + '<p style="margin:0 0 8px;font-size:13px;color:var(--text-main);line-height:1.6;">'+parsed.reply+'</p>'
                         + (lastReply ? '<div style="font-size:11px;color:var(--text-muted);">'+(lastReply.by||'Admin')+' &middot; '+fmtTs(lastReply.timestamp)+'</div>' : '')
                         + '</div>'
@@ -3293,7 +3283,7 @@
 
                 const statusBadge = _concernStatusBadge(c.status);
                 const repliedBadge = parsed.reply
-                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);">&#10003; Replied</span>'
+                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(245,166,35,0.12);color:#f5a623;border:1px solid rgba(245,166,35,0.3);">&#10003; Replied</span>'
                     : '';
 
                 return '<div style="background:var(--card-bg,var(--input-bg));border:1px solid var(--border-color);border-radius:16px;padding:18px;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 20px rgba(0,0,0,0.1)\'" onmouseout="this.style.boxShadow=\'none\'">'
@@ -3326,7 +3316,7 @@
                 for (let p = 1; p <= totalPages; p++) {
                     if (p === 1 || p === totalPages || (p >= _concernsCurrentPage - range && p <= _concernsCurrentPage + range)) {
                         const isActive = p === _concernsCurrentPage;
-                        btns.push('<button onclick="loadConcernsView('+p+')" style="padding:6px 12px;border-radius:8px;border:1px solid '+(isActive?'#10b981':'var(--border-color)')+';background:'+(isActive?'#10b981':'var(--input-bg)')+';color:'+(isActive?'#fff':'var(--text-muted)')+';font-size:13px;font-weight:'+(isActive?'800':'600')+';cursor:pointer;min-width:36px;">'+p+'</button>');
+                        btns.push('<button onclick="loadConcernsView('+p+')" style="padding:6px 12px;border-radius:8px;border:1px solid '+(isActive?'#f5a623':'var(--border-color)')+';background:'+(isActive?'#f5a623':'var(--input-bg)')+';color:'+(isActive?'#fff':'var(--text-muted)')+';font-size:13px;font-weight:'+(isActive?'800':'600')+';cursor:pointer;min-width:36px;">'+p+'</button>');
                     } else if (p === _concernsCurrentPage - range - 1 || p === _concernsCurrentPage + range + 1) {
                         btns.push('<span style="padding:6px 4px;color:var(--text-muted);font-size:13px;">...</span>');
                     }
@@ -3380,7 +3370,7 @@
             const badge = document.getElementById('borrowModalStockBadge');
             if (badge) {
                 badge.innerHTML = `${item.available} Available`;
-                badge.className = item.available > 0 ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-emerald-500/90 text-white backdrop-blur-md' : 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-red-500/90 text-white backdrop-blur-md';
+                badge.className = item.available > 0 ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-slate-500/90 text-white backdrop-blur-md' : 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-md bg-red-500/90 text-white backdrop-blur-md';
             }
 
             document.getElementById('borrowEquipmentId').value = equipId;
@@ -3518,7 +3508,7 @@
         function switchVenue(venue) {
             selectedVenue = venue;
             
-            const activeClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95';
+            const activeClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-navy-600 text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95';
             const inactiveClass = 'px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800';
 
             document.getElementById('sel-basketball').className = venue === 'basketball' ? activeClass : inactiveClass;
@@ -3614,7 +3604,7 @@
                 }
                 else if (hasEvent) { 
                     // Official Events  solid violet. User can still book outside event time slots.
-                    dayDiv.className += 'bg-emerald-600 text-white border-2 border-emerald-700 cursor-pointer hover:bg-emerald-700 hover:scale-105'; 
+                    dayDiv.className += 'bg-[#0f1f3d] text-white border-2 border-amber-400 cursor-pointer hover:bg-amber-500 hover:scale-105'; 
                     dayDiv.title = 'Brgy Event: ' + hasEvent.title + '. Click to view schedule & book available slots.'; 
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
@@ -3624,7 +3614,7 @@
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 else { 
-                    dayDiv.className += 'bg-emerald-50 text-emerald-700 hover:bg-emerald-200 border border-emerald-200 cursor-pointer hover:scale-105'; 
+                    dayDiv.className += 'bg-slate-50 text-slate-700 hover:bg-amber-500 border border-slate-200 cursor-pointer hover:scale-105'; 
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
                 
@@ -3633,7 +3623,7 @@
                 }
                 
                 if (selectedDate === dateStr && !hasEvent) { 
-                    dayDiv.className = 'p-3 rounded-lg text-center cursor-pointer font-bold text-sm bg-emerald-600 text-white shadow-md hover:scale-105 transition transform'; 
+                    dayDiv.className = 'p-3 rounded-lg text-center cursor-pointer font-bold text-sm bg-navy-600 text-white shadow-md hover:scale-105 transition transform'; 
                 }
                 
                 dayDiv.textContent = day;
@@ -3660,7 +3650,7 @@
             } else {
                 activeBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
                 myContainer.innerHTML = activeBookings.map(b => {
-                    const statusClass = b.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
+                    const statusClass = b.status === 'approved' ? 'bg-slate-100 text-slate-800' : 'bg-amber-100 text-amber-800';
                     const statusText = b.status.charAt(0).toUpperCase() + b.status.slice(1);
                     return '<div class="border rounded-xl p-4 shadow-sm" style="background-color: var(--panel-bg); border-color: var(--border-color);">' +
                         '<div class="flex justify-between mb-2 border-b pb-2" style="border-color: var(--border-color);"><h4 class="font-bold" style="color: var(--text-main);">&#128197; ' + formatDate(b.date) + '</h4><span class="px-2 py-0.5 rounded text-xs font-bold ' + statusClass + '">' + statusText + '</span></div>' +
@@ -3725,10 +3715,10 @@
                 if(!banner) {
                     banner = document.createElement('div');
                     banner.id = 'dsRescheduleBanner';
-                    banner.className = 'bg-emerald-50 text-emerald-800 p-3 rounded-lg mb-4 text-sm font-bold border border-emerald-200';
+                    banner.className = 'bg-slate-50 text-slate-800 p-3 rounded-lg mb-4 text-sm font-bold border border-slate-200';
                     document.getElementById('dsBookingForm').prepend(banner);
                 }
-                banner.innerHTML = `&#128260; Rescheduling Mode Active:<br><span class="text-xs font-normal text-emerald-700">Original Time: ${m.original_time}. Review time and confirm.</span>`;
+                banner.innerHTML = `&#128260; Rescheduling Mode Active:<br><span class="text-xs font-normal text-slate-700">Original Time: ${m.original_time}. Review time and confirm.</span>`;
                 banner.classList.remove('hidden');
             } else {
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span> Add Facility Reservation</span>';
@@ -3773,7 +3763,7 @@
                     const timeRange = ev.end_time ? `${fmt12(ev.time)} - ${fmt12(ev.end_time)}` : fmt12(ev.time);
                     return `<strong>${ev.title}</strong> <span style="opacity:0.85;">(${timeRange})</span>`;
                 }).join('<br>');
-                eventNoticeBanner.innerHTML = `<div style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;">
+                eventNoticeBanner.innerHTML = `<div style="background:linear-gradient(135deg,#f5a623,#0f1f3d);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;">
                     <div style="font-size:14px;font-weight:800;margin-bottom:4px;">&#127881; Official Barangay Event</div>
                     ${evNames}
                     <div style="margin-top:6px;font-size:11px;opacity:0.85;">¸Â Time slots during this event are blocked. You may still book slots outside these hours.</div>
@@ -3816,7 +3806,7 @@
                     const startM = timeToMinutes(ev.time || '07:00');
                     return (endM - startM) >= 600;
                 });
-                blockedNotice.innerHTML = `<div style="background:linear-gradient(135deg,#064e3b,#047857);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:center;">
+                blockedNotice.innerHTML = `<div style="background:linear-gradient(135deg,#0f1f3d,#0f1f3d);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:center;">
                     <div style="font-size:16px;font-weight:800;margin-bottom:6px;"> This Day is Fully Reserved by the Barangay</div>
                     <div style="font-size:12px;opacity:0.85;">${blockedEvent ? '"' + blockedEvent.title + '"' : 'A Barangay event'} has been scheduled for this entire day.</div>
                     <div style="font-size:11px;opacity:0.7;margin-top:4px;">No facility reservations can be made on this date. Please choose another date.</div>
@@ -3875,9 +3865,9 @@
                 empty.classList.add('hidden');
                 list.innerHTML = entries.map(en => {
                     const isBk = en.type === 'booking';
-                    const bg = isBk ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200';
+                    const bg = isBk ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200';
                     const dot = isBk ? '' : '';
-                    const nameColor = isBk ? 'text-red-700' : 'text-emerald-700';
+                    const nameColor = isBk ? 'text-red-700' : 'text-slate-700';
                     return `<div class="flex items-start gap-3 p-3 rounded-xl border ${bg}">
                         <span class="text-lg leading-none mt-0.5">${dot}</span>
                         <div class="flex-1 min-w-0">
@@ -4147,15 +4137,15 @@
             upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
             container.innerHTML = upcoming.map(e => {
                 const timeStr = e.end_time ? fmt12(e.time) + ' - ' + fmt12(e.end_time) : fmt12(e.time);
-                return '<div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">' +
-                    '<div class="flex justify-between items-start mb-4"><span class="bg-white text-emerald-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span></div>' +
+                return '<div class="bg-gradient-to-br from-slate-500 to-emerald-700 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">' +
+                    '<div class="flex justify-between items-start mb-4"><span class="bg-white text-slate-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm uppercase tracking-wide">Official Event</span></div>' +
                     '<h3 class="text-2xl font-black mb-1 line-clamp-2">' + e.title + '</h3>' +
-                    '<p class="text-emerald-100 font-medium mb-4 text-sm flex items-center gap-1">&#128205; ' + e.location + '</p>' +
+                    '<p class="text-slate-100 font-medium mb-4 text-sm flex items-center gap-1">&#128205; ' + e.location + '</p>' +
                     '<div class="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">' +
                     '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + formatDate(e.date) + '</span></div>' +
                     '<div class="flex items-center gap-2 mb-2"><span class="font-bold">' + timeStr + '</span></div>' +
                     '<div class="flex items-center gap-2' + (e.capacity || e.description ? ' mb-2' : '') + '"><span class="text-sm">By ' + e.organizer + '</span></div>' +
-                    (e.capacity ? '<div class="flex items-center gap-2 mb-2"><span class="text-sm font-bold text-emerald-100"> Capacity: ' + e.capacity + ' max</span></div>' : '') +
+                    (e.capacity ? '<div class="flex items-center gap-2 mb-2"><span class="text-sm font-bold text-slate-100"> Capacity: ' + e.capacity + ' max</span></div>' : '') +
                     ''  +
                     '</div></div>';
             }).join('');
@@ -4277,9 +4267,9 @@
                 const boo = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
                 
                 let all = [];
-                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '<i class="bi bi-box-seam"></i>', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
-                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '<i class="bi bi-chat-left-text"></i>', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
-                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '<i class="bi bi-calendar-event"></i>', colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' }));
+                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '<i class="bi bi-box-seam"></i>', colorClass: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-navy-900/30 dark:border-slate-200 dark:text-slate-400' }));
+                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '<i class="bi bi-chat-left-text"></i>', colorClass: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-navy-900/30 dark:border-slate-200 dark:text-slate-400' }));
+                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '<i class="bi bi-calendar-event"></i>', colorClass: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-navy-900/30 dark:border-slate-200 dark:text-slate-400' }));
                 all.sort((a,b) => b.date - a.date);
                 allHistoryData = all;
                 currentPageHistory = 1;
@@ -4303,9 +4293,9 @@
             document.getElementById('stab-content-' + tab).classList.remove('hidden');
             const activeBtn = document.getElementById('stab-' + tab);
             if (activeBtn) {
-                activeBtn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+                activeBtn.style.background = 'linear-gradient(135deg,#f5a623,#0f1f3d)';
                 activeBtn.style.color = '#fff';
-                activeBtn.style.borderColor = '#10b981';
+                activeBtn.style.borderColor = '#f5a623';
             }
             if (tab === 'security') loadDashboardTOTPStatus();
         }
@@ -4398,7 +4388,7 @@ async function loadSettingsView() {
                 const info = await fetchUserTOTPInfo(user.id);
                 if (info.totp_enabled) {
                     statusText.textContent = 'Enabled';
-                    statusBadge.style.cssText = 'padding:4px 12px;background:#d1fae5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;';
+                    statusBadge.style.cssText = 'padding:4px 12px;background:#e8edf5;color:#065f46;border-radius:20px;font-size:12px;font-weight:700;';
                     statusBadge.textContent = ' Active';
                     actionsEl.innerHTML = `<button onclick="disableDashboardTOTP()" style="padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#fee2e2;color:#b91c1c;border:1.5px solid #fecaca;transition:all 0.2s;"> Disable Google Authenticator</button>`;
                 } else {
@@ -4677,7 +4667,7 @@ async function loadSettingsView() {
             if (existing) existing.remove();
 
             const colors = {
-                success: { bg: '#d1fae5', border: '#10b981', icon: '', text: '#065f46', progress: '#10b981' },
+                success: { bg: '#e8edf5', border: '#f5a623', icon: '', text: '#065f46', progress: '#f5a623' },
                 error:   { bg: '#fee2e2', border: '#ef4444', icon: '&#10060;', text: '#991b1b', progress: '#ef4444' },
                 info:    { bg: '#dbeafe', border: '#3b82f6', icon: '', text: '#1e40af', progress: '#3b82f6' },
                 warning: { bg: '#fef3c7', border: '#f59e0b', icon: '¸Â', text: '#92400e', progress: '#f59e0b' }
@@ -4736,7 +4726,7 @@ async function loadSettingsView() {
                 <button id="rcmCancelBtn" onclick="confirmCancelCompletely()" class="flex-1 py-3 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     Cancel Completely
                 </button>
-                <button id="rcmRescheduleBtn" onclick="handleReschedule()" class="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition">
+                <button id="rcmRescheduleBtn" onclick="handleReschedule()" class="flex-1 py-3 bg-gradient-to-r from-slate-500 to-slate-100 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition">
                     &#128197; Reschedule
                 </button>
             </div>
