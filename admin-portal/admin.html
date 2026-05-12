@@ -639,18 +639,6 @@
                             </div>
                         </div>
 
-                        <!-- MAIN PAGE TABS: Court Events / Schedule Overview -->
-                        <div style="display:flex;gap:8px;margin-bottom:20px;">
-                            <button id="courtMainTab-events" onclick="switchCourtMainTab('events')" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;border:2px solid #2563eb;background:#2563eb;color:#fff;transition:all 0.2s;">
-                                <i class="bi bi-calendar-event-fill"></i> Court Events
-                            </button>
-                            <button id="courtMainTab-schedule" onclick="switchCourtMainTab('schedule')" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;border:2px solid #1e3a5f;background:transparent;color:#1e3a5f;transition:all 0.2s;">
-                                <i class="bi bi-list-ul"></i> Schedule Overview
-                            </button>
-                        </div>
-
-                        <!-- TAB PANEL: Court Events (existing table) -->
-                        <div id="courtPanel-events">
                         <!-- FILTER + SEARCH BAR -->
                         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
                             <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="courtBookingTabs">
@@ -694,26 +682,6 @@
                             </div>
                         </div>
                         <div id="courtBookingsPg" class="pg-controls" style="display:none;margin-top:16px;"></div>
-                        </div><!-- end courtPanel-events -->
-
-                        <!-- TAB PANEL: Schedule Overview -->
-                        <div id="courtPanel-schedule" style="display:none;">
-                            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
-                                <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="scheduleOverviewTabs">
-                                    <button class="cb-tab-btn cb-active" onclick="setScheduleFilter('all',this)">All</button>
-                                    <button class="cb-tab-btn" onclick="setScheduleFilter('basketball',this)">Basketball Court</button>
-                                    <button class="cb-tab-btn" onclick="setScheduleFilter('multipurpose',this)">Multi-Purpose Hall</button>
-                                </div>
-                                <div style="position:relative;">
-                                    <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
-                                    <input type="text" id="scheduleSearch" placeholder="Search by resident or venue..." oninput="renderScheduleOverview()" style="padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;width:260px;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#2563eb';this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                                </div>
-                            </div>
-                            <div id="scheduleOverviewList" style="display:flex;flex-direction:column;gap:10px;">
-                                <div style="padding:40px;text-align:center;color:#94a3b8;font-size:14px;">Loading schedule...</div>
-                            </div>
-                            <div id="scheduleOverviewPg" class="pg-controls" style="display:none;margin-top:16px;"></div>
-                        </div><!-- end courtPanel-schedule -->
 
                     </div> <!-- Closes court-bookings-section -->
 
@@ -4333,113 +4301,6 @@
 
                 } catch (err) {
                     console.error('loadOverviewPanels error:', err);
-                }
-            }
-
-            let _scheduleAllBookings = [];
-            let _scheduleFilter = 'all';
-            let _schedulePage = 1;
-            const SCHEDULE_PER_PAGE = 10;
-
-            function switchCourtMainTab(tab) {
-                const eventsPanel = document.getElementById('courtPanel-events');
-                const schedPanel = document.getElementById('courtPanel-schedule');
-                const eventsBtn = document.getElementById('courtMainTab-events');
-                const schedBtn = document.getElementById('courtMainTab-schedule');
-                if (tab === 'events') {
-                    if (eventsPanel) eventsPanel.style.display = '';
-                    if (schedPanel) schedPanel.style.display = 'none';
-                    if (eventsBtn) { eventsBtn.style.background = '#2563eb'; eventsBtn.style.color = '#fff'; eventsBtn.style.borderColor = '#2563eb'; }
-                    if (schedBtn) { schedBtn.style.background = 'transparent'; schedBtn.style.color = '#1e3a5f'; schedBtn.style.borderColor = '#1e3a5f'; }
-                } else {
-                    if (eventsPanel) eventsPanel.style.display = 'none';
-                    if (schedPanel) schedPanel.style.display = '';
-                    if (schedBtn) { schedBtn.style.background = '#2563eb'; schedBtn.style.color = '#fff'; schedBtn.style.borderColor = '#2563eb'; }
-                    if (eventsBtn) { eventsBtn.style.background = 'transparent'; eventsBtn.style.color = '#1e3a5f'; eventsBtn.style.borderColor = '#1e3a5f'; }
-                    loadScheduleOverview();
-                }
-            }
-
-            function setScheduleFilter(venue, btn) {
-                _scheduleFilter = venue;
-                _schedulePage = 1;
-                document.querySelectorAll('#scheduleOverviewTabs .cb-tab-btn').forEach(b => b.classList.remove('cb-active'));
-                if (btn) btn.classList.add('cb-active');
-                renderScheduleOverview();
-            }
-
-            async function loadScheduleOverview() {
-                const listEl = document.getElementById('scheduleOverviewList');
-                if (!listEl) return;
-                listEl.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8;font-size:14px;">Loading schedule...</div>';
-                const { data, error } = await window.supabase
-                    .from('facility_reservations')
-                    .select('id, venue, date, start_time, end_time, purpose, status, created_at, users(full_name)')
-                    .order('date', { ascending: true });
-                if (error || !data) {
-                    listEl.innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444;font-size:14px;">Failed to load schedule.</div>';
-                    return;
-                }
-                _scheduleAllBookings = data;
-                _schedulePage = 1;
-                renderScheduleOverview();
-            }
-
-            function renderScheduleOverview() {
-                const listEl = document.getElementById('scheduleOverviewList');
-                const pgEl = document.getElementById('scheduleOverviewPg');
-                if (!listEl) return;
-                const search = (document.getElementById('scheduleSearch')?.value || '').toLowerCase();
-                let items = _scheduleAllBookings.filter(b => {
-                    const venueMatch = _scheduleFilter === 'all' || (b.venue || '').toLowerCase().includes(_scheduleFilter);
-                    const searchMatch = !search ||
-                        (b.users?.full_name || '').toLowerCase().includes(search) ||
-                        (b.venue || '').toLowerCase().includes(search) ||
-                        (b.purpose || '').toLowerCase().includes(search);
-                    return venueMatch && searchMatch;
-                });
-                if (items.length === 0) {
-                    listEl.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8;font-size:14px;">No bookings found.</div>';
-                    if (pgEl) pgEl.style.display = 'none';
-                    return;
-                }
-                const totalPages = Math.ceil(items.length / SCHEDULE_PER_PAGE);
-                if (_schedulePage > totalPages) _schedulePage = 1;
-                const page = items.slice((_schedulePage - 1) * SCHEDULE_PER_PAGE, _schedulePage * SCHEDULE_PER_PAGE);
-                const statusColors = { approved: '#dcfce7|#166534', pending: '#fef9c3|#854d0e', cancelled: '#fee2e2|#991b1b', rejected: '#fee2e2|#991b1b' };
-                listEl.innerHTML = page.map(b => {
-                    const name = b.users?.full_name || 'Unknown';
-                    const date = b.date ? new Date(b.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : '—';
-                    const time = b.start_time && b.end_time ? b.start_time + ' – ' + b.end_time : b.start_time || '—';
-                    const [bg, fg] = (statusColors[b.status] || '#f3f4f6|#374151').split('|');
-                    const venueLabel = (b.venue || '').toLowerCase().includes('basketball') ? 'Basketball Court' : (b.venue || '').toLowerCase().includes('multi') ? 'Multi-Purpose Hall' : b.venue || 'Venue';
-                    return `<div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
-                        <div style="width:44px;height:44px;border-radius:10px;background:#eff6ff;color:#2563eb;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;">
-                            <i class="bi bi-calendar3" style="font-size:18px;"></i>
-                        </div>
-                        <div style="flex:1;min-width:0;">
-                            <div style="font-size:14px;font-weight:700;color:#0f2952;">${name}</div>
-                            <div style="font-size:12px;color:#6b7280;margin-top:2px;">${venueLabel} &bull; ${date} &bull; ${time}</div>
-                            ${b.purpose ? '<div style="font-size:12px;color:#374151;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b.purpose + '</div>' : ''}
-                        </div>
-                        <span style="padding:4px 12px;border-radius:20px;background:${bg};color:${fg};font-size:12px;font-weight:600;text-transform:capitalize;flex-shrink:0;">${b.status}</span>
-                    </div>`;
-                }).join('');
-                // Pagination
-                if (pgEl) {
-                    if (totalPages <= 1) { pgEl.style.display = 'none'; return; }
-                    pgEl.style.display = 'flex';
-                    pgEl.innerHTML = '';
-                    const mkBtn = (label, page, disabled, active) => {
-                        const btn = document.createElement('button');
-                        btn.innerHTML = label;
-                        btn.style.cssText = `padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;cursor:${disabled?'default':'pointer'};font-family:inherit;border:1.5px solid ${active?'#2563eb':'#e2e8f0'};background:${active?'#2563eb':'#fff'};color:${active?'#fff':'#374151'};opacity:${disabled?0.4:1};`;
-                        if (!disabled) btn.onclick = () => { _schedulePage = page; renderScheduleOverview(); };
-                        return btn;
-                    };
-                    pgEl.appendChild(mkBtn('&laquo;', _schedulePage - 1, _schedulePage === 1, false));
-                    for (let i = 1; i <= totalPages; i++) pgEl.appendChild(mkBtn(i, i, false, i === _schedulePage));
-                    pgEl.appendChild(mkBtn('&raquo;', _schedulePage + 1, _schedulePage === totalPages, false));
                 }
             }
 
