@@ -765,30 +765,34 @@
                         </div>
                     </div>
                     <!-- Calendar -->
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
-                            <div class="flex gap-2">
-                                <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-left"></i></button>
-                                <button onclick="(function(){const t=new Date();bookingYear=t.getFullYear();bookingMonth=t.getMonth();renderBookingCalendar();})()" class="px-3 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition border border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100" style="min-width:52px;">Today</button>
-                                <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-right"></i></button>
+                    <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
+                        <!-- Calendar Header (navy) -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:#1A3A6B;">
+                            <button onclick="changeBookingMonth(-1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="bi bi-chevron-left"></i></button>
+                            <h3 id="calendarMonthTitle" style="font-size:18px;font-weight:700;color:#fff;margin:0;">Month</h3>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <button onclick="(function(){const t=new Date();currentMonth=t.getMonth();currentYear=t.getFullYear();loadBookingView();})()" style="padding:6px 14px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.7);background:transparent;cursor:pointer;font-size:12px;font-weight:700;color:#fff;transition:all 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='#fff'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,0.7)'">Today</button>
+                                <button onclick="changeBookingMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="bi bi-chevron-right"></i></button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-7 gap-1 mb-3">
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
-                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
+                        <!-- Day Labels (darker navy) -->
+                        <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#0F2547;">
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sun</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Mon</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Tue</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Wed</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Thu</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Fri</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sat</div>
                         </div>
-                        <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
-                        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding-top:14px;border-top:1px solid var(--border-color);">
-                            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;">&#9679; Available</span>
-                            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:#dbeafe;color:#1e3a5f;border:1px solid #bfdbfe;">&#9679; Brgy Event</span>
-                            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">&#9679; Booked</span>
-                            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;">&#9679; Past</span>
+                        <!-- Calendar Grid -->
+                        <div id="bookingCalendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
+                        <!-- Legend -->
+                        <div style="display:flex;justify-content:center;gap:24px;padding:14px 20px;border-top:1px solid #F3F4F6;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DCFCE7;border:1px solid #86EFAC;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Available</span></div>
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#FEF3C7;border:1px solid #FCD34D;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Brgy Event</span></div>
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DBEAFE;border:1px solid #93C5FD;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Booked</span></div>
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#F3F4F6;border:1px solid #D1D5DB;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Past</span></div>
                         </div>
                     </div>
                 </div>
@@ -3693,34 +3697,42 @@
                 const hasEvent = eventDates[dateStr];
                 const dayDiv = document.createElement('div');
                 
-                // Base classes
-                dayDiv.className = 'p-3 rounded-lg text-center font-bold text-sm transition transform ';
-                
-                if (dateObj < today) { 
-                    dayDiv.className += 'bg-gray-100 text-gray-400 cursor-not-allowed'; 
+                // Base styles (inline, matching admin calendar palette)
+                dayDiv.style.cssText = 'padding:12px 4px;text-align:center;font-weight:700;font-size:13px;cursor:default;transition:all 0.15s;border-bottom:1px solid #F3F4F6;border-right:1px solid #F3F4F6;';
+
+                if (dateObj < today) {
+                    dayDiv.style.background = '#F3F4F6';
+                    dayDiv.style.color = '#9CA3AF';
                 }
-                else if (hasEvent) { 
-                    // Official Events  solid violet. User can still book outside event time slots.
-                    dayDiv.className += 'bg-[#0f1f3d] text-white border-2 border-amber-400 cursor-pointer hover:bg-amber-500 hover:scale-105'; 
-                    dayDiv.title = 'Brgy Event: ' + hasEvent.title + '. Click to view schedule & book available slots.'; 
+                else if (hasEvent) {
+                    dayDiv.style.background = '#FEF3C7';
+                    dayDiv.style.color = '#92400E';
+                    dayDiv.style.cursor = 'pointer';
+                    dayDiv.title = 'Brgy Event: ' + hasEvent.title + '. Click to view schedule & book available slots.';
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
-                else if (bookedDates.includes(dateStr)) { 
-                    dayDiv.className += 'bg-red-600 text-white border-2 border-red-700 cursor-pointer hover:bg-red-700 hover:scale-105 shadow-md'; 
+                else if (bookedDates.includes(dateStr)) {
+                    dayDiv.style.background = '#DBEAFE';
+                    dayDiv.style.color = '#1E40AF';
+                    dayDiv.style.cursor = 'pointer';
                     dayDiv.title = 'Has Bookings. Click to see schedule.';
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
-                else { 
-                    dayDiv.className += 'bg-slate-50 text-slate-700 hover:bg-amber-500 border border-slate-200 cursor-pointer hover:scale-105'; 
+                else {
+                    dayDiv.style.background = '#DCFCE7';
+                    dayDiv.style.color = '#166534';
+                    dayDiv.style.cursor = 'pointer';
                     dayDiv.onclick = () => openDaySchedulePopup(dateStr);
                 }
-                
-                if (dateObj.getTime() === today.getTime() && !selectedDate) { 
-                    dayDiv.style.outline = '2.5px solid #2563eb'; dayDiv.style.outlineOffset = '2px'; 
+
+                if (dateObj.getTime() === today.getTime() && !selectedDate) {
+                    dayDiv.style.outline = '2.5px solid #2563eb';
+                    dayDiv.style.outlineOffset = '2px';
                 }
-                
-                if (selectedDate === dateStr && !hasEvent) { 
-                    dayDiv.className = 'p-3 rounded-lg text-center cursor-pointer font-bold text-sm bg-navy-600 text-white shadow-md hover:scale-105 transition transform'; 
+
+                if (selectedDate === dateStr && !hasEvent) {
+                    dayDiv.style.background = '#1e3a5f';
+                    dayDiv.style.color = '#fff';
                 }
                 
                 dayDiv.textContent = day;

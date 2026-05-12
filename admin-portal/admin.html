@@ -778,6 +778,19 @@
                             <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">View and schedule barangay events on the basketball court calendar.</p>
                         </div>
 
+                        <!-- Tab Buttons -->
+                        <div style="display:flex;gap:8px;margin-bottom:20px;">
+                            <button id="eventsTab-calendar" onclick="switchEventsTab('calendar')" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;border:2px solid #2563eb;background:#2563eb;color:#fff;transition:all 0.2s;">
+                                <i class="bi bi-calendar-event-fill"></i> Court Events
+                            </button>
+                            <button id="eventsTab-schedule" onclick="switchEventsTab('schedule')" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;border:2px solid #1e3a5f;background:transparent;color:#1e3a5f;transition:all 0.2s;">
+                                <i class="bi bi-list-ul"></i> Schedule Overview
+                            </button>
+                        </div>
+
+                        <!-- Tab Panel: Calendar -->
+                        <div id="eventsPanel-calendar">
+
                         <!-- Calendar Card -->
                         <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
                             <!-- Calendar Header (navy) -->
@@ -814,13 +827,17 @@
                             </div>
                         </div>
 
+                        </div><!-- end eventsPanel-calendar -->
+
+                        <!-- Tab Panel: Schedule Overview -->
+                        <div id="eventsPanel-schedule" style="display:none;">
                         <!-- Schedule Overview Card -->
                         <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
                             <div style="padding:14px 20px;background:#1A3A6B;display:flex;align-items:center;gap:12px;">
                                 <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-list-check" style="font-size:18px;color:#FDB913;"></i></div>
                                 <div>
                                     <div style="font-size:15px;font-weight:700;color:#fff;">Schedule Overview</div>
-                                    <div style="font-size:12px;color:rgba(255,255,255,0.7);">Click any date on the calendar to view its schedule and add events.</div>
+                                    <div style="font-size:12px;color:rgba(255,255,255,0.7);">All upcoming bookings and barangay events.</div>
                                 </div>
                             </div>
                             <div style="padding:16px 20px;">
@@ -828,6 +845,7 @@
                                 <div id="adminAllBookingsList" style="display:flex;flex-direction:column;gap:8px;"></div>
                             </div>
                         </div>
+                        </div><!-- end eventsPanel-schedule -->
                     </div>
                     <div id="equipment-section" class="section-container" style="display: none;">
 
@@ -4301,6 +4319,25 @@
 
                 } catch (err) {
                     console.error('loadOverviewPanels error:', err);
+                }
+            }
+
+            function switchEventsTab(tab) {
+                const calPanel  = document.getElementById('eventsPanel-calendar');
+                const schedPanel = document.getElementById('eventsPanel-schedule');
+                const calBtn    = document.getElementById('eventsTab-calendar');
+                const schedBtn  = document.getElementById('eventsTab-schedule');
+                if (tab === 'calendar') {
+                    if (calPanel)  calPanel.style.display  = '';
+                    if (schedPanel) schedPanel.style.display = 'none';
+                    if (calBtn)  { calBtn.style.background  = '#2563eb'; calBtn.style.color  = '#fff'; calBtn.style.borderColor  = '#2563eb'; }
+                    if (schedBtn){ schedBtn.style.background = 'transparent'; schedBtn.style.color = '#1e3a5f'; schedBtn.style.borderColor = '#1e3a5f'; }
+                } else {
+                    if (calPanel)  calPanel.style.display  = 'none';
+                    if (schedPanel) schedPanel.style.display = '';
+                    if (schedBtn){ schedBtn.style.background = '#2563eb'; schedBtn.style.color = '#fff'; schedBtn.style.borderColor = '#2563eb'; }
+                    if (calBtn)  { calBtn.style.background  = 'transparent'; calBtn.style.color  = '#1e3a5f'; calBtn.style.borderColor  = '#1e3a5f'; }
+                    renderAdminCalendar();
                 }
             }
 
