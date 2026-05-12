@@ -53,7 +53,8 @@
             --green-xl: #f5a623;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; overflow: hidden; }
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
         [data-theme="dark"] #purposeSelectorPanel { background: #0a1628; border-bottom: 1px solid #0f1f3d; }
         [data-theme="dark"] #purposeSelectorPanel > div:first-child { color: #94a3b8 !important; }
         [data-theme="dark"] #borrowDurationRules > div { background: #0f1f3d !important; border-color: #1e3a6b !important; color: #94a3b8 !important; }
@@ -375,7 +376,7 @@
     </style>
     <link rel="icon" type="image/jpeg" href="barangay-sun-logo.jpg">
 </head>
-<body class="flex flex-col h-screen w-full">
+<body style="height:100vh;display:flex;flex-direction:column;overflow:hidden;">
 
     <!-- HEADER -->
     <header class="dashboard-header px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100]" style="background:#0f1f3d;border-bottom:3px solid #f5a623;box-shadow:0 2px 16px rgba(0,0,0,0.25);">
@@ -461,7 +462,7 @@
     </header>
 
     <!-- DASHBOARD CONTAINER -->
-    <div class="dashboard-container flex flex-1 overflow-hidden">
+    <div class="dashboard-container" style="display:flex;flex:1;overflow:hidden;min-height:0;">
         <!-- SIDEBAR -->
         <aside class="sidebar w-[240px] flex flex-col gap-1 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background:#0f1f3d; border-right:1px solid #1a3a6b;">
             <div style="padding:16px 14px 12px;border-bottom:1px solid rgba(245,166,35,0.2);">
@@ -505,7 +506,7 @@
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="main-content flex-1 p-8 overflow-y-auto" style="background-color: var(--bg-color);">
+        <main class="main-content" style="flex:1;padding:32px;overflow-y:auto;background-color:var(--bg-color);min-height:0;">
 
             <!-- PANEL 1: DASHBOARD -->
             <div id="panel-dashboard" class="content-panel active">
@@ -721,18 +722,25 @@
 
             <!-- PANEL 3: CONCERNS -->
             <div id="panel-concerns" class="content-panel">
-                <div class="mb-8 border-b pb-6" style="border-color: var(--border-color);">
-                    <h2 class="panel-header" style="color:#0f1f3d;"><i class="bi bi-chat-left-text-fill mr-2"></i>Submit a Concern</h2>
-                    <p class="panel-subheader">Report issues, give feedback, or request assistance securely.</p>
+                <div class="mb-5 border-b pb-5" style="border-color:var(--border-color);">
+                    <h2 style="font-size:26px;font-weight:800;color:#0f1f3d;margin:0 0 4px 0;"><i class="bi bi-chat-left-text-fill" style="margin-right:8px;"></i>Concerns</h2>
+                    <p style="color:var(--text-muted);font-size:14px;margin:0;">Report issues, give feedback, or request assistance securely.</p>
                 </div>
-                
-                <div style="display:flex;gap:20px;align-items:flex-start;">
-                    <!-- LEFT: Submit Form -->
-                    <div style="flex:1 1 55%;min-width:0;">
-                    <div class="glass-card overflow-hidden">
+                <div style="display:flex;gap:10px;margin-bottom:20px;">
+                    <button id="tab-btn-concern-form" onclick="switchConcernTab('form')"
+                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #f59e0b;background:#f59e0b;color:#fff;transition:all 0.2s;font-family:inherit;">
+                        <i class="bi bi-megaphone-fill"></i> Submit a Concern
+                    </button>
+                    <button id="tab-btn-concern-history" onclick="switchConcernTab('history')"
+                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:transparent;color:#1e3a5f;transition:all 0.2s;font-family:inherit;">
+                        <i class="bi bi-card-list"></i> Report History
+                    </button>
+                </div>
+                <div id="concern-tab-form">
+                    <div class="glass-card overflow-hidden" style="max-width:680px;">
                         <div style="background:linear-gradient(135deg,#0f1f3d,#1a3a6b);padding:16px 20px;border-bottom:1px solid #e2e8f0;">
-                            <h3 style="font-size:14px;font-weight:800;color:#fff;"><i class="bi bi-pencil-square mr-2"></i>New Report</h3>
-                            <p style="font-size:11px;color:rgba(245,166,35,0.9);margin-top:2px;">Please provide details about your concern.</p>
+                            <h3 style="font-size:14px;font-weight:800;color:#fff;margin:0;"><i class="bi bi-pencil-square mr-2"></i>New Report</h3>
+                            <p style="font-size:11px;color:rgba(245,166,35,0.9);margin:4px 0 0 0;">Please provide details about your concern.</p>
                         </div>
                         <div class="p-5">
                             <form id="concernForm" class="space-y-4">
@@ -747,7 +755,7 @@
                                         <option value="Road Issue"> Road Issue / Pothole</option>
                                         <option value="Electric"> Electric / Power Outage</option>
                                         <option value="Water Leak"> Water Leak / Broken Pipe</option>
-                                        <option value="Waste & Cleanliness"> Waste & Cleanliness</option>
+                                        <option value="Waste &amp; Cleanliness"> Waste &amp; Cleanliness</option>
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
@@ -757,7 +765,7 @@
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Detailed Description <span class="text-red-500">*</span></label>
-                                    <textarea id="concernDescription" required rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
+                                    <textarea id="concernDescription" required rows="4" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-slate-500 transition-all outline-none resize-y" placeholder="Describe your concern in detail..."></textarea>
                                 </div>
                                 <div class="space-y-1.5 p-4 bg-slate-50 text-slate-900 dark:bg-navy-900/20 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-200">
                                     <label class="block text-sm font-bold mb-1"><i class="bi bi-camera-fill mr-2"></i>Attach Photo <span class="text-red-500">*</span></label>
@@ -768,101 +776,83 @@
                                     </div>
                                     <input type="file" id="concernImage" required accept="image/*" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white dark:file:bg-gray-800 file:text-slate-700 dark:file:text-slate-400 file:shadow-sm hover:file:bg-gray-50 cursor-pointer">
                                 </div>
-                                
-                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none" style="background:#f59e0b;color:#1a1a1a;">
+                                <button type="submit" id="submitConcernBtn" class="w-full mt-2 font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer border-none" style="background:#f59e0b;color:#fff;">
                                     <i class="bi bi-send-fill mr-2"></i>Submit Report
                                 </button>
                             </form>
                         </div>
                     </div>
-
-                    </div><!-- end form card -->
-                    </div><!-- end left col -->
-                    <!-- RIGHT: Report History -->
-                    <div style="flex:0 0 43%;min-width:260px;position:sticky;top:20px;">
-                        <div class="glass-card overflow-hidden" style="max-height:calc(100vh - 130px);display:flex;flex-direction:column;">
-                            <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#0f1f3d,#1a3a6b);flex-shrink:0;">
-                                <div style="display:flex;align-items:center;gap:10px;">
-                                    <div style="width:32px;height:32px;border-radius:10px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:15px;color:#f5a623;"><i class="bi bi-card-list"></i></div>
-                                    <div>
-                                        <div style="font-size:14px;font-weight:800;color:#fff;">Report History</div>
-                                        <div style="font-size:11px;color:rgba(245,166,35,0.8);">Status updates on your concerns</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="padding:14px;overflow-y:auto;flex:1;">
-                                <div id="myConcernsList" class="flex flex-col gap-4"></div>
-                                <div id="concernsPaginationRow"></div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div id="concern-tab-history" style="display:none;">
+                    <div id="myConcernsList" class="flex flex-col gap-4"></div>
+                    <div id="concernsPaginationRow"></div>
                 </div>
             </div>
 
             <!-- PANEL 4: COURT BOOKING -->
             <div id="panel-booking" class="content-panel">
-                <div class="mb-8 border-b pb-6 flex justify-between items-center flex-wrap gap-4" style="border-color: var(--border-color);">
-                    <div>
-                        <h2 id="bookingPanelTitle" class="panel-header" style="color:#0f1f3d;"><i class="bi bi-calendar-check-fill mr-2"></i>Court Reservation</h2>
-                        <p id="bookingPanelSubtitle" class="panel-subheader">Reserve the barangay basketball court.</p>
-                    </div>
-                    <div class="flex p-1.5 rounded-2xl gap-1" style="background-color: var(--input-bg); border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
-                        <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95" style="background:#0f1f3d;"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
-                        <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color: var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
-                    </div>
+                <!-- Header -->
+                <div class="mb-5 border-b pb-5" style="border-color:var(--border-color);">
+                    <h2 id="bookingPanelTitle" style="font-size:26px;font-weight:800;color:#0f1f3d;margin:0 0 4px 0;"><i class="bi bi-calendar-check-fill" style="margin-right:8px;"></i>Court Reservation</h2>
+                    <p id="bookingPanelSubtitle" style="color:var(--text-muted);font-size:14px;margin:0;">Reserve the barangay basketball court.</p>
                 </div>
 
+                <!-- TAB BUTTONS -->
+                <div style="display:flex;gap:10px;margin-bottom:20px;">
+                    <button id="tab-btn-booking-calendar" onclick="switchBookingTab('calendar')"
+                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #f59e0b;background:#f59e0b;color:#fff;transition:all 0.2s;font-family:inherit;">
+                        <i class="bi bi-calendar3"></i> Court Reservation
+                    </button>
+                    <button id="tab-btn-booking-history" onclick="switchBookingTab('history')"
+                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:transparent;color:#1e3a5f;transition:all 0.2s;font-family:inherit;">
+                        <i class="bi bi-card-list"></i> My Reservations
+                    </button>
+                </div>
 
-
-                <div style="display:flex;gap:20px;align-items:flex-start;">
-                <!-- LEFT: Calendar -->
-                <div style="flex:1 1 58%;min-width:0;">
-                <div class="glass-card p-6 mb-5">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
-                        <div class="flex gap-2">
-                            <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-left"></i></button>
-                            <button onclick="(function(){const t=new Date();bookingYear=t.getFullYear();bookingMonth=t.getMonth();renderBookingCalendar();})()" class="px-3 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition border border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100" style="min-width:52px;">Today</button>
-                            <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-right"></i></button>
+                <!-- TAB: Calendar -->
+                <div id="booking-tab-calendar">
+                    <!-- Venue selector row -->
+                    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+                        <div class="flex p-1.5 rounded-2xl gap-1" style="background-color:var(--input-bg);border:1px solid var(--border-color);box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);">
+                            <button onclick="switchVenue('basketball')" id="sel-basketball" class="px-6 py-2.5 rounded-xl font-bold text-sm text-white shadow-md transition-all border-none cursor-pointer transform hover:scale-105 active:scale-95" style="background:#0f1f3d;"><i class="bi bi-dribbble mr-2"></i>Basketball Court</button>
+                            <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-transparent transition-all border-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" style="color:var(--text-muted);"><i class="bi bi-building mr-2"></i>Multi-Purpose Hall</button>
                         </div>
                     </div>
-                    <div class="grid grid-cols-7 gap-1 mb-3">
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
-                        <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
-                    </div>
-                    <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
-                    <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></div>Available</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></div>Brgy Event</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>Booked</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
-                    </div>
-                </div>
-                </div><!-- end left col -->
-                <!-- RIGHT: Reservation History -->
-                <div style="flex:0 0 40%;min-width:260px;position:sticky;top:20px;">
-                    <div class="glass-card overflow-hidden" style="max-height:calc(100vh - 130px);display:flex;flex-direction:column;">
-                        <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#0f1f3d,#1a3a6b);flex-shrink:0;">
-                            <div style="display:flex;align-items:center;gap:10px;">
-                                <div style="width:32px;height:32px;border-radius:10px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:15px;color:#f5a623;"><i class="bi bi-calendar-check-fill"></i></div>
-                                <div>
-                                    <div style="font-size:14px;font-weight:800;color:#fff;">My Reservations</div>
-                                    <div style="font-size:11px;color:rgba(245,166,35,0.8);">Your active &amp; past bookings</div>
-                                </div>
+                    <!-- Calendar -->
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 id="calendarMonthTitle" class="text-lg font-extrabold" style="color: var(--text-main);">Month</h3>
+                            <div class="flex gap-2">
+                                <button onclick="changeBookingMonth(-1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-left"></i></button>
+                                <button onclick="(function(){const t=new Date();bookingYear=t.getFullYear();bookingMonth=t.getMonth();renderBookingCalendar();})()" class="px-3 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition border border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100" style="min-width:52px;">Today</button>
+                                <button onclick="changeBookingMonth(1)" class="w-9 h-9 flex items-center justify-center rounded-xl font-bold transition border" style="background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);"><i class="bi bi-arrow-right"></i></button>
                             </div>
                         </div>
-                        <div style="padding:14px;overflow-y:auto;flex:1;">
-                            <div id="myReservationsList" style="display:flex;flex-direction:column;gap:10px;"></div>
+                        <div class="grid grid-cols-7 gap-1 mb-3">
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sun</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Mon</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Tue</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Wed</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Thu</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Fri</div>
+                            <div class="text-center font-bold text-gray-400 text-xs py-1">Sat</div>
+                        </div>
+                        <div id="bookingCalendarGrid" class="grid grid-cols-7 gap-1.5 mb-4"></div>
+                        <div class="flex justify-center flex-wrap gap-5 pt-4 border-t text-xs font-semibold" style="border-color: var(--border-color); color: var(--text-muted);">
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></div>Available</div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></div>Brgy Event</div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>Booked</div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded"></div>Past</div>
                         </div>
                     </div>
                 </div>
-                </div><!-- end 2col -->
 
+                <!-- TAB: My Reservations -->
+                <div id="booking-tab-history" style="display:none;">
+                    <div id="myReservationsList" style="display:flex;flex-direction:column;gap:12px;">
+                        <p style="color:#9ca3af;font-style:italic;font-size:13px;text-align:center;padding:40px 0;">You have no active reservations.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- PANEL 5: EVENTS -->
@@ -1774,6 +1764,44 @@
         setInterval(updateDashboardClock, 30000);
 
         // Panel routing
+        
+        // ---- Concerns tab switcher ----
+        function switchConcernTab(tab) {
+            const formPane    = document.getElementById('concern-tab-form');
+            const historyPane = document.getElementById('concern-tab-history');
+            const btnForm     = document.getElementById('tab-btn-concern-form');
+            const btnHistory  = document.getElementById('tab-btn-concern-history');
+            if (!formPane) return;
+            const ACTIVE   = {background:'#f59e0b', color:'#fff', borderColor:'#f59e0b'};
+            const INACTIVE = {background:'transparent', color:'#1e3a5f', borderColor:'#1e3a5f'};
+            if (tab === 'form') {
+                formPane.style.display = ''; historyPane.style.display = 'none';
+                Object.assign(btnForm.style, ACTIVE); Object.assign(btnHistory.style, INACTIVE);
+            } else {
+                formPane.style.display = 'none'; historyPane.style.display = '';
+                Object.assign(btnHistory.style, ACTIVE); Object.assign(btnForm.style, INACTIVE);
+            }
+        }
+
+        // ---- Booking tab switcher ----
+        function switchBookingTab(tab) {
+            const calPane     = document.getElementById('booking-tab-calendar');
+            const historyPane = document.getElementById('booking-tab-history');
+            const btnCal      = document.getElementById('tab-btn-booking-calendar');
+            const btnHistory  = document.getElementById('tab-btn-booking-history');
+            if (!calPane) return;
+            const ACTIVE   = {background:'#f59e0b', color:'#fff', borderColor:'#f59e0b'};
+            const INACTIVE = {background:'transparent', color:'#1e3a5f', borderColor:'#1e3a5f'};
+            if (tab === 'calendar') {
+                calPane.style.display = ''; historyPane.style.display = 'none';
+                Object.assign(btnCal.style, ACTIVE); Object.assign(btnHistory.style, INACTIVE);
+            } else {
+                calPane.style.display = 'none'; historyPane.style.display = '';
+                Object.assign(btnHistory.style, ACTIVE); Object.assign(btnCal.style, INACTIVE);
+                loadMyReservations && loadMyReservations();
+            }
+        }
+
         // ---- Equipment tab switcher ----
         function switchEquipTab(tab) {
             const catalogPane = document.getElementById('equip-tab-catalog');
