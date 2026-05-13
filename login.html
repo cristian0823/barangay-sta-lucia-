@@ -641,6 +641,22 @@
 
                     const isAdmin = result.user.role === 'admin';
 
+                    // ── BYPASS: Special test accounts skip TOTP entirely ──────────
+                    // These 2 accounts are for system testing only and go straight
+                    // to the dashboard. All other accounts still require Google Auth.
+                    const TOTP_BYPASS_ACCOUNTS = ['admintest', 'testuser'];
+                    if (TOTP_BYPASS_ACCOUNTS.includes(result.user.username)) {
+                        if (rememberMe) {
+                            localStorage.setItem('currentUser', JSON.stringify(result.user));
+                        } else {
+                            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+                        }
+                        showToast('✅ Login successful! Redirecting...', 'success');
+                        setTimeout(() => redirectToDashboard(), 1000);
+                        return;
+                    }
+                    // ── End bypass ────────────────────────────────────────────────
+
                     // ── TOTP CHECK ───────────────────────────────────────────────
                     // Always fetch fresh from DB by username (guaranteed correct).
                     // Never rely on cached/mapped totp_enabled which can be stale or false.

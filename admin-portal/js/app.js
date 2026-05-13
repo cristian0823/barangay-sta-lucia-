@@ -149,7 +149,9 @@ if (typeof localStorage !== 'undefined') {
         const defaultUsers = [
             { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', role: 'admin', avatar: 'A' },
             { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'admin2@barangay.gov', role: 'admin', avatar: 'B' },
-            { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
+            { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' },
+            { id: 4, username: 'admintest', password: 'Admin1234!', fullName: 'Test Admin Account', email: 'admintest@barangay.gov', role: 'admin', avatar: 'T', totp_bypass: true },
+            { id: 5, username: 'testuser', password: 'testuser123', fullName: 'Test User Account', email: 'testuser@barangay.gov', role: 'user', avatar: 'T', totp_bypass: true }
         ];
         localStorage.setItem('barangay_local_users', JSON.stringify(defaultUsers));
     }
@@ -218,7 +220,9 @@ function initializeLocalUsers() {
         const defaultUsers = [
             { id: 1, username: 'admin1', password: 'admin123', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', role: 'admin', avatar: 'A' },
             { id: 2, username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', role: 'admin', avatar: 'B' },
-            { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' }
+            { id: 3, username: 'user', password: 'user123', fullName: 'Barangay Resident', email: 'user@barangay.gov', role: 'user', avatar: 'U' },
+            { id: 4, username: 'admintest', password: 'Admin1234!', fullName: 'Test Admin Account', email: 'admintest@barangay.gov', role: 'admin', avatar: 'T', totp_bypass: true },
+            { id: 5, username: 'testuser', password: 'testuser123', fullName: 'Test User Account', email: 'testuser@barangay.gov', role: 'user', avatar: 'T', totp_bypass: true }
         ];
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(defaultUsers));
     } else {
@@ -227,6 +231,17 @@ function initializeLocalUsers() {
         const hasAdmin2 = users.some(u => u.username === 'admin2');
         if (!hasAdmin2) {
             users.push({ id: Date.now(), username: 'admin2', password: 'admin123', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', role: 'admin', avatar: 'B' });
+            localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+        }
+        // Ensure test bypass accounts exist in localStorage
+        const hasAdminTest = users.some(u => u.username === 'admintest');
+        if (!hasAdminTest) {
+            users.push({ id: Date.now() + 1, username: 'admintest', password: 'Admin1234!', fullName: 'Test Admin Account', email: 'admintest@barangay.gov', role: 'admin', avatar: 'T', totp_bypass: true });
+            localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+        }
+        const hasTestUser = users.some(u => u.username === 'testuser');
+        if (!hasTestUser) {
+            users.push({ id: Date.now() + 2, username: 'testuser', password: 'testuser123', fullName: 'Test User Account', email: 'testuser@barangay.gov', role: 'user', avatar: 'T', totp_bypass: true });
             localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
         }
         // Also rename 'admin' to 'admin1' if old default exists
@@ -400,7 +415,9 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         const defaultAccounts = [
             { username: 'admin1', password: 'admin123', role: 'admin', fullName: 'Barangay Administrator', email: 'cristianjames0808@gmail.com', avatar: 'A' },
             { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', avatar: 'B' },
-            { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' }
+            { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' },
+            { username: 'admintest', password: 'Admin1234!', role: 'admin', fullName: 'Test Admin Account', email: 'admintest@barangay.gov', avatar: 'T', totp_bypass: true },
+            { username: 'testuser', password: 'testuser123', role: 'user', fullName: 'Test User Account', email: 'testuser@barangay.gov', avatar: 'T', totp_bypass: true }
         ];
         const hashedPassword = await hashPassword(password);
         const matchedDefault = defaultAccounts.find(a => a.username === username && a.password === password);
