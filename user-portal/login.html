@@ -443,10 +443,16 @@
                     return;
                 }
 
-                // No TOTP yet — require setup
+                // No TOTP yet — check if this is a brand-new admin-created account
+                const isFirstLogin = (result.user.totp_enabled === null || result.user.totp_enabled === undefined) && !result.user.password;
                 sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
                 sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
-                showToast('Please set up Google Authenticator to continue.', 'success');
+                if (isFirstLogin) {
+                    sessionStorage.setItem('totp_first_login', 'true');
+                    showToast('Welcome! Please set up your account to continue.', 'success');
+                } else {
+                    showToast('Please set up Google Authenticator to continue.', 'success');
+                }
                 setTimeout(() => window.location.href = 'setup-totp.html', 1200);
             } else {
                 recordFailedAttempt(username);
