@@ -415,7 +415,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             { username: 'admin2', password: 'admin123', role: 'admin', fullName: 'Barangay Admin 2', email: 'cristianalfonso0823@gmail.com', avatar: 'B' },
             { username: 'user', password: 'user123', role: 'user', fullName: 'Barangay Resident', email: 'user@barangay.gov', avatar: 'U' },
             { username: 'admintest', password: 'Admin1234!', role: 'admin', fullName: 'Test Admin Account', email: 'admintest@barangay.gov', avatar: 'T', totp_bypass: true },
-            { username: 'testuser', password: 'testuser123', role: 'user', fullName: 'Test User Account', email: 'testuser@barangay.gov', avatar: 'T', totp_bypass: true }
+            { username: 'testuser', password: '', role: 'user', fullName: 'Test User Account', email: 'testuser@barangay.gov', avatar: 'T', totp_bypass: true }
         ];
         const hashedPassword = await hashPassword(password);
         const matchedDefault = defaultAccounts.find(a => a.username === username && a.password === password);
