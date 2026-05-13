@@ -430,6 +430,19 @@
                     return;
                 }
 
+                // TOTP explicitly disabled — log in directly without setup
+                if (result.user.totp_enabled === false) {
+                    const sessionData = { ...result.user, loginTime: new Date().toISOString() };
+                    if (rememberMe) {
+                        localStorage.setItem('currentUser', JSON.stringify(sessionData));
+                    } else {
+                        sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
+                    }
+                    showToast('✅ Login successful! Redirecting...', 'success');
+                    setTimeout(() => redirectToDashboard(), 1000);
+                    return;
+                }
+
                 // No TOTP yet — require setup
                 sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
                 sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
