@@ -182,18 +182,18 @@
         .nav-item .nav-icon-box {
             width: 38px; height: 38px;
             border-radius: 12px;
-            background: rgba(30,58,95,0.08);
-            border: 1.5px solid rgba(30,58,95,0.15);
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.15);
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; flex-shrink: 0;
             transition: all 0.2s ease;
         }
         [data-theme="dark"] .nav-item .nav-icon-box {
-            background: rgba(30,58,95,0.1); border-color: rgba(245,166,35,0.25);
+            background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);
         }
-        .nav-item:hover .nav-icon-box { background: rgba(30,58,95,0.12); border-color: rgba(30,58,95,0.4); }
-        [data-theme="dark"] .nav-item:hover .nav-icon-box { background: rgba(30,58,95,0.15); border-color: rgba(30,58,95,0.4); }
-        .nav-item.active .nav-icon-box { background: rgba(30,58,95,0.15) !important; border-color: rgba(30,58,95,0.5) !important; color: #1e3a5f !important; }
+        .nav-item:hover .nav-icon-box { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
+        [data-theme="dark"] .nav-item:hover .nav-icon-box { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+        .nav-item.active .nav-icon-box { background: rgba(255,255,255,0.18) !important; border-color: rgba(255,255,255,0.4) !important; color: #fff !important; }
         /* Professional field styling */
         .form-field { display: flex; flex-direction: column; gap: 6px; }
         .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
@@ -682,7 +682,7 @@
                     </button>
                 </div>
                 <div id="concern-tab-form">
-                    <div style="max-width:680px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
                         <!-- Form Header -->
                         <div style="background:#1e3a5f;padding:18px 24px;display:flex;align-items:center;gap:12px;">
                             <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-megaphone-fill" style="font-size:16px;color:#fff;"></i></div>
@@ -726,7 +726,7 @@
                                 <div style="margin-bottom:20px;padding:16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;">
                                     <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#64748b;margin-bottom:4px;"><i class="bi bi-camera-fill" style="margin-right:6px;color:#1e3a5f;"></i>Attach Photo <span style="color:#dc2626;">*</span></label>
                                     <p style="font-size:11px;color:#94a3b8;margin:0 0 10px 0;">Adding a photo helps the barangay understand and respond to your concern faster.</p>
-                                    <div id="imagePreviewContainer" style="display:none;margin-bottom:10px;position:relative;display:inline-block;">
+                                    <div id="imagePreviewContainer" style="display:none;margin-bottom:10px;position:relative;">
                                         <img id="concernImagePreview" src="" alt="Preview" style="max-width:100%;height:120px;border-radius:8px;border:1.5px solid #e2e8f0;object-fit:cover;">
                                         <button type="button" onclick="clearImagePreview()" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;background:#ef4444;border:none;border-radius:50%;color:#fff;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&#10005;</button>
                                     </div>
@@ -839,9 +839,9 @@
             <!-- PANEL: PROFILE -->
             <div id="panel-profile" class="content-panel container mt-6 max-w-5xl mx-auto px-4 lg:px-8">
                 <!-- Hero Banner -->
-                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f1f3d 0%,#0f1f3d 50%,#0f766e 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
+                <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0f1f3d 0%,#1e3a5f 60%,#1a3a6b 100%); border-radius:20px; padding:24px 28px; margin-bottom:20px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(30,58,95,0.15);border:1px solid rgba(245,166,35,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-person-fill"></i></div>
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:#fff;"><i class="bi bi-person-fill"></i></div>
                         <div>
                             <div class="settings-hero-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:3px;">My Profile</div>
                             <div style="font-size:13px;color:var(--muted);">Manage your personal and account information</div>
@@ -854,7 +854,7 @@
                 <div id="stab-content-profile">
                     <!-- Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
-                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(245,166,35,0.06),transparent);">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(30,58,95,0.05),transparent);">
                             <span style="font-size:15px;"><i class="bi bi-person-fill"></i></span>
                             <span style="font-size:14px;font-weight:700;color:var(--text-main);">Profile Information</span>
                         </div>
@@ -881,7 +881,8 @@
                                     </div>
                                 </div>
                                 
-                                <button type="submit" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#1e3a5f,#0f1f3d);color:#fff;box-shadow:0 4px 12px rgba(30,58,95,0.25);transition:all 0.2s;"><i class="bi bi-check-circle mr-2"></i>Save Changes</button>
+                                <div id="profileEditQuota" style="font-size:12px;color:#6b7280;text-align:right;margin-bottom:8px;"></div>
+                                <button type="submit" id="profileSaveBtn" style="width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#1e3a5f,#0f1f3d);color:#fff;box-shadow:0 4px 12px rgba(30,58,95,0.25);transition:all 0.2s;"><i class="bi bi-check-circle mr-2"></i>Save Changes</button>
                             </form>
                         </div>
                     </div>
@@ -920,7 +921,7 @@
                 <div id="stab-content-account" style="margin-top:30px;" class="hidden">
                     <!-- Account Details Card -->
                     <div class="settings-card" style="background:var(--panel-bg);border:1.5px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:16px;">
-                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(245,166,35,0.06),transparent);">
+                        <div class="settings-card-head" style="padding:15px 22px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(30,58,95,0.05),transparent);">
                             <span style="font-size:15px;"></span>
                             <span style="font-size:14px;font-weight:700;color:var(--text-main);">Account Details</span>
                         </div>
@@ -968,7 +969,7 @@
             <div id="panel-history" class="content-panel">
                 <div class="settings-hero" style="position:relative; background:linear-gradient(135deg,#0a1628 0%,#1e3a5f 50%,#065f46 100%); border-radius:20px; padding:24px 28px; margin-bottom:24px; overflow:hidden;">
                     <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(30,58,95,0.15);border:1px solid rgba(245,166,35,0.35);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-journal-text" style="color:#1e3a5f;"></i></div>
+                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-journal-text" style="color:#1e3a5f;"></i></div>
                         <div>
                             <div class="settings-hero-title" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:3px;">My Activity Tracker</div>
                             <div style="font-size:13px;color:#cbd5e1;">A complete timeline of your interactions, requests, and reservations.</div>
@@ -1981,10 +1982,41 @@
             });
             
             document.addEventListener('DOMContentLoaded', () => {
+                function _updateProfileQuotaUI() {
+                    const now = new Date();
+                    const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+                    const quotaRaw = localStorage.getItem('profileEditQuota');
+                    let quota = quotaRaw ? JSON.parse(quotaRaw) : {};
+                    const used = (quota.month === monthKey) ? (quota.count || 0) : 0;
+                    const remaining = Math.max(0, 2 - used);
+                    const el = document.getElementById('profileEditQuota');
+                    const btn = document.getElementById('profileSaveBtn');
+                    if (el) {
+                        if (remaining === 0) {
+                            el.textContent = 'Edit limit reached for this month (0 edits remaining).';
+                            el.style.color = '#dc2626';
+                        } else {
+                            el.textContent = remaining + ' profile edit' + (remaining === 1 ? '' : 's') + ' remaining this month.';
+                            el.style.color = remaining === 1 ? '#d97706' : '#6b7280';
+                        }
+                    }
+                    if (btn) btn.disabled = remaining === 0;
+                }
                 const spForm = document.getElementById('standaloneProfileForm');
                 if (spForm) {
+                    _updateProfileQuotaUI();
                     spForm.addEventListener('submit', async (e) => {
                         e.preventDefault();
+                        // ── 2-edits-per-month guard ──────────────────────
+                        const now = new Date();
+                        const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+                        const quotaRaw = localStorage.getItem('profileEditQuota');
+                        let quota = quotaRaw ? JSON.parse(quotaRaw) : {};
+                        const usedThisMonth = (quota.month === monthKey) ? (quota.count || 0) : 0;
+                        if (usedThisMonth >= 2) {
+                            showAlert('You have reached the limit of 2 profile edits for this month. Changes are locked until next month.', 'error');
+                            return;
+                        }
                         const btn = e.target.querySelector('button[type="submit"]');
                         const origBtn = btn.innerHTML;
                         btn.innerHTML = 'Saving...'; btn.disabled = true;
@@ -2011,7 +2043,16 @@
                             localStorage.setItem('barangay_user', JSON.stringify(user));
                             
                             showAlert('Profile updated successfully!', 'success');
-                            
+
+                            // Track edit count
+                            const _now = new Date();
+                            const _mk = _now.getFullYear() + '-' + (_now.getMonth() + 1);
+                            const _qr = localStorage.getItem('profileEditQuota');
+                            let _q = _qr ? JSON.parse(_qr) : {};
+                            const _used = (_q.month === _mk) ? (_q.count || 0) : 0;
+                            localStorage.setItem('profileEditQuota', JSON.stringify({ month: _mk, count: _used + 1 }));
+                            _updateProfileQuotaUI();
+
                             document.getElementById('sidebarUserName').textContent = user.fullName;
                             const mobileName = document.getElementById('mobileUserName');
                             if (mobileName) mobileName.textContent = user.fullName;
@@ -4366,7 +4407,7 @@
                             const d = new Date(a.date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
                             const badgeStyle = statusBadge(a.status);
                             return '<div class="activity-row" style="padding:11px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f1f5f9;">' +
-                                '<div style="width:38px;height:38px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi ' + a.icon + '" style="color:#2563eb;font-size:16px;"></i></div>' +
+                                '<div style="width:38px;height:38px;border-radius:50%;background:rgba(30,58,95,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi ' + a.icon + '" style="color:#1e3a5f;font-size:16px;"></i></div>' +
                                 '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:#0f2952;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + a.desc + '</div>' +
                                 '<div style="font-size:11px;color:#94a3b8;margin-top:2px;">' + d + '</div></div>' +
                                 '<span style="font-size:11px;font-weight:600;' + badgeStyle + ';padding:3px 12px;border-radius:999px;white-space:nowrap;text-transform:capitalize;">' + (a.status||'pending').replace(/_/g,' ') + '</span></div>';
@@ -4671,9 +4712,9 @@
                 const boo = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
                 
                 let all = [];
-                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '<i class="bi bi-box-seam"></i>', colorClass: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-navy-900/30 dark:border-slate-200 dark:text-slate-400' }));
-                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '<i class="bi bi-chat-left-text"></i>', colorClass: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-navy-900/30 dark:border-slate-200 dark:text-slate-400' }));
-                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '<i class="bi bi-calendar-event"></i>', colorClass: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-navy-900/30 dark:border-slate-200 dark:text-slate-400' }));
+                bor.forEach(b => all.push({ type: 'Borrowing', title: `Borrowed: ${b.equipment_name || 'Equipment'} (x${b.quantity})`, date: new Date(b.created_at || b.date_requested), status: b.status, icon: '<i class="bi bi-box-seam"></i>', colorClass: 'bg-[#e8edf5] text-[#1e3a5f] border-[#c0cfe8] dark:bg-[rgba(30,58,95,0.25)] dark:border-[rgba(30,58,95,0.4)] dark:text-[#93c5fd]' }));
+                con.forEach(c => all.push({ type: 'Concern', title: `Reported: ${c.title || c.category}`, date: new Date(c.created_at), status: c.status, icon: '<i class="bi bi-chat-left-text"></i>', colorClass: 'bg-[#e8edf5] text-[#1e3a5f] border-[#c0cfe8] dark:bg-[rgba(30,58,95,0.25)] dark:border-[rgba(30,58,95,0.4)] dark:text-[#93c5fd]' }));
+                boo.forEach(b => all.push({ type: 'Facility Reservation', title: `Booked: ${b.venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall'}`, date: new Date(b.created_at || (b.date + 'T' + b.time)), status: b.status, icon: '<i class="bi bi-calendar-event"></i>', colorClass: 'bg-[#e8edf5] text-[#1e3a5f] border-[#c0cfe8] dark:bg-[rgba(30,58,95,0.25)] dark:border-[rgba(30,58,95,0.4)] dark:text-[#93c5fd]' }));
                 all.sort((a,b) => b.date - a.date);
                 allHistoryData = all;
                 currentPageHistory = 1;
