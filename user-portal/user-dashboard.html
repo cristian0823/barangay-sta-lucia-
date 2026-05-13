@@ -1118,6 +1118,22 @@
                     <form id="borrowForm" class="flex flex-col space-y-4">
                         <input type="hidden" id="borrowEquipmentId"><input type="hidden" id="borrowEquipmentName">
                         <input type="hidden" id="borrowStartDate"><input type="hidden" id="borrowReturnDate">
+                        <!-- Borrowing Rules Agreement — TOP of form -->
+                        <div id="borrowRulesSection" style="display:none;margin-bottom:8px;">
+                            <div style="border:1.5px solid #1A3A6B;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,58,107,0.08);">
+                                <div style="background:#1A3A6B;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+                                    <i class="bi bi-journal-text" style="color:#fff;font-size:14px;"></i>
+                                    <span style="font-size:13px;font-weight:700;color:#fff;flex:1;">Borrowing Rules &amp; Policies</span>
+                                    <span style="font-size:10px;color:rgba(255,255,255,0.7);font-style:italic;">Read before borrowing</span>
+                                </div>
+                                <div id="borrowRulesListItems" style="padding:12px 14px;height:180px;overflow-y:auto;background:#F9FAFB;font-size:12px;color:#374151;line-height:1.6;"></div>
+                            </div>
+                            <div id="rulesScrollHint" style="font-size:11px;color:#9CA3AF;text-align:center;padding:4px 0 2px;display:none;"><i class="bi bi-arrow-down-circle" style="margin-right:3px;"></i>Scroll down to read all rules and enable the checkbox.</div>
+                            <label style="display:flex;align-items:flex-start;gap:10px;margin-top:8px;cursor:pointer;padding:11px 13px;background:#EEF2FF;border:1.5px solid #C7D2FE;border-radius:8px;">
+                                <input type="checkbox" id="borrowAgreeCheck" onchange="updateBorrowSubmitButton()" disabled style="width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:#1A3A6B;">
+                                <span id="borrowAgreeLabel" style="font-size:12px;font-weight:600;color:#1A1A2E;line-height:1.5;">I have read and agree to the <strong>Barangay Borrowing Rules and Policies</strong> listed above.</span>
+                            </label>
+                        </div>
                         <!-- User Info Fields -->
                         <div class="grid grid-cols-2 gap-4">
                             <div class="form-field">
@@ -1175,26 +1191,7 @@
                             <label class="form-label">Purpose</label>
                             <textarea id="borrowPurpose" required class="form-input form-textarea" placeholder="Describe why you need this equipment..." rows="3"></textarea>
                         </div>
-                        <div class="mt-2 text-[11px] leading-relaxed text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2.5 rounded-lg border border-red-200 dark:border-red-700 shadow-sm flex items-start gap-2">
-                            <span class="text-base leading-none">&#9888;&#65039;</span>
-                            <div>
-                                <strong>Reminder:</strong> If you break the item or equipment, you will pay or replace it.
-                            </div>
-                        </div>
-                        <!-- Borrowing Rules Agreement -->
-                        <div id="borrowRulesSection" style="display:none;margin-top:4px;">
-                            <div style="border:1px solid #D1D5DB;border-radius:10px;overflow:hidden;">
-                                <div style="background:#1A3A6B;padding:10px 14px;display:flex;align-items:center;gap:8px;">
-                                    <i class="bi bi-journal-text" style="color:#FDB913;font-size:13px;"></i>
-                                    <span style="font-size:13px;font-weight:700;color:#fff;">Borrowing Rules &amp; Policies</span>
-                                </div>
-                                <div id="borrowRulesListItems" style="padding:12px 14px;max-height:200px;overflow-y:auto;background:#F9FAFB;font-size:12px;color:#374151;line-height:1.6;"></div>
-                            </div>
-                            <label style="display:flex;align-items:flex-start;gap:10px;margin-top:10px;cursor:pointer;padding:11px 13px;background:#EEF2FF;border:1.5px solid #C7D2FE;border-radius:8px;">
-                                <input type="checkbox" id="borrowAgreeCheck" onchange="updateBorrowSubmitButton()" style="width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:#1A3A6B;">
-                                <span style="font-size:12px;font-weight:600;color:#1A1A2E;line-height:1.5;">I have read and agree to the <strong>Barangay Borrowing Rules and Policies</strong> listed above.</span>
-                            </label>
-                        </div>
+                        
 
                         <button type="submit" id="submitBorrowBtn" disabled class="w-full mt-2 bg-gradient-to-r from-slate-500 to-emerald-600 hover:from-slate-50 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;">
                             Submit Borrow Request
@@ -2717,16 +2714,37 @@
             const listEl    = document.getElementById('borrowRulesListItems');
             const agreeChk  = document.getElementById('borrowAgreeCheck');
             if (!section || !listEl) return;
-            if (!rules.length) { section.style.display = 'none'; return; }
+            // Always show section — even when no rules (show default message)
             section.style.display = 'block';
-            if (agreeChk) agreeChk.checked = false;
+            if (agreeChk) { agreeChk.checked = false; agreeChk.disabled = true; }
             const _e = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            listEl.innerHTML = rules.map((r, i) =>
-                '<div style="margin-bottom:'+(i < rules.length-1 ? '10px' : '0')+';padding-bottom:'+(i < rules.length-1 ? '10px' : '0')+';border-bottom:'+(i < rules.length-1 ? '1px solid #E5E7EB' : 'none')+';">'
+            if (!rules.length) {
+                listEl.innerHTML = '<div style="color:#6B7280;font-style:italic;padding:4px 0;">No specific rules have been defined yet. Please return borrowed items on time and in good condition.</div>';
+            } else {
+                listEl.innerHTML = rules.map((r, i) =>
+                    '<div style="margin-bottom:'+(i < rules.length-1 ? '10px' : '0')+';padding-bottom:'+(i < rules.length-1 ? '10px' : '0')+';border-bottom:'+(i < rules.length-1 ? '1px solid #E5E7EB' : 'none')+';">'
                 + '<div style="font-weight:700;color:#1A1A2E;margin-bottom:2px;">'+(i+1)+'. '+_e(r.title)+'</div>'
                 + '<div style="color:#6B7280;">'+_e(r.content)+'</div>'
                 + '</div>'
             ).join('');
+            }
+            // Scroll-to-bottom detection: enable checkbox only after reading all rules
+            const hintEl = document.getElementById('rulesScrollHint');
+            function _onRulesScroll() {
+                if (listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 8) {
+                    if (agreeChk) agreeChk.disabled = false;
+                    if (hintEl) hintEl.style.display = 'none';
+                    listEl.removeEventListener('scroll', _onRulesScroll);
+                }
+            }
+            setTimeout(() => {
+                if (listEl.scrollHeight <= listEl.clientHeight + 8) {
+                    if (agreeChk) agreeChk.disabled = false;
+                } else {
+                    if (hintEl) hintEl.style.display = 'block';
+                    listEl.addEventListener('scroll', _onRulesScroll);
+                }
+            }, 50);
             updateBorrowSubmitButton();
         }
         document.getElementById('borrowerContact')?.addEventListener('input', updateBorrowSubmitButton);

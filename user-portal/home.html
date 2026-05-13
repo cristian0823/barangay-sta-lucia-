@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Barangay Dashboard</title>
+    <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script><script>tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }</script>
     <script>
@@ -267,6 +268,7 @@
             font-size: 18px;
             width: 24px;
             text-align: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
         /* MAIN CONTENT */
@@ -426,6 +428,7 @@
         .welcome-icon {
             font-size: 48px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            display: flex; align-items: center; justify-content: center;
         }
 
         /* STATS ROW */
@@ -1189,8 +1192,8 @@
                 <div class="user-avatar" id="userAvatar">U</div>
             </div>
             <button class="btn-dark-toggle dark-mode-toggle" onclick="toggleDarkMode()"
-                title="Toggle Dark Mode">🌙</button>
-            <button class="btn" onclick="window.location.href='user-settings.html'">⚙️ <span>Settings</span></button>
+                title="Toggle Dark Mode"><i class="bi bi-moon-fill"></i></button>
+            <button class="btn" onclick="window.location.href='user-settings.html'"><i class="bi bi-gear-fill"></i><span>Settings</span></button>
             <button class="btn" onclick="logoutUser()"><span>Logout</span></button>
         </div>
     </header>
@@ -1201,22 +1204,22 @@
             <div class="sidebar-title" style="margin-top: 5px;">Menu</div>
 
             <button class="nav-item active" data-panel="equipment-panel" style="margin-top: 10px;">
-                <div class="nav-icon">🪑</div>
+                <div class="nav-icon"><i class="bi bi-box-seam-fill"></i></div>
                 <span>Borrow Equipment</span>
             </button>
 
             <button class="nav-item" data-panel="concerns-panel">
-                <div class="nav-icon">📋</div>
+                <div class="nav-icon"><i class="bi bi-clipboard2-check-fill"></i></div>
                 <span>Submit Concern</span>
             </button>
 
             <button class="nav-item" data-panel="court-bookings-panel">
-                <div class="nav-icon">🏀</div>
+                <div class="nav-icon"><i class="bi bi-dribbble"></i></div>
                 <span>Court Reservations</span>
             </button>
 
             <button class="nav-item" data-panel="my-borrowings-panel">
-                <div class="nav-icon">📦</div>
+                <div class="nav-icon"><i class="bi bi-bag-check-fill"></i></div>
                 <span>My Borrowings</span>
             </button>
         </aside>
@@ -1229,15 +1232,15 @@
                 <!-- Welcome text injected into the top of the Equipment Panel -->
                 <div class="welcome-banner" style="margin-bottom: 26px;">
                     <div class="welcome-text">
-                        <h2>👋 Welcome, <span id="welcomeName">User</span>!</h2>
+                        <h2><i class="bi bi-hand-wave" style="margin-right:6px;"></i>Welcome, <span id="welcomeName">User</span>!</h2>
                         <p>Here you can view available items and request to borrow them.</p>
                     </div>
-                    <div class="welcome-icon">🪑</div>
+                    <div class="welcome-icon"><i class="bi bi-box-seam-fill"></i></div>
                 </div>
 
                 <div class="panel-header"
                     style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
-                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">🏃 Available Equipment</h3>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;"><i class="bi bi-box-seam-fill" style="margin-right:6px;"></i>Available Equipment</h3>
                 </div>
                 <div id="equipmentList" class="equip-grid"></div>
             </div>
@@ -1246,12 +1249,12 @@
             <div id="concerns-panel" class="content-panel">
                 <div class="panel-header"
                     style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
-                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">📋 Submit a Concern</h3>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;"><i class="bi bi-clipboard2-check-fill" style="margin-right:6px;"></i>Submit a Concern</h3>
                 </div>
                 
                 <div id="concernFormBackdrop" onclick="toggleConcernSheet()"></div>
                 <form id="concernForm" class="concern-form" style="max-width: 680px;">
-                    <button type="button" class="mobile-close-btn" onclick="toggleConcernSheet()">✕</button>
+                    <button type="button" class="mobile-close-btn" onclick="toggleConcernSheet()"><i class="bi bi-x-lg"></i></button>
                     <div class="mobile-only-header">Submit Concern</div>
                     <div class="fg">
                         <label>Your Address</label>
@@ -1262,11 +1265,11 @@
                             <label>Category</label>
                             <select id="concernCategory" required>
                                 <option value="">Select a category...</option>
-                                <option value="infrastructure">🏗️ Infrastructure</option>
-                                <option value="sanitation">🧹 Sanitation</option>
-                                <option value="security">👮 Security</option>
-                                <option value="noise">🔊 Noise</option>
-                                <option value="other">📝 Other</option>
+                                <option value="infrastructure">Infrastructure</option>
+                                <option value="sanitation">Sanitation</option>
+                                <option value="security">Security</option>
+                                <option value="noise">Noise</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                         <div class="fg">
@@ -1293,7 +1296,7 @@
             <div id="my-borrowings-panel" class="content-panel">
                 <div class="panel-header"
                     style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
-                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">📦 My Borrowings</h3>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;"><i class="bi bi-bag-check-fill" style="margin-right:6px;"></i>My Borrowings</h3>
                 </div>
                 <div id="myBorrowingsList"></div>
             </div>
@@ -1302,14 +1305,12 @@
             <div id="court-bookings-panel" class="content-panel">
                 <div class="panel-header"
                     style="margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px;">
-                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;">🏀 Court Reservations</h3>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #064e3b;"><i class="bi bi-dribbble" style="margin-right:6px;"></i>Court Reservations</h3>
                 </div>
 
                 <div class="venue-toggle">
-                    <button class="venue-btn active" id="vb-basketball" onclick="switchVenue('basketball')">🏀
-                        Basketball Court</button>
-                    <button class="venue-btn" id="vb-multipurpose" onclick="switchVenue('multipurpose')">🏢
-                        Multi-Purpose Hall</button>
+                    <button class="venue-btn active" id="vb-basketball" onclick="switchVenue('basketball')"><i class="bi bi-dribbble" style="margin-right:5px;"></i>Basketball Court</button>
+                    <button class="venue-btn" id="vb-multipurpose" onclick="switchVenue('multipurpose')"><i class="bi bi-building" style="margin-right:5px;"></i>Multi-Purpose Hall</button>
                 </div>
                 <input type="hidden" id="currentVenue" value="basketball">
 
@@ -1359,7 +1360,7 @@
 
 
                 <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
-                    <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;">🎉 Upcoming
+                    <h4 style="font-size: 15px; font-weight: 700; color: #064e3b; margin-bottom: 14px;"><i class="bi bi-calendar-event-fill" style="margin-right:6px;"></i>Upcoming
                         Events</h4>
                     <div id="upcomingEventsList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     </div>
@@ -1413,7 +1414,7 @@
                     <!-- Date Display -->
                     <div style="background: linear-gradient(to bottom right, #ecfdf5, #f0fdfa); border: 1px solid #a7f3d0; border-radius: 16px; padding: 20px; margin-bottom: 24px; position: relative; overflow: hidden;">
                         <h5 style="font-size: 14px; font-weight: 700; color: #065f46; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                            <span style="width: 32px; height: 32px; background: #10b981; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">📅</span> Selected Borrowing Period
+                            <span style="width: 32px; height: 32px; background: #10b981; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="bi bi-calendar-range" style="font-size:16px;"></i></span> Selected Borrowing Period
                         </h5>
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
                             <div style="flex: 1; text-align: center;">
@@ -1677,7 +1678,7 @@
             document.getElementById('borrowQty').value = 1;
             
             const maxHelp = document.getElementById('borrowMaxHelp');
-            if(maxHelp) maxHelp.innerHTML = '📦 Max: ' + item.available + ' units available';
+            if(maxHelp) maxHelp.innerHTML = '<i class="bi bi-boxes" style="margin-right:3px;"></i>Max: ' + item.available + ' units available';
             
             document.getElementById('borrowPurpose').value = '';
             document.getElementById('borrowerFullName').value = user.fullName || '';
@@ -1759,7 +1760,7 @@
                 const start = new Date(borrowStartDate);
                 const diffDays = Math.ceil(Math.abs(d - start) / (1000*60*60*24)) + 1;
                 if(durText) durText.textContent = diffDays + (diffDays > 1 ? ' days' : ' day');
-                if(rangeDisplay) rangeDisplay.innerHTML = '<span class="text-emerald-600">📅 ' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' → ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
+                if(rangeDisplay) rangeDisplay.innerHTML = '<span class="text-emerald-600">' + fullMonths[start.getMonth()] + ' ' + start.getDate() + ' → ' + fullMonths[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</span> <span class="ml-2 px-2 py-1 bg-emerald-500 text-white rounded-lg text-xs font-bold">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + '</span>';
             } else {
                 if(rDisp) {
                     rDisp.innerHTML = '<div class="text-lg font-bold text-teal-700">Select date</div><div class="text-xs text-teal-500">from calendar</div>';
@@ -1941,7 +1942,7 @@
                     cls = 'cal-day past';
                 } else if (eventMap[dateStr]) {
                     cls = 'cal-day event';
-                    txt = '<div class="cal-badge">🎉 Event</div>';
+                    txt = '<div class="cal-badge">Event</div>';
                 } else if (venueBookings.includes(dateStr)) {
                     cls = 'cal-day booked';
                     txt = '<div class="cal-badge">Booked</div>';
@@ -2039,7 +2040,7 @@
             const c = document.getElementById('myCourtBookingsList');
 
             if (userBookings.length === 0) {
-                c.innerHTML = '<div class="empty-state"><span>🏟️</span><p>No court reservations yet.</p></div>';
+                c.innerHTML = '<div class="empty-state"><span><i class="bi bi-dribbble" style="font-size:24px;"></i></span><p>No court reservations yet.</p></div>';
                 return;
             }
 
@@ -2067,7 +2068,7 @@
                         <div class="li-header" style="flex-direction:column;align-items:flex-start;gap:8px;">
                             <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;">
                                 <div>
-                                    <div class="li-title">🏀 ${venueName}</div>
+                                    <div class="li-title">${venueName}</div>
                                     <div class="li-meta">📅 ${formatDate(b.date)} • ⏰ ${timeDisplay}</div>
                                 </div>
                                 ${trackerHtml}
@@ -2217,7 +2218,7 @@
         async function loadEquipment() {
             const equipment = await getEquipment();
             const c = document.getElementById('equipmentList');
-            if (!equipment.length) { c.innerHTML = '<div class="empty-state"><span>📦</span><p>No equipment available.</p></div>'; return; }
+            if (!equipment.length) { c.innerHTML = '<div class="empty-state"><span><i class="bi bi-box-seam" style="font-size:24px;"></i></span><p>No equipment available.</p></div>'; return; }
             c.innerHTML = equipment.map(item => {
                 const pct = Math.round((item.available / item.quantity) * 100);
                 const fc = pct > 50 ? 'pf-green' : pct > 25 ? 'pf-yellow' : 'pf-red';
@@ -2248,7 +2249,7 @@
         async function loadMyConcerns() {
             const concerns = await getMyConcerns();
             const c = document.getElementById('myConcernsList');
-            if (!concerns.length) { c.innerHTML = '<div class="empty-state"><span>📋</span><p>No concerns submitted yet.</p></div>'; return; }
+            if (!concerns.length) { c.innerHTML = '<div class="empty-state"><span><i class="bi bi-clipboard2-x" style="font-size:24px;"></i></span><p>No concerns submitted yet.</p></div>'; return; }
             concerns.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             c.innerHTML = concerns.map(concern => {
                 let step = 1;
@@ -2296,7 +2297,7 @@
         async function loadMyBorrowings() {
             const borrowings = await getMyBorrowings();
             const c = document.getElementById('myBorrowingsList');
-            if (!borrowings.length) { c.innerHTML = '<div class="empty-state"><span>📦</span><p>No borrowings yet. Request some equipment!</p></div>'; return; }
+            if (!borrowings.length) { c.innerHTML = '<div class="empty-state"><span><i class="bi bi-bag-x" style="font-size:24px;"></i></span><p>No borrowings yet. Request some equipment!</p></div>'; return; }
             borrowings.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
             c.innerHTML = borrowings.map(b => {
                 let step = 1;

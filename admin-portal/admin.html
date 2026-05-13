@@ -940,6 +940,59 @@
                             <div id="equipPagBtns" style="display:flex;gap:6px;"></div>
                         </div>
                     </div>
+                    <!-- ── BORROWING RULES MANAGEMENT ── -->
+                    <div style="margin-top:28px;border-top:2px solid #e2e8f0;padding-top:24px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:36px;height:36px;background:#1A3A6B;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                                    <i class="bi bi-journal-check" style="color:#fff;font-size:18px;"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:14px;font-weight:700;color:#1A1A2E;">Borrowing Rules &amp; Policies</div>
+                                    <div style="font-size:11px;color:#6B7280;">Rules residents must acknowledge before borrowing equipment</div>
+                                </div>
+                            </div>
+                            <span id="adminRulesCountBadge" style="font-size:11px;font-weight:700;background:#1A3A6B;color:#fff;border-radius:10px;padding:3px 10px;">0 rules</span>
+                        </div>
+
+                        <!-- Add/Edit Rule Form -->
+                        <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:16px;">
+                            <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:12px;display:flex;align-items:center;gap:7px;" id="adminRuleFormTitle">
+                                <i class="bi bi-plus-circle-fill" style="color:#1A3A6B;"></i> Add New Rule
+                            </div>
+                            <input type="hidden" id="adminEditRuleId" value="">
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6B7280;margin-bottom:5px;">Rule Title *</label>
+                                <input type="text" id="adminRuleTitle" maxlength="120" placeholder="e.g. Return Items on Time"
+                                    style="width:100%;padding:9px 12px;border:1.5px solid #D1D5DB;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;"
+                                    onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6B7280;margin-bottom:5px;">Description *</label>
+                                <textarea id="adminRuleContent" rows="3" placeholder="Describe the rule in detail..."
+                                    style="width:100%;padding:9px 12px;border:1.5px solid #D1D5DB;border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;"
+                                    onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button onclick="adminSaveRule()"
+                                    style="flex:1;padding:9px;border-radius:8px;border:none;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;background:#1A3A6B;color:#fff;display:flex;align-items:center;justify-content:center;gap:6px;"
+                                    onmouseover="this.style.background='#0f2547'" onmouseout="this.style.background='#1A3A6B'">
+                                    <i class="bi bi-floppy-fill"></i><span id="adminRuleSaveBtnText">Add Rule</span>
+                                </button>
+                                <button id="adminRuleCancelBtn" onclick="adminCancelRuleEdit()" style="display:none;padding:9px 18px;border-radius:8px;border:1.5px solid #D1D5DB;background:#fff;color:#374151;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;"
+                                    onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#fff'">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- Rules List -->
+                        <div id="adminRulesListBody" style="display:flex;flex-direction:column;gap:8px;"></div>
+                        <div id="adminRulesEmptyState" style="text-align:center;padding:28px 16px;color:#9CA3AF;display:none;">
+                            <i class="bi bi-journal-x" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+                            No rules defined yet. Add your first rule above.
+                        </div>
+                    </div>
+
+
                     <!-- USERS SECTION -->
                     <div id="users-section" class="section-container" style="display: none;">
                         <div class="section-header">
@@ -2733,7 +2786,7 @@
                 if (section === 'audit-log') loadAuditLog();
                 if (section === 'security-log') loadSecurityLog();
                                 if (section === 'users') loadUsers();
-                if (section === 'equipment') loadEquipment();
+                if (section === 'equipment') { loadEquipment(); adminLoadBorrowingRules(); }
                 if (section === 'requests') loadRequests();
                 if (section === 'concerns') loadConcerns();
                 if (section === 'court-bookings') {
@@ -8441,7 +8494,122 @@ function closeUserDetailPanel() {
     if (overlay) overlay.style.display = 'none';
     document.body.style.overflow = '';
 }
-</script>
+
+        // ── EQUIPMENT: BORROWING RULES MANAGEMENT ────────────────────
+        const _ADMIN_LS_RULES = 'brgy_borrowing_rules';
+
+        function _adminGetRules() {
+            try { return JSON.parse(localStorage.getItem(_ADMIN_LS_RULES)) || []; } catch(e) { return []; }
+        }
+        function _adminStoreRules(rules) {
+            localStorage.setItem(_ADMIN_LS_RULES, JSON.stringify(rules));
+        }
+        function _adminEscR(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        async function adminLoadBorrowingRules() {
+            try {
+                const { data, error } = await supabase.from('site_settings').select('value').eq('key','borrowing_rules').single();
+                if (!error && data) _adminStoreRules(JSON.parse(data.value || '[]'));
+            } catch(e) {}
+            adminRenderRulesList();
+        }
+
+        function adminRenderRulesList() {
+            const rules  = _adminGetRules();
+            const body   = document.getElementById('adminRulesListBody');
+            const empty  = document.getElementById('adminRulesEmptyState');
+            const badge  = document.getElementById('adminRulesCountBadge');
+            if (badge) badge.textContent = rules.length + (rules.length === 1 ? ' rule' : ' rules');
+            if (!body) return;
+            if (!rules.length) {
+                body.innerHTML = '';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+            if (empty) empty.style.display = 'none';
+            body.innerHTML = rules.map((rule, i) =>
+                '<div style="border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;background:#FAFAFA;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">'+
+                '<div style="flex:1;min-width:0;">'+
+                '<div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:3px;display:flex;align-items:center;gap:7px;">'+
+                '<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#1A3A6B;color:#fff;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0;">'+(i+1)+'</span>'+
+                _adminEscR(rule.title)+'</div>'+
+                '<div style="font-size:12px;color:#6B7280;line-height:1.55;padding-left:27px;">'+_adminEscR(rule.content)+'</div>'+
+                '</div>'+
+                '<div style="display:flex;gap:6px;flex-shrink:0;">'+
+                '<button onclick="adminEditRule(\''+rule.id+'\',\''+_adminEscR(rule.title).replace(/'/g,"&#39;")+'\')" style="width:30px;height:30px;border-radius:6px;background:#EEF2FF;border:none;cursor:pointer;color:#1A3A6B;font-size:13px;display:flex;align-items:center;justify-content:center;" title="Edit"><i class="bi bi-pencil-fill"></i></button>'+
+                '<button onclick="adminDeleteRule(\''+rule.id+'\',\''+_adminEscR(rule.title).replace(/'/g,"&#39;")+'\')" style="width:30px;height:30px;border-radius:6px;background:#FEF2F2;border:none;cursor:pointer;color:#CE1126;font-size:13px;display:flex;align-items:center;justify-content:center;" title="Delete"><i class="bi bi-trash-fill"></i></button>'+
+                '</div></div>'
+            ).join('');
+        }
+
+        function adminSaveRule() {
+            const title   = (document.getElementById('adminRuleTitle').value   || '').trim();
+            const content = (document.getElementById('adminRuleContent').value || '').trim();
+            if (!title)   return showNotification('Rule title is required.', 'error');
+            if (!content) return showNotification('Rule description is required.', 'error');
+            const rules  = _adminGetRules();
+            const editId = document.getElementById('adminEditRuleId').value;
+            if (editId) {
+                const idx = rules.findIndex(r => String(r.id) === editId);
+                if (idx !== -1) { rules[idx].title = title; rules[idx].content = content; }
+            } else {
+                rules.push({ id: String(Date.now()), title, content });
+            }
+            _adminStoreRules(rules);
+            _adminSyncRules(rules);
+            adminCancelRuleEdit();
+            adminRenderRulesList();
+            showNotification(editId ? 'Rule updated.' : 'Rule added.', 'success');
+        }
+
+        function adminEditRule(id, title) {
+            const rule = _adminGetRules().find(r => String(r.id) === id);
+            if (!rule) return;
+            document.getElementById('adminEditRuleId').value     = id;
+            document.getElementById('adminRuleTitle').value      = rule.title;
+            document.getElementById('adminRuleContent').value    = rule.content;
+            const ft = document.getElementById('adminRuleFormTitle');
+            if (ft) ft.innerHTML = '<i class="bi bi-pencil-fill" style="color:#1A3A6B;"></i> Edit Rule';
+            const sb = document.getElementById('adminRuleSaveBtnText');
+            if (sb) sb.textContent = 'Save Changes';
+            const cb = document.getElementById('adminRuleCancelBtn');
+            if (cb) cb.style.display = '';
+            document.getElementById('adminRuleTitle').focus();
+        }
+
+        function adminCancelRuleEdit() {
+            document.getElementById('adminEditRuleId').value     = '';
+            document.getElementById('adminRuleTitle').value      = '';
+            document.getElementById('adminRuleContent').value    = '';
+            const ft = document.getElementById('adminRuleFormTitle');
+            if (ft) ft.innerHTML = '<i class="bi bi-plus-circle-fill" style="color:#1A3A6B;"></i> Add New Rule';
+            const sb = document.getElementById('adminRuleSaveBtnText');
+            if (sb) sb.textContent = 'Add Rule';
+            const cb = document.getElementById('adminRuleCancelBtn');
+            if (cb) cb.style.display = 'none';
+        }
+
+        function adminDeleteRule(id, title) {
+            if (!confirm('Delete rule "' + title + '"? Residents will no longer see it.')) return;
+            const rules = _adminGetRules().filter(r => String(r.id) !== id);
+            _adminStoreRules(rules);
+            _adminSyncRules(rules);
+            adminRenderRulesList();
+            showNotification('Rule deleted.', 'success');
+        }
+
+        async function _adminSyncRules(rules) {
+            try {
+                await supabase.from('site_settings').upsert(
+                    [{ key: 'borrowing_rules', value: JSON.stringify(rules), updated_at: new Date().toISOString() }],
+                    { onConflict: 'key' }
+                );
+            } catch(e) {}
+        }
+        // ──────────────────────────────────────────────────────────────
+        </script>
 </body>
 
 </html>

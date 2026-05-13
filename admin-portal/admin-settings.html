@@ -940,7 +940,7 @@
                 <i class="bi bi-arrow-left-circle"></i><span class="back-text"> Back to Dashboard</span>
             </a>
             <button class="mobile-logout-btn" onclick="logoutUser ? logoutUser() : window.location.href='index.html'"
-                style="display:none; align-items:center; gap:6px; padding:7px 14px; border-radius:10px; border:none; background:#fef2f2; color:#b91c1c; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">🚪<span
+                style="display:none; align-items:center; gap:6px; padding:7px 14px; border-radius:10px; border:none; background:#fef2f2; color:#b91c1c; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;"><i class="bi bi-box-arrow-right" style="font-size:15px;"></i><span
                     class="logout-text">Logout</span></button>
         </div>
     </header>
@@ -956,9 +956,6 @@
         <button class="mobile-section-tab"
             onclick="showSection('system'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');"><i class="bi bi-bar-chart-fill"></i>
             System</button>
-        <button class="mobile-section-tab"
-            onclick="showSection('borrowing-rules'); document.querySelectorAll('.mobile-section-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active');"><i class="bi bi-journal-text"></i>
-            Rules</button>
     </div>
 
     <div class="layout">
@@ -977,9 +974,6 @@
                 <button class="nav-item" onclick="showSection('system')" id="systemBtn">
                     <i class="bi bi-bar-chart-fill"></i> System Info
                 </button>
-                <button class="nav-item" onclick="showSection('borrowing-rules')" id="borrowingRulesBtn">
-                    <i class="bi bi-journal-text"></i> Borrowing Rules
-                </button>
             </nav>
         </aside>
 
@@ -993,7 +987,7 @@
             <div id="profile-section">
                 <div class="section-hero">
                     <div class="section-hero-content">
-                        <div class="section-hero-icon">👤</div>
+                        <div class="section-hero-icon"><i class="bi bi-person-fill" style="font-size:20px;"></i></div>
                         <div>
                             <div class="section-hero-title">My Profile</div>
                             <div class="section-hero-sub">Update your account information and change your password</div>
@@ -1064,7 +1058,7 @@
             <div id="security-section" class="hidden">
                 <div class="section-hero">
                     <div class="section-hero-content">
-                        <div class="section-hero-icon">🔐</div>
+                        <div class="section-hero-icon"><i class="bi bi-shield-lock-fill" style="font-size:20px;"></i></div>
                         <div>
                             <div class="section-hero-title">Security / 2FA</div>
                             <div class="section-hero-sub">Protect your admin account with Google Authenticator</div>
@@ -1115,7 +1109,7 @@
             <div id="system-section" class="hidden">
                 <div class="section-hero">
                     <div class="section-hero-content">
-                        <div class="section-hero-icon">📊</div>
+                        <div class="section-hero-icon"><i class="bi bi-bar-chart-fill" style="font-size:20px;"></i></div>
                         <div>
                             <div class="section-hero-title">System Information</div>
                             <div class="section-hero-sub">Overview of all registered users, bookings, and equipment
@@ -1209,57 +1203,7 @@
             </div>
 
             <!-- ── BORROWING RULES ── -->
-            <div id="borrowing-rules-section" class="hidden">
-                <div class="section-hero" style="background:#1e2a4a;">
-                    <div class="section-hero-content">
-                        <div class="section-hero-icon" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);font-size:20px;">&#128203;</div>
-                        <div>
-                            <div class="section-hero-title" style="color:#fff;">Borrowing Rules</div>
-                            <div class="section-hero-sub" style="color:rgba(255,255,255,0.65);">Define policies residents must acknowledge before borrowing equipment</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add / Edit Rule Form -->
-                <div class="card" style="margin-bottom:20px;">
-                    <div class="card-head">
-                        <div class="card-head-title" id="ruleFormTitle"><i class="bi bi-plus-circle"></i> Add New Rule</div>
-                    </div>
-                    <div class="card-body">
-                        <input type="hidden" id="editRuleId" value="">
-                        <div class="form-group" style="margin-bottom:14px;">
-                            <label class="form-label">Rule Title *</label>
-                            <input type="text" id="ruleTitle" class="form-input" placeholder="e.g. Return Items on Time" maxlength="120">
-                        </div>
-                        <div class="form-group" style="margin-bottom:16px;">
-                            <label class="form-label">Description *</label>
-                            <textarea id="ruleContent" class="form-input" rows="3" placeholder="Describe the rule in detail..." style="resize:vertical;"></textarea>
-                        </div>
-                        <div style="display:flex;gap:10px;">
-                            <button onclick="saveRule()" class="btn-submit navy" style="flex:1;height:42px;padding:0;">
-                                <i class="bi bi-floppy-fill" style="margin-right:6px;"></i><span id="ruleSaveBtnText">Add Rule</span>
-                            </button>
-                            <button id="ruleCancelEditBtn" onclick="cancelRuleEdit()" style="display:none;height:42px;padding:0 20px;border:1.5px solid #D1D5DB;border-radius:8px;background:#fff;color:#374151;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#fff'">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rules List -->
-                <div class="card">
-                    <div class="card-head">
-                        <div class="card-head-title">
-                            <i class="bi bi-list-check"></i> Active Rules
-                            <span id="rulesCountBadge" style="font-size:11px;font-weight:700;background:#1A3A6B;color:#fff;border-radius:10px;padding:2px 9px;margin-left:8px;">0</span>
-                        </div>
-                    </div>
-                    <div class="card-body" id="rulesListBody">
-                        <div id="rulesEmptyState" style="text-align:center;padding:32px 16px;color:#9CA3AF;">
-                            <i class="bi bi-journal-x" style="font-size:32px;display:block;margin-bottom:8px;"></i>
-                            No rules defined yet. Add your first rule above.
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
         </main>
     </div>
@@ -1275,9 +1219,9 @@
         <script src="js/portal-overrides.js"></script>
     <script>
         function showToast(message, type = 'success') {
-            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            const icons = { success: '<i class="bi bi-check-circle-fill" style="color:#16a34a;"></i>', error: '<i class="bi bi-x-circle-fill" style="color:#dc2626;"></i>', info: '<i class="bi bi-info-circle-fill" style="color:#2563eb;"></i>' };
             const toast = document.getElementById('toast');
-            toast.innerHTML = `<span>${icons[type] || '✅'}</span><span>${message}</span>`;
+            toast.innerHTML = `<span>${icons[type] || icons.info}</span><span>${message}</span>`;
             toast.className = `show ${type}`;
             setTimeout(() => toast.className = '', 3200);
         }
@@ -1296,15 +1240,14 @@
         }
 
         function showSection(section) {
-            ['profile', 'security', 'system', 'borrowing-rules'].forEach(s => {
+            ['profile', 'security', 'system'].forEach(s => {
                 const el = document.getElementById(s + '-section');
                 if (el) el.classList.toggle('hidden', s !== section);
-                const btnId = s === 'borrowing-rules' ? 'borrowingRulesBtn' : s + 'Btn';
+                const btnId = s + 'Btn';
                 const btn = document.getElementById(btnId);
                 if (btn) btn.classList.toggle('active', s === section);
             });
             if (section === 'security') loadAdminTOTPStatus();
-            if (section === 'borrowing-rules') loadBorrowingRules();
         }
 
         async function loadAdminTOTPStatus() {
@@ -1319,7 +1262,7 @@
 
             const info = await fetchUserTOTPInfo(user.id);
             if (info.totp_enabled) {
-                icon.textContent = '✅';
+                icon.className = 'bi bi-check-circle-fill'; icon.style.color='#16a34a'; icon.style.fontSize='24px';
                 label.textContent = 'Google Authenticator is Active';
                 sub.textContent = 'Your account is protected with 2-Factor Authentication.';
                 badge.textContent = 'Enabled';
@@ -1328,7 +1271,7 @@
                 enableBtn.style.display = 'none';
                 disableBtn.style.display = 'block';
             } else {
-                icon.textContent = '⚠️';
+                icon.className = 'bi bi-exclamation-triangle-fill'; icon.style.color='#d97706'; icon.style.fontSize='24px';
                 label.textContent = 'Google Authenticator is Not Enabled';
                 sub.textContent = 'Your account has no 2FA protection. Enable it now for extra security.';
                 badge.textContent = 'Disabled';
@@ -1382,7 +1325,7 @@
                             </div>
                         </td>
                         <td style="color:var(--muted);font-size:13px;">${user.email || '—'}</td>
-                        <td><span class="role-badge ${isAdmin ? 'role-admin' : 'role-user'}">${isAdmin ? '🛡️ Admin' : '👤 Resident'}</span></td>
+                        <td><span class="role-badge ${isAdmin ? 'role-admin' : 'role-user'}">${isAdmin ? '<i class="bi bi-shield-fill"></i> Admin' : '<i class="bi bi-person-fill"></i> Resident'}</span></td>
                         <td style="color:var(--muted);font-size:12px;">${joinDate}</td>
                         <td>
                             <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -1455,116 +1398,7 @@
         }
         init();
 
-        // ── BORROWING RULES ─────────────────────────────────────────
-        const _LS_RULES = 'brgy_borrowing_rules';
-
-        function _getRules() {
-            try { return JSON.parse(localStorage.getItem(_LS_RULES)) || []; } catch(e) { return []; }
-        }
-        function _storeRules(rules) {
-            localStorage.setItem(_LS_RULES, JSON.stringify(rules));
-        }
-        function _escR(s) {
-            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        }
-
-        async function loadBorrowingRules() {
-            try {
-                const { data, error } = await supabase.from('site_settings').select('value').eq('key','borrowing_rules').single();
-                if (!error && data) _storeRules(JSON.parse(data.value || '[]'));
-            } catch(e) {}
-            renderBorrowingRulesList();
-        }
-
-        function renderBorrowingRulesList() {
-            const rules = _getRules();
-            const body  = document.getElementById('rulesListBody');
-            const empty = document.getElementById('rulesEmptyState');
-            const badge = document.getElementById('rulesCountBadge');
-            if (badge) badge.textContent = rules.length;
-            if (!body) return;
-            body.querySelectorAll('.rule-item').forEach(el => el.remove());
-            if (!rules.length) { if (empty) empty.style.display = 'block'; return; }
-            if (empty) empty.style.display = 'none';
-            rules.forEach((rule, i) => {
-                const d = document.createElement('div');
-                d.className = 'rule-item';
-                d.style.cssText = 'border:1px solid #E5E7EB;border-radius:8px;padding:14px 16px;margin-bottom:10px;background:#FAFAFA;';
-                d.innerHTML =
-                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">'
-                    + '<div style="flex:1;min-width:0;">'
-                    + '<div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:4px;display:flex;align-items:center;gap:7px;">'
-                    + '<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#1A3A6B;color:#fff;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0;">'+(i+1)+'</span>'
-                    + _escR(rule.title)+'</div>'
-                    + '<div style="font-size:12px;color:#6B7280;line-height:1.55;padding-left:27px;">'+_escR(rule.content)+'</div>'
-                    + '</div>'
-                    + '<div style="display:flex;gap:6px;flex-shrink:0;">'
-                    + '<button onclick="editRule(\''+rule.id+'\')" style="width:30px;height:30px;border-radius:6px;background:#EEF2FF;border:none;cursor:pointer;color:#1A3A6B;font-size:13px;display:flex;align-items:center;justify-content:center;" title="Edit"><i class="bi bi-pencil-fill"></i></button>'
-                    + '<button onclick="deleteRule(\''+rule.id+'\')" style="width:30px;height:30px;border-radius:6px;background:#FEF2F2;border:none;cursor:pointer;color:#CE1126;font-size:13px;display:flex;align-items:center;justify-content:center;" title="Delete"><i class="bi bi-trash-fill"></i></button>'
-                    + '</div></div>';
-                body.insertBefore(d, empty);
-            });
-        }
-
-        function saveRule() {
-            const title   = (document.getElementById('ruleTitle').value   || '').trim();
-            const content = (document.getElementById('ruleContent').value || '').trim();
-            if (!title)   return showToast('Rule title is required.', 'error');
-            if (!content) return showToast('Rule description is required.', 'error');
-            const rules  = _getRules();
-            const editId = document.getElementById('editRuleId').value;
-            if (editId) {
-                const idx = rules.findIndex(r => String(r.id) === editId);
-                if (idx !== -1) { rules[idx].title = title; rules[idx].content = content; }
-            } else {
-                rules.push({ id: String(Date.now()), title, content });
-            }
-            _storeRules(rules);
-            _syncRules(rules);
-            cancelRuleEdit();
-            renderBorrowingRulesList();
-            showToast(editId ? 'Rule updated.' : 'Rule added.', 'success');
-        }
-
-        function editRule(id) {
-            const rule = _getRules().find(r => String(r.id) === id);
-            if (!rule) return;
-            document.getElementById('editRuleId').value       = id;
-            document.getElementById('ruleTitle').value        = rule.title;
-            document.getElementById('ruleContent').value      = rule.content;
-            document.getElementById('ruleFormTitle').innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Rule';
-            document.getElementById('ruleSaveBtnText').textContent = 'Save Changes';
-            document.getElementById('ruleCancelEditBtn').style.display = '';
-            document.getElementById('ruleTitle').focus();
-        }
-
-        function cancelRuleEdit() {
-            document.getElementById('editRuleId').value  = '';
-            document.getElementById('ruleTitle').value   = '';
-            document.getElementById('ruleContent').value = '';
-            document.getElementById('ruleFormTitle').innerHTML = '<i class="bi bi-plus-circle"></i> Add New Rule';
-            document.getElementById('ruleSaveBtnText').textContent = 'Add Rule';
-            document.getElementById('ruleCancelEditBtn').style.display = 'none';
-        }
-
-        function deleteRule(id) {
-            if (!confirm('Delete this rule? Residents will no longer see it.')) return;
-            const rules = _getRules().filter(r => String(r.id) !== id);
-            _storeRules(rules);
-            _syncRules(rules);
-            renderBorrowingRulesList();
-            showToast('Rule deleted.', 'success');
-        }
-
-        async function _syncRules(rules) {
-            try {
-                await supabase.from('site_settings').upsert(
-                    [{ key: 'borrowing_rules', value: JSON.stringify(rules), updated_at: new Date().toISOString() }],
-                    { onConflict: 'key' }
-                );
-            } catch(e) {}
-        }
-        // ────────────────────────────────────────────────────────────
+        
 
     </script>
 </body>
