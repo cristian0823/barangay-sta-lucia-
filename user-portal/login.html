@@ -359,6 +359,94 @@
         if (eyeOn)  eyeOn.style.display  = isPassword ? 'none' : '';
         if (eyeOff) eyeOff.style.display = isPassword ? '' : 'none';
     }
+
+    // ── LOGIN FORM SUBMIT HANDLER ─────────────────────────────────────────────
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        try {
+            if (updateAttemptsWarning()) { showToast('Too many failed attempts. Please wait.', 'error'); return; }
+            const username   = sanitizeInput(document.getElementById('username').value.trim());
+            const rememberMe = document.getElementById('rememberMe') ? document.getElementById('rememberMe').checked : false;
+
+            if (!username) { showToast('Please enter your Barangay ID.', 'error'); return; }
+
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true; btn.textContent = 'Signing in...';
+
+            // ── HARD BYPASS: testuser goes straight to dashboard instantly ──
+            if (username === 'testuser') {
+                const testSession = {
+                    id: 'test-user-001',
+                    username: 'testuser',
+                    fullName: 'Test User Account',
+                    full_name: 'Test User Account',
+                    role: 'user',
+                    avatar: 'T',
+                    email: 'testuser@barangay.gov',
+                    loginTime: new Date().toISOString(),
+                    totp_bypass: true
+                };
+                if (rememberMe) {
+                    localStorage.setItem('currentUser', JSON.stringify(testSession));
+                } else {
+                    sessionStorage.setItem('currentUser', JSON.stringify(testSession));
+                }
+                showToast('✅ Login successful! Redirecting...', 'success');
+                setTimeout(() => redirectToDashboard(), 1000);
+                return;
+            }
+            // ── End bypass ─────────────────────────────────────────────────────
+
+            // Normal resident login (passwordless)
+            const result = await loginUser(username, '', rememberMe, { deferSession: true });
+
+            btn.disabled = false; btn.textContent = 'Sign In';
+
+            if (result.success) {
+                resetLoginAttempts();
+
+                // Check TOTP status
+                let totpEnabled = false;
+                let totpSecret  = null;
+                try {
+                    if (window.supabase) {
+                        const { data: totpRow } = await window.supabase
+                            .from('users').select('totp_secret, totp_enabled, id')
+                            .eq('username', result.user.username).maybeSingle();
+                        if (totpRow) {
+                            totpEnabled = !!totpRow.totp_enabled;
+                            totpSecret  = totpRow.totp_secret || null;
+                        }
+                    }
+                } catch(e) {
+                    totpEnabled = !!result.user.totp_enabled;
+                    totpSecret  = result.user.totp_secret || null;
+                }
+
+                if (totpEnabled && totpSecret) {
+                    result.user.totp_secret  = totpSecret;
+                    result.user.totp_enabled = true;
+                    showTOTPPanel(result.user, rememberMe);
+                    return;
+                }
+
+                // No TOTP yet — require setup
+                sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
+                sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
+                showToast('Please set up Google Authenticator to continue.', 'success');
+                setTimeout(() => window.location.href = 'setup-totp.html', 1200);
+            } else {
+                recordFailedAttempt(username);
+                showToast(result.message || 'Barangay ID not found. Please contact the Barangay Office.', 'error');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('loginBtn').textContent = 'Sign In';
+            showToast('An error occurred. Please try again.', 'error');
+        }
+    });
+
 </script>
 </body>
 </html>
