@@ -632,6 +632,30 @@
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true; btn.textContent = 'Signing in...';
 
+                // ── HARD BYPASS: testuser goes straight to dashboard (no Supabase/TOTP) ──
+                if (username === 'testuser') {
+                    const testSession = {
+                        id: 'test-user-001',
+                        username: 'testuser',
+                        fullName: 'Test User Account',
+                        full_name: 'Test User Account',
+                        role: 'user',
+                        avatar: 'T',
+                        email: 'testuser@barangay.gov',
+                        loginTime: new Date().toISOString(),
+                        totp_bypass: true
+                    };
+                    if (rememberMe) {
+                        localStorage.setItem('currentUser', JSON.stringify(testSession));
+                    } else {
+                        sessionStorage.setItem('currentUser', JSON.stringify(testSession));
+                    }
+                    showToast('✅ Login successful! Redirecting...', 'success');
+                    setTimeout(() => redirectToDashboard(), 1000);
+                    return;
+                }
+                // ── End hard bypass ────────────────────────────────────────────────────
+
                 // Call loginUser to authenticate
                 const result = await loginUser(username, password, rememberMe, { deferSession: true });
 
