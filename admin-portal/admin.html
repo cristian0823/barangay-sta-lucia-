@@ -2973,7 +2973,7 @@
                         : '<span style="display:inline-block;background:#0e9488;color:#fff;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;">Resident</span>';
                     return `<tr style="border-bottom: 1px solid #F3F4F6;">
                         <td style="padding:12px;color:#6B7280;white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
-                        <td style="padding:12px;font-weight:600;color:#1A1A2E;">${who}</td>
+                        <td style="padding:12px;font-weight:600;color:#1A1A2E;">${who}${whoBid}</td>
                         <td style="padding:12px;text-align:center;">${actorBadge}</td>
                         <td style="padding:12px;text-align:center;white-space:nowrap;"><span style="${roleStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
                         <td style="padding:12px;text-align:center;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${actionLabel}</span></td>
@@ -7858,40 +7858,40 @@
                 try {
                     const supabaseOk = typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable();
                     if (supabaseOk) {
-                        // Query all three tables for recent pending activity
+                        // Query all three tables with user join for resident names
                         const [bookingsRes, borrowingsRes, concernsRes] = await Promise.all([
-                            supabase.from('facility_reservations').select('id, user_id, date, time, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('borrowings').select('id, user_id, equipment, quantity, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('concerns').select('id, user_id, title, description, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20)
+                            supabase.from('facility_reservations').select('id, user_id, date, time, venue, created_at, status, users(full_name, barangay_id)').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
+                            supabase.from('borrowings').select('id, user_id, equipment, quantity, borrow_date, return_date, created_at, status, users(full_name, barangay_id)').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
+                            supabase.from('concerns').select('id, user_id, title, category, description, created_at, status, users(full_name, barangay_id)').eq('status', 'pending').order('created_at', { ascending: false }).limit(20)
                         ]);
 
-                        (bookingsRes.data || []).forEach(b => items.push({
-                            id: 'booking_' + b.id,
-                            refId: b.id,
-                            type: 'booking',
-                            icon: '<i class="bi bi-calendar-check-fill"></i>',
-                            title: 'Facility Reservation',
-                            message: 'Pending reservation on ' + (b.date ? new Date(b.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : b.date),
-                            createdAt: b.created_at
-                        }));
-                        (borrowingsRes.data || []).forEach(b => items.push({
-                            id: 'borrow_' + b.id,
-                            refId: b.id,
-                            type: 'borrow',
-                            icon: '<i class="bi bi-box-seam"></i>',
-                            title: 'Equipment Request',
-                            message: (b.quantity || 1) + 'x ' + (b.equipment || 'Item') + ' requested',
-                            createdAt: b.created_at
-                        }));
-                        (concernsRes.data || []).forEach(c => items.push({
-                            id: 'concern_' + c.id,
-                            refId: c.id,
-                            type: 'concern',
-                            icon: '<i class="bi bi-megaphone-fill"></i>',
-                            title: 'New Concern',
-                            message: c.title || c.description || 'Untitled concern',
-                            createdAt: c.created_at
-                        }));
+                        (bookingsRes.data || []).forEach(b => {
+                            const bName = b.users ? (b.users.full_name || 'Resident') : 'Resident';
+                            const venue = b.venue || 'Facility';
+                            const dateStr = b.date ? new Date(b.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+                            items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking',
+                                icon: '<i class="bi bi-building"></i>', iconColor: '#16a34a', iconBg: 'rgba(22,163,74,0.12)',
+                                title: 'New Facility Reservation',
+                                message: bName + ' — ' + venue + (dateStr ? ' on ' + dateStr : '') + (b.time ? ' at ' + b.time : ''),
+                                createdAt: b.created_at });
+                        });
+                        (borrowingsRes.data || []).forEach(b => {
+                            const rName = b.users ? (b.users.full_name || 'Resident') : 'Resident';
+                            const dateRange = b.borrow_date ? new Date(b.borrow_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) + (b.return_date ? ' – ' + new Date(b.return_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '') : '';
+                            items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow',
+                                icon: '<i class="bi bi-box-seam"></i>', iconColor: '#2563eb', iconBg: 'rgba(37,99,235,0.1)',
+                                title: 'New Borrow Request',
+                                message: rName + ' — ' + (b.equipment||'Item') + ' x' + (b.quantity||1) + (dateRange ? ' (' + dateRange + ')' : ''),
+                                createdAt: b.created_at });
+                        });
+                        (concernsRes.data || []).forEach(c => {
+                            const cName = c.users ? (c.users.full_name || 'Resident') : 'Resident';
+                            items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern',
+                                icon: '<i class="bi bi-chat-left-text"></i>', iconColor: '#ea580c', iconBg: 'rgba(234,88,12,0.1)',
+                                title: 'New Concern Submitted',
+                                message: cName + ': ' + (c.title||c.description||'Untitled') + (c.category ? ' — ' + c.category : ''),
+                                createdAt: c.created_at });
+                        });
                     } else {
                         // LocalStorage fallback
                         const bookings = (JSON.parse(localStorage.getItem('courtBookings')) || []).filter(b => b.status === 'pending');
@@ -7926,9 +7926,10 @@
                         ? new Date(n.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
                         : 'Just now';
                     const msg = n.message || '';
-                    const shortMsg = msg.length > 60 ? msg.substring(0, 60) + '…' : msg;
+                    const shortMsg = msg.length > 70 ? msg.substring(0, 70) + '…' : msg;
+                    const iconStyle = n.iconColor ? 'background:' + n.iconBg + ';color:' + n.iconColor + ';' : '';
                     return `<div class="admin-bell-item is-unread" data-notif-id="${n.id}" onclick="handleAdminBellClick('${n.id}', '${n.type}')">
-                        <div class="admin-bell-icon-circle">${n.icon}</div>
+                        <div class="admin-bell-icon-circle" style="${iconStyle}">${n.icon}</div>
                         <div style="flex:1;min-width:0;">
                             <p class="admin-bell-title">${n.title || 'Notification'}</p>
                             <p class="admin-bell-msg">${shortMsg}</p>

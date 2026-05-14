@@ -1029,7 +1029,9 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         // Removed immediate deduction
 
-        await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
+        const _bid = user.barangay_id || user.username || '';
+        const _uLabel = (user.fullName || user.full_name || user.username || 'Resident') + (_bid ? ' (' + _bid + ')' : '');
+        await logActivity('Borrow Request', _uLabel + ' submitted a borrow request for ' + item.name + ' x' + quantity + ' — ' + borrowDate + ' to ' + returnDate);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
         if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Equipment request submitted' };
@@ -1503,7 +1505,9 @@ async function submitConcern(category, title, description, address, imageFile = 
         const { error } = await supabase.from('concerns').insert([payload]);
 
         if (error) return { success: false, message: error.message };
-        await logActivity('Concern Submitted', `User submitted a concern: ${title}`);
+        const _cbid = user.barangay_id || user.username || '';
+        const _cuLabel = (user.fullName || user.full_name || user.username || 'Resident') + (_cbid ? ' (' + _cbid + ')' : '');
+        await logActivity('Concern Submitted', _cuLabel + ' submitted a concern: ' + title + (category ? ' — Category: ' + category : ''));
         await addNotification('admin', 'concern', `User submitted a concern: ${title}`);
         if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Concern submitted successfully' };
@@ -2010,7 +2014,9 @@ async function bookCourt(bookingData) {
                 await logActivity('Booking Rescheduled', `User rescheduled admin-cancelled booking from ${bookingData.originalDate || 'previous date'} to ${bookingData.date} at ${combinedTime}.`);
                 await addNotification('admin', 'booking_rescheduled', `User ${user.fullName || user.username} rescheduled their admin-cancelled booking to ${bookingData.date} at ${combinedTime}.`);
             } else {
-                await logActivity('Court Reservation Submitted', `User reserved the ${venueLabel} for ${bookingData.date} at ${combinedTime}. Purpose: ${bookingData.purpose}`);
+                const _rbid = user.barangay_id || user.username || '';
+                const _rLabel = (user.fullName || user.full_name || user.username || 'Resident') + (_rbid ? ' (' + _rbid + ')' : '');
+                await logActivity('Court Reservation Submitted', _rLabel + ' reserved ' + venueLabel + ' on ' + bookingData.date + ' at ' + combinedTime);
                 await addNotification('admin', 'booking', `User reserved the ${venueLabel} for ${combinedTime}`);
             }
             

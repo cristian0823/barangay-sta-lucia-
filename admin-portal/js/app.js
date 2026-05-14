@@ -1418,7 +1418,9 @@ async function approveEquipmentRequest(borrowingId) {
             broadcastSync();
         }
 
-        await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
+        const { data: userInfo } = await supabase.from('users').select('full_name, barangay_id').eq('id', targetUserId).maybeSingle();
+        const rLabel = userInfo ? (userInfo.full_name || '') + (userInfo.barangay_id ? ' (' + userInfo.barangay_id + ')' : '') : 'Resident';
+        await logActivity('Borrow Approved', 'Admin approved borrow request for ' + rLabel + ' — ' + (rec?.quantity||1) + 'x ' + (equipmentName||'Item') + ' [Request #' + borrowingId + ']');
         return { success: true, message: 'Status updated to approved' };
     } else {
         // Local fallback
@@ -1465,7 +1467,14 @@ async function returnEquipmentRequest(borrowingId) {
         if (error) return { success: false, message: error.message };
         if (!data.success) return data;
         
-        await logActivity('Borrow Returned', `Admin marked equipment request #${borrowingId} as returned`);
+        const { data: retRec } = await supabase.from('borrowings').select('user_id, equipment, quantity').eq('id', borrowingId).maybeSingle();
+        if (retRec) {
+            const { data: retUser } = await supabase.from('users').select('full_name, barangay_id').eq('id', retRec.user_id).maybeSingle();
+            const retLabel = retUser ? (retUser.full_name||'') + (retUser.barangay_id?' ('+retUser.barangay_id+')':'') : 'Resident';
+            await logActivity('Borrow Returned', retLabel + ' returned ' + (retRec.quantity||1) + 'x ' + (retRec.equipment||'Item') + ' [Request #' + borrowingId + ']');
+        } else {
+            await logActivity('Borrow Returned', 'Admin marked equipment request #' + borrowingId + ' as returned');
+        }
         return data;
     } else {
         // Local fallback
