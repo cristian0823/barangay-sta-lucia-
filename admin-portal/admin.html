@@ -2998,6 +2998,7 @@
                         details: a.details || ''
                     }));
 
+                    const whoBid = a.users && a.users.barangay_id ? '<br><span style="font-size:10px;color:#9CA3AF;">' + a.users.barangay_id + '</span>' : '';
                     const actorType = a.actor_type || (role === 'admin' ? 'admin' : 'resident');
                     const actorBadge = actorType === 'admin'
                         ? '<span style="display:inline-block;background:#1A3A6B;color:#fff;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;">Admin</span>'
@@ -4888,7 +4889,7 @@
 
             document.getElementById('editEventForm').addEventListener('submit', async function (e) {
                 e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
+                const btn = document.querySelector('[form="editEquipmentForm"][type="submit"]');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = 'Saving...';
@@ -5368,7 +5369,7 @@
                 btn.innerHTML = originalText;
 
                 if (result.success) {
-                    showAlert('Equipment updated', 'success');
+                    showAlert('Equipment updated successfully', 'success');
                     closeModal('editEquipmentModal');
                     await loadEquipment();
                 } else {
