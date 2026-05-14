@@ -993,10 +993,7 @@
                         
                     </div>
                     <!-- Pagination Controls -->
-                    <div class="flex justify-between items-center mt-auto border-t border-gray-200 dark:border-slate-700 pt-4">
-                        <button onclick="prevPageHistory()" class="px-4 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
-                        <span id="historyPaginationInfo" class="text-sm text-gray-500 dark:text-gray-400 font-medium">Page 1 of 1</span>
-                        <button onclick="nextPageHistory()" class="px-4 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                    <div id="historyPaginationContainer" class="flex justify-center items-center gap-1.5 mt-4 pt-4 border-t border-gray-200 dark:border-slate-700 flex-wrap min-h-[44px]">
                     </div>
                 </div>
             </div>
@@ -1015,18 +1012,13 @@
                     <i class="bi bi-journal-check" style="color:#fff;font-size:22px;"></i>
                 </div>
                 <div style="flex:1;">
-                    <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-0.3px;">Borrowing Terms &amp; Conditions</div>
-                    <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;">Read all terms carefully. A checkbox will appear at the bottom.</div>
+                    <div id="termsModalTitle" style="font-size:18px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-0.3px;">Borrowing Terms &amp; Conditions</div>
+                    <div id="termsModalSubtitle" style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;">Read all terms carefully, then check the box to proceed.</div>
                 </div>
                 <button onclick="closeTermsModal()" style="width:32px;height:32px;border-radius:8px;border:none;background:rgba(255,255,255,0.12);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"
                     onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
                     <i class="bi bi-x-lg"></i>
                 </button>
-            </div>
-            <!-- Scroll hint banner -->
-            <div id="termsScrollHint" style="background:#fef9c3;border-bottom:1px solid #fde68a;padding:9px 24px;display:flex;align-items:center;gap:8px;font-size:12px;color:#92400e;font-weight:600;flex-shrink:0;">
-                <i class="bi bi-arrow-down-circle-fill" style="font-size:15px;flex-shrink:0;animation:termsArrowBounce 1.2s ease-in-out infinite;"></i>
-                Scroll down to read all the terms — the agreement checkbox is waiting at the bottom
             </div>
             <!-- Scrollable content — checkbox lives INSIDE here at the very end -->
             <div id="termsRulesContent" style="padding:20px 24px;height:340px;overflow-y:auto;font-size:13px;color:#374151;line-height:1.75;flex-shrink:0;">
@@ -1051,6 +1043,10 @@
             0%,100% { transform: translateY(0); }
             50%      { transform: translateY(3px); }
         }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
     </style>
 
 <!-- BORROW MODAL -->
@@ -1073,9 +1069,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col lg:flex-row flex-1 lg:overflow-hidden" style="min-height:0;">
-                <!-- Left Column: Calendar -->
-                <div class="w-full lg:w-1/2 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/30 lg:overflow-y-auto flex flex-col" style="background: var(--dm-cal-bg, inherit);">
+            <div class="flex flex-col lg:flex-row-reverse flex-1 lg:overflow-hidden" style="min-height:0;">
+                <!-- Right Column: Calendar (visually on right via flex-row-reverse) -->
+                <div class="w-full lg:w-1/2 p-4 lg:p-6 border-b lg:border-b-0 lg:border-l border-gray-100 bg-gray-50/30 lg:overflow-y-auto flex flex-col" style="background: var(--dm-cal-bg, inherit);">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-2 flex-wrap">
                             <h4 id="borrowMonthTitle" class="text-lg font-bold text-gray-800" style="color: var(--dm-text, inherit);">Month Year</h4>
@@ -1122,7 +1118,6 @@
                     </div>
                     <!-- FORM BODY: hidden until purpose selected -->
                     <div id="borrowFormBody" style="display:none;padding:0 20px 24px;">
-                    <div id="borrowModalAlerts" class="flex flex-col gap-3 mb-4 empty:hidden"></div>
                     <!-- Date Display -->
                     <div class="bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-200 rounded-2xl p-5 mb-6 relative overflow-visible">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -1162,6 +1157,8 @@
                             <strong>Important:</strong> You must return the item exactly at the time you specified in the form. You have a <strong>+1 day extension</strong> to bring the item back.
                         </div>
                     </div>
+                    <div id="borrowDetailsReveal" style="display:none;">
+                    <div id="borrowModalAlerts" class="flex flex-col gap-3 mb-4 empty:hidden"></div>
                     <form id="borrowForm" class="flex flex-col space-y-4">
                         <input type="hidden" id="borrowEquipmentId"><input type="hidden" id="borrowEquipmentName">
                         <input type="hidden" id="borrowStartDate"><input type="hidden" id="borrowReturnDate">
@@ -1228,6 +1225,7 @@
                             Submit Borrow Request
                         </button>
                     </form>
+                    </div><!-- /borrowDetailsReveal -->
                     </div><!-- /borrowFormBody -->
                 </div>
             </div>
@@ -2656,6 +2654,10 @@
             const _dtl = document.getElementById('deliveryToAddrLabel'); if (_dtl) { _dtl.style.border = '2px solid #e2e8f0'; _dtl.style.display = 'flex'; }
             const _pon = document.getElementById('deliveryPickupOnlyNotice'); if (_pon) _pon.style.display = 'none';
             updateBorrowLockState();
+            window._borrowTermsAgreed = false;
+            const _sbtn = document.getElementById('submitBorrowBtn');
+            if (_sbtn) { _sbtn.innerHTML = 'Submit Borrow Request'; _sbtn.style.background = ''; }
+            const _bdr = document.getElementById('borrowDetailsReveal'); if (_bdr) _bdr.style.display = 'none';
         }
 
         // Submit button validation
@@ -2963,6 +2965,7 @@
             const body = document.getElementById('borrowFormBody');
             if (body) { body.style.display = 'block'; body.style.visibility = 'visible'; }
             borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            const _bdrSel = document.getElementById('borrowDetailsReveal'); if (_bdrSel) _bdrSel.style.display = 'none';
             updateBorrowDurationRules();
             renderAvailableItemsForPurpose(purpose);
             updateBorrowDateDisplays();
@@ -2983,7 +2986,8 @@
 
         function renderAvailableItemsForPurpose(purpose) {
             const el = document.getElementById('availableItemsForPurpose');
-            if (!el || !purpose) { if (el) el.innerHTML = ''; return; }
+            if (el) el.innerHTML = '';
+            return; // chips removed
             const label = purpose === 'event' ? 'EVENT' : 'FUNERAL VIEWING';
             const chips = ALL_BORROW_ITEMS.map(name => {
                 const excluded = !itemAllowsBurol(name);
@@ -3115,10 +3119,16 @@
                     borrowStartDate = dateStr; borrowReturnDate = nextDayStr; borrowDateSelectingStart = true;
                     updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
                     updateBorrowLockState();
+                    const _bdrEv = document.getElementById('borrowDetailsReveal'); if (_bdrEv) _bdrEv.style.display = 'block';
                     return;
                 }
-                borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
-                showToast('Now select your return date (max 7 days)', 'success');
+                // Auto-set return date to next day (same UX as event)
+                const _bnd = new Date(dateStr); _bnd.setDate(_bnd.getDate() + 1);
+                const _bndStr = _bnd.getFullYear() + '-' + String(_bnd.getMonth()+1).padStart(2,'0') + '-' + String(_bnd.getDate()).padStart(2,'0');
+                borrowStartDate = dateStr; borrowReturnDate = _bndStr; borrowDateSelectingStart = true;
+                updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
+                updateBorrowLockState();
+                const _bdrBu = document.getElementById('borrowDetailsReveal'); if (_bdrBu) _bdrBu.style.display = 'block';
             } else {
                 if (new Date(dateStr) <= new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
 
@@ -3194,6 +3204,7 @@
             borrowStartDate = null;
             borrowReturnDate = null;
             borrowDateSelectingStart = true;
+            const _bdrClr = document.getElementById('borrowDetailsReveal'); if (_bdrClr) _bdrClr.style.display = 'none';
             updateBorrowDateDisplays();
             renderBorrowCalendar();
             updateBorrowSubmitButton();
@@ -3211,8 +3222,11 @@
         // Borrow Form Submission
         document.getElementById('borrowForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
-            // Show Terms & Conditions modal instead of submitting directly
-            await showBorrowTermsModal();
+            if (window._borrowTermsAgreed) {
+                await _doSubmitBorrowRequest();
+            } else {
+                await showBorrowTermsModal();
+            }
         });
 
         async function _doSubmitBorrowRequest() {
@@ -3576,7 +3590,7 @@
             
             renderBorrowAlerts();
             renderExistingBookings();
-            renderBorrowCalendar();
+            selectBorrowPurpose('event');
             updateBorrowLockState();
             document.getElementById('borrowModal').classList.remove('hidden');
         }
@@ -4661,13 +4675,42 @@
                 }).join('');
             }
 
-            const info = document.getElementById('historyPaginationInfo');
-            if(info) info.textContent = `Page ${currentPageHistory} of ${totalPages}`;
-            
-            const prevBtn = document.querySelector('button[onclick="prevPageHistory()"]');
-            const nextBtn = document.querySelector('button[onclick="nextPageHistory()"]');
-            if(prevBtn) prevBtn.disabled = currentPageHistory === 1;
-            if(nextBtn) nextBtn.disabled = currentPageHistory === totalPages;
+            _renderHistoryPagination(currentPageHistory, totalPages);
+        }
+        function _renderHistoryPagination(current, total) {
+            const container = document.getElementById('historyPaginationContainer');
+            if (!container) return;
+            const btnBase = 'display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all 0.15s;font-family:inherit;';
+            const btnNormal = btnBase + 'background:#fff;border-color:#e2e8f0;color:#374151;';
+            const btnActive = btnBase + 'background:#1e3a5f;border-color:#1e3a5f;color:#fff;';
+            const btnDisabled = btnBase + 'background:#f3f4f6;border-color:#e2e8f0;color:#9ca3af;cursor:not-allowed;opacity:0.6;';
+            const html = [];
+            html.push('<button onclick="prevPageHistory()" ' + (current===1?'disabled':' ') + ' style="' + (current===1?btnDisabled:btnNormal) + '"><i class="bi bi-chevron-left"></i></button>');
+            _getPageRange(current, total).forEach(function(p) {
+                if (p === '...') {
+                    html.push('<span style="padding:0 4px;color:#9ca3af;font-size:14px;line-height:36px;">&#8230;</span>');
+                } else {
+                    html.push('<button onclick="currentPageHistory=' + p + ';renderHistory()" style="' + (p===current?btnActive:btnNormal) + '">' + p + '</button>');
+                }
+            });
+            html.push('<button onclick="nextPageHistory()" ' + (current===total?'disabled':' ') + ' style="' + (current===total?btnDisabled:btnNormal) + '"><i class="bi bi-chevron-right"></i></button>');
+            container.innerHTML = html.join('');
+        }
+        function _getPageRange(current, total) {
+            if (total <= 7) { var out=[]; for(var i=1;i<=total;i++) out.push(i); return out; }
+            var pages = [];
+            if (current <= 4) {
+                for (var i=1;i<=5;i++) pages.push(i);
+                pages.push('...'); pages.push(total);
+            } else if (current >= total-3) {
+                pages.push(1); pages.push('...');
+                for (var i=total-4;i<=total;i++) pages.push(i);
+            } else {
+                pages.push(1); pages.push('...');
+                for (var i=current-1;i<=current+1;i++) pages.push(i);
+                pages.push('...'); pages.push(total);
+            }
+            return pages;
         }
 
         function prevPageHistory() {
@@ -5152,37 +5195,62 @@ async function loadSettingsView() {
     
         // ── TERMS & CONDITIONS MODAL ──────────────────────────────────
         async function showBorrowTermsModal() {
-            // Load rules from cache then Supabase
+            const purpose = window.currentBorrowPurpose || 'event';
+            const isEvent = purpose === 'event';
+
+            // Update modal title/subtitle per purpose
+            const titleEl = document.getElementById('termsModalTitle');
+            const subEl = document.getElementById('termsModalSubtitle');
+            if (titleEl) titleEl.textContent = isEvent ? 'Equipment Borrowing Terms & Conditions' : 'Funeral Viewing Borrowing Terms & Conditions';
+            if (subEl) subEl.textContent = isEvent ? 'Read all event-borrowing terms carefully before proceeding.' : 'Read all funeral-viewing borrowing terms carefully before proceeding.';
+
+            // Load purpose-specific rules
+            const ruleKey = isEvent ? 'borrowing_rules_event' : 'borrowing_rules_burol';
+            const fallbackKey = 'borrowing_rules';
             let rules = [];
             try {
-                const cached = localStorage.getItem('brgy_borrowing_rules');
-                rules = cached ? JSON.parse(cached) : [];
-                const { data, error } = await supabase.from('site_settings').select('value').eq('key','borrowing_rules').single();
-                if (!error && data) {
-                    rules = JSON.parse(data.value || '[]');
-                    localStorage.setItem('brgy_borrowing_rules', JSON.stringify(rules));
+                const { data: d1, error: e1 } = await supabase.from('site_settings').select('value').eq('key', ruleKey).single();
+                if (!e1 && d1) rules = JSON.parse(d1.value || '[]');
+                if (!rules.length) {
+                    const { data: d2, error: e2 } = await supabase.from('site_settings').select('value').eq('key', fallbackKey).single();
+                    if (!e2 && d2) rules = JSON.parse(d2.value || '[]');
                 }
-            } catch(e) {}
+            } catch(err) {}
 
             const _e = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             const scrollEl = document.getElementById('termsRulesContent');
-            const hint     = document.getElementById('termsScrollHint');
             const proceedBtn = document.getElementById('termsProceedBtn');
 
-            // Build rules HTML
+            // Default rules per purpose if none in DB
             let rulesHtml = '';
             if (!rules.length) {
-                rulesHtml =
-                    '<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:16px 18px;margin-bottom:4px;">' +
-                    '<div style="font-weight:800;color:#065f46;margin-bottom:10px;font-size:14px;display:flex;align-items:center;gap:8px;">' +
-                    '<i class="bi bi-shield-check-fill" style="color:#16a34a;font-size:16px;"></i>General Borrowing Policy</div>' +
-                    '<ol style="margin:0;padding-left:20px;color:#374151;line-height:2.0;font-size:13px;">' +
-                    '<li>All borrowed equipment must be returned in the <strong>same condition</strong>.</li>' +
-                    '<li>Return items on the <strong>agreed date and time</strong>.</li>' +
-                    '<li>Any damage must be <strong>reported immediately</strong> to the Barangay.</li>' +
-                    '<li>Borrowers are responsible for <strong>replacing lost or damaged</strong> items.</li>' +
-                    '<li>Equipment is for <strong>community use only</strong> — not for commercial purposes.</li>' +
-                    '</ol></div>';
+                if (isEvent) {
+                    rulesHtml =
+                        '<div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:10px;padding:16px 18px;margin-bottom:4px;">' +
+                        '<div style="font-weight:800;color:#065f46;margin-bottom:10px;font-size:14px;display:flex;align-items:center;gap:8px;">' +
+                        '<i class="bi bi-calendar-event-fill" style="color:#0d9488;font-size:16px;"></i>General Event Borrowing Policy</div>' +
+                        '<ol style="margin:0;padding-left:20px;color:#374151;line-height:2.0;font-size:13px;">' +
+                        '<li>Equipment must be picked up on your <strong>event day</strong> and returned the <strong>very next day</strong> at the same time.</li>' +
+                        '<li>All items must be returned in the <strong>same condition</strong> as borrowed.</li>' +
+                        '<li>Any damage or loss must be <strong>reported immediately</strong> to the Barangay.</li>' +
+                        '<li>Borrowers are liable for <strong>replacing lost or damaged items</strong>.</li>' +
+                        '<li>Equipment is for <strong>community events only</strong> — not for commercial or personal profit.</li>' +
+                        '<li>A <strong>+1 day extension</strong> applies — items returned beyond this incur a penalty.</li>' +
+                        '</ol></div>';
+                } else {
+                    rulesHtml =
+                        '<div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:16px 18px;margin-bottom:4px;">' +
+                        '<div style="font-weight:800;color:#92400e;margin-bottom:10px;font-size:14px;display:flex;align-items:center;gap:8px;">' +
+                        '<i class="bi bi-shield-fill" style="color:#d97706;font-size:16px;"></i>Funeral Viewing Borrowing Policy</div>' +
+                        '<ol style="margin:0;padding-left:20px;color:#374151;line-height:2.0;font-size:13px;">' +
+                        '<li>Equipment may be borrowed for up to <strong>7 days</strong> for funeral viewings.</li>' +
+                        '<li>Items must be treated with <strong>respect and care</strong> during the viewing period.</li>' +
+                        '<li>All items must be returned <strong>clean and in the same condition</strong> as when borrowed.</li>' +
+                        '<li>Any damage or loss must be <strong>reported immediately</strong> to the Barangay.</li>' +
+                        '<li>Borrowers are fully liable for <strong>replacing lost or damaged equipment</strong>.</li>' +
+                        '<li>Equipment is exclusively for the <strong>viewing/wake</strong> — not for other personal use.</li>' +
+                        '</ol></div>';
+                }
             } else {
                 rulesHtml = rules.map((r, i) =>
                     '<div style="padding:14px 0;' + (i < rules.length-1 ? 'border-bottom:1px solid #e2e8f0;' : '') + '">' +
@@ -5194,20 +5262,17 @@ async function loadSettingsView() {
                 ).join('');
             }
 
-            // Append agree checkbox at the very bottom of scrollable content
+            // Append agree checkbox at the very bottom
             rulesHtml +=
                 '<div id="termsCheckRow" style="margin-top:20px;padding:16px 18px;background:#EEF2FF;border:2px solid #C7D2FE;border-radius:12px;">' +
                 '<label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">' +
                 '<input type="checkbox" id="termsAgreeCheck" onchange="onTermsCheckChange(this)"' +
                 ' style="width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:#1e3a5f;cursor:pointer;">' +
                 '<span style="font-size:13px;font-weight:600;color:#1e3a5f;line-height:1.5;">' +
-                'I have read and fully understood the <strong>Barangay Borrowing Terms &amp; Conditions</strong> listed above.' +
+                'I have read and fully understood the <strong>Barangay Borrowing Terms &amp; Conditions</strong> above and agree to comply.' +
                 '</span></label></div>';
 
-            if (scrollEl) {
-                scrollEl.innerHTML = rulesHtml;
-                scrollEl.scrollTop = 0;
-            }
+            if (scrollEl) { scrollEl.innerHTML = rulesHtml; scrollEl.scrollTop = 0; }
 
             // Reset proceed button
             if (proceedBtn) {
@@ -5216,13 +5281,11 @@ async function loadSettingsView() {
                 proceedBtn.style.color = '#9CA3AF';
                 proceedBtn.style.cursor = 'not-allowed';
             }
-            if (hint) hint.style.display = 'flex';
 
             // Show modal
             const modal = document.getElementById('borrowTermsModal');
             if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
         }
-
         function onTermsCheckChange(chk) {
             const proceedBtn = document.getElementById('termsProceedBtn');
             if (!proceedBtn) return;
@@ -5247,11 +5310,16 @@ async function loadSettingsView() {
         }
 
         function agreeAndSubmitBorrow() {
-            // Check the checkbox is actually ticked before proceeding
             const chk = document.getElementById('termsAgreeCheck');
             if (!chk || !chk.checked) return;
+            window._borrowTermsAgreed = true;
             closeTermsModal();
-            _doSubmitBorrowRequest();
+            // Show terms-accepted state on the submit button
+            const _btn = document.getElementById('submitBorrowBtn');
+            if (_btn) {
+                _btn.innerHTML = '<i class="bi bi-check-circle-fill" style="margin-right:6px;"></i>Terms Accepted — Click to Submit';
+                _btn.style.background = 'linear-gradient(135deg,#1e3a5f,#065f46)';
+            }
         }
         // ──────────────────────────────────────────────────────────────
         </script>
