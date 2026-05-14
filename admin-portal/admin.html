@@ -7097,10 +7097,6 @@
                         const deliveryBadge = parsedDelivery
                             ? `<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${isDelivery?'#eff6ff':'#f0fdf4'};color:${isDelivery?'#1d4ed8':'#166534'};border:1px solid ${isDelivery?'#bfdbfe':'#bbf7d0'};">${isDelivery?'&#128666; Delivery to address':'&#127963; Pickup at Barangay Hall'}</span>`
                             : '';
-                        const deliveryDetail = isDelivery
-                            ? `<div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Delivery Address</span><strong style="font-size:13px;color:var(--text);">${parsedDelivery.replace(/^Delivery to\s*/i,'')}</strong></div>`
-                            : '';
-
                         purposeHtml = `
                             <div style="background:var(--panel-bg,#f9fafb); border-radius:10px; padding:14px; border:1px solid var(--border); margin-bottom:16px;">
                                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">
@@ -7111,7 +7107,6 @@
                                     <div><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Contact No.</span><strong style="font-size:13px;color:var(--text);">${parsedContact}</strong></div>
                                     <div><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Requested Time</span><strong style="font-size:13px;color:var(--text);">${parsedTime}</strong></div>
                                     <div style="grid-column:1/-1;"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px;">Address</span><strong style="font-size:13px;color:var(--text);">${parsedAddress}</strong></div>
-                                    ${deliveryDetail}
                                 </div>
                                 <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Main Purpose</p>
                                 <p style="margin:0;font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${parsedPurpose}</p>
