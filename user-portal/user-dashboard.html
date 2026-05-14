@@ -1104,8 +1104,8 @@
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;" id="purposeBtnGrid">
                             <button type="button" onclick="selectBorrowPurpose('event')" id="purposeBtnEvent" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
                                 <span style="font-size:22px;">&#127881;</span>
-                                <span style="font-size:14px;font-weight:700;color:#0a1628;">Event</span>
-                                <span style="font-size:11px;color:#94a3b8;">Community gatherings</span>
+                                <span style="font-size:14px;font-weight:700;color:#0a1628;">Personal Events</span>
+                                <span style="font-size:11px;color:#94a3b8;">Birthdays, parties &amp; gatherings</span>
                             </button>
                             <button type="button" onclick="selectBorrowPurpose('burol')" id="purposeBtnBurol" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;border:2px solid #e2e8f0;background:#f8fafc;box-shadow:none;">
                                 <span style="font-size:22px;">&#128357;</span>
@@ -1120,7 +1120,6 @@
                     <div id="borrowFormBody" style="display:none;padding:0 20px 24px;">
                     <!-- Date Display -->
                     <div class="bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-200 rounded-2xl p-5 mb-6 relative overflow-visible">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
                         <h5 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-300 mb-2 flex items-center gap-2 relative z-10 w-full break-words">
                             <span class="w-8 h-8 bg-slate-500 text-white rounded-lg flex items-center justify-center text-base shrink-0">&#128197;</span> Selected Borrowing Period
                         </h5>
@@ -2967,8 +2966,14 @@
             _setPurposeBtnStyle(document.getElementById('purposeBtnBurol'), purpose === 'burol');
             const body = document.getElementById('borrowFormBody');
             if (body) { body.style.display = 'block'; body.style.visibility = 'visible'; }
-            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
-            const _bdrSel = document.getElementById('borrowDetailsReveal'); if (_bdrSel) _bdrSel.style.display = 'none';
+            if (borrowStartDate) {
+                const _addDays = purpose === 'burol' ? 7 : 1;
+                const _rnd = new Date(borrowStartDate); _rnd.setDate(_rnd.getDate() + _addDays);
+                borrowReturnDate = _rnd.getFullYear() + '-' + String(_rnd.getMonth()+1).padStart(2,'0') + '-' + String(_rnd.getDate()).padStart(2,'0');
+            } else {
+                borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+                const _bdrSel = document.getElementById('borrowDetailsReveal'); if (_bdrSel) _bdrSel.style.display = 'none';
+            }
             updateBorrowDurationRules();
             renderAvailableItemsForPurpose(purpose);
             updateBorrowDateDisplays();
@@ -2981,9 +2986,9 @@
             if (!el) return;
             if (!currentBorrowPurpose) { el.innerHTML = ''; return; }
             if (currentBorrowPurpose === 'event') {
-                el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Event borrowing:</strong> Pick up on your event day, return the next day at the same time.</div>';
+                el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Personal Events:</strong> Pick up on your event day, return the next day at the same time. <strong>(1-day borrowing period)</strong></div>';
             } else {
-                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Maximum 7 days. Select your start and end dates.</div>';
+                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Pick up on your scheduled day, return after 7 days at the same time. <strong>(7-day borrowing period)</strong></div>';
             }
         }
 
@@ -3125,8 +3130,8 @@
                     const _bdrEv = document.getElementById('borrowDetailsReveal'); if (_bdrEv) _bdrEv.style.display = 'block';
                     return;
                 }
-                // Auto-set return date to next day (same UX as event)
-                const _bnd = new Date(dateStr); _bnd.setDate(_bnd.getDate() + 1);
+                // Funeral Viewing: auto-set return date to 7 days later
+                const _bnd = new Date(dateStr); _bnd.setDate(_bnd.getDate() + 7);
                 const _bndStr = _bnd.getFullYear() + '-' + String(_bnd.getMonth()+1).padStart(2,'0') + '-' + String(_bnd.getDate()).padStart(2,'0');
                 borrowStartDate = dateStr; borrowReturnDate = _bndStr; borrowDateSelectingStart = true;
                 updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
@@ -3235,7 +3240,7 @@
         async function _doSubmitBorrowRequest() {
             const equipId = parseInt(document.getElementById('borrowEquipmentId').value);
             const qty = parseInt(document.getElementById('borrowQty').value);
-            const purposeTypeLabel = currentBorrowPurpose === 'burol' ? 'Funeral Viewing' : 'Event';
+            const purposeTypeLabel = currentBorrowPurpose === 'burol' ? 'Funeral Viewing' : 'Personal Events';
             const purposeStr = '[' + purposeTypeLabel + '] ' + document.getElementById('borrowPurpose').value;
             const fullName = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
@@ -5205,7 +5210,7 @@ async function loadSettingsView() {
             const titleEl = document.getElementById('termsModalTitle');
             const subEl = document.getElementById('termsModalSubtitle');
             if (titleEl) titleEl.textContent = isEvent ? 'Equipment Borrowing Terms & Conditions' : 'Funeral Viewing Borrowing Terms & Conditions';
-            if (subEl) subEl.textContent = isEvent ? 'Read all event-borrowing terms carefully before proceeding.' : 'Read all funeral-viewing borrowing terms carefully before proceeding.';
+            if (subEl) subEl.textContent = isEvent ? 'Read all personal event borrowing terms carefully before proceeding.' : 'Read all funeral-viewing borrowing terms carefully before proceeding.';
 
             // Load purpose-specific rules
             const ruleKey = isEvent ? 'borrowing_rules_event' : 'borrowing_rules_burol';
