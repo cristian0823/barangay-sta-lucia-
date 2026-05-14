@@ -8001,8 +8001,6 @@
                 ['newUserSuffix','newUserSitio'].forEach(function(id){
                     var el=document.getElementById(id); if(el) el.selectedIndex=0;
                 });
-                var streetSel=document.getElementById('newUserStreet');
-                if(streetSel) streetSel.innerHTML='<option value="">Select sitio first</option>';
                 document.getElementById('newUserBid').textContent='...';
                 _generateNextBarangayId().then(function(bid){
                     var el=document.getElementById('newUserBid'); if(el) el.textContent=bid;
@@ -8050,14 +8048,13 @@
                 var phone = rawPhone.replace(/\D/g,'');
                 var email = (document.getElementById('newUserEmail').value||'').trim().toLowerCase();
                 var sitio = (document.getElementById('newUserSitio').value||'').trim();
-                var street = (document.getElementById('newUserStreet').value||'').trim();
                 var house = (document.getElementById('newUserHouse').value||'').trim();
                 var errEl = document.getElementById('addUserError');
                 var showErr = function(msg){errEl.textContent=msg;errEl.style.display='block';};
                 errEl.style.display='none';
                 if (!firstName || !lastName) return showErr('First name and last name are required.');
                 if (!phone || phone.length < 4) return showErr('Please enter a valid phone number (at least 4 digits).');
-                if (!sitio || !street) return showErr('Please select the resident\'s sitio and street.');
+                if (!sitio) return showErr('Please select the resident\'s sitio.');
                 var phone4 = phone.slice(-4);
                 var last3 = lastName.replace(/[^A-Za-z]/g,'').substring(0,3).toUpperCase();
                 var tempPw = 'STL' + last3 + phone4;
@@ -8068,7 +8065,6 @@
                 var fullName = nameParts.join(' ');
                 var addrParts = [];
                 if (house) addrParts.push(house);
-                if (street) addrParts.push(street);
                 addrParts.push('Sitio '+sitio+', Brgy. Sta. Lucia');
                 var address = addrParts.join(', ');
                 var btn = document.getElementById('addUserSubmitBtn');
@@ -8509,26 +8505,18 @@
                 </div>
             </div>
             <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #F3F4F6;">Address</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                <div>
-                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Sitio *</label>
-                    <select id="newUserSitio" onchange="_onSitioChange()" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
-                        <option value="">Select sitio...</option>
-                        <option value="I">Sitio I</option>
-                        <option value="II">Sitio II</option>
-                        <option value="III">Sitio III</option>
-                        <option value="IV">Sitio IV</option>
-                        <option value="V">Sitio V</option>
-                        <option value="VI">Sitio VI</option>
-                        <option value="VII">Sitio VII</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Street *</label>
-                    <select id="newUserStreet" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
-                        <option value="">Select sitio first</option>
-                    </select>
-                </div>
+            <div style="margin-bottom:12px;">
+                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Sitio *</label>
+                <select id="newUserSitio" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    <option value="">Select sitio...</option>
+                    <option value="I">Sitio I</option>
+                    <option value="II">Sitio II</option>
+                    <option value="III">Sitio III</option>
+                    <option value="IV">Sitio IV</option>
+                    <option value="V">Sitio V</option>
+                    <option value="VI">Sitio VI</option>
+                    <option value="VII">Sitio VII</option>
+                </select>
             </div>
             <div style="margin-bottom:6px;">
                 <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">House / Unit No.</label>
