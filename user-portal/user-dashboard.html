@@ -2966,14 +2966,8 @@
             _setPurposeBtnStyle(document.getElementById('purposeBtnBurol'), purpose === 'burol');
             const body = document.getElementById('borrowFormBody');
             if (body) { body.style.display = 'block'; body.style.visibility = 'visible'; }
-            if (borrowStartDate) {
-                const _addDays = purpose === 'burol' ? 7 : 1;
-                const _rnd = new Date(borrowStartDate); _rnd.setDate(_rnd.getDate() + _addDays);
-                borrowReturnDate = _rnd.getFullYear() + '-' + String(_rnd.getMonth()+1).padStart(2,'0') + '-' + String(_rnd.getDate()).padStart(2,'0');
-            } else {
-                borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
-                const _bdrSel = document.getElementById('borrowDetailsReveal'); if (_bdrSel) _bdrSel.style.display = 'none';
-            }
+            borrowStartDate = null; borrowReturnDate = null; borrowDateSelectingStart = true;
+            const _bdrSel = document.getElementById('borrowDetailsReveal'); if (_bdrSel) _bdrSel.style.display = 'none';
             updateBorrowDurationRules();
             renderAvailableItemsForPurpose(purpose);
             updateBorrowDateDisplays();
@@ -2988,7 +2982,7 @@
             if (currentBorrowPurpose === 'event') {
                 el.innerHTML = '<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#0f766e;">&#128203; <strong>Personal Events:</strong> Pick up on your event day, return the next day at the same time. <strong>(1-day borrowing period)</strong></div>';
             } else {
-                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Pick up on your scheduled day, return after 7 days at the same time. <strong>(7-day borrowing period)</strong></div>';
+                el.innerHTML = '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:#92400e;">&#128203; <strong>Funeral Viewing:</strong> Click your start date, then click your return date. Maximum 7 days allowed.</div>';
             }
         }
 
@@ -3022,7 +3016,7 @@
                     _crb.textContent = 'Next-day return';
                 } else if (currentBorrowPurpose === 'burol') {
                     _crb.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
-                    _crb.textContent = '7 days only';
+                    _crb.textContent = 'Max 7 days';
                 } else {
                     _crb.style.display = 'none';
                 }
@@ -3130,13 +3124,12 @@
                     const _bdrEv = document.getElementById('borrowDetailsReveal'); if (_bdrEv) _bdrEv.style.display = 'block';
                     return;
                 }
-                // Funeral Viewing: auto-set return date to 7 days later
-                const _bnd = new Date(dateStr); _bnd.setDate(_bnd.getDate() + 7);
-                const _bndStr = _bnd.getFullYear() + '-' + String(_bnd.getMonth()+1).padStart(2,'0') + '-' + String(_bnd.getDate()).padStart(2,'0');
-                borrowStartDate = dateStr; borrowReturnDate = _bndStr; borrowDateSelectingStart = true;
+                // Funeral Viewing: first click = start date only; wait for second click for return date
+                borrowStartDate = dateStr; borrowReturnDate = null; borrowDateSelectingStart = false;
+                const _rdEl = document.getElementById('dateRangeDisplay');
+                if (_rdEl) { _rdEl.textContent = 'Now click your return date (max 7 days from start date).'; _rdEl.style.fontWeight = ''; _rdEl.style.background = ''; }
                 updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
                 updateBorrowLockState();
-                const _bdrBu = document.getElementById('borrowDetailsReveal'); if (_bdrBu) _bdrBu.style.display = 'block';
             } else {
                 if (new Date(dateStr) <= new Date(borrowStartDate)) return showToast('Return date must be after borrow date', 'error');
 
@@ -3181,6 +3174,7 @@
                 if (helpEl) helpEl.innerHTML = '&#128230; Max: ' + minAvail + (minAvail === 1 ? ' unit available' : ' units available on selected dates');
 
                 borrowReturnDate = dateStr; borrowDateSelectingStart = true;
+                const _bdrBu = document.getElementById('borrowDetailsReveal'); if (_bdrBu) _bdrBu.style.display = 'block';
             }
             updateBorrowDateDisplays(); renderBorrowCalendar(); updateBorrowSubmitButton(); renderBorrowAlerts();
             updateBorrowLockState();
