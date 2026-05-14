@@ -110,20 +110,37 @@ async function decryptData(ciphertext) {
     }
 }
 
-// ── A.9.4.2 Admin Email OTP (MFA via Supabase Auth) ─────────
+// ── A.9.4.2 Admin Email OTP (MFA via Edge Function) ─────────
 const MFA_EMAIL_KEY = 'admin_mfa_email';
+
+function generateAdminMFACode() {
+    const arr = new Uint32Array(1);
+    crypto.getRandomValues(arr);
+    return String(arr[0] % 1000000).padStart(6, '0');
+}
 
 async function sendAdminMFACode(email) {
     email = email.trim().toLowerCase();
-    sessionStorage.setItem(MFA_EMAIL_KEY, email);
+    
     try {
-        const { error } = await supabase.auth.signInWithOtp({
-            email: email,
-            options: { shouldCreateUser: false }
+        const otp = generateAdminMFACode();
+        sessionStorage.setItem(MFA_EMAIL_KEY, email);
+        sessionStorage.setItem('admin_mfa_otp_code', otp);
+        sessionStorage.setItem('admin_mfa_otp_expiry', Date.now() + 10 * 60 * 1000);
+        
+        const SUPABASE_URL = 'https://cojgsyrnexbwgsfttojq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvamdzeXJuZXhid2dzZnR0b2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzNTg5NTgsImV4cCI6MjA4NzkzNDk1OH0.FbZmFhlPhQyP3_N8nei5rL8W3oYkwup16zEJpG3Kw4E';
+        
+        const res = await fetch(SUPABASE_URL + '/functions/v1/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+            body: JSON.stringify({ to_email: email, otp_code: otp })
         });
-        if (error) {
-            console.error('[MFA] Supabase OTP error:', error);
-            return { success: false, message: error.message };
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error('[MFA] Edge function error:', data.error);
+            return { success: false, message: 'Could not send OTP: ' + (data.error || 'Unknown error') };
         }
         if (typeof logActivity === 'function') {
             await logActivity('Admin MFA Sent', `MFA code sent to ${email}`, 'info');
@@ -138,18 +155,20 @@ async function sendAdminMFACode(email) {
 async function verifyAdminMFACode(enteredCode) {
     const email = sessionStorage.getItem(MFA_EMAIL_KEY);
     if (!email) return { success: false, message: 'No active MFA session. Please log in again.' };
+    
     try {
-        const { error } = await supabase.auth.verifyOtp({
-            email: email,
-            token: enteredCode.trim(),
-            type: 'email'
-        });
-        if (error) {
-            console.error('[MFA] Verify error:', error);
-            return { success: false, message: 'Incorrect or expired code. Please try again.' };
+        const storedOtp = sessionStorage.getItem('admin_mfa_otp_code');
+        const otpExpiry = parseInt(sessionStorage.getItem('admin_mfa_otp_expiry') || '0', 10);
+        const isExpired = Date.now() > otpExpiry;
+        const isCorrect = storedOtp && enteredCode.trim() === storedOtp;
+
+        if (!isCorrect || isExpired) {
+            return { success: false, message: isExpired ? 'Code expired. Please request a new one.' : 'Incorrect code. Please try again.' };
         }
-        await supabase.auth.signOut();
+        
         sessionStorage.removeItem(MFA_EMAIL_KEY);
+        sessionStorage.removeItem('admin_mfa_otp_code');
+        sessionStorage.removeItem('admin_mfa_otp_expiry');
         sessionStorage.setItem('mfa_verified', 'true');
         sessionStorage.setItem('mfa_verified_at', Date.now().toString());
         return { success: true };

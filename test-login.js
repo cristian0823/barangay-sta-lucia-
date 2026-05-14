@@ -1,215 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resident Login - Barangay Sta. Lucia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/jpeg" href="barangay-sun-logo.jpg">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] }, colors: { gov: { dark:'#0f1f3d', primary:'#1a3a6b', gold:'#f5a623' } } } } }</script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f1f3d;
-            background-image: linear-gradient(rgba(15,31,61,0.82), rgba(15,31,61,0.82)), url('barangay%20hall.png');
-            background-size: cover; background-position: center;
-            background-repeat: no-repeat; background-attachment: fixed;
-        }
-        .gov-input:focus {
-            outline: none; border-color: #1a3a6b;
-            box-shadow: 0 0 0 3px rgba(26,58,107,0.18); background: #fff;
-        }
-        .code-digit { transition: all 0.18s; font-family: monospace; }
-        .code-digit:focus { outline: none; border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.18); }
-        .code-digit.filled { border-color: #1a3a6b; background: #f0f4ff; }
-        .hidden { display: none !important; }
-        #toast {
-            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-            padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
-            transform: translateY(80px); transition: transform 0.3s ease;
-            pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-        #toast.success { background: #1a3a6b; color: #fff; }
-        #toast.error   { background: #dc2626; color: #fff; }
-        .eye-toggle { background: none; border: none; cursor: pointer; }
-        .page-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
-    </style>
-</head>
-<body>
-<div class="page-wrap">
 
-    <!-- Login Card -->
-    <div class="w-full max-w-md rounded-xl overflow-hidden" style="background:#fff; box-shadow: 0 28px 64px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.3);">
-
-        <!-- Gold/Navy top bar -->
-        <div class="h-1.5" style="background: linear-gradient(90deg, #0f1f3d, #1e3a5f, #0f1f3d);"></div>
-
-        <!-- Branding header -->
-        <div class="flex flex-col items-center text-center px-8 pt-5 pb-4" style="background:#F9FAFB; border-bottom: 1px solid #E5E7EB;">
-            <div class="w-16 h-16 rounded-full overflow-hidden mb-2 flex-shrink-0"
-                 style="border: 2.5px solid #f5a623; box-shadow: 0 4px 16px rgba(245,166,35,0.28);">
-                <img src="barangay-sun-logo.jpg" alt="Barangay Sta. Lucia" class="w-full h-full object-cover">
-            </div>
-            <p class="font-extrabold text-gray-800 tracking-wide uppercase mb-0.5" style="font-size:13px;">Barangay Sta. Lucia</p>
-            <p class="text-xs text-gray-400 font-medium mb-2.5">Novaliches, Quezon City &bull; Community Services</p>
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-extrabold tracking-widest uppercase px-3 py-1 rounded"
-                      style="background:#0f1f3d; color:#f5a623; letter-spacing:0.1em;">Resident Portal</span>
-                <span class="text-xs font-extrabold tracking-widest uppercase px-3 py-1 rounded"
-                      style="background:#e8eef6; color:#1e3a5f; border:1px solid #c0cfe8; letter-spacing:0.1em;">Residents Only</span>
-            </div>
-        </div>
-
-        <!-- Form body -->
-        <div class="px-8 pt-5 pb-5">
-            <h2 class="font-bold text-gray-800 mb-0.5" style="font-size:15px;">Sign In to Your Account</h2>
-            <p class="text-xs text-gray-500 mb-4">Enter your Barangay ID Number to continue.</p>
-
-            <form id="loginForm">
-                <input type="hidden" id="csrfToken" name="csrfToken">
-
-                <div id="lockoutWarning" class="hidden rounded-lg px-4 py-3 mb-4 text-sm font-medium"
-                     style="background:#FEF2F2; border:1px solid #FECACA; color:#991B1B;">
-                    Too many failed attempts. Please try again later.
-                </div>
-
-                <!-- Barangay ID -->
-                <div class="field mb-4">
-                    <label for="username" id="usernameLabel"
-                           class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Barangay ID or Email</label>
-                    <div class="field-wrap relative">
-                        <input type="text" id="username" required placeholder="Enter your Barangay ID or email"
-                               autocomplete="username" maxlength="50"
-                               class="gov-input w-full px-3.5 py-2 text-sm text-gray-800 rounded-lg transition-all"
-                               style="border:1.5px solid #D1D5DB; background:#F9FAFB; font-family:inherit;">
-                    </div>
-                </div>
-
-                <!-- Remember me -->
-                <div class="flex items-center gap-2 mb-4">
-                    <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded cursor-pointer" style="accent-color:#0f1f3d;">
-                    <label for="rememberMe" class="text-xs text-gray-500 cursor-pointer">Remember me on this device</label>
-                </div>
-
-                <div class="h-px mb-4" style="background:#E5E7EB;"></div>
-
-                <button type="submit" id="loginBtn"
-                        class="w-full py-3 rounded-lg font-extrabold text-base tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        style="background:#1e3a5f; color:#fff; font-family:inherit; box-shadow:0 4px 16px rgba(15,31,61,0.35);"
-                        onmouseover="if(!this.disabled) this.style.background='#1a3a6b'"
-                        onmouseout="if(!this.disabled) this.style.background='#0f1f3d'">
-                    Sign In
-                </button>
-            </form>
-
-            <!-- Email OTP Panel (hidden by default) -->
-            <div id="emailOTPPanel" class="rounded-xl p-6 mt-0" style="display:none; background:#f8fafc; border:1.5px solid #e2e8f0;">
-                <div class="font-extrabold text-gray-800 mb-1" style="font-size:15px;">Email Verification</div>
-                <p class="text-sm text-gray-500 mb-1 leading-relaxed">
-                    A 6-digit code was sent to <strong id="emailOTPAddress"></strong>
-                </p>
-                <p class="text-xs text-gray-400 mb-4">Check your inbox and spam folder. Code expires in 10 minutes.</p>
-                <div class="code-wrap flex gap-2 justify-center mb-4">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed0">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed1">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed2">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed3">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed4">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed5">
-                </div>
-                <div id="emailOTPError" class="hidden rounded-lg px-4 py-2.5 mb-3 text-sm font-medium"
-                     style="background:#FEF2F2; border:1px solid #FECACA; color:#991B1B;">
-                    Invalid or expired code. Please try again.
-                </div>
-                <button type="button" id="emailOTPVerifyBtn" onclick="submitEmailOTPCode()"
-                        class="w-full py-3 rounded-lg font-extrabold text-base tracking-wide transition-all duration-200 mb-2.5 disabled:opacity-50"
-                        style="background:#0f1f3d; color:#f5a623; font-family:inherit; box-shadow:0 4px 14px rgba(15,31,61,0.30);"
-                        onmouseover="if(!this.disabled) this.style.background='#1a3a6b'"
-                        onmouseout="if(!this.disabled) this.style.background='#0f1f3d'">
-                    Verify Code
-                </button>
-                <button type="button" id="resendOTPBtn" onclick="resendEmailOTP()"
-                        class="w-full py-2 rounded-lg font-semibold text-sm transition-all duration-200 mb-1 disabled:opacity-50"
-                        style="border:1.5px solid #D1D5DB; background:transparent; color:#6B7280; font-family:inherit;"
-                        onmouseover="if(!this.disabled){this.style.borderColor='#0f1f3d';this.style.color='#0f1f3d'}"
-                        onmouseout="if(!this.disabled){this.style.borderColor='#D1D5DB';this.style.color='#6B7280'}">
-                    Resend Code
-                </button>
-                <button type="button" onclick="cancelEmailOTP()"
-                        class="w-full py-2.5 rounded-lg font-semibold text-sm transition-all duration-200"
-                        style="border:1.5px solid #D1D5DB; background:transparent; color:#6B7280; font-family:inherit;"
-                        onmouseover="this.style.borderColor='#0f1f3d'; this.style.color='#0f1f3d'"
-                        onmouseout="this.style.borderColor='#D1D5DB'; this.style.color='#6B7280'">
-                    Back to Login
-                </button>
-            </div>
-
-            <!-- TOTP Panel (hidden by default) -->
-            <div id="totpPanel" class="rounded-xl p-6 mt-0" style="display:none; background:#f8fafc; border:1.5px solid #e2e8f0;">
-                <div class="font-extrabold text-gray-800 mb-1" style="font-size:15px;">Two-Factor Authentication</div>
-                <p class="text-sm text-gray-500 mb-4 leading-relaxed">
-                    Enter the 6-digit code from your <strong>Google Authenticator</strong> app to verify your identity.
-                </p>
-                <div class="flex items-center justify-center mb-4">
-                    <span class="text-xs text-gray-400">Code refreshes every <strong id="totpCountdown">30</strong>s</span>
-                </div>
-                <div class="code-wrap flex gap-2 justify-center mb-4">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="td0">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="td1">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="td2">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="td3">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="td4">
-                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="td5">
-                </div>
-                <div id="totpError" class="hidden rounded-lg px-4 py-2.5 mb-3 text-sm font-medium"
-                     style="background:#FEF2F2; border:1px solid #FECACA; color:#991B1B;">
-                    Invalid code. Please try again.
-                </div>
-                <button type="button" id="totpVerifyBtn" onclick="submitTOTPCode()"
-                        class="w-full py-3 rounded-lg font-extrabold text-base tracking-wide transition-all duration-200 mb-2.5 disabled:opacity-50"
-                        style="background:#0f1f3d; color:#f5a623; font-family:inherit; box-shadow:0 4px 14px rgba(15,31,61,0.30);"
-                        onmouseover="if(!this.disabled) this.style.background='#1a3a6b'"
-                        onmouseout="if(!this.disabled) this.style.background='#0f1f3d'">
-                    Verify Code
-                </button>
-                <button type="button" onclick="cancelTOTP()"
-                        class="w-full py-2.5 rounded-lg font-semibold text-sm transition-all duration-200"
-                        style="border:1.5px solid #D1D5DB; background:transparent; color:#6B7280; font-family:inherit;"
-                        onmouseover="this.style.borderColor='#0f1f3d'; this.style.color='#0f1f3d'"
-                        onmouseout="this.style.borderColor='#D1D5DB'; this.style.color='#6B7280'">
-                    Back to Login
-                </button>
-            </div>
-        </div>
-
-        <!-- Card footer -->
-        <div class="flex items-center justify-center gap-2 px-9 py-3.5" style="background:#F9FAFB; border-top:1px solid #E5E7EB;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                Registered Residents Only &bull;
-                <a href="terms.html" target="_blank" style="color:#0f1f3d;" class="hover:underline">Terms &amp; Conditions</a>
-            </p>
-        </div>
-    </div><!-- end card -->
-
-    <!-- Back to home -->
-    <a href="index.html" class="mt-5 text-xs font-semibold" style="color:rgba(255,255,255,0.55);" onmouseover="this.style.color='#f5a623'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">← Back to Home</a>
-
-</div><!-- end page-wrap -->
-
-<div id="toast"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/portal-config.js"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/crypto-utils.js"></script>
-<script src="js/incident-manager.js"></script>
-<script src="js/otpauth.js"></script>
-<script src="js/totp-handler.js"></script>
-<script src="js/app.js"></script>
-<script src="js/portal-overrides.js"></script>
-<script>
     const SECURITY = { maxAttempts: 5, lockoutDuration: 15 * 60 * 1000 };
 
     function generateCSRFToken() {
@@ -405,28 +194,15 @@
         return visible + '@' + domain;
     }
 
-    function generateLoginEmailOTP() {
-        const arr = new Uint32Array(1);
-        crypto.getRandomValues(arr);
-        return String(arr[0] % 1000000).padStart(6, '0');
-    }
-
     async function sendEmailOTP(email) {
         try {
-            const otp = generateLoginEmailOTP();
-            sessionStorage.setItem('login_email_otp_code', otp);
-            sessionStorage.setItem('login_email_otp_expiry', Date.now() + 10 * 60 * 1000);
-            const SUPABASE_URL = 'https://cojgsyrnexbwgsfttojq.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvamdzeXJuZXhid2dzZnR0b2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzNTg5NTgsImV4cCI6MjA4NzkzNDk1OH0.FbZmFhlPhQyP3_N8nei5rL8W3oYkwup16zEJpG3Kw4E';
-            const res = await fetch(SUPABASE_URL + '/functions/v1/send-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-                body: JSON.stringify({ to_email: email, otp_code: otp })
+            const { error } = await window.supabase.auth.signInWithOtp({
+                email: email,
+                options: { shouldCreateUser: true }
             });
-            const data = await res.json();
-            if (!res.ok) { showToast('Could not send code: ' + (data.error || 'Unknown error'), 'error'); return false; }
+            if (error) { showToast('Could not send code: ' + error.message, 'error'); return false; }
             return true;
-        } catch (e) { console.error('sendEmailOTP:', e); showToast('Failed to send code. Please try again.', 'error'); return false; }
+        } catch (e) { console.error('sendEmailOTP:', e); return false; }
     }
 
     async function showEmailOTPPanel(user, rememberMe) {
@@ -469,24 +245,17 @@
         btn.disabled = true; btn.textContent = 'Verifying...';
         document.getElementById('emailOTPError').classList.add('hidden');
         try {
-            const storedOtp = sessionStorage.getItem('login_email_otp_code');
-            const otpExpiry = parseInt(sessionStorage.getItem('login_email_otp_expiry') || '0', 10);
-            const isExpired = Date.now() > otpExpiry;
-            const isCorrect = storedOtp && code === storedOtp;
-
-            if (!isCorrect || isExpired) {
-                const errEl = document.getElementById('emailOTPError');
-                errEl.textContent = isExpired ? 'Code expired. Please resend a new code.' : 'Invalid code. Please try again.';
-                errEl.classList.remove('hidden');
+            const { error } = await window.supabase.auth.verifyOtp({
+                email: emailOTPAddress, token: code, type: 'email'
+            });
+            if (error) {
+                document.getElementById('emailOTPError').classList.remove('hidden');
                 btn.disabled = false; btn.textContent = 'Verify Code';
                 clearEmailOTPDigits();
                 document.getElementById('ed0').focus();
                 return;
             }
-            // Clear OTP from session storage
-            sessionStorage.removeItem('login_email_otp_code');
-            sessionStorage.removeItem('login_email_otp_expiry');
-
+            await window.supabase.auth.signOut();
             showToast('Login successful! Redirecting...', 'success');
             resetLoginAttempts();
             if (emailOTPRememberMe) {
@@ -650,6 +419,3 @@
         }
     });
 
-</script>
-</body>
-</html>

@@ -52,7 +52,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Barangay Sta. Lucia <onboarding@resend.dev>",
         to: [to_email],
-        subject: "Your Password Reset Code - Barangay Sta. Lucia",
+        subject: "Your Verification Code - Barangay Sta. Lucia",
         html: `
           <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
             <div style="text-align: center; margin-bottom: 24px;">
@@ -62,7 +62,7 @@ serve(async (req) => {
             </div>
 
             <div style="background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb; text-align: center;">
-              <p style="color: #374151; font-size: 15px; margin-bottom: 8px;">Your password reset code is:</p>
+              <p style="color: #374151; font-size: 15px; margin-bottom: 8px;">Your one-time verification code is:</p>
               <div style="background: #ecfdf5; border: 2px dashed #10b981; border-radius: 12px; padding: 20px; margin: 16px 0;">
                 <span style="font-size: 40px; font-weight: 900; letter-spacing: 10px; color: #064e3b; font-family: monospace;">${otp_code}</span>
               </div>
