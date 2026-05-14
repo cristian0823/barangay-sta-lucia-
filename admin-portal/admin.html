@@ -669,12 +669,13 @@
                             <table class="data-table" style="width:100%;border-collapse:collapse;">
                                 <thead>
                                     <tr style="background:#1A3A6B;">
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Resident</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Venue</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Date</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Time</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Purpose</th>
-                                        <th style="padding:14px 18px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:left;">Status</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;">Resident</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;">Venue</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;white-space:nowrap;">Date</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;white-space:nowrap;">Time</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;">Purpose</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:center;">Status</th>
+                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:center;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="courtBookingsTable"></tbody>
@@ -1124,22 +1125,20 @@
 
     <!-- TABLE -->
     <div style="background:#fff;border-radius:12px;border:1px solid #D1D5DB;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-        <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px;" id="auditLogTable">
+        <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px;min-width:820px;" id="auditLogTable">
             <thead>
                 <tr style="background:#1A3A6B;">
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Timestamp</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Performed By</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Actor</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Role</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Action</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Module</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Status</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Details</th>
-                    <th style="padding:14px 18px;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.08em;text-align:right;"></th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:left;white-space:nowrap;">Timestamp</th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Performed By</th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Action</th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Module</th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:center;">Status</th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:left;">Details</th>
+                    <th style="padding:12px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;text-align:right;"></th>
                 </tr>
             </thead>
             <tbody id="auditList"></tbody>
-        </table>
+        </table></div>
         <!-- Audit Log Pagination Controls -->
         <div id="auditPagination" class="pagination-controls" style="display:flex;justify-content:center;gap:10px;padding:14px;align-items:center;border-top:1px solid #F3F4F6;">
             <button id="auditPrevBtn" onclick="changeAuditPage(-1)" style="padding:6px 14px;font-size:12px;background:#fff;color:#1A3A6B;border:1px solid #D1D5DB;border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit;">Previous</button>
@@ -2942,7 +2941,7 @@
                     if (a.includes('delete') || a.includes('removed')) return { label: 'Deleted', dot: '#ef4444' };
                     if (a.includes('batch') || a.includes('upload') || a.includes('update') || a.includes('edit')) return { label: 'Completed', dot: '#22c55e' };
                     if (a.includes('login') || a.includes('logout')) return { label: 'Done', dot: '#22c55e' };
-                    return { label: 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â', dot: '#94a3b8' };
+                    return { label: '—', dot: '#94a3b8' };
                 }
 
                 // Derive module from entity_type or action
@@ -3003,17 +3002,25 @@
                     const actorBadge = actorType === 'admin'
                         ? '<span style="display:inline-block;background:#1A3A6B;color:#fff;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;">Admin</span>'
                         : '<span style="display:inline-block;background:#0e9488;color:#fff;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;">Resident</span>';
-                    return `<tr style="border-bottom: 1px solid #F3F4F6;">
-                        <td style="padding:12px;color:#6B7280;white-space:nowrap;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br><span style="font-size:10px;">${d.toLocaleTimeString('en-US')}</span></td>
-                        <td style="padding:12px;font-weight:600;color:#1A1A2E;">${who}${whoBid}</td>
-                        <td style="padding:12px;text-align:center;">${actorBadge}</td>
-                        <td style="padding:12px;text-align:center;white-space:nowrap;"><span style="${roleStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
-                        <td style="padding:12px;text-align:center;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${actionLabel}</span></td>
-                        <td style="padding:12px;font-size:12px;color:#1A1A2E;font-weight:500;text-align:center;">${module_}</td>
-                        <td style="padding:12px;text-align:center;"><span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;color:#1A1A2E;"><span style="width:9px;height:9px;border-radius:50%;background:${status.dot};display:inline-block;"></span>${status.label}</span></td>
-                        <td style="padding:12px;font-size:12px;color:#6B7280;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.details || ''}</td>
-                        <td style="padding:12px;text-align:right;">
-                            <button onclick="showAuditDetails('${logDataStr}')" style="background:transparent;border:1px solid #D1D5DB;color:#1A1A2E;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;" onmouseover="this.style.borderColor='#1A3A6B';this.style.color='#1A3A6B'" onmouseout="this.style.borderColor='#D1D5DB';this.style.color='#1A1A2E'">View Details</button>
+                    return `<tr style="border-bottom:1px solid #F3F4F6;transition:background 0.12s;" onmouseover="this.style.background='#F8FAFF'" onmouseout="this.style.background=''">
+                        <td style="padding:12px 16px;white-space:nowrap;vertical-align:middle;">
+                            <div style="font-size:12px;font-weight:700;color:#1A1A2E;">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+                            <div style="font-size:10px;color:#9CA3AF;margin-top:2px;">${d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</div>
+                        </td>
+                        <td style="padding:12px 16px;vertical-align:middle;">
+                            <div style="font-size:13px;font-weight:600;color:#111827;">${who}</div>
+                            <div style="display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:wrap;">
+                                ${actorBadge}
+                                <span style="${roleStyle}padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;">${roleLabel}</span>
+                            </div>
+                            ${whoBid}
+                        </td>
+                        <td style="padding:12px 16px;text-align:center;vertical-align:middle;"><span style="background:${actBg};color:${actColor};padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${actionLabel}</span></td>
+                        <td style="padding:12px 16px;font-size:12px;color:#374151;font-weight:600;text-align:center;vertical-align:middle;">${module_}</td>
+                        <td style="padding:12px 16px;text-align:center;vertical-align:middle;"><span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;white-space:nowrap;"><span style="width:8px;height:8px;border-radius:50%;background:${status.dot};flex-shrink:0;display:inline-block;"></span>${status.label}</span></td>
+                        <td style="padding:12px 16px;font-size:11px;color:#6B7280;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;" title="${(a.details||'').replace(/"/g,'&quot;')}">${a.details || ''}</td>
+                        <td style="padding:12px 16px;text-align:right;vertical-align:middle;white-space:nowrap;">
+                            <button onclick="showAuditDetails('${logDataStr}')" style="background:#1A3A6B;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.02em;">View</button>
                         </td>
                     </tr>`;
                 }).join('');
@@ -3276,7 +3283,7 @@
                         bdg = 'background:#FEE2E2;color:#991B1B;';
                     }
 
-                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
+                    const device = s.device_info ? (s.device_info.length > 40 ? s.device_info.substring(0,37)+'...' : s.device_info) : '—';
                     const ipColor = (ev === 'New IP Detected' || ev === 'Suspicious Login Activity') ? '#ef4444' : 'var(--muted)';
                     return `<tr style="border-bottom:1px solid var(--border);${rowBg}">
                         <td style="padding: 12px; text-align:center;">${icon}</td>
@@ -3284,7 +3291,7 @@
                         <td style="padding: 12px;"><div style="font-weight:700; color: var(--text);">${uName}</div><div style="font-size:11px;color:var(--muted);">${uMail}</div></td>
                         <td style="padding: 12px;"><span style="${bdg}padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;">${ev}</span></td>
                         <td style="padding: 12px; font-weight: 600; color: var(--text);">${s.auth_method || 'System'}</td>
-                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                        <td style="padding: 12px; font-family:monospace;font-size:12px;color:${ipColor};">${s.ip_address || '—'}</td>
                         <td style="padding: 12px; font-size:11px;color:var(--muted);" title="${s.device_info || ''}">${device}</td>
                         <td style="padding: 12px; font-size:12px; color: var(--muted);">${s.details || 'N/A'}</td>
                     </tr>`;
@@ -5233,7 +5240,7 @@
 
             document.getElementById('addEquipmentForm').addEventListener('submit', async function (e) {
                 e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
+                const btn = document.querySelector('[form="editEquipmentForm"][type="submit"]');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = 'Saving...';
@@ -5887,13 +5894,21 @@
 
                     const adminComment = b.admin_comment ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-style:italic;">Admin: ${b.admin_comment}</div>` : '';
 
-                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.06)'" onmouseout="this.style.background=''">
-                    <td>${residentDisplay}</td>
-                    <td style="color:var(--text);">${venue}</td>
-                    <td style="color:var(--text);">${b.date}</td>
-                    <td style="color:var(--text);">${timeStr}</td>
-                    <td style="color:var(--text);">${b.purpose || ''}${adminComment}</td>
-                    <td>${statusBadge}</td>
+                    const _isPending = b.status === 'pending' || b.status === 'booked';
+                    const _actionCol = _isPending
+                        ? `<div style="display:flex;gap:6px;justify-content:center;" onclick="event.stopPropagation()">
+                               <button onclick="approveAdminBooking(${b.id})" style="padding:5px 14px;background:linear-gradient(135deg,#22c55e,#15803d);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.02em;">Approve</button>
+                               <button onclick="openRejectModal(${b.id})" style="padding:5px 14px;background:#fff;color:#dc2626;border:1.5px solid #dc2626;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.02em;">Reject</button>
+                           </div>`
+                        : `<div onclick="event.stopPropagation()"><button onclick="openBookingRespond(${b.id})" style="padding:5px 14px;background:#fff;border:1px solid #D1D5DB;color:#6B7280;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View</button></div>`;
+                    return `<tr data-bid="${b.id}" onclick="openBookingRespond(${b.id})" style="cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(37,99,235,0.04)'" onmouseout="this.style.background=''">
+                    <td style="padding:14px 18px;">${residentDisplay}</td>
+                    <td style="padding:14px 18px;color:#374151;font-size:13px;">${venue}</td>
+                    <td style="padding:14px 18px;color:#374151;font-size:13px;white-space:nowrap;">${b.date}</td>
+                    <td style="padding:14px 18px;color:#374151;font-size:13px;white-space:nowrap;">${timeStr}</td>
+                    <td style="padding:14px 18px;color:#374151;font-size:13px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${b.purpose||''}">${b.purpose || ''}${adminComment}</td>
+                    <td style="padding:14px 18px;text-align:center;">${statusBadge}</td>
+                    <td style="padding:14px 18px;text-align:center;">${_actionCol}</td>
                 </tr>`;
                 }).join('');
             }
@@ -6296,7 +6311,7 @@
                 dayEvents.forEach(e => {
                     const startM = timeToMinutes(e.time || '07:00');
                     const endM   = timeToMinutes(e.end_time || e.time || '22:00');
-                    const timeStr = adminFmt12(e.time) + (e.end_time ? '  ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“  ' + adminFmt12(e.end_time) : '');
+                    const timeStr = adminFmt12(e.time) + (e.end_time ? ' → ' + adminFmt12(e.end_time) : '');
                     entries.push({
                         type: 'event', id: e.id, timeStr,
                         label: e.title,
@@ -6328,8 +6343,8 @@
                         if (isFullDayBlock) {
                             // Full-day admin block: show Cancel + Reschedule
                             actionBtns = `
-                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬Ëœ Cancel Event</button>
-                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Reschedule</button>`;
+                                <button onclick="adminCancelBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fff0f0;font-size:11px;font-weight:700;color:#ef4444;cursor:pointer;">Cancel Event</button>
+                                <button onclick="adminRescheduleBlockedEvent('${en.id}')" style="flex-shrink:0;padding:4px 10px;border-radius:8px;border:1.5px solid #93c5fd;background:#eff6ff;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;">Reschedule</button>`;
                         } else if (!isBk) {
                             // Normal event: Reschedule + Remove
                             actionBtns = `
@@ -6531,7 +6546,7 @@
                 picker.id = '_adminBlockReschedulePicker';
                 picker.style.cssText = 'background:#eff6ff;border:2px solid #3b82f6;border-radius:14px;padding:16px;margin-bottom:12px;';
                 picker.innerHTML = `
-                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Reschedule "${ev.title}" to:</p>
+                    <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;"> Reschedule "${ev.title}" to:</p>
                     <input type="date" id="_adminBlockNewDate" min="${today}" value="" style="width:100%;padding:9px 12px;border:1.5px solid #93c5fd;border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:10px;">
                     <div style="display:flex;gap:8px;">
                         <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Confirm Reschedule</button>
@@ -8642,12 +8657,12 @@ function openUserDetailPanel(row) {
     if (!b) return;
     var name = u.fullName || u.full_name || u.username || '—';
     var initials = name.split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase() || 'U';
-    var status = (u.suspended_until && new Date(u.suspended_until) > new Date())
+    var statusHtml = (u.suspended_until && new Date(u.suspended_until) > new Date())
         ? '<span style="background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">Suspended</span>'
         : '<span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">Active</span>';
     var createdAt = u.created_at ? new Date(u.created_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—';
     var lastLogin = u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-    function row(label, val) {
+    function infoRow(label, val) {
         return '<div style="margin-bottom:16px;">'
             + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:4px;">'+label+'</div>'
             + '<div style="font-size:14px;color:#0f1f3d;font-weight:500;word-break:break-word;">'+(val||'<span style=\'color:#9ca3af;font-style:italic;\'>Not provided</span>')+'</div>'
@@ -8656,18 +8671,18 @@ function openUserDetailPanel(row) {
     b.innerHTML = '<div style="text-align:center;margin-bottom:24px;">'
         + '<div style="width:64px;height:64px;background:#1A3A6B;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;">'+initials+'</div>'
         + '<div style="font-size:18px;font-weight:700;color:#0f1f3d;margin-bottom:4px;">'+name+'</div>'
-        + status
+        + statusHtml
         + '</div>'
         + '<hr style="border:none;border-top:1px solid #e5e7eb;margin-bottom:20px;">'
-        + row('Barangay ID', u.barangay_id)
-        + row('Full Name', name)
-        + row('Phone', u.phone || u.contact_number)
-        + row('Email', u.email)
-        + row('Address', u.address)
-        + row('Role', u.role ? u.role.charAt(0).toUpperCase()+u.role.slice(1) : null)
-        + row('2FA Enabled', u.totp_enabled === true ? '✔ Enabled' : u.totp_enabled === false ? '✘ Disabled' : '—')
-        + row('Date Registered', createdAt)
-        + row('Last Login', lastLogin);
+        + infoRow('Barangay ID', u.barangay_id)
+        + infoRow('Full Name', name)
+        + infoRow('Phone', u.phone || u.contact_number)
+        + infoRow('Email', u.email)
+        + infoRow('Address', u.address)
+        + infoRow('Role', u.role ? u.role.charAt(0).toUpperCase()+u.role.slice(1) : null)
+        + infoRow('2FA Enabled', u.totp_enabled === true ? '✔ Enabled' : u.totp_enabled === false ? '✘ Disabled' : '—')
+        + infoRow('Date Registered', createdAt)
+        + infoRow('Last Login', lastLogin);
     var panel = document.getElementById('userDetailPanel');
     var overlay = document.getElementById('userDetailOverlay');
     panel.style.display = 'flex';
