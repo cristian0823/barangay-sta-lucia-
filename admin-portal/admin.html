@@ -1948,10 +1948,24 @@
                             </div>
                         </div>
                         <div id="editQtyWarn" style="display:none;margin-bottom:10px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;margin-bottom:8px;">
                             <input type="checkbox" id="editEquipArchived" style="width:15px;height:15px;cursor:pointer;accent-color:#1A3A6B;flex-shrink:0;">
                             <span>Archive this equipment (hide from active inventory)</span>
                         </label>
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <i class="bi bi-truck" style="color:#1A3A6B;font-size:16px;flex-shrink:0;"></i>
+                                <div>
+                                    <div style="font-size:13px;font-weight:600;color:#374151;">Delivery Mode</div>
+                                    <div id="editEquipDelivLabel" style="font-size:11px;color:#6B7280;margin-top:1px;">Delivery available</div>
+                                </div>
+                            </div>
+                            <label style="position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;cursor:pointer;">
+                                <input type="checkbox" id="editEquipCanDeliver" style="opacity:0;width:0;height:0;position:absolute;" onchange="(function(c){document.getElementById('editEquipDelivLabel').textContent=c.checked?'Delivery available':'Pickup Only — resident collects in person';document.getElementById('editDelivTrack').style.background=c.checked?'#1A3A6B':'#D1D5DB';document.getElementById('editDelivKnob').style.transform=c.checked?'translateX(18px)':'none';})(this)">
+                                <span id="editDelivTrack" style="position:absolute;inset:0;border-radius:24px;background:#D1D5DB;transition:background 0.2s;"></span>
+                                <span id="editDelivKnob" style="position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
+                            </label>
+                        </div>
                     </div>
                 </form>
                 <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
@@ -5050,15 +5064,12 @@
                             photoCell = '<div onclick="quickUploadEquipImage('+e.id+',this)" title="Upload photo" style="width:40px;height:40px;border-radius:8px;border:1.5px dashed #D1D5DB;background:#F9FAFB;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;position:relative;"><i class="bi bi-camera" style="font-size:16px;color:#9CA3AF;"></i><input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange('+e.id+',this)"></div>';
                         }
                         var lower = (e.name||'').toLowerCase();
-                        var isPickupOnly = ['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
-                        var delivToggle;
-                        if (isPickupOnly) {
-                            delivToggle = '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
-                        } else {
-                            var ds = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
-                            var don = ds[lower]!==false;
-                            delivToggle = '<button onclick="toggleDeliveryAdmin(\''+lower+'\')" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:0.04em;background:'+(don?'#DBEAFE':'#F3F4F6')+';color:'+(don?'#1E40AF':'#6B7280')+';font-family:inherit;">'+(don?'Delivery':'No Delivery')+'</button>';
-                        }
+                        var _rds = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
+                        var _rDef = !['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
+                        var _canDeliv = _rds['id_'+e.id] !== undefined ? _rds['id_'+e.id] : (_rds[lower] !== undefined ? _rds[lower] : _rDef);
+                        var delivToggle = _canDeliv
+                            ? '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#DBEAFE;color:#1E40AF;text-transform:uppercase;letter-spacing:0.04em;">Delivery</span>'
+                            : '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
                         rows += '<tr style="border-top:1px solid #F3F4F6;vertical-align:middle;'+(e.isArchived?'opacity:0.55;':'')+'">'
                             +'<td style="padding:12px 18px;"><div style="display:flex;align-items:center;gap:12px;">'+photoCell+'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+(e.name||'')+'</div>'+(e.description?'<div style="font-size:12px;color:#9CA3AF;margin-top:1px;">'+e.description+'</div>':'')+'</div></div></td>'
                             +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:600;color:#374151;">'+qty+'</td>'
@@ -5265,6 +5276,19 @@
                 document.getElementById('editPhotoLabel').textContent = 'Click to upload new photo';
                 calcEditAvail();
 
+                var _ds = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
+                var _lower = (equipment.name||'').toLowerCase();
+                var _defCanDeliv = !['table','tent'].some(function(kw){return _lower.indexOf(kw)>=0;});
+                var _canDeliv = _ds['id_'+equipment.id] !== undefined ? _ds['id_'+equipment.id]
+                              : (_ds[_lower] !== undefined ? _ds[_lower] : _defCanDeliv);
+                var _dcb = document.getElementById('editEquipCanDeliver');
+                if (_dcb) {
+                    _dcb.checked = _canDeliv;
+                    document.getElementById('editEquipDelivLabel').textContent = _canDeliv ? 'Delivery available' : 'Pickup Only — resident collects in person';
+                    document.getElementById('editDelivTrack').style.background = _canDeliv ? '#1A3A6B' : '#D1D5DB';
+                    document.getElementById('editDelivKnob').style.transform = _canDeliv ? 'translateX(18px)' : 'none';
+                }
+
                 document.getElementById('editEquipmentModal').classList.add('active');
                 history.pushState({ modal: 'editEquipmentModal' }, '', '#editEquipmentModal');
             }
@@ -5298,6 +5322,10 @@
                     btn.innerHTML = originalText;
                     return;
                 }
+
+                var _savDs = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
+                _savDs['id_'+id] = document.getElementById('editEquipCanDeliver').checked;
+                localStorage.setItem('brgy_delivery_settings', JSON.stringify(_savDs));
 
                 const updates = {
                     name: document.getElementById('editEquipName').value,
