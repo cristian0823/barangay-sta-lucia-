@@ -30,7 +30,7 @@ window.logAudit = async function(entityType, entityId, action, details) {
                 const { data: uData } = await window.supabase.from('users').select('id').eq('username', u.username).maybeSingle();
                 if (uData) finalUserId = uData.id;
             }
-            await supabase.from('audit_log').insert([{
+            const { error: _auditErr } = await supabase.from('audit_log').insert([{
                 user_id: finalUserId,
                 actor_type: u.role === 'admin' ? 'admin' : 'resident',
                 entity_type: entityType || 'System',
@@ -38,6 +38,7 @@ window.logAudit = async function(entityType, entityId, action, details) {
                 action: action,
                 details: details
             }]);
+            if (_auditErr) console.warn('[logAudit] insert failed:', _auditErr.code, _auditErr.message);
         }
     } catch(e) { console.error('logAudit failed', e); }
 };
