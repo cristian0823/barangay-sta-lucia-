@@ -149,16 +149,73 @@
         </div>
 
         <div class="badge">🔐 Two-Factor Authentication Setup</div>
-        <h1>Setup Google Authenticator</h1>
-        <p class="subtitle">This is a <strong>required security step</strong>. Your account cannot be accessed until Google Authenticator is set up. This only takes a minute.</p>
+        <h1 id="setupTitle">Secure Your Account</h1>
+        <p class="subtitle" id="setupSubtitle">This is a <strong>required security step</strong>. Choose how you want to verify your identity every time you log in.</p>
 
         <!-- Step Indicator -->
-        <div class="steps">
+        <div class="steps" id="stepsBar" style="display:none;">
             <div class="step-dot active" id="stepDot1">1</div>
             <div class="step-line" id="stepLine1"></div>
             <div class="step-dot inactive" id="stepDot2">2</div>
             <div class="step-line" id="stepLine2"></div>
             <div class="step-dot inactive" id="stepDot3">✓</div>
+        </div>
+
+        <!-- Method Choice -->
+        <div id="stepChoice">
+            <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px;">
+                <button onclick="chooseMethod('totp')"
+                    style="display:flex;align-items:center;gap:16px;padding:16px 20px;border:2px solid #e5e7eb;border-radius:14px;background:#fff;cursor:pointer;text-align:left;transition:all 0.18s;width:100%;"
+                    onmouseover="this.style.borderColor='#059669';this.style.background='#f0fdf4'"
+                    onmouseout="this.style.borderColor='#e5e7eb';this.style.background='#fff'">
+                    <div style="width:44px;height:44px;border-radius:12px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">📱</div>
+                    <div>
+                        <div style="font-size:14px;font-weight:700;color:#1f2937;margin-bottom:2px;">Google Authenticator</div>
+                        <div style="font-size:12px;color:#6b7280;line-height:1.4;">Scan a QR code with the app on your phone. Works offline.</div>
+                    </div>
+                </button>
+                <button onclick="chooseMethod('email')"
+                    style="display:flex;align-items:center;gap:16px;padding:16px 20px;border:2px solid #e5e7eb;border-radius:14px;background:#fff;cursor:pointer;text-align:left;transition:all 0.18s;width:100%;"
+                    onmouseover="this.style.borderColor='#059669';this.style.background='#f0fdf4'"
+                    onmouseout="this.style.borderColor='#e5e7eb';this.style.background='#fff'">
+                    <div style="width:44px;height:44px;border-radius:12px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">✉️</div>
+                    <div>
+                        <div style="font-size:14px;font-weight:700;color:#1f2937;margin-bottom:2px;">Email OTP</div>
+                        <div style="font-size:12px;color:#6b7280;line-height:1.4;">We send a 6-digit code to your registered email each time you log in.</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Email OTP: Send step -->
+        <div id="stepEmailSend" style="display:none;">
+            <p style="font-size:14px;color:#374151;margin-bottom:8px;line-height:1.6;">A verification code will be sent to:</p>
+            <div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:14px;font-weight:600;color:#065f46;" id="emailOTPDisplay"></div>
+            <div id="emailSendError" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:13px;color:#991b1b;margin-bottom:14px;"></div>
+            <button onclick="sendEmailOTPCode()" id="sendOTPBtn"
+                style="width:100%;padding:13px;border-radius:10px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:#059669;color:#fff;transition:background 0.15s;"
+                onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+                Send Code to My Email
+            </button>
+            <button onclick="backToChoice()" class="btn-secondary" style="margin-top:10px;">← Back</button>
+        </div>
+
+        <!-- Email OTP: Verify step -->
+        <div id="stepEmailVerify" style="display:none;">
+            <div class="verify-label">Enter the 6-digit code from your email</div>
+            <p class="verify-hint" id="emailVerifyHint"></p>
+            <div class="code-wrap">
+                <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="e0">
+                <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="e1">
+                <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="e2">
+                <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="e3">
+                <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="e4">
+                <input class="code-digit" type="text" inputmode="numeric" maxlength="1" id="e5">
+            </div>
+            <div class="msg-box msg-error" id="emailVerifyError">Invalid or expired code. Please try again.</div>
+            <div class="msg-box msg-success" id="emailVerifySuccess">✅ Email verified successfully!</div>
+            <button class="btn-main" id="emailVerifyBtn" onclick="verifyEmailOTPCode()">Verify & Enable 2FA</button>
+            <button class="btn-secondary" onclick="backToEmailSend()">← Resend Code</button>
         </div>
 
         <!-- Step 0: Set Password (first login only) -->
@@ -267,14 +324,14 @@
     <script src="js/totp-handler.js"></script>
     <script src="js/auth-visuals.js"></script>
     <script>
-        let currentSecret = '';
-        let pendingUser   = null;
-        let timerInterval = null;
+        let currentSecret  = '';
+        let pendingUser    = null;
+        let timerInterval  = null;
+        let selectedMethod = null; // 'totp' or 'email'
 
         // ── Auth Guard ───────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', async () => {
-            // Check for pending TOTP setup (post-login) or already-logged-in user
-            const pendingRaw = sessionStorage.getItem('totp_pending_user');
+            const pendingRaw  = sessionStorage.getItem('totp_pending_user');
             const currentUser = getCurrentUser();
 
             if (pendingRaw) {
@@ -286,20 +343,169 @@
                 return;
             }
 
-            // First-login: show password step before TOTP
+            // First-login: show password step before method choice
             const isFirstLogin = sessionStorage.getItem('totp_first_login') === 'true';
             if (isFirstLogin) {
+                document.getElementById('stepChoice').style.display = 'none';
                 document.getElementById('step0').style.display = 'block';
                 document.getElementById('step1').style.display = 'none';
-                // Update subtitle
-                var sub = document.querySelector('.subtitle');
-                if (sub) sub.textContent = 'Step 1 of 3: Set your account password to secure your access.';
-                return; // TOTP init happens after password is set
+                document.getElementById('setupSubtitle').textContent = 'Step 1 of 3: Set your account password to secure your access.';
+                return;
             }
-
-            await initSetup();
-            startTimer();
+            // Show method choice by default (step0, step1 hidden)
+            document.getElementById('step0').style.display = 'none';
+            document.getElementById('step1').style.display = 'none';
         });
+
+        // ── Method Selection ─────────────────────────────────────
+        async function chooseMethod(method) {
+            selectedMethod = method;
+            document.getElementById('stepChoice').style.display = 'none';
+            document.getElementById('stepsBar').style.display = 'flex';
+            if (method === 'email') {
+                document.getElementById('setupTitle').textContent = 'Email Verification Setup';
+                document.getElementById('setupSubtitle').textContent = 'We will send a one-time code to your email each time you log in.';
+                const email = pendingUser.email || '';
+                document.getElementById('emailOTPDisplay').textContent = email || '(no email on file — contact barangay office)';
+                if (!email) {
+                    document.getElementById('emailSendError').textContent = 'No email address found on your account. Please contact the barangay office.';
+                    document.getElementById('emailSendError').style.display = 'block';
+                    document.getElementById('sendOTPBtn').disabled = true;
+                }
+                document.getElementById('stepEmailSend').style.display = 'block';
+                setStepState(1);
+            } else {
+                document.getElementById('setupTitle').textContent = 'Setup Google Authenticator';
+                document.getElementById('setupSubtitle').textContent = 'Link your Google Authenticator app. This only takes a minute.';
+                document.getElementById('step1').style.display = 'block';
+                setStepState(1);
+                await initSetup();
+                startTimer();
+            }
+        }
+
+        function backToChoice() {
+            selectedMethod = null;
+            document.getElementById('stepEmailSend').style.display = 'none';
+            document.getElementById('stepEmailVerify').style.display = 'none';
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('stepsBar').style.display = 'none';
+            document.getElementById('stepChoice').style.display = 'block';
+            document.getElementById('setupTitle').textContent = 'Secure Your Account';
+            document.getElementById('setupSubtitle').textContent = 'This is a required security step. Choose how you want to verify your identity every time you log in.';
+        }
+
+        // ── Email OTP Setup ──────────────────────────────────────
+        async function sendEmailOTPCode() {
+            const btn = document.getElementById('sendOTPBtn');
+            btn.disabled = true; btn.textContent = 'Sending...';
+            document.getElementById('emailSendError').style.display = 'none';
+            try {
+                const { error } = await window.supabase.auth.signInWithOtp({
+                    email: pendingUser.email,
+                    options: { shouldCreateUser: true }
+                });
+                if (error) {
+                    document.getElementById('emailSendError').textContent = 'Could not send code: ' + error.message;
+                    document.getElementById('emailSendError').style.display = 'block';
+                    btn.disabled = false; btn.textContent = 'Send Code to My Email';
+                    return;
+                }
+                // Advance to verify step
+                document.getElementById('stepEmailSend').style.display = 'none';
+                document.getElementById('emailVerifyHint').textContent = 'Sent to ' + pendingUser.email;
+                document.getElementById('stepEmailVerify').style.display = 'block';
+                setStepState(2);
+                document.getElementById('e0').focus();
+            } catch (e) {
+                document.getElementById('emailSendError').textContent = 'Error: ' + e.message;
+                document.getElementById('emailSendError').style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Send Code to My Email';
+            }
+        }
+
+        function backToEmailSend() {
+            document.getElementById('stepEmailVerify').style.display = 'none';
+            clearEmailSetupDigits();
+            document.getElementById('stepEmailSend').style.display = 'block';
+            document.getElementById('sendOTPBtn').disabled = false;
+            document.getElementById('sendOTPBtn').textContent = 'Send Code to My Email';
+            setStepState(1);
+        }
+
+        function getEmailSetupDigits() {
+            return [0,1,2,3,4,5].map(i => document.getElementById('e' + i).value).join('');
+        }
+        function clearEmailSetupDigits() {
+            for (let i = 0; i < 6; i++) {
+                document.getElementById('e' + i).value = '';
+                document.getElementById('e' + i).classList.remove('filled');
+            }
+            document.getElementById('emailVerifyError').style.display = 'none';
+            document.getElementById('emailVerifySuccess').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 0; i < 6; i++) {
+                const el = document.getElementById('e' + i);
+                el.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '').slice(-1);
+                    this.classList.toggle('filled', !!this.value);
+                    if (this.value && i < 5) document.getElementById('e' + (i + 1)).focus();
+                    if (getEmailSetupDigits().length === 6) verifyEmailOTPCode();
+                });
+                el.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && i > 0) document.getElementById('e' + (i - 1)).focus();
+                });
+                el.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                    for (let j = 0; j < 6; j++) {
+                        const d = document.getElementById('e' + j);
+                        d.value = text[j] || '';
+                        d.classList.toggle('filled', !!d.value);
+                    }
+                    if (text.length === 6) verifyEmailOTPCode();
+                });
+            }
+        });
+
+        async function verifyEmailOTPCode() {
+            const code = getEmailSetupDigits();
+            if (code.length !== 6) return;
+            const btn = document.getElementById('emailVerifyBtn');
+            btn.disabled = true; btn.textContent = 'Verifying...';
+            document.getElementById('emailVerifyError').style.display = 'none';
+            document.getElementById('emailVerifySuccess').style.display = 'none';
+            try {
+                const { error } = await window.supabase.auth.verifyOtp({
+                    email: pendingUser.email, token: code, type: 'email'
+                });
+                if (error) {
+                    document.getElementById('emailVerifyError').style.display = 'block';
+                    clearEmailSetupDigits();
+                    btn.disabled = false; btn.textContent = 'Verify & Enable 2FA';
+                    document.getElementById('e0').focus();
+                    return;
+                }
+                // Save otp_method to DB
+                await window.supabase.from('users').update({ totp_enabled: true, otp_method: 'email' }).eq('id', pendingUser.id);
+                await window.supabase.auth.signOut();
+                if (typeof logActivity === 'function') {
+                    logActivity('2FA Enabled', 'User ' + pendingUser.username + ' enabled Email OTP');
+                }
+                document.getElementById('emailVerifySuccess').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('stepEmailVerify').style.display = 'none';
+                    document.getElementById('step3').style.display = 'block';
+                    document.getElementById('step3').querySelector('.success-text').textContent = 'Email OTP is now active on your account. A code will be sent to your email each time you log in.';
+                    setStepState(3);
+                }, 800);
+            } catch (e) {
+                document.getElementById('emailVerifyError').style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Verify & Enable 2FA';
+            }
+        }
 
         // ── First-Login Password Setup ──────────────────────────
         async function submitFirstLoginPassword() {
@@ -321,13 +527,11 @@
                 pendingUser.password = hashed;
                 sessionStorage.setItem('totp_pending_user', JSON.stringify(pendingUser));
                 sessionStorage.removeItem('totp_first_login');
-                // Show TOTP step
+                // Show method choice after password is set
                 document.getElementById('step0').style.display = 'none';
-                document.getElementById('step1').style.display = 'block';
-                var sub = document.querySelector('.subtitle');
-                if (sub) sub.textContent = 'Step 2 of 3: Link your Google Authenticator app for two-factor authentication.';
-                await initSetup();
-                startTimer();
+                document.getElementById('stepChoice').style.display = 'block';
+                document.getElementById('setupTitle').textContent = 'Secure Your Account';
+                document.getElementById('setupSubtitle').textContent = 'Choose how you want to verify your identity every time you log in.';
             } catch (e) { errEl.textContent = 'Error: ' + e.message; errEl.style.display = 'block'; }
         }
 
@@ -466,8 +670,8 @@
 
             if (valid) {
                 document.getElementById('verifySuccess').style.display = 'block';
-                // Save to DB
                 await saveTOTPSecretToDB(pendingUser.id, currentSecret);
+                await window.supabase.from('users').update({ otp_method: 'totp' }).eq('id', pendingUser.id);
                 if (typeof logActivity === 'function') {
                     logActivity('2FA Enabled', `User ${pendingUser.username} enabled Google Authenticator`);
                 }

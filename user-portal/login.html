@@ -103,6 +103,48 @@
                 </button>
             </form>
 
+            <!-- Email OTP Panel (hidden by default) -->
+            <div id="emailOTPPanel" class="rounded-xl p-6 mt-0" style="display:none; background:#f8fafc; border:1.5px solid #e2e8f0;">
+                <div class="font-extrabold text-gray-800 mb-1" style="font-size:15px;">Email Verification</div>
+                <p class="text-sm text-gray-500 mb-1 leading-relaxed">
+                    A 6-digit code was sent to <strong id="emailOTPAddress"></strong>
+                </p>
+                <p class="text-xs text-gray-400 mb-4">Check your inbox and spam folder. Code expires in 10 minutes.</p>
+                <div class="code-wrap flex gap-2 justify-center mb-4">
+                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed0">
+                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed1">
+                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed2">
+                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed3">
+                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed4">
+                    <input class="code-digit w-11 h-14 border-2 rounded-lg text-2xl font-bold text-center text-gray-800 bg-white" style="border-color:#D1D5DB;" type="text" inputmode="numeric" maxlength="1" id="ed5">
+                </div>
+                <div id="emailOTPError" class="hidden rounded-lg px-4 py-2.5 mb-3 text-sm font-medium"
+                     style="background:#FEF2F2; border:1px solid #FECACA; color:#991B1B;">
+                    Invalid or expired code. Please try again.
+                </div>
+                <button type="button" id="emailOTPVerifyBtn" onclick="submitEmailOTPCode()"
+                        class="w-full py-3 rounded-lg font-extrabold text-base tracking-wide transition-all duration-200 mb-2.5 disabled:opacity-50"
+                        style="background:#0f1f3d; color:#f5a623; font-family:inherit; box-shadow:0 4px 14px rgba(15,31,61,0.30);"
+                        onmouseover="if(!this.disabled) this.style.background='#1a3a6b'"
+                        onmouseout="if(!this.disabled) this.style.background='#0f1f3d'">
+                    Verify Code
+                </button>
+                <button type="button" id="resendOTPBtn" onclick="resendEmailOTP()"
+                        class="w-full py-2 rounded-lg font-semibold text-sm transition-all duration-200 mb-1 disabled:opacity-50"
+                        style="border:1.5px solid #D1D5DB; background:transparent; color:#6B7280; font-family:inherit;"
+                        onmouseover="if(!this.disabled){this.style.borderColor='#0f1f3d';this.style.color='#0f1f3d'}"
+                        onmouseout="if(!this.disabled){this.style.borderColor='#D1D5DB';this.style.color='#6B7280'}">
+                    Resend Code
+                </button>
+                <button type="button" onclick="cancelEmailOTP()"
+                        class="w-full py-2.5 rounded-lg font-semibold text-sm transition-all duration-200"
+                        style="border:1.5px solid #D1D5DB; background:transparent; color:#6B7280; font-family:inherit;"
+                        onmouseover="this.style.borderColor='#0f1f3d'; this.style.color='#0f1f3d'"
+                        onmouseout="this.style.borderColor='#D1D5DB'; this.style.color='#6B7280'">
+                    Back to Login
+                </button>
+            </div>
+
             <!-- TOTP Panel (hidden by default) -->
             <div id="totpPanel" class="rounded-xl p-6 mt-0" style="display:none; background:#f8fafc; border:1.5px solid #e2e8f0;">
                 <div class="font-extrabold text-gray-800 mb-1" style="font-size:15px;">Two-Factor Authentication</div>
@@ -350,6 +392,131 @@
         }
     }
 
+    // -- Email OTP State --
+    let emailOTPPendingUser = null;
+    let emailOTPRememberMe  = false;
+    let emailOTPAddress     = null;
+
+    function maskEmail(email) {
+        if (!email) return 'your email';
+        const [local, domain] = email.split('@');
+        if (!domain) return email;
+        const visible = local.length > 2 ? local.substring(0, 2) + '***' : local[0] + '***';
+        return visible + '@' + domain;
+    }
+
+    async function sendEmailOTP(email) {
+        try {
+            const { error } = await window.supabase.auth.signInWithOtp({
+                email: email,
+                options: { shouldCreateUser: true }
+            });
+            if (error) { showToast('Could not send code: ' + error.message, 'error'); return false; }
+            return true;
+        } catch (e) { console.error('sendEmailOTP:', e); return false; }
+    }
+
+    async function showEmailOTPPanel(user, rememberMe) {
+        emailOTPPendingUser = user;
+        emailOTPRememberMe  = rememberMe;
+        emailOTPAddress     = user.email;
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('emailOTPPanel').style.display = 'block';
+        document.getElementById('emailOTPAddress').textContent = maskEmail(emailOTPAddress);
+        clearEmailOTPDigits();
+        const ok = await sendEmailOTP(emailOTPAddress);
+        if (ok) showToast('Code sent! Check your inbox.', 'success');
+        document.getElementById('ed0').focus();
+    }
+
+    async function resendEmailOTP() {
+        const btn = document.getElementById('resendOTPBtn');
+        btn.disabled = true; btn.textContent = 'Sending...';
+        const ok = await sendEmailOTP(emailOTPAddress);
+        if (ok) showToast('Code resent! Check your inbox.', 'success');
+        setTimeout(() => { btn.disabled = false; btn.textContent = 'Resend Code'; }, 30000);
+    }
+
+    function getEmailOTPDigits() {
+        return [0,1,2,3,4,5].map(i => document.getElementById('ed' + i).value).join('');
+    }
+    function clearEmailOTPDigits() {
+        for (let i = 0; i < 6; i++) {
+            document.getElementById('ed' + i).value = '';
+            document.getElementById('ed' + i).classList.remove('filled');
+        }
+        document.getElementById('emailOTPError').classList.add('hidden');
+    }
+
+    async function submitEmailOTPCode() {
+        if (!emailOTPPendingUser) return;
+        const code = getEmailOTPDigits();
+        if (code.length !== 6) return;
+        const btn = document.getElementById('emailOTPVerifyBtn');
+        btn.disabled = true; btn.textContent = 'Verifying...';
+        document.getElementById('emailOTPError').classList.add('hidden');
+        try {
+            const { error } = await window.supabase.auth.verifyOtp({
+                email: emailOTPAddress, token: code, type: 'email'
+            });
+            if (error) {
+                document.getElementById('emailOTPError').classList.remove('hidden');
+                btn.disabled = false; btn.textContent = 'Verify Code';
+                clearEmailOTPDigits();
+                document.getElementById('ed0').focus();
+                return;
+            }
+            await window.supabase.auth.signOut();
+            showToast('Login successful! Redirecting...', 'success');
+            resetLoginAttempts();
+            if (emailOTPRememberMe) {
+                localStorage.setItem('currentUser', JSON.stringify(emailOTPPendingUser));
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify(emailOTPPendingUser));
+            }
+            if (typeof window.logSecurity === 'function') {
+                window.logSecurity('Login Success', 'Email OTP', 'info', 'Login successful.', emailOTPPendingUser.username);
+            }
+            setTimeout(() => redirectToDashboard(), 1200);
+        } catch (e) {
+            console.error('submitEmailOTPCode:', e);
+            btn.disabled = false; btn.textContent = 'Verify Code';
+        }
+    }
+
+    function cancelEmailOTP() {
+        emailOTPPendingUser = null;
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('emailOTPPanel').style.display = 'none';
+        document.getElementById('loginBtn').disabled = false;
+        document.getElementById('loginBtn').textContent = 'Sign In';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        for (let i = 0; i < 6; i++) {
+            const el = document.getElementById('ed' + i);
+            el.addEventListener('input', function () {
+                this.value = this.value.replace(/\D/g, '').slice(-1);
+                this.classList.toggle('filled', !!this.value);
+                if (this.value && i < 5) document.getElementById('ed' + (i + 1)).focus();
+                if (getEmailOTPDigits().length === 6) submitEmailOTPCode();
+            });
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !this.value && i > 0) document.getElementById('ed' + (i - 1)).focus();
+            });
+            el.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                for (let j = 0; j < 6; j++) {
+                    const d = document.getElementById('ed' + j);
+                    d.value = text[j] || '';
+                    d.classList.toggle('filled', !!d.value);
+                }
+                if (text.length === 6) submitEmailOTPCode();
+            });
+        }
+    });
+
     function togglePassword(id, btn) {
         const input = document.getElementById(id);
         const isPassword = input.type === 'password';
@@ -405,17 +572,21 @@
             if (result.success) {
                 resetLoginAttempts();
 
-                // Check TOTP status
+                // Check 2FA status
                 let totpEnabled = false;
                 let totpSecret  = null;
+                let otpMethod   = null;
+                let userEmail   = result.user.email || null;
                 try {
                     if (window.supabase) {
                         const { data: totpRow } = await window.supabase
-                            .from('users').select('totp_secret, totp_enabled, id')
+                            .from('users').select('totp_secret, totp_enabled, otp_method, email, id')
                             .eq('username', result.user.username).maybeSingle();
                         if (totpRow) {
                             totpEnabled = !!totpRow.totp_enabled;
                             totpSecret  = totpRow.totp_secret || null;
+                            otpMethod   = totpRow.otp_method || null;
+                            userEmail   = totpRow.email || userEmail;
                         }
                     }
                 } catch(e) {
@@ -423,35 +594,28 @@
                     totpSecret  = result.user.totp_secret || null;
                 }
 
-                if (totpEnabled && totpSecret) {
+                if (totpEnabled) {
+                    if (otpMethod === 'email') {
+                        result.user.otp_method = 'email';
+                        result.user.email = userEmail;
+                        showEmailOTPPanel(result.user, rememberMe);
+                        return;
+                    }
                     result.user.totp_secret  = totpSecret;
                     result.user.totp_enabled = true;
                     showTOTPPanel(result.user, rememberMe);
                     return;
                 }
 
-                // TOTP explicitly disabled — log in directly without setup
-                if (result.user.totp_enabled === false) {
-                    const sessionData = { ...result.user, loginTime: new Date().toISOString() };
-                    if (rememberMe) {
-                        localStorage.setItem('currentUser', JSON.stringify(sessionData));
-                    } else {
-                        sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
-                    }
-                    showToast('✅ Login successful! Redirecting...', 'success');
-                    setTimeout(() => redirectToDashboard(), 1000);
-                    return;
-                }
-
-                // No TOTP yet — check if this is a brand-new admin-created account
-                const isFirstLogin = (result.user.totp_enabled === null || result.user.totp_enabled === undefined) && !result.user.password;
+                // 2FA not set up — mandatory setup for all residents
+                const isFirstLogin = !result.user.password;
                 sessionStorage.setItem('totp_pending_user', JSON.stringify(result.user));
                 sessionStorage.setItem('totp_remember_me', rememberMe ? 'true' : 'false');
                 if (isFirstLogin) {
                     sessionStorage.setItem('totp_first_login', 'true');
                     showToast('Welcome! Please set up your account to continue.', 'success');
                 } else {
-                    showToast('Please set up Google Authenticator to continue.', 'success');
+                    showToast('Please set up two-factor authentication to continue.', 'success');
                 }
                 setTimeout(() => window.location.href = 'setup-totp.html', 1200);
             } else {
