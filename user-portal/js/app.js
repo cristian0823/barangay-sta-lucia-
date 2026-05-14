@@ -32,6 +32,7 @@ window.logAudit = async function(entityType, entityId, action, details) {
             }
             await supabase.from('audit_log').insert([{
                 user_id: finalUserId,
+                actor_type: u.role === 'admin' ? 'admin' : 'resident',
                 entity_type: entityType || 'System',
                 entity_id: entityId,
                 action: action,

@@ -816,7 +816,7 @@
                                 <h2 id="adminCalendarMonth" style="font-size:18px;font-weight:700;color:#fff;margin:0;letter-spacing:0;"></h2>
                                 <div style="display:flex;gap:8px;align-items:center;">
                                     <button onclick="jumpToToday()" style="padding:6px 14px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.7);background:transparent;cursor:pointer;font-size:12px;font-weight:700;color:#fff;transition:all 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='#fff'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,0.7)'">Today</button>
-                                    <button onclick="openAdsEventModal()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.15);cursor:pointer;font-size:12px;font-weight:700;color:#fff;transition:background 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'"><i class="bi bi-plus-lg"></i> Add Event</button>
+
                                     <button onclick="changeAdminMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="bi bi-chevron-right"></i></button>
                                 </div>
                             </div>
@@ -3899,6 +3899,7 @@
                         <td style="text-align:center; white-space:nowrap;" onclick="event.stopPropagation()">${actionHtml}</td>
                     </tr>`;
                 }).join('');
+                users.forEach(function(u) { _userDetailMap[String(u.id)] = u; });
                 renderPg('usersPg', _pgUsersList.length, PG_SIZE, _pgUsersPage, 'gotoUsersPage');
             }
 
@@ -5357,7 +5358,8 @@
                     quantity: newQty,
                     broken: newBroken,
                     disposal: newDisposal,
-                    isArchived: document.getElementById('editEquipArchived').checked
+                    isArchived: document.getElementById('editEquipArchived').checked,
+                    canDeliver: document.getElementById('editEquipCanDeliver').checked
                 };
                 if (image_url !== undefined) {
                     updates.image_url = image_url;
@@ -5369,6 +5371,9 @@
                 btn.innerHTML = originalText;
 
                 if (result.success) {
+                    if (window.supabase) {
+                        supabase.from('equipment').update({ can_deliver: updates.canDeliver }).eq('id', id).then(() => {}).catch(() => {});
+                    }
                     showAlert('Equipment updated successfully', 'success');
                     closeModal('editEquipmentModal');
                     await loadEquipment();
@@ -6503,7 +6508,7 @@
                 )) return;
                 const res = await deleteEvent(id);
                 if (res.success) {
-                    showAlert('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Day block cancelled. The date is now open for reservations.', 'success');
+                    showAlert('Day block cancelled. The date is now open for reservations.', 'success');
                     const dateStr = document.getElementById('adsDate').value;
                     const venue   = document.getElementById('adsVenue').value;
                     await refreshAdminDaySchedule(dateStr, venue);
@@ -6529,8 +6534,8 @@
                     <p style="font-weight:800;font-size:13px;color:#1e3a8a;margin:0 0 10px;">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Reschedule "${ev.title}" to:</p>
                     <input type="date" id="_adminBlockNewDate" min="${today}" value="" style="width:100%;padding:9px 12px;border:1.5px solid #93c5fd;border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:10px;">
                     <div style="display:flex;gap:8px;">
-                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirm Reschedule</button>
-                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
+                        <button id="_adminBlockReschedConfirm" style="flex:1;padding:9px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Confirm Reschedule</button>
+                        <button onclick="document.getElementById('_adminBlockReschedulePicker').remove()" style="padding:9px 14px;background:#e5e7eb;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#374151;">×</button>
                     </div>`;
 
                 const list = document.getElementById('adsScheduleList');
@@ -6552,7 +6557,7 @@
                     });
                     if (alreadyBlocked) {
                         showAlert('That date is already fully blocked by another event. Choose a different date.', 'error');
-                        this.disabled = false; this.textContent = 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirm Reschedule';
+                        this.disabled = false; this.textContent = 'Confirm Reschedule';
                         return;
                     }
 
@@ -6570,14 +6575,14 @@
                     });
                     if (res.success) {
                         picker.remove();
-                        showAlert(`ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
+                        showAlert(`Block rescheduled to ${newDate}. That date is now closed for reservations.`, 'success');
                         const dateStr = document.getElementById('adsDate').value;
                         const venue   = document.getElementById('adsVenue').value;
                         await refreshAdminDaySchedule(dateStr, venue);
                         if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
                     } else {
                         showAlert('Error rescheduling: ' + res.message, 'error');
-                        this.disabled = false; this.textContent = 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirm Reschedule';
+                        this.disabled = false; this.textContent = 'Confirm Reschedule';
                     }
                 });
             };
