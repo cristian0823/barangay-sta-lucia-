@@ -13,7 +13,7 @@ window.logAudit = async function(entityType, entityId, action, details) {
     logs.push({
         id: Date.now(), 
         user_id: u.id || null,
-        local_username: u.username || 'System',
+        local_username: u.barangay_id || u.username || 'System',
         local_full_name: u.fullName || u.full_name || 'System',
         local_role: u.role || 'system',
         entity_type: entityType, entity_id: entityId, action: action, details: details,
@@ -78,8 +78,8 @@ window.logSecurity = async function(eventType, authMethod, severity, details, ta
     // Use cached IP — already resolved at page load, no delay
     const ip = _cachedDeviceIP;
     const u = getCurrentUser() || {};
-    // Resolve which username to use — prefer current session, fall back to targetUsername
-    const resolvedUsername = u.username || targetUsername || null;
+    // Resolve which identifier to use — prefer barangay_id, fall back to username
+    const resolvedUsername = u.barangay_id || u.username || targetUsername || null;
 
     // Local fallback log
     const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
@@ -425,7 +425,6 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             // If admin changed their password via forgot-password, we respect that.
         }
 
-        const encryptedUsername = await encryptData(username);
         const isEmailInput = username.indexOf('@') !== -1;
         let usersData, error;
         if (isEmailInput) {
@@ -437,7 +436,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             ({ data: usersData, error } = await supabase
                 .from('users')
                 .select('*')
-                .or(`barangay_id.eq.${encryptedUsername},username.eq.${username}`));
+                .or(`barangay_id.eq.${username},username.eq.${username}`));
         }
 
         let data = null;
@@ -490,17 +489,18 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
                 const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
                 // Use cached IP (pre-fetched at page load — no delay)
                 const currentIP = _cachedDeviceIP;
-                const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
+                const _ipKey = sessionData.barangay_id || sessionData.username;
+                const knownIps = JSON.parse(localStorage.getItem('known_ips_' + _ipKey)) || [];
                 if (currentIP !== 'Unavailable' && !knownIps.includes(currentIP)) {
                     knownIps.push(currentIP);
-                    localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
+                    localStorage.setItem('known_ips_' + _ipKey, JSON.stringify(knownIps));
                     if (knownIps.length === 1) {
-                        window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, sessionData.username);
+                        window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, _ipKey);
                     } else {
-                        window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, sessionData.username);
+                        window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, _ipKey);
                     }
                 } else {
-                    window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
+                    window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, _ipKey);
                 }
             }
 
@@ -590,17 +590,18 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             const lType = (sessionData.role === 'admin' || sessionData.role === 'Admin') ? 'Admin Login' : 'User Login';
             // Use cached IP (pre-fetched at page load — no delay)
             const currentIP = _cachedDeviceIP;
-            const knownIps = JSON.parse(localStorage.getItem('known_ips_' + sessionData.username)) || [];
+            const _ipKey2 = sessionData.barangay_id || sessionData.username;
+            const knownIps = JSON.parse(localStorage.getItem('known_ips_' + _ipKey2)) || [];
             if (currentIP !== 'Unavailable' && !knownIps.includes(currentIP)) {
                 knownIps.push(currentIP);
-                localStorage.setItem('known_ips_' + sessionData.username, JSON.stringify(knownIps));
+                localStorage.setItem('known_ips_' + _ipKey2, JSON.stringify(knownIps));
                 if (knownIps.length === 1) {
-                    window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, sessionData.username);
+                    window.logSecurity('Login Success', 'Password', 'info', `${lType} successful. First login from IP ${currentIP}.`, _ipKey2);
                 } else {
-                    window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, sessionData.username);
+                    window.logSecurity('Suspicious Login Activity', 'Password', 'warning', `${lType} detected from a new IP address (${currentIP}). Previous sessions used a different location.`, _ipKey2);
                 }
             } else {
-                window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, sessionData.username);
+                window.logSecurity('Login Success', 'Password', 'info', `${lType} successful.`, _ipKey2);
             }
         }
 

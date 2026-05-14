@@ -1934,7 +1934,8 @@
                 // Resolve real Supabase ID to prevent type mismatch (string vs integer)
                 let resolvedStatUid = String(user.id);
                 try {
-                    const { data: uRowStat } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                    const _bidStat = user.barangay_id || user.username;
+                    const { data: uRowStat } = await supabase.from('users').select('id').eq('barangay_id', _bidStat).maybeSingle();
                     if (uRowStat) resolvedStatUid = String(uRowStat.id);
                 } catch(_) {}
                 const myBookings = bookingsRaw ? bookingsRaw.filter(b =>
@@ -1971,7 +1972,8 @@
                 // Resolve real Supabase integer ID, then cast to String to match TEXT column in user_notifications
                 let resolvedNotifId = String(user.id);
                 try {
-                    const { data: uRowN } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                    const _bidNotif = user.barangay_id || user.username;
+                    const { data: uRowN } = await supabase.from('users').select('id').eq('barangay_id', _bidNotif).maybeSingle();
                     if (uRowN) resolvedNotifId = String(uRowN.id);
                 } catch(_) {}
                 window._resolvedUserId = resolvedNotifId; // Cache for realtime matching
@@ -3826,7 +3828,8 @@
             // Resolve real Supabase ID to handle type mismatches (string vs integer)
             let resolvedBookingUid = String(user.id);
             try {
-                const { data: uRow } = await supabase.from('users').select('id').eq('username', user.username).maybeSingle();
+                const _bidBook = user.barangay_id || user.username;
+                const { data: uRow } = await supabase.from('users').select('id').eq('barangay_id', _bidBook).maybeSingle();
                 if (uRow) resolvedBookingUid = String(uRow.id);
             } catch(_) {}
 
@@ -4812,7 +4815,7 @@ async function loadSettingsView() {
             // Fill profile fields
             document.getElementById('s-fullName').value = user.full_name || user.fullName || user.name || '';
             document.getElementById('s-email').value = user.email || '';
-            document.getElementById('s-username').value = user.username || '';
+            if (document.getElementById('s-username')) document.getElementById('s-username').value = user.barangay_id || user.username || '';
             document.getElementById('s-phone').value = user.contact_number || user.phone || '';
             document.getElementById('s-address').value = user.address || '';
             if (user.createdAt) document.getElementById('s-memberSince').textContent = new Date(user.createdAt).toLocaleDateString();

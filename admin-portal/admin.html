@@ -3041,8 +3041,9 @@
                     const _allUsers = await getAllUsers(); // Auto-decrypts!
                     if (_allUsers) {
                         _allUsers.forEach(u => {
-                            if (u.username) _userMap[u.username.toLowerCase()] = u;
-                            if (u.id)       _userMap[String(u.id)] = u;
+                            if (u.username)    _userMap[u.username.toLowerCase()] = u;
+                            if (u.barangay_id) _userMap[u.barangay_id.toLowerCase()] = u;
+                            if (u.id)          _userMap[String(u.id)] = u;
                         });
                     }
                 } catch(e) {}

@@ -13,7 +13,7 @@ window.logAudit = async function(entityType, entityId, action, details) {
     logs.push({
         id: Date.now(), 
         user_id: u.id || null,
-        local_username: u.username || 'System',
+        local_username: u.barangay_id || u.username || 'System',
         local_full_name: u.fullName || u.full_name || 'System',
         local_role: u.role || 'system',
         entity_type: entityType, entity_id: entityId, action: action, details: details,
@@ -78,8 +78,8 @@ window.logSecurity = async function(eventType, authMethod, severity, details, ta
     // Use cached IP — already resolved at page load, no delay
     const ip = _cachedDeviceIP;
     const u = getCurrentUser() || {};
-    // Resolve which username to use — prefer current session, fall back to targetUsername
-    const resolvedUsername = u.username || targetUsername || null;
+    // Resolve which identifier to use — prefer barangay_id, fall back to username
+    const resolvedUsername = u.barangay_id || u.username || targetUsername || null;
 
     // Local fallback log
     const logs = JSON.parse(localStorage.getItem(LOCAL_SECURITY_LOG_KEY)) || [];
