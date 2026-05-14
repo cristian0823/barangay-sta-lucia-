@@ -3262,7 +3262,7 @@
                 return showToast('You can only borrow equipment for a maximum of 7 days (1 week).', 'error');
             }
             
-            const btn = this.querySelector('button[type="submit"]');
+            const btn = document.getElementById('submitBorrowBtn');
             btn.disabled = true; btn.innerHTML = 'Submitting...';
             
             // Format time string for 12-hour AM/PM purely for readability in logs
