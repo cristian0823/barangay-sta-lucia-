@@ -426,10 +426,19 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
         }
 
         const encryptedUsername = await encryptData(username);
-        const { data: usersData, error } = await supabase
-            .from('users')
-            .select('*')
-            .or(`barangay_id.eq.${encryptedUsername},username.eq.${username}`);
+        const isEmailInput = username.indexOf('@') !== -1;
+        let usersData, error;
+        if (isEmailInput) {
+            ({ data: usersData, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', username.toLowerCase()));
+        } else {
+            ({ data: usersData, error } = await supabase
+                .from('users')
+                .select('*')
+                .or(`barangay_id.eq.${encryptedUsername},username.eq.${username}`));
+        }
 
         let data = null;
         let supabaseUserFound = false;

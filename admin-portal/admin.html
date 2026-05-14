@@ -7957,11 +7957,54 @@
 
             setInterval(refreshAdminBell, 30000);
 
+            var _SITIO_STREETS = {
+                'I':   ['Castro Compound','Plainville','PamanaVille','Sta. Marcela St.','Paguio St.','Area Trinidad','Galvez St.','F. Balagtas St.'],
+                'II':  ['J. Rizal St.','A. Luna St.','RiveraVille','Marco Polo St.','E. Jacinto St.','Diego Silang St.','Panganiban St.','M.H. del Pilar St.','M. Aquino St.'],
+                'III': ['J.P. Rizal St.','Aguinaldo St.','Lakandula St.','Lopez Jaena St.','P. Bukaneg St.','San Francisco Subd.','Interior 19','Interior 21','Panday Pira St.'],
+                'IV':  ['P. Gomez St.','P. Burgos St.','Zamora St.','Naning Ponce St.','Jose Basa St.','Homabon St.'],
+                'V':   ['T. Alonzo St.','Sta. Lucia Avenue','Natividad Subd.','P. Soliman St.'],
+                'VI':  ['F. Agoncillo St.','Veronica Court','Villa Carmen'],
+                'VII': ['F. Calderon St.','Jose Palma St.','Lapu-Lapu St.','TarrahVille']
+            };
+
+            async function _generateNextBarangayId() {
+                try {
+                    var res = await supabase.from('users').select('barangay_id').ilike('barangay_id','RM-%');
+                    var maxNum = 0;
+                    if (res.data && res.data.length) {
+                        res.data.forEach(function(r){
+                            var m=(r.barangay_id||'').match(/^RM-(\d+)$/i);
+                            if(m){var n=parseInt(m[1],10);if(n>maxNum)maxNum=n;}
+                        });
+                    }
+                    return 'RM-'+String(maxNum+1).padStart(3,'0');
+                } catch(e){ return 'RM-001'; }
+            }
+
+            function _onSitioChange() {
+                var sitio=(document.getElementById('newUserSitio').value||'');
+                var sel=document.getElementById('newUserStreet');
+                sel.innerHTML='<option value="">Select street...</option>';
+                if(!sitio){sel.innerHTML='<option value="">Select sitio first</option>';return;}
+                (_SITIO_STREETS[sitio]||[]).forEach(function(s){
+                    var o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);
+                });
+            }
+
             function openAddUserModal() {
                 document.getElementById('addUserModal').classList.add('active');
                 document.getElementById('addUserError').style.display = 'none';
-                ['newUserBarangayId','newUserFullName','newUserPhone','newUserEmail','newUserAddress'].forEach(function(id){
+                ['newUserFirstName','newUserLastName','newUserMiddleName','newUserPhone','newUserEmail','newUserHouse'].forEach(function(id){
                     var el=document.getElementById(id); if(el) el.value='';
+                });
+                ['newUserSuffix','newUserSitio'].forEach(function(id){
+                    var el=document.getElementById(id); if(el) el.selectedIndex=0;
+                });
+                var streetSel=document.getElementById('newUserStreet');
+                if(streetSel) streetSel.innerHTML='<option value="">Select sitio first</option>';
+                document.getElementById('newUserBid').textContent='...';
+                _generateNextBarangayId().then(function(bid){
+                    var el=document.getElementById('newUserBid'); if(el) el.textContent=bid;
                 });
             }
 
@@ -7969,44 +8012,95 @@
                 document.getElementById('addUserModal').classList.remove('active');
             }
 
+            function showUserCreatedModal(name, bid, pw) {
+                document.getElementById('ucmName').textContent=name;
+                document.getElementById('ucmBid').textContent=bid;
+                document.getElementById('ucmPw').textContent=pw;
+                document.getElementById('userCreatedModal').classList.add('active');
+            }
+            function closeUserCreatedModal() {
+                document.getElementById('userCreatedModal').classList.remove('active');
+            }
+            function copyUserCredentials() {
+                var name=document.getElementById('ucmName').textContent;
+                var bid=document.getElementById('ucmBid').textContent;
+                var pw=document.getElementById('ucmPw').textContent;
+                var text='Name: '+name+'\nBarangay ID: '+bid+'\nTemporary Password: '+pw;
+                function fallback(){
+                    var ta=document.createElement('textarea');ta.value=text;
+                    ta.style.position='fixed';ta.style.left='-9999px';
+                    document.body.appendChild(ta);ta.select();
+                    try{document.execCommand('copy');}catch(e){}
+                    document.body.removeChild(ta);
+                    showAlert('Credentials copied!','success');
+                }
+                if(navigator.clipboard&&navigator.clipboard.writeText){
+                    navigator.clipboard.writeText(text).then(function(){showAlert('Credentials copied to clipboard!','success');}).catch(fallback);
+                } else { fallback(); }
+            }
+
             async function submitAddUser() {
-                var bid = (document.getElementById('newUserBarangayId').value||'').trim();
-                var name = (document.getElementById('newUserFullName').value||'').trim();
-                var phone = (document.getElementById('newUserPhone').value||'').trim();
-                var email = (document.getElementById('newUserEmail').value||'').trim();
-                var addr = (document.getElementById('newUserAddress').value||'').trim();
+                var bid = (document.getElementById('newUserBid').textContent||'').trim();
+                var firstName = (document.getElementById('newUserFirstName').value||'').trim();
+                var lastName = (document.getElementById('newUserLastName').value||'').trim();
+                var middleName = (document.getElementById('newUserMiddleName').value||'').trim();
+                var suffix = (document.getElementById('newUserSuffix').value||'').trim();
+                var rawPhone = (document.getElementById('newUserPhone').value||'').trim();
+                var phone = rawPhone.replace(/\D/g,'');
+                var email = (document.getElementById('newUserEmail').value||'').trim().toLowerCase();
+                var sitio = (document.getElementById('newUserSitio').value||'').trim();
+                var street = (document.getElementById('newUserStreet').value||'').trim();
+                var house = (document.getElementById('newUserHouse').value||'').trim();
                 var errEl = document.getElementById('addUserError');
                 var showErr = function(msg){errEl.textContent=msg;errEl.style.display='block';};
                 errEl.style.display='none';
-                if (!bid) return showErr('Barangay ID is required.');
-                if (!name) return showErr('Full Name is required.');
-                var btn=document.getElementById('addUserSubmitBtn');
-                var orig=btn.innerHTML;
-                btn.innerHTML='<i class="bi bi-hourglass-split" style="margin-right:6px;"></i>Adding...';
-                btn.disabled=true;
+                if (!firstName || !lastName) return showErr('First name and last name are required.');
+                if (!phone || phone.length < 4) return showErr('Please enter a valid phone number (at least 4 digits).');
+                if (!sitio || !street) return showErr('Please select the resident\'s sitio and street.');
+                var phone4 = phone.slice(-4);
+                var last3 = lastName.replace(/[^A-Za-z]/g,'').substring(0,3).toUpperCase();
+                var tempPw = 'STL' + last3 + phone4;
+                var nameParts = [firstName];
+                if (middleName) nameParts.push(middleName.charAt(0).toUpperCase()+'.');
+                nameParts.push(lastName);
+                if (suffix) nameParts.push(suffix);
+                var fullName = nameParts.join(' ');
+                var addrParts = [];
+                if (house) addrParts.push(house);
+                if (street) addrParts.push(street);
+                addrParts.push('Sitio '+sitio+', Brgy. Sta. Lucia');
+                var address = addrParts.join(', ');
+                var btn = document.getElementById('addUserSubmitBtn');
+                var orig = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-hourglass-split" style="margin-right:6px;"></i>Adding...';
+                btn.disabled = true;
                 try {
-                    // Check duplicate in users table
-                    var chk = await supabase.from('users').select('id').eq('barangay_id', bid);
-                    if (chk.data && chk.data.length > 0) { btn.innerHTML=orig; btn.disabled=false; return showErr('Barangay ID "'+bid+'" already exists.'); }
-                    var chkU = await supabase.from('users').select('id').eq('username', bid);
-                    if (chkU.data && chkU.data.length > 0) { btn.innerHTML=orig; btn.disabled=false; return showErr('Barangay ID "'+bid+'" is already in use.'); }
-                    // Insert into users table — barangay_id and username both set to the ID
-                    // totp_enabled is null (not false) so login forces first-login setup flow
+                    var chkBid = await supabase.from('users').select('id').eq('barangay_id',bid).maybeSingle();
+                    if (chkBid.data) { btn.innerHTML=orig;btn.disabled=false;return showErr('Barangay ID "'+bid+'" already exists. Please refresh and try again.'); }
+                    if (email) {
+                        var chkEmail = await supabase.from('users').select('id').eq('email',email).maybeSingle();
+                        if (chkEmail.data) { btn.innerHTML=orig;btn.disabled=false;return showErr('This email address is already registered to another resident.'); }
+                    }
+                    var chkPhone = await supabase.from('users').select('id').eq('phone',rawPhone).maybeSingle();
+                    if (chkPhone.data) { btn.innerHTML=orig;btn.disabled=false;return showErr('This phone number is already in use by another resident.'); }
+                    var hashedPw = await hashPassword(tempPw);
                     var ins = await supabase.from('users').insert([{
                         barangay_id: bid,
                         username: bid,
-                        full_name: name,
-                        phone: phone || null,
+                        full_name: fullName,
+                        phone: rawPhone,
                         email: email || null,
-                        address: addr || null,
+                        address: address,
                         role: 'user',
-                        avatar: name.trim().charAt(0).toUpperCase(),
+                        avatar: firstName.charAt(0).toUpperCase(),
                         totp_enabled: null,
-                        password: null
+                        password: hashedPw
                     }]);
-                    if (ins.error) { btn.innerHTML=orig; btn.disabled=false; return showErr('Save error: '+ins.error.message); }
+                    if (ins.error) { btn.innerHTML=orig;btn.disabled=false;return showErr('Save error: '+ins.error.message); }
+                    try { await logActivity('User Created','Admin created new resident account for '+fullName+' — Barangay ID: '+bid); } catch(e){}
+                    btn.innerHTML=orig; btn.disabled=false;
                     closeAddUserModal();
-                    showAlert('User "'+name+'" added. They can log in with Barangay ID: '+bid+' and will be prompted to set up their account on first login.', 'success');
+                    showUserCreatedModal(fullName, bid, tempPw);
                     loadUsers();
                 } catch(e) {
                     btn.innerHTML=orig; btn.disabled=false; showErr('Unexpected error: '+e.message);
@@ -8352,45 +8446,128 @@
     <div style="padding:10px 16px;border-top:1px solid #F3F4F6;background:#FAFAFA;font-size:12px;color:#6B7280;flex-shrink:0;text-align:center;" id="maintDrawerFooter"></div>
 </div>
 <div id="addUserModal" class="modal">
-    <div class="modal-content" style="max-width:540px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+    <div class="modal-content" style="max-width:580px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:92vh;">
         <div style="background:#1A3A6B;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:34px;height:34px;background:rgba(255,255,255,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-person-plus-fill" style="font-size:17px;color:#FDB913;"></i></div>
-                <div style="font-size:15px;font-weight:700;color:#fff;">Add User</div>
+                <div>
+                    <div style="font-size:15px;font-weight:700;color:#fff;">Add New Resident</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.6);">Fill in resident information below</div>
+                </div>
             </div>
             <button onclick="closeAddUserModal()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
         </div>
         <div style="padding:20px 22px;overflow-y:auto;flex:1;">
             <div id="addUserError" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:6px;padding:10px 14px;font-size:13px;color:#991b1b;margin-bottom:16px;"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div style="margin-bottom:16px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+                <i class="bi bi-id-card-fill" style="color:#1A3A6B;font-size:20px;flex-shrink:0;"></i>
+                <div style="flex:1;">
+                    <div style="font-size:10px;font-weight:700;color:#1A3A6B;text-transform:uppercase;letter-spacing:0.06em;">Auto-Generated Barangay ID</div>
+                    <div id="newUserBid" style="font-size:20px;font-weight:800;color:#1A3A6B;letter-spacing:0.1em;font-family:monospace;">—</div>
+                </div>
+                <div style="font-size:11px;color:#6B7280;text-align:right;">Assigned automatically</div>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #F3F4F6;">Resident Name</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
                 <div>
-                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Barangay ID *</label>
-                    <input type="text" id="newUserBarangayId" placeholder="e.g. BGY-001" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
-                    <div style="font-size:11px;color:#6B7280;margin-top:4px;">Unique resident identifier</div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">First Name *</label>
+                    <input type="text" id="newUserFirstName" placeholder="Juan" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                 </div>
                 <div>
-                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Full Name *</label>
-                    <input type="text" id="newUserFullName" placeholder="Juan dela Cruz" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Last Name *</label>
+                    <input type="text" id="newUserLastName" placeholder="dela Cruz" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 110px;gap:12px;margin-bottom:16px;">
                 <div>
-                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Phone</label>
-                    <input type="text" id="newUserPhone" placeholder="09171234567" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Middle Name</label>
+                    <input type="text" id="newUserMiddleName" placeholder="Santos" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                 </div>
                 <div>
-                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Email *</label>
-                    <input type="email" id="newUserEmail" placeholder="juan@email.com" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Suffix</label>
+                    <select id="newUserSuffix" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <option value="">None</option>
+                        <option value="Jr.">Jr.</option>
+                        <option value="Sr.">Sr.</option>
+                        <option value="II">II</option>
+                        <option value="III">III</option>
+                        <option value="IV">IV</option>
+                    </select>
                 </div>
             </div>
-            <div style="margin-bottom:14px;">
-                <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Address</label>
-                <textarea id="newUserAddress" placeholder="123 Rizal St., Brgy. Sta. Lucia" rows="2" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+            <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #F3F4F6;">Contact Information</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Phone Number *</label>
+                    <input type="text" id="newUserPhone" placeholder="09171234567" maxlength="11" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    <div style="font-size:11px;color:#6B7280;margin-top:3px;">Used to generate temp password</div>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Email Address</label>
+                    <input type="email" id="newUserEmail" placeholder="juan@email.com" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                </div>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #F3F4F6;">Address</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Sitio *</label>
+                    <select id="newUserSitio" onchange="_onSitioChange()" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <option value="">Select sitio...</option>
+                        <option value="I">Sitio I</option>
+                        <option value="II">Sitio II</option>
+                        <option value="III">Sitio III</option>
+                        <option value="IV">Sitio IV</option>
+                        <option value="V">Sitio V</option>
+                        <option value="VI">Sitio VI</option>
+                        <option value="VII">Sitio VII</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Street *</label>
+                    <select id="newUserStreet" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <option value="">Select sitio first</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom:6px;">
+                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">House / Unit No.</label>
+                <input type="text" id="newUserHouse" placeholder="e.g. 12B" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
             </div>
         </div>
         <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
             <button onclick="closeAddUserModal()" style="height:40px;padding:0 20px;border:1.5px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'">Cancel</button>
-            <button id="addUserSubmitBtn" onclick="submitAddUser()" style="height:40px;padding:0 20px;border:none;border-radius:6px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-person-plus" style="margin-right:6px;"></i>Add User</button>
+            <button id="addUserSubmitBtn" onclick="submitAddUser()" style="height:40px;padding:0 20px;border:none;border-radius:6px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-person-plus" style="margin-right:6px;"></i>Add Resident</button>
+        </div>
+    </div>
+</div>
+
+<div id="userCreatedModal" class="modal">
+    <div class="modal-content" style="max-width:440px;width:92vw;border-radius:12px;overflow:hidden;padding:0;">
+        <div style="background:#166534;padding:18px 22px;display:flex;align-items:center;gap:10px;">
+            <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-check-circle-fill" style="font-size:17px;color:#fff;"></i></div>
+            <div style="font-size:15px;font-weight:700;color:#fff;">Account Created Successfully</div>
+        </div>
+        <div style="padding:22px;">
+            <p style="font-size:13px;color:#374151;margin:0 0 16px;">Resident account has been created. Share these credentials with the resident.</p>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:3px;">Resident Name</div>
+                    <div id="ucmName" style="font-size:14px;font-weight:600;color:#111;"></div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:3px;">Barangay ID (Login ID)</div>
+                    <div id="ucmBid" style="font-size:18px;font-weight:800;color:#1A3A6B;font-family:monospace;letter-spacing:0.08em;"></div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:3px;">Temporary Password</div>
+                    <div id="ucmPw" style="font-size:18px;font-weight:800;color:#166534;font-family:monospace;letter-spacing:0.1em;"></div>
+                    <div style="font-size:11px;color:#6B7280;margin-top:4px;">Resident will set up 2FA on first login</div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;">
+            <button onclick="copyUserCredentials()" style="height:40px;padding:0 20px;border:1.5px solid #1A3A6B;border-radius:6px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1A3A6B'"><i class="bi bi-clipboard" style="margin-right:6px;"></i>Copy Credentials</button>
+            <button onclick="closeUserCreatedModal()" style="height:40px;padding:0 20px;border:none;border-radius:6px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Close</button>
         </div>
     </div>
 </div>
