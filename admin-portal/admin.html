@@ -8153,6 +8153,7 @@
                     btn.innerHTML=orig; btn.disabled=false;
                     closeAddUserModal();
                     showUserCreatedModal(fullName, bid, tempPw);
+                    const _srch = document.getElementById('usersSearch'); if (_srch) _srch.value = '';
                     loadUsers();
                 } catch(e) {
                     btn.innerHTML=orig; btn.disabled=false; showErr('Unexpected error: '+e.message);
