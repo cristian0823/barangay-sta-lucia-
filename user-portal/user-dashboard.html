@@ -749,31 +749,32 @@
             <div id="panel-booking" class="content-panel">
                 <!-- Header -->
                 <div class="mb-5 border-b pb-5" style="border-color:var(--border-color);">
-                    <div style="font-size:12px;color:#9ca3af;margin-bottom:8px;display:flex;align-items:center;gap:4px;"><span onclick="showPanel('dashboard')" style="cursor:pointer;color:#1e3a5f;font-weight:600;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Dashboard</span><i class="bi bi-chevron-right" style="font-size:10px;margin:0 2px;"></i><span>Court Reservation</span></div><h2 id="bookingPanelTitle" style="font-size:26px;font-weight:800;color:#0f1f3d;margin:0 0 4px 0;"><i class="bi bi-calendar-check-fill" style="margin-right:8px;"></i>Court Reservation</h2>
-                    <p id="bookingPanelSubtitle" style="color:var(--text-muted);font-size:14px;margin:0;">Reserve the barangay basketball court.</p>
+                    <div style="font-size:12px;color:#9ca3af;margin-bottom:8px;display:flex;align-items:center;gap:4px;"><span onclick="showPanel('dashboard')" style="cursor:pointer;color:#1e3a5f;font-weight:600;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Dashboard</span><i class="bi bi-chevron-right" style="font-size:10px;margin:0 2px;"></i><span>Facility Reservation</span></div><h2 id="bookingPanelTitle" style="font-size:26px;font-weight:800;color:#0f1f3d;margin:0 0 4px 0;"><i class="bi bi-calendar-check-fill" style="margin-right:8px;"></i>Facility Reservation</h2>
+                    <p id="bookingPanelSubtitle" style="color:var(--text-muted);font-size:14px;margin:0;">Reserve the barangay basketball court or multi-purpose hall.</p>
                 </div>
 
-                <!-- TAB BUTTONS -->
-                <div style="display:flex;gap:10px;margin-bottom:20px;">
-                    <button id="tab-btn-booking-calendar" onclick="switchBookingTab('calendar')"
-                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:#1e3a5f;color:#fff;transition:all 0.2s;font-family:inherit;">
-                        <i class="bi bi-calendar3"></i> Court Reservation
-                    </button>
-                    <button id="tab-btn-booking-history" onclick="switchBookingTab('history')"
-                        style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:transparent;color:#1e3a5f;transition:all 0.2s;font-family:inherit;">
-                        <i class="bi bi-card-list"></i> My Reservations
-                    </button>
-                </div>
-
-                <!-- TAB: Calendar -->
-                <div id="booking-tab-calendar">
-                    <!-- Venue selector row -->
-                    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+                <!-- TABS + VENUE ROW -->
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;margin-bottom:20px;border-bottom:1.5px solid #e2e8f0;">
+                    <div style="display:flex;gap:10px;">
+                        <button id="tab-btn-booking-calendar" onclick="switchBookingTab('calendar')"
+                            style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:#1e3a5f;color:#fff;transition:all 0.2s;font-family:inherit;">
+                            <i class="bi bi-calendar3"></i> Make a Reservation
+                        </button>
+                        <button id="tab-btn-booking-history" onclick="switchBookingTab('history')"
+                            style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:#fff;color:#1e3a5f;transition:all 0.2s;font-family:inherit;">
+                            <i class="bi bi-card-list"></i> My Reservations
+                        </button>
+                    </div>
+                    <div id="venueToggleRow">
                         <div class="flex p-1.5 rounded-2xl gap-1" style="background-color:var(--input-bg);border:1px solid var(--border-color);box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);">
                             <button onclick="switchVenue('basketball')" id="sel-basketball" style="padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#fff;background:#1e3a5f;border:none;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;"><i class="bi bi-dribbble"></i>Basketball Court</button>
                             <button onclick="switchVenue('multipurpose')" id="sel-multipurpose" style="padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#1e3a5f;background:#fff;border:1.5px solid #1e3a5f;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;"><i class="bi bi-building"></i>Multi-Purpose Hall</button>
                         </div>
                     </div>
+                </div>
+
+                <!-- TAB: Calendar -->
+                <div id="booking-tab-calendar">
                     <!-- Calendar -->
                     <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
                         <!-- Calendar Header (navy) -->
@@ -1789,12 +1790,15 @@
             if (!calPane) return;
             const ACTIVE   = {background:'#1e3a5f', color:'#fff', borderColor:'#1e3a5f'};
             const INACTIVE = {background:'#fff', color:'#1e3a5f', borderColor:'#1e3a5f'};
+            const venueRow = document.getElementById('venueToggleRow');
             if (tab === 'calendar') {
                 calPane.style.display = ''; historyPane.style.display = 'none';
                 Object.assign(btnCal.style, ACTIVE); Object.assign(btnHistory.style, INACTIVE);
+                if (venueRow) venueRow.style.display = '';
             } else {
                 calPane.style.display = 'none'; historyPane.style.display = '';
                 Object.assign(btnHistory.style, ACTIVE); Object.assign(btnCal.style, INACTIVE);
+                if (venueRow) venueRow.style.display = 'none';
                 loadMyReservations && loadMyReservations();
             }
         }
