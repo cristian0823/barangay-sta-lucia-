@@ -82,9 +82,19 @@ When modifying shared logic, edit both `user-portal/js/app.js` and `admin-portal
 
 ### Auth pattern
 
-Sessions stored in `sessionStorage` (primary) and `localStorage` (fallback) under the key `currentUser` as a JSON object with `{ id, username, role, fullName, ... }`. Each SPA has an **early auth guard** — an inline `<script>` before any external JS loads that reads `currentUser` and redirects immediately if auth fails.
+Sessions stored in `sessionStorage` (primary) and `localStorage` (fallback) under the key `currentUser` as a JSON object with `{ id, barangay_id, username, role, fullName, ... }`. Each SPA has an **early auth guard** — an inline `<script>` before any external JS loads that reads `currentUser` and redirects immediately if auth fails.
 
-**Resident login is passwordless** — `loginUser()` in `app.js` only validates the password for admin-role accounts. Any resident (`role: 'user'`) that exists in the `users` table is accepted regardless of the password field. Admins require correct SHA-256-hashed password.
+**`barangay_id` is the primary identifier** shown to residents (format `RM-001`, `RM-002`, …). `username` is auto-set to equal `barangay_id` on insert — it exists only for legacy code compatibility. All login logic, audit logs, and `known_ips_` localStorage keys now key by `barangay_id || username`.
+
+**Resident login flow** — `loginUser()` in `app.js`:
+- If input contains `@` → query `users` table by `email`
+- Otherwise → query by `barangay_id.eq.${input}` OR `username.eq.${input}` (plain text — `barangay_id` is **not** AES-encrypted in the DB)
+- Residents (`role: 'user'`) are **not** passwordless anymore — they get a generated temp password `STL + lastName.substring(0,3).toUpperCase() + lastPhone4digits` (e.g. last name "Cruz", phone ending 3078 → `STLCRU3078`) which is SHA-256 hashed and stored in `password`
+- Admins still require correct SHA-256-hashed password
+
+**Add Resident form** collects: First Name, Last Name, Middle Name, Suffix, Phone, Email, Sitio, House No. → assembles `full_name` as `"First [M.] Last [Suffix]"` and stores combined in `full_name` column. Never adds separate `first_name`/`last_name` columns — DB schema stays as-is.
+
+**Auto-generated Barangay ID** — `_generateNextBarangayId()` queries `users` for all `ilike 'RM-%'` rows, finds the max number, and increments. Called on `openAddUserModal()` open.
 
 ## User Portal Navigation
 
@@ -155,6 +165,24 @@ Both the admin Court Events calendar and the user portal Facility booking calend
 - Today: navy circle badge (`background:#1A3A6B`) on the date number, `outline:3px solid #1A3A6B`
 - Events/bookings: navy pill labels inside the cell (`background:#1A3A6B;color:#fff`)
 - Legend: green (Available), yellow (Brgy Event), blue (Booked), gray (Past) — decorative color boxes only
+
+## Equipment Delivery Mode
+
+Stored in `localStorage` under key `brgy_delivery_settings` as a JSON object. Keys are `'id_' + equipmentId` (boolean). Falls back to `ds[equipName.toLowerCase()]` (old name-based key) then to name-based heuristic (items containing `"table"` or `"tent"` default to pickup-only). Set via the toggle in the Edit Equipment modal — not stored in Supabase.
+
+## logAudit / logSecurity Signature
+
+Both functions live at the **top** of `admin-portal/js/app.js` (and `user-portal/js/app.js`):
+
+```js
+window.logAudit(entityType, entityId, action, details)
+window.logActivity(action, details, severity?)   // wrapper — routes to logAudit or logSecurity
+window.logSecurity(eventType, authMethod, severity, details, targetUsername?)
+```
+
+`logActivity` routes security-related actions (matching `/Login|Logout|User|Password|OTP|Suspend|Role|Admin|Account/i`) to `logSecurity` AND `logAudit`. All other actions go to `logAudit` only.
+
+`logAudit` uses `u.barangay_id || u.username` as `local_username` so resident audit rows show their Barangay ID.
 
 ## Inline Styles Convention
 

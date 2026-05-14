@@ -703,10 +703,14 @@
                                         <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#64748b;margin-bottom:6px;">Category <span style="color:#dc2626;">*</span></label>
                                         <select id="concernCategory" required style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;font-family:inherit;outline:none;background:#f8fafc;color:#0f1f3d;box-sizing:border-box;transition:border-color 0.15s;cursor:pointer;appearance:auto;" onfocus="this.style.borderColor='#1e3a5f';this.style.boxShadow='0 0 0 3px rgba(30,58,95,0.08)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow=''">
                                             <option value="" disabled selected>Select a category...</option>
-                                            <option value="Road Issue">Road Issue / Pothole</option>
-                                            <option value="Electric">Electric / Power Outage</option>
-                                            <option value="Water Leak">Water Leak / Broken Pipe</option>
+                                            <option value="Road Issue">Road Issue</option>
+                                            <option value="Water Leak / Broken Pipe">Water Leak / Broken Pipe</option>
+                                            <option value="Electric / Power Outage">Electric / Power Outage</option>
                                             <option value="Waste &amp; Cleanliness">Waste &amp; Cleanliness</option>
+                                            <option value="Noise Complaint">Noise Complaint</option>
+                                            <option value="Street Light Issue">Street Light Issue</option>
+                                            <option value="Flooding / Drainage">Flooding / Drainage</option>
+                                            <option value="Public Safety">Public Safety</option>
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
@@ -714,7 +718,58 @@
                                 <!-- Location -->
                                 <div style="margin-bottom:16px;">
                                     <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#64748b;margin-bottom:6px;">Specific Location <span style="color:#dc2626;">*</span></label>
-                                    <input type="text" id="concernLocation" required placeholder="e.g. Purok 4, near the intersection" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;font-family:inherit;outline:none;background:#f8fafc;color:#0f1f3d;box-sizing:border-box;transition:border-color 0.15s;" onfocus="this.style.borderColor='#1e3a5f';this.style.boxShadow='0 0 0 3px rgba(30,58,95,0.08)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow=''">
+                                    <select id="concernLocation" required style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;font-family:inherit;outline:none;background:#f8fafc;color:#0f1f3d;box-sizing:border-box;transition:border-color 0.15s;cursor:pointer;appearance:auto;" onfocus="this.style.borderColor='#1e3a5f';this.style.boxShadow='0 0 0 3px rgba(30,58,95,0.08)'" onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow=''">
+                                        <option value="" disabled selected>Select location...</option>
+                                        <optgroup label="Sitio I">
+                                            <option value="Sitio I - Zone A">Zone A</option>
+                                            <option value="Sitio I - Zone B">Zone B</option>
+                                            <option value="Sitio I - Purok 1">Purok 1</option>
+                                            <option value="Sitio I - Purok 2">Purok 2</option>
+                                            <option value="Sitio I - Near Basketball Court">Near Basketball Court</option>
+                                        </optgroup>
+                                        <optgroup label="Sitio II">
+                                            <option value="Sitio II - Zone A">Zone A</option>
+                                            <option value="Sitio II - Zone B">Zone B</option>
+                                            <option value="Sitio II - Purok 1">Purok 1</option>
+                                            <option value="Sitio II - Purok 2">Purok 2</option>
+                                            <option value="Sitio II - Near Multi-Purpose Hall">Near Multi-Purpose Hall</option>
+                                        </optgroup>
+                                        <optgroup label="Sitio III">
+                                            <option value="Sitio III - Zone A">Zone A</option>
+                                            <option value="Sitio III - Zone B">Zone B</option>
+                                            <option value="Sitio III - Purok 1">Purok 1</option>
+                                            <option value="Sitio III - Purok 2">Purok 2</option>
+                                            <option value="Sitio III - Main Road">Main Road</option>
+                                        </optgroup>
+                                        <optgroup label="Sitio IV">
+                                            <option value="Sitio IV - Zone A">Zone A</option>
+                                            <option value="Sitio IV - Zone B">Zone B</option>
+                                            <option value="Sitio IV - Purok 1">Purok 1</option>
+                                            <option value="Sitio IV - Purok 2">Purok 2</option>
+                                            <option value="Sitio IV - Near Barangay Hall">Near Barangay Hall</option>
+                                        </optgroup>
+                                        <optgroup label="Sitio V">
+                                            <option value="Sitio V - Zone A">Zone A</option>
+                                            <option value="Sitio V - Zone B">Zone B</option>
+                                            <option value="Sitio V - Purok 1">Purok 1</option>
+                                            <option value="Sitio V - Purok 2">Purok 2</option>
+                                            <option value="Sitio V - Near Chapel">Near Chapel</option>
+                                        </optgroup>
+                                        <optgroup label="Sitio VI">
+                                            <option value="Sitio VI - Zone A">Zone A</option>
+                                            <option value="Sitio VI - Zone B">Zone B</option>
+                                            <option value="Sitio VI - Purok 1">Purok 1</option>
+                                            <option value="Sitio VI - Purok 2">Purok 2</option>
+                                            <option value="Sitio VI - Drainage Area">Drainage Area</option>
+                                        </optgroup>
+                                        <optgroup label="Sitio VII">
+                                            <option value="Sitio VII - Zone A">Zone A</option>
+                                            <option value="Sitio VII - Zone B">Zone B</option>
+                                            <option value="Sitio VII - Purok 1">Purok 1</option>
+                                            <option value="Sitio VII - Purok 2">Purok 2</option>
+                                            <option value="Sitio VII - Boundary Area">Boundary Area</option>
+                                        </optgroup>
+                                    </select>
                                 </div>
                                 <!-- Description -->
                                 <div style="margin-bottom:16px;">

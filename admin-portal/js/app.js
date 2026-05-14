@@ -945,7 +945,8 @@ async function updateEquipment(id, updates) {
     const supabaseAvailable = await isSupabaseAvailable();
 
     if (supabaseAvailable) {
-        const { data: item } = await supabase.from('equipment').select('*').eq('id', id).single();
+        const { data: item, error: fetchErr } = await supabase.from('equipment').select('*').eq('id', id).maybeSingle();
+        if (fetchErr) return { success: false, message: fetchErr.message };
         if (!item) return { success: false, message: 'Equipment not found' };
 
         // --- ABSOLUTE calculation (not diff-based, prevents double-deductions) ---

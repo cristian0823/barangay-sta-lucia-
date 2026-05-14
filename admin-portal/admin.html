@@ -190,6 +190,11 @@
       .pg-btn:hover { background: #1A3A6B; color: #fff; border-color: #1A3A6B; }
       .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
+      /* ── Hide number input spinners ─────────────────────── */
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+      input[type=number] { -moz-appearance: textfield; }
+
       /* ── Section layout ──────────────────────────────────── */
       .section-container { background: transparent; }
       .section-header { background: #fff; border: 1px solid #D1D5DB; border-radius: 8px;
@@ -730,6 +735,18 @@
                                 <option value="Resolved">Resolved</option>
                                 <option value="Rejected">Rejected</option>
                             </select>
+                            <select id="concernCategoryFilter" onchange="applyConcernFilter()" style="height:36px;padding:0 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;background:#fff;cursor:pointer;outline:none;">
+                                <option value="all">All Categories</option>
+                                <option value="Road Issue">Road Issue</option>
+                                <option value="Water Leak / Broken Pipe">Water Leak / Broken Pipe</option>
+                                <option value="Electric / Power Outage">Electric / Power Outage</option>
+                                <option value="Waste &amp; Cleanliness">Waste &amp; Cleanliness</option>
+                                <option value="Noise Complaint">Noise Complaint</option>
+                                <option value="Street Light Issue">Street Light Issue</option>
+                                <option value="Flooding / Drainage">Flooding / Drainage</option>
+                                <option value="Public Safety">Public Safety</option>
+                                <option value="Other">Other</option>
+                            </select>
                             <div style="display:flex;align-items:center;gap:6px;">
                                 <label style="font-size:12px;font-weight:600;color:#6B7280;white-space:nowrap;">From:</label>
                                 <input type="date" id="concernDateFrom" onchange="applyConcernFilter()" style="height:36px;padding:0 10px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;background:#fff;">
@@ -738,7 +755,7 @@
                                 <label style="font-size:12px;font-weight:600;color:#6B7280;white-space:nowrap;">To:</label>
                                 <input type="date" id="concernDateTo" onchange="applyConcernFilter()" style="height:36px;padding:0 10px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;background:#fff;">
                             </div>
-                            <button onclick="document.getElementById('concernDateFrom').value='';document.getElementById('concernDateTo').value='';document.getElementById('concernStatusFilter').value='all';document.getElementById('concernSearch').value='';applyConcernFilter();" style="height:36px;padding:0 14px;border:1px solid #D1D5DB;border-radius:6px;font-size:12px;font-weight:600;color:#6B7280;background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.borderColor='#1A3A6B';this.style.color='#1A3A6B'" onmouseout="this.style.borderColor='#D1D5DB';this.style.color='#6B7280'"><i class="bi bi-x-circle" style="margin-right:4px;"></i>Clear</button>
+                            <button onclick="document.getElementById('concernDateFrom').value='';document.getElementById('concernDateTo').value='';document.getElementById('concernStatusFilter').value='all';document.getElementById('concernCategoryFilter').value='all';document.getElementById('concernSearch').value='';applyConcernFilter();" style="height:36px;padding:0 14px;border:1px solid #D1D5DB;border-radius:6px;font-size:12px;font-weight:600;color:#6B7280;background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.borderColor='#1A3A6B';this.style.color='#1A3A6B'" onmouseout="this.style.borderColor='#D1D5DB';this.style.color='#6B7280'"><i class="bi bi-x-circle" style="margin-right:4px;"></i>Clear</button>
                             <div style="position:relative;flex:1;min-width:180px;max-width:340px;">
                                 <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:13px;pointer-events:none;"></i>
                                 <input type="text" id="concernSearch" placeholder="Search by name or title..." oninput="applyConcernFilter()" style="width:100%;height:36px;padding:0 12px 0 32px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
@@ -1083,6 +1100,9 @@
                 <option value="Reserve">Facility Reservation</option>
                 <option value="Concern">Concerns</option>
                 <option value="Event">Events</option>
+                <option value="Inventory">Inventory</option>
+                <option value="User">User Management</option>
+                <option value="Login">Login / Logout</option>
             </select>
         </div>
         <div style="flex:1;min-width:130px;">
@@ -2187,31 +2207,25 @@
                         );
                     } catch(e) { console.warn('broadcast email failed', e); }
 
-                    // --- Check for conflicting bookings and show warning ---
+                    // --- Auto-cancel conflicting bookings immediately ---
                     try {
                         const allBookings = await getCourtBookings();
-                        const conflicting = allBookings.filter(b =>
-                            b.date === eventData.date &&
-                            b.status !== 'cancelled' && b.status !== 'rejected' && b.status !== 'admin_cancelled' &&
-                            (b.venue === venue || (b.venueName || '').includes(venueLabel))
-                        );
+                        const eStart = eventData.time || '00:00';
+                        const eEnd   = eventData.end_time || '23:59';
+                        const conflicting = allBookings.filter(b => {
+                            if (b.date !== eventData.date) return false;
+                            if (b.status === 'cancelled' || b.status === 'rejected' || b.status === 'admin_cancelled') return false;
+                            if (b.venue !== venue && !(b.venueName || '').includes(venueLabel)) return false;
+                            const bStart = b.time || '00:00';
+                            const bEnd   = b.end_time || b.endTime || '23:59';
+                            return bStart < eEnd && bEnd > eStart;
+                        });
 
                         if (conflicting.length > 0) {
-                            let warningHtml = `<div style="margin-top:16px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:16px;">
-                                <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;">Ãƒâ€šÃ‚Â  ${conflicting.length} existing booking(s) conflict with this event:</div>
-                                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">`;
-                            conflicting.forEach(b => {
-                                warningHtml += `<div style="font-size:12px;background:#fff;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;color:#78350f;">
-                                     <strong>${b.userName || 'Resident'}</strong>  ${b.timeRange || b.time}
-                                </div>`;
-                            });
-                            warningHtml += `</div>
-                                <button id="notifyConflictBtn" onclick="notifyConflictingUsers(${JSON.stringify(conflicting).replace(/"/g, '&quot;')}, '${eventData.title.replace(/'/g, "\\'")}')"
-                                    style="width:100%;padding:10px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">
-                                     Notify All Affected Users
-                                </button>
+                            await notifyConflictingUsers(conflicting, eventData.title);
+                            msgBox.innerHTML += `<div style="margin-top:12px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:12px 16px;font-size:13px;color:#166534;font-weight:600;">
+                                <i class="bi bi-check-circle-fill" style="margin-right:6px;"></i>${conflicting.length} conflicting booking(s) were automatically cancelled and residents notified.
                             </div>`;
-                            msgBox.innerHTML += warningHtml;
                         }
                     } catch(err) { console.warn('Conflict check failed:', err); }
                 }
@@ -2873,10 +2887,13 @@
                         if (aType !== filterActor) return false;
                     }
                     if (filterAction !== 'all') {
-                        if (filterAction === 'Borrow'  && !act.includes('borrow'))  return false;
-                        if (filterAction === 'Reserve' && !act.includes('reserv'))  return false;
-                        if (filterAction === 'Concern' && !act.includes('concern')) return false;
-                        if (filterAction === 'Event'   && !act.includes('event'))   return false;
+                        if (filterAction === 'Borrow'    && !act.includes('borrow'))    return false;
+                        if (filterAction === 'Reserve'   && !act.includes('reserv'))    return false;
+                        if (filterAction === 'Concern'   && !act.includes('concern'))   return false;
+                        if (filterAction === 'Event'     && !act.includes('event'))     return false;
+                        if (filterAction === 'Inventory' && !act.includes('inventor') && !act.includes('equipment')) return false;
+                        if (filterAction === 'User'      && !act.includes('user') && !act.includes('resident') && !act.includes('batch') && !act.includes('suspend')) return false;
+                        if (filterAction === 'Login'     && !act.includes('login') && !act.includes('logout'))   return false;
                     }
                     if (filterFrom) { const d = new Date(filterFrom); d.setHours(0,0,0,0); if (new Date(a.created_at) < d) return false; }
                     if (filterTo)   { const d = new Date(filterTo);   d.setHours(23,59,59,999); if (new Date(a.created_at) > d) return false; }
@@ -3500,7 +3517,8 @@
             }
 
             // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Concerns ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
-            function applyConcernFilter() { _pgConcernFilter = document.getElementById('concernStatusFilter')?.value||'all'; _pgConcernsPage=1; renderConcernsPg(); }
+            let _pgConcernCatFilter = 'all';
+            function applyConcernFilter() { _pgConcernFilter = document.getElementById('concernStatusFilter')?.value||'all'; _pgConcernCatFilter = document.getElementById('concernCategoryFilter')?.value||'all'; _pgConcernsPage=1; renderConcernsPg(); }
             function gotoConcernsPage(p) { _pgConcernsPage = p; renderConcernsPg(); }
             function _adminConcernStatusLabel(status) {
                 if (!status || status === 'pending' || status === 'open') return 'Submitted';
@@ -3530,6 +3548,9 @@
                 let list = _pgConcernsList;
                 if (_pgConcernFilter !== 'all') {
                     list = list.filter(c => _adminConcernStatusLabel(c.status) === _adminConcernStatusLabel(_pgConcernFilter) || c.status === _pgConcernFilter);
+                }
+                if (_pgConcernCatFilter && _pgConcernCatFilter !== 'all') {
+                    list = list.filter(c => (c.category||'') === _pgConcernCatFilter);
                 }
                 if (_q) list = list.filter(c => (c.full_name||c.userName||c.username||'').toLowerCase().includes(_q) || (c.title||c.description||'').toLowerCase().includes(_q));
                 var _dateFrom=(document.getElementById('concernDateFrom')||{}).value||'';
