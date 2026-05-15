@@ -731,7 +731,6 @@
                         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px;">
                             <select id="concernStatusFilter" onchange="applyConcernFilter()" style="height:36px;padding:0 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;font-family:inherit;background:#fff;cursor:pointer;outline:none;">
                                 <option value="all">All Status</option>
-                                <option value="Submitted">Submitted</option>
                                 <option value="In Progress">In Progress</option>
                                 <option value="Resolved">Resolved</option>
                                 <option value="Rejected">Rejected</option>
@@ -6747,6 +6746,7 @@
                             if (typeof loadEquipment === 'function') loadEquipment();
                             if (typeof refreshAdminBell === 'function') refreshAdminBell();
                             if (typeof loadActivityLog === 'function') loadActivityLog();
+                            if (typeof loadAnalytics === 'function') loadAnalytics();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'facility_reservations' }, payload => {
                             console.log('[Admin Realtime] facility_reservations:', payload.eventType);
@@ -6757,6 +6757,8 @@
                             if (typeof loadAdminBookings === 'function') loadAdminBookings();
                             if (typeof refreshAdminBell === 'function') refreshAdminBell();
                             if (typeof loadActivityLog === 'function') loadActivityLog();
+                            if (typeof loadMultipurposeBookings === 'function') loadMultipurposeBookings();
+                            if (typeof loadAnalytics === 'function') loadAnalytics();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'concerns' }, payload => {
                             console.log('[Admin Realtime] concerns:', payload.eventType);
@@ -6766,6 +6768,7 @@
                             if (typeof loadConcerns === 'function') loadConcerns();
                             if (typeof refreshAdminBell === 'function') refreshAdminBell();
                             if (typeof loadActivityLog === 'function') loadActivityLog();
+                            if (typeof loadAnalytics === 'function') loadAnalytics();
                         })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_notifications' }, payload => {
                             const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
@@ -6774,6 +6777,12 @@
                                 if (typeof refreshAdminBell === 'function') refreshAdminBell();
                             }
                         })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, payload => {
+                            console.log('[Admin Realtime] users:', payload.eventType);
+                            if (typeof loadUsers === 'function') loadUsers();
+                            if (typeof loadOverview === 'function') loadOverview();
+                            if (typeof loadStats === 'function') loadStats();
+                        })
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, payload => {
                             console.log('[Admin Realtime] events:', payload.eventType);
                             if (typeof loadOverview === 'function') loadOverview();
@@ -6781,6 +6790,14 @@
                             if (typeof loadStats === 'function') loadStats();
                             if (typeof loadEvents === 'function') loadEvents();
                             if (typeof renderAdminCalendar === 'function') renderAdminCalendar();
+                        })
+                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'audit_log' }, payload => {
+                            console.log('[Admin Realtime] audit_log:', payload.eventType);
+                            if (typeof loadAuditLog === 'function') loadAuditLog();
+                        })
+                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'security_log' }, payload => {
+                            console.log('[Admin Realtime] security_log:', payload.eventType);
+                            if (typeof loadSecurityLog === 'function') loadSecurityLog();
                         })
                         .subscribe((status) => {
                             console.log('[Admin Realtime] Status:', status);
@@ -7356,7 +7373,6 @@
                         <div style="margin-bottom:12px;">
                             <label style="display:block;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Status</label>
                             <select id="adminConcernStatusSelect" onchange="onConcernStatusSelectChange()" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;font-weight:600;color:#1A1A2E;background:#fff;outline:none;cursor:pointer;font-family:inherit;">
-                                <option value="open">Submitted</option>
                                 <option value="in-progress">In Progress</option>
                                 <option value="resolved">Resolved</option>
                                 <option value="rejected">Rejected</option>

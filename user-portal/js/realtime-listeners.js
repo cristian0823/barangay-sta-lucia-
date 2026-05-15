@@ -94,15 +94,29 @@ function initRealtime() {
             if (typeof loadDashboardStats === 'function') loadDashboardStats();
         });
         
-        // 4. Listen for concerns replies
+        // 4. Listen for concerns replies/status updates
         channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'concerns', filter: `user_id=eq.${user.id}` }, payload => {
             const newStatus = payload.new.status;
-            if (newStatus !== 'pending') {
-                if (typeof window.showToast === 'function') {
-                    window.showToast(`Your concern was marked as ${newStatus}!`, 'success');
-                }
-                if (typeof loadConcernsView === 'function') loadConcernsView();
+            if (typeof window.showToast === 'function') {
+                const label = newStatus === 'resolved' ? 'Resolved' : newStatus === 'rejected' ? 'Rejected' : newStatus === 'In Progress' ? 'In Progress' : newStatus;
+                window.showToast(`Your concern status updated: ${label}`, 'success');
             }
+            if (typeof loadConcernsView === 'function') loadConcernsView();
+            if (typeof loadDashboardStats === 'function') loadDashboardStats();
+        });
+
+        // 5. Real-time notifications from admin
+        channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_notifications', filter: `user_id=eq.${user.id}` }, payload => {
+            if (typeof pollBellNotifications === 'function') pollBellNotifications();
+            if (typeof window.showToast === 'function') {
+                const msg = payload.new.message || 'You have a new notification.';
+                window.showToast(msg, 'info');
+            }
+        });
+
+        // 6. Listen for equipment/inventory changes (catalog availability)
+        channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'equipment' }, payload => {
+            if (typeof loadEquipmentCatalog === 'function') loadEquipmentCatalog();
         });
     }
 
