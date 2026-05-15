@@ -871,7 +871,8 @@ async function getEquipment() {
         available: item.available !== undefined ? item.available : Math.max(0, (item.quantity || 0) - (item.broken || 0)),
         broken: item.broken || 0,
         pending: pendingQtyMap[item.name] || 0,
-        isLocked: lockedNames.has(item.name || 'Unknown')
+        isLocked: lockedNames.has(item.name || 'Unknown'),
+        can_deliver: item.can_deliver !== null && item.can_deliver !== undefined ? !!item.can_deliver : !['table','tent'].some(kw => (item.name||'').toLowerCase().includes(kw))
     }));
 }
 

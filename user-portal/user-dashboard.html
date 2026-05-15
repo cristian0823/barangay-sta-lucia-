@@ -1913,11 +1913,14 @@
         const BUROL_EXCLUDED = ['microphone', 'speaker', 'ladder', 'electric fan', 'fan'];
         const ALL_BORROW_ITEMS = ['Chair', 'Table', 'Tent', 'Microphone', 'Speaker', 'Electric Fan', 'Ladder'];
         const PICKUP_ONLY_ITEMS = ['table', 'tent'];
-        const LS_DELIVERY_KEY = 'brgy_delivery_settings';
-        function _itemDeliveryAllowed(itemName) {
-            const lower = (itemName || '').toLowerCase();
-            if (PICKUP_ONLY_ITEMS.some(kw => lower.includes(kw))) return false;
-            try { const s = JSON.parse(localStorage.getItem(LS_DELIVERY_KEY) || '{}'); return s[lower] !== false; } catch(e) { return true; }
+        function _itemDeliveryAllowed(item) {
+            // Primary: use can_deliver from Supabase data
+            if (item && typeof item === 'object' && item.can_deliver !== undefined && item.can_deliver !== null) {
+                return !!item.can_deliver;
+            }
+            // Fallback: name-based heuristic (for items not yet migrated)
+            const lower = (typeof item === 'string' ? item : (item && item.name) || '').toLowerCase();
+            return !PICKUP_ONLY_ITEMS.some(kw => lower.includes(kw));
         }
         const _BTN_BASE = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;cursor:pointer;font-family:inherit;width:100%;';
         const _BTN_ACTIVE   = _BTN_BASE + 'border:2px solid #0f1f3d;background:#1e3a5f;box-shadow:0 4px 14px rgba(30,58,95,.35);';
@@ -2964,8 +2967,8 @@
             updateBorrowSubmitButton();
         }
 
-        function updateDeliveryOptions(itemName) {
-            const allowed = _itemDeliveryAllowed(itemName);
+        function updateDeliveryOptions(itemOrName) {
+            const allowed = _itemDeliveryAllowed(itemOrName);
             const deliveryLabel = document.getElementById('deliveryToAddrLabel');
             const notice = document.getElementById('deliveryPickupOnlyNotice');
             const pickupRadio = document.getElementById('deliveryPickup');
@@ -3569,7 +3572,7 @@
             const _ai = document.getElementById('availableItemsForPurpose'); if (_ai) _ai.innerHTML = '';
 
             document.getElementById('borrowModalTitle').innerHTML = item.name;
-            updateDeliveryOptions(item.name);
+            updateDeliveryOptions(item);
             
             const imageSrc = item.image_url ? item.image_url : '../barangay-sun-logo.jpg';
             document.getElementById('borrowModalImage').src = imageSrc;

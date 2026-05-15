@@ -5120,9 +5120,8 @@
                             photoCell = '<div onclick="quickUploadEquipImage('+e.id+',this)" title="Upload photo" style="width:40px;height:40px;border-radius:8px;border:1.5px dashed #D1D5DB;background:#F9FAFB;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;position:relative;"><i class="bi bi-camera" style="font-size:16px;color:#9CA3AF;"></i><input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange('+e.id+',this)"></div>';
                         }
                         var lower = (e.name||'').toLowerCase();
-                        var _rds = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
-                        var _rDef = !['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
-                        var _canDeliv = _rds['id_'+e.id] !== undefined ? _rds['id_'+e.id] : (_rds[lower] !== undefined ? _rds[lower] : _rDef);
+                        var _defCanDeliv = !['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
+                        var _canDeliv = (e.can_deliver !== null && e.can_deliver !== undefined) ? !!e.can_deliver : _defCanDeliv;
                         var delivToggle = _canDeliv
                             ? '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#DBEAFE;color:#1E40AF;text-transform:uppercase;letter-spacing:0.04em;">Delivery</span>'
                             : '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
@@ -5174,12 +5173,13 @@
                 _pgEquipPage = Math.max(1, Math.min(pg, Math.max(1,Math.ceil(list.length/_pgEquipPerPage))));
                 renderEquipmentPg();
             }
-            function toggleDeliveryAdmin(itemNameLower) {
+            async function toggleDeliveryAdmin(equipId, currentVal) {
+                const newVal = !currentVal;
                 try {
-                    const s = JSON.parse(localStorage.getItem('brgy_delivery_settings') || '{}');
-                    s[itemNameLower] = s[itemNameLower] === false ? true : false;
-                    localStorage.setItem('brgy_delivery_settings', JSON.stringify(s));
-                } catch(e) {}
+                    if (window.supabase) {
+                        await window.supabase.from('equipment').update({ can_deliver: newVal }).eq('id', equipId);
+                    }
+                } catch(e) { console.warn('toggleDeliveryAdmin error:', e); }
                 loadEquipment();
             }
 
@@ -5332,11 +5332,9 @@
                 document.getElementById('editPhotoLabel').textContent = 'Click to upload new photo';
                 calcEditAvail();
 
-                var _ds = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
                 var _lower = (equipment.name||'').toLowerCase();
                 var _defCanDeliv = !['table','tent'].some(function(kw){return _lower.indexOf(kw)>=0;});
-                var _canDeliv = _ds['id_'+equipment.id] !== undefined ? _ds['id_'+equipment.id]
-                              : (_ds[_lower] !== undefined ? _ds[_lower] : _defCanDeliv);
+                var _canDeliv = (equipment.can_deliver !== null && equipment.can_deliver !== undefined) ? !!equipment.can_deliver : _defCanDeliv;
                 var _dcb = document.getElementById('editEquipCanDeliver');
                 if (_dcb) {
                     _dcb.checked = _canDeliv;
@@ -5378,10 +5376,6 @@
                     btn.innerHTML = originalText;
                     return;
                 }
-
-                var _savDs = JSON.parse(localStorage.getItem('brgy_delivery_settings')||'{}');
-                _savDs['id_'+id] = document.getElementById('editEquipCanDeliver').checked;
-                localStorage.setItem('brgy_delivery_settings', JSON.stringify(_savDs));
 
                 const updates = {
                     name: document.getElementById('editEquipName').value,
