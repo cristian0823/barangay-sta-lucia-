@@ -2020,7 +2020,6 @@ async function bookCourt(bookingData) {
                 user_id: resolvedUserId,
                 date: bookingData.date,
                 time: combinedTime,
-                venue: venue,
                 purpose: bookingData.purpose || '',
                 status: 'pending'
             }]);
