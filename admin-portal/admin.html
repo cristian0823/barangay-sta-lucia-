@@ -4065,7 +4065,7 @@
                     for (const row of _batchRows) {
                         if (!row.barangay_id || !row.full_name) { skipped++; continue; }
                         const payload = {
-                            barangay_id: await encryptData(String(row.barangay_id)),
+                            barangay_id: String(row.barangay_id),
                             full_name: row.full_name,
                             username: String(row.barangay_id),
                             email: row.email ? await encryptData(String(row.email)) : null,
@@ -8116,16 +8116,21 @@
 
             async function _generateNextBarangayId() {
                 try {
-                    // Use 'RM%' (no hyphen) so it also matches batch-uploaded IDs like RM001
-                    var { data } = await supabase.from('users').select('barangay_id').ilike('barangay_id','RM%').range(0,9999);
+                    // Scan both columns in parallel:
+                    //   barangay_id — plain text for all records after the batch-upload fix
+                    //   username    — always plain text; covers legacy batch-uploaded records
+                    //                 where barangay_id was accidentally stored as ENC:...
+                    var results = await Promise.all([
+                        supabase.from('users').select('barangay_id').ilike('barangay_id','RM%').range(0,9999),
+                        supabase.from('users').select('username').ilike('username','RM%').range(0,9999)
+                    ]);
                     var maxNum = 0;
-                    if (data && data.length) {
-                        data.forEach(function(r){
-                            // Match RM-001, RM001, rm-001, rm001, etc.
-                            var m=(r.barangay_id||'').match(/^RM-?(\d+)$/i);
-                            if(m){var n=parseInt(m[1],10);if(n>maxNum)maxNum=n;}
-                        });
-                    }
+                    var extract = function(val) {
+                        var m = (val||'').match(/^RM-?(\d+)$/i);
+                        if (m) { var n = parseInt(m[1],10); if (n > maxNum) maxNum = n; }
+                    };
+                    if (results[0].data) results[0].data.forEach(function(r){ extract(r.barangay_id); });
+                    if (results[1].data) results[1].data.forEach(function(r){ extract(r.username); });
                     return 'RM-'+String(maxNum+1).padStart(3,'0');
                 } catch(e){ console.warn('_generateNextBarangayId error:',e); return 'RM-001'; }
             }
@@ -8220,8 +8225,8 @@
                 btn.innerHTML = '<i class="bi bi-hourglass-split" style="margin-right:6px;"></i>Adding...';
                 btn.disabled = true;
                 try {
-                    var chkBid = await supabase.from('users').select('id').eq('barangay_id',bid).maybeSingle();
-                    if (chkBid.data) { btn.innerHTML=orig;btn.disabled=false;return showErr('Barangay ID "'+bid+'" already exists. Please refresh and try again.'); }
+                    var chkBid = await supabase.from('users').select('id').or('barangay_id.eq.'+bid+',username.eq.'+bid).limit(1);
+                    if (chkBid.data && chkBid.data.length > 0) { btn.innerHTML=orig;btn.disabled=false;return showErr('Barangay ID "'+bid+'" already exists. Please refresh and try again.'); }
                     if (email) {
                         var chkEmail = await supabase.from('users').select('id').eq('email',email).maybeSingle();
                         if (chkEmail.data) { btn.innerHTML=orig;btn.disabled=false;return showErr('This email address is already registered to another resident.'); }
@@ -8229,7 +8234,7 @@
                     var chkPhone = await supabase.from('users').select('id').eq('phone',rawPhone).maybeSingle();
                     if (chkPhone.data) { btn.innerHTML=orig;btn.disabled=false;return showErr('This phone number is already in use by another resident.'); }
                     var hashedPw = await hashPassword(tempPw);
-                    var ins = await supabase.from('users').insert([{
+                    var _payload = {
                         barangay_id: bid,
                         username: bid,
                         full_name: fullName,
@@ -8240,8 +8245,24 @@
                         avatar: firstName.charAt(0).toUpperCase(),
                         totp_enabled: null,
                         password: hashedPw
-                    }]);
-                    if (ins.error) { btn.innerHTML=orig;btn.disabled=false;return showErr('Save error: '+ins.error.message); }
+                    };
+                    var ins = await supabase.from('users').insert([_payload]);
+                    if (ins.error) {
+                        var _isUniq = ins.error.code === '23505'
+                            || (ins.error.message||'').toLowerCase().includes('unique')
+                            || (ins.error.message||'').includes('barangay_id')
+                            || (ins.error.message||'').includes('username');
+                        if (_isUniq) {
+                            bid = await _generateNextBarangayId();
+                            var _bidEl = document.getElementById('newUserBid'); if (_bidEl) _bidEl.textContent = bid;
+                            _payload.barangay_id = bid;
+                            _payload.username = bid;
+                            ins = await supabase.from('users').insert([_payload]);
+                            if (ins.error) { btn.innerHTML=orig;btn.disabled=false;return showErr('Save error: '+ins.error.message); }
+                        } else {
+                            btn.innerHTML=orig;btn.disabled=false;return showErr('Save error: '+ins.error.message);
+                        }
+                    }
                     try { await logActivity('User Created','Admin created new resident account for '+fullName+' — Barangay ID: '+bid); } catch(e){}
                     btn.innerHTML=orig; btn.disabled=false;
                     closeAddUserModal();
