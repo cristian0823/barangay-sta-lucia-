@@ -4101,9 +4101,9 @@
                 empty.classList.add('hidden');
                 list.innerHTML = entries.map(en => {
                     const isBk = en.type === 'booking';
-                    const bg = isBk ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200';
+                    const bg = isBk ? 'bg-red-50 border-red-200' : (venue === 'basketball' ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200');
                     const dot = isBk ? '' : '';
-                    const nameColor = isBk ? 'text-red-700' : 'text-slate-700';
+                    const nameColor = isBk ? 'text-red-700' : (venue === 'basketball' ? 'text-green-700' : 'text-slate-700');
                     return `<div class="flex items-start gap-3 p-3 rounded-xl border ${bg}">
                         <span class="text-lg leading-none mt-0.5">${dot}</span>
                         <div class="flex-1 min-w-0">

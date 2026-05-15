@@ -2200,9 +2200,9 @@
                     // Broadcast email to all residents about the new event
                     try {
                         broadcastEmailToAllResidents(
-                            ` New Barangay Event: ${eventData.title}`,
+                            `New Barangay Event: ${eventData.title}`,
                             `A new barangay event has been scheduled.`,
-                            ` ${eventData.location || 'Barangay Sta. Lucia'} |  ${eventData.date}${eventData.time ? ' at ' + eventData.time : ''}${eventData.description ? ' | ' + eventData.description : ''}`
+                            `${eventData.location || 'Barangay Sta. Lucia'} | ${eventData.date}${eventData.time ? ' at ' + eventData.time : ''}${eventData.description ? ' | ' + eventData.description : ''}`
                         );
                     } catch(e) { console.warn('broadcast email failed', e); }
 
@@ -2239,20 +2239,24 @@
                     for (const b of bookings) {
                         const uid = b.userId || b.user_id;
                         if (!uid) continue;
-                        
-                        // 1. Fully delete the conflicting reservation from the database so it disappears completely
-                        await supabase.from('facility_reservations').delete().eq('id', b.id);
-                        
-                        // 2. Insert notification so the user gets the popup
+
+                        // 1. Cancel the conflicting reservation (set status rather than hard-delete so history is kept)
+                        await supabase.from('facility_reservations').update({ status: 'cancelled_by_admin' }).eq('id', b.id);
+
+                        // 2. Build a clear notification with time range
+                        const _facilityName = b.venueName || (b.venue === 'basketball' ? 'Basketball Court' : b.venue === 'multipurpose' ? 'Multi-Purpose Hall' : 'the facility');
+                        const _timeStr = b.timeRange || (b.time ? b.time + (b.end_time ? ' to ' + b.end_time : '') : '');
+                        const _notifMsg = `Your reservation at ${_facilityName} on ${b.date}${_timeStr ? ' from ' + _timeStr : ''} has been cancelled due to an official barangay event. We apologize for the inconvenience.`;
+
                         await supabase.from('user_notifications').insert([{
                             user_id: uid,
                             type: 'booking_cancelled',
-                            message: `Your Facility Reservation on ${b.date} at ${b.venueName || b.venue || 'the venue'} has been cancelled due to an official event: "${eventTitle}". Please reschedule.`,
-                            meta: { booking_id: b.id, date: b.date, venue: b.venueName || b.venue, original_time: b.timeRange || b.time || '', event_title: eventTitle },
+                            message: _notifMsg,
+                            meta: { booking_id: b.id, date: b.date, venue: _facilityName, original_time: _timeStr, event_title: eventTitle },
                             is_read: false
                         }]);
                     }
-                    if (btn) { btn.textContent = ' Cancelled & Notified!'; btn.style.background = '#16a34a'; }
+                    if (btn) { btn.textContent = 'Cancelled & Notified!'; btn.style.background = '#16a34a'; }
                     await logActivity('Event Conflict Managed', `Cancelled and notified ${bookings.length} user(s) due to conflict with event: ${eventTitle}`);
                     
                     // Re-render calendar so the deleted bookings disappear instantly
@@ -2585,7 +2589,7 @@
                                 const notifPayloads = allUsers.map(u => ({
                                     user_id: u.id,
                                     type: 'event_added',
-                                    message: ` New Barangay Event: "${eventName}" on ${new Date(adminSelectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. Facility Reservations on this day have been cancelled.`,
+                                    message: `New Barangay Event: "${eventName}" on ${new Date(adminSelectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. Facility reservations on this day have been cancelled.`,
                                     meta: { event_title: eventName, date: adminSelectedDate },
                                     is_read: false
                                 }));
@@ -8079,16 +8083,18 @@
 
             async function _generateNextBarangayId() {
                 try {
-                    var res = await supabase.from('users').select('barangay_id').ilike('barangay_id','RM-%');
+                    // Use 'RM%' (no hyphen) so it also matches batch-uploaded IDs like RM001
+                    var { data } = await supabase.from('users').select('barangay_id').ilike('barangay_id','RM%').range(0,9999);
                     var maxNum = 0;
-                    if (res.data && res.data.length) {
-                        res.data.forEach(function(r){
-                            var m=(r.barangay_id||'').match(/^RM-(\d+)$/i);
+                    if (data && data.length) {
+                        data.forEach(function(r){
+                            // Match RM-001, RM001, rm-001, rm001, etc.
+                            var m=(r.barangay_id||'').match(/^RM-?(\d+)$/i);
                             if(m){var n=parseInt(m[1],10);if(n>maxNum)maxNum=n;}
                         });
                     }
                     return 'RM-'+String(maxNum+1).padStart(3,'0');
-                } catch(e){ return 'RM-001'; }
+                } catch(e){ console.warn('_generateNextBarangayId error:',e); return 'RM-001'; }
             }
 
             function _onSitioChange() {

@@ -2973,7 +2973,7 @@ async function createEvent(eventData, massCancel = false) {
                         const notifPayloads = allUsers.map(u => ({
                             user_id: String(u.id),
                             type: 'event_added',
-                            message: `📢 New Barangay Event: "${eventData.title}" on ${new Date(eventData.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${eventData.time}${eventData.location ? ' @ ' + eventData.location : ''}.`,
+                            message: `New Barangay Event: "${eventData.title}" on ${new Date(eventData.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}${eventData.time ? ' at ' + eventData.time : ''}${eventData.location ? ' @ ' + eventData.location : ''}.`,
                             meta: { event_title: eventData.title, date: eventData.date, time: eventData.time, location: eventData.location },
                             is_read: false
                         }));
@@ -3142,7 +3142,7 @@ async function deleteEvent(eventId) {
                         const notifPayloads = allUsers.map(u => ({
                             user_id: String(u.id),
                             type: 'event_cancelled',
-                            message: `\u274C Barangay Event Cancelled: "${eventRecord.title}" scheduled on ${new Date(eventRecord.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} has been cancelled.`,
+                            message: `Barangay Event Cancelled: "${eventRecord.title}" scheduled on ${new Date(eventRecord.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} has been cancelled.`,
                             meta: { event_title: eventRecord.title, date: eventRecord.date },
                             is_read: false
                         }));
