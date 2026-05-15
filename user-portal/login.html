@@ -77,9 +77,9 @@
                 <!-- Barangay ID -->
                 <div class="field mb-4">
                     <label for="username" id="usernameLabel"
-                           class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Barangay ID or Email</label>
+                           class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Barangay ID</label>
                     <div class="field-wrap relative">
-                        <input type="text" id="username" required placeholder="Enter your Barangay ID or email"
+                        <input type="text" id="username" required placeholder="Enter your Barangay ID"
                                autocomplete="username" maxlength="50"
                                class="gov-input w-full px-3.5 py-2 text-sm text-gray-800 rounded-lg transition-all"
                                style="border:1.5px solid #D1D5DB; background:#F9FAFB; font-family:inherit;">
@@ -555,7 +555,7 @@
             const username   = sanitizeInput(document.getElementById('username').value.trim());
             const rememberMe = document.getElementById('rememberMe') ? document.getElementById('rememberMe').checked : false;
 
-            if (!username) { showToast('Please enter your Barangay ID or email.', 'error'); return; }
+            if (!username) { showToast('Please enter your Barangay ID.', 'error'); return; }
 
             const btn = document.getElementById('loginBtn');
             btn.disabled = true; btn.textContent = 'Signing in...';
