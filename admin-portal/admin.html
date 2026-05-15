@@ -8005,25 +8005,39 @@
                 try {
                     const supabaseOk = typeof isSupabaseAvailable === 'function' && await isSupabaseAvailable();
                     if (supabaseOk) {
-                        // Query all three tables with user join for resident names
+                        // Query all three tables — no embedded join to avoid FK dependency
                         const [bookingsRes, borrowingsRes, concernsRes] = await Promise.all([
-                            supabase.from('facility_reservations').select('id, user_id, date, time, venue, created_at, status, users(full_name, barangay_id)').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('borrowings').select('id, user_id, equipment, quantity, borrow_date, return_date, created_at, status, users(full_name, barangay_id)').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
-                            supabase.from('concerns').select('id, user_id, title, category, description, created_at, status, users(full_name, barangay_id)').eq('status', 'pending').order('created_at', { ascending: false }).limit(20)
+                            supabase.from('facility_reservations').select('id, user_id, date, time, venue, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
+                            supabase.from('borrowings').select('id, user_id, equipment, quantity, borrow_date, return_date, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
+                            supabase.from('concerns').select('id, user_id, title, category, description, created_at, status').eq('status', 'pending').order('created_at', { ascending: false }).limit(20)
                         ]);
 
+                        // Batch-fetch resident names — avoids FK join requirement per table
+                        const _bellUids = [...new Set([
+                            ...(bookingsRes.data||[]).map(r=>r.user_id),
+                            ...(borrowingsRes.data||[]).map(r=>r.user_id),
+                            ...(concernsRes.data||[]).map(r=>r.user_id)
+                        ].filter(Boolean))];
+                        const _bellNameMap = {};
+                        if (_bellUids.length) {
+                            const { data: uList } = await supabase.from('users').select('id, full_name, barangay_id').in('id', _bellUids);
+                            if (uList) uList.forEach(u => { _bellNameMap[String(u.id)] = u.full_name || u.barangay_id || 'Resident'; });
+                        }
+                        const _bellName = id => id ? (_bellNameMap[String(id)] || 'Resident') : 'Resident';
+
                         (bookingsRes.data || []).forEach(b => {
-                            const bName = b.users ? (b.users.full_name || 'Resident') : 'Resident';
-                            const venue = b.venue || 'Facility';
+                            const bName = _bellName(b.user_id);
+                            const venueStr = b.venue || (b.time ? b.time.split('|')[0].trim() : 'Facility');
+                            const timeSlot = b.time && b.time.includes('|') ? b.time.split('|').slice(1).join('|').trim() : (b.time || '');
                             const dateStr = b.date ? new Date(b.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
                             items.push({ id: 'booking_' + b.id, refId: b.id, type: 'booking',
                                 icon: '<i class="bi bi-building"></i>', iconColor: '#16a34a', iconBg: 'rgba(22,163,74,0.12)',
                                 title: 'New Facility Reservation',
-                                message: bName + ' — ' + venue + (dateStr ? ' on ' + dateStr : '') + (b.time ? ' at ' + b.time : ''),
+                                message: bName + ' — ' + venueStr + (dateStr ? ' on ' + dateStr : '') + (timeSlot ? ' at ' + timeSlot : ''),
                                 createdAt: b.created_at });
                         });
                         (borrowingsRes.data || []).forEach(b => {
-                            const rName = b.users ? (b.users.full_name || 'Resident') : 'Resident';
+                            const rName = _bellName(b.user_id);
                             const dateRange = b.borrow_date ? new Date(b.borrow_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) + (b.return_date ? ' – ' + new Date(b.return_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '') : '';
                             items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow',
                                 icon: '<i class="bi bi-box-seam"></i>', iconColor: '#2563eb', iconBg: 'rgba(37,99,235,0.1)',
@@ -8032,7 +8046,7 @@
                                 createdAt: b.created_at });
                         });
                         (concernsRes.data || []).forEach(c => {
-                            const cName = c.users ? (c.users.full_name || 'Resident') : 'Resident';
+                            const cName = _bellName(c.user_id);
                             items.push({ id: 'concern_' + c.id, refId: c.id, type: 'concern',
                                 icon: '<i class="bi bi-chat-left-text"></i>', iconColor: '#ea580c', iconBg: 'rgba(234,88,12,0.1)',
                                 title: 'New Concern Submitted',

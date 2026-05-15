@@ -729,9 +729,11 @@ async function logoutUser() {
     // Attempt to log securely before redirecting so the browser doesn't cancel the request
     try {
         if (_curr) {
-            const logType = 'Logout';
-            const logDetails = `${_curr.username || _curr.fullName || 'System'} logged out`;
-            await window.logSecurity(logType, 'N/A', 'info', logDetails, _curr.username || null);
+            const _loBid = _curr.barangay_id || _curr.username || 'System';
+            const _loLabel = (_curr.fullName || _curr.full_name || _loBid) + ' (' + _loBid + ')';
+            const logDetails = _loLabel + ' logged out';
+            await window.logSecurity('Logout', 'N/A', 'info', logDetails, _loBid);
+            await window.logAudit('Auth', null, 'Logout', logDetails);
         }
         if (window.supabase) {
             await window.supabase.auth.signOut().catch(() => {});
@@ -2018,8 +2020,9 @@ async function bookCourt(bookingData) {
                 user_id: resolvedUserId,
                 date: bookingData.date,
                 time: combinedTime,
+                venue: venue,
                 purpose: bookingData.purpose || '',
-                status: bookingData.status || 'approved'
+                status: 'pending'
             }]);
 
             if (error) throw error;
@@ -2076,6 +2079,9 @@ async function cancelCourtBooking(bookingId) {
         const { data: bk } = await supabase.from('facility_reservations').select('date, time').eq('id', bookingId).maybeSingle();
         const { error } = await query;
         if (!error) {
+            const _cxBid = user.barangay_id || user.username || '';
+            const _cxLabel = (user.fullName || user.full_name || user.username || 'Resident') + (_cxBid ? ' (' + _cxBid + ')' : '');
+            await logActivity('Facility Reservation Cancelled', _cxLabel + ' cancelled their reservation on ' + (bk?.date || '') + (bk?.time ? ' at ' + bk.time : ''));
             await addNotification('admin', 'cancel_booking', `User cancelled facility reservation on ${bk?.date || ''} at ${bk?.time || ''}`);
             broadcastSync();
         }
@@ -3071,6 +3077,9 @@ async function updateUserProfile(updates) {
         window.user = updatedUser;
     }
 
+    const _upBid = user.barangay_id || user.username || '';
+    const _upLabel = (user.fullName || user.full_name || user.username || 'Resident') + (_upBid ? ' (' + _upBid + ')' : '');
+    await logActivity('Profile Updated', _upLabel + ' updated their profile (' + Object.keys(updates).join(', ') + ').');
     return { success: true, message: 'Profile updated successfully' };
 }
 
