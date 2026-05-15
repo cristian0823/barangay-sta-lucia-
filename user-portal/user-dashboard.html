@@ -602,6 +602,17 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Upcoming Barangay Events -->
+                <div style="margin-top:20px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid #f1f5f9;overflow:hidden;">
+                    <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-size:14px;font-weight:700;color:#0f2952;display:flex;align-items:center;gap:8px;"><i class="bi bi-calendar-event-fill" style="color:#1e3a5f;"></i> Upcoming Barangay Events</div>
+                        <button onclick="showPanel('events')" style="font-size:12px;color:#1e3a5f;font-weight:600;background:none;border:none;cursor:pointer;padding:0;">See all &#8594;</button>
+                    </div>
+                    <div id="dashEventsSection">
+                        <div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;"><i class="bi bi-hourglass" style="font-size:20px;display:block;margin-bottom:8px;"></i>Loading...</div>
+                    </div>
+                </div>
             </div><!-- end panel-dashboard -->
 
 
@@ -4477,7 +4488,8 @@
             try {
                 const annEl = document.getElementById('dashAnnouncements');
                 if (annEl && window.supabase) {
-                    const { data: evs } = await supabase.from('events').select('id,title,date,category').order('date',{ascending:true}).limit(3);
+                    const _annToday = new Date().toISOString().split('T')[0];
+                    const { data: evs } = await supabase.from('events').select('id,title,date,category,status').gte('date', _annToday).order('date',{ascending:true}).limit(3);
                     if (!evs || !evs.length) {
                         annEl.innerHTML = '<div style="padding:36px 24px;text-align:center;"><div style="width:52px;height:52px;background:rgba(30,58,95,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class=\"bi bi-megaphone-fill\" style=\"font-size:22px;color:#1e3a5f;\"></i></div><div style=\"font-size:14px;font-weight:600;color:#374151;margin-bottom:4px;\">No upcoming announcements</div><div style=\"font-size:12px;color:#94a3b8;\">Check back later for barangay updates</div></div>';
                     } else {
