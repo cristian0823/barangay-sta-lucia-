@@ -591,16 +591,7 @@
                             <div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;"><i class="bi bi-hourglass" style="font-size:20px;display:block;margin-bottom:8px;"></i>Loading...</div>
                         </div>
                     </div>
-                    <!-- Announcements -->
-                    <div style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid #f1f5f9;overflow:hidden;min-height:200px;">
-                        <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
-                            <div style="font-size:14px;font-weight:700;color:#0f2952;display:flex;align-items:center;gap:8px;"><i class="bi bi-megaphone-fill" style="color:#1e3a5f;"></i> Announcements</div>
-                            <button onclick="showPanel('events')" style="font-size:12px;color:#1e3a5f;font-weight:600;background:none;border:none;cursor:pointer;padding:0;">See all &#8594;</button>
-                        </div>
-                        <div id="dashAnnouncements" style="padding:4px 0;">
-                            <div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;"><i class="bi bi-hourglass" style="font-size:20px;display:block;margin-bottom:8px;"></i>Loading...</div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- Upcoming Barangay Events -->
@@ -872,14 +863,7 @@
                     <div style="font-size:12px;color:#9ca3af;margin-bottom:8px;display:flex;align-items:center;gap:4px;"><span onclick="showPanel('dashboard')" style="cursor:pointer;color:#1e3a5f;font-weight:600;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Dashboard</span><i class="bi bi-chevron-right" style="font-size:10px;margin:0 2px;"></i><span>Barangay Events</span></div><h2 style="font-size:26px;font-weight:800;color:#0f1f3d;margin:0 0 4px 0;"><i class="bi bi-calendar-event-fill" style="margin-right:8px;"></i>Barangay Events</h2>
                     <p style="color:var(--text-muted);font-size:14px;margin:0;">Official barangay activities, tournaments, and community programs.</p>
                 </div>
-                <!-- Category Filter Tabs -->
-                <div id="eventsCategoryRow" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-                    <button onclick="filterEventsCategory('all')" id="evcat-all" class="evcat-btn" style="padding:7px 18px;border-radius:20px;border:1.5px solid #1e3a5f;background:#1e3a5f;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">All</button>
-                    <button onclick="filterEventsCategory('sports')" id="evcat-sports" class="evcat-btn" style="padding:7px 18px;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">Sports</button>
-                    <button onclick="filterEventsCategory('community')" id="evcat-community" class="evcat-btn" style="padding:7px 18px;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">Community</button>
-                    <button onclick="filterEventsCategory('health')" id="evcat-health" class="evcat-btn" style="padding:7px 18px;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">Health</button>
-                    <button onclick="filterEventsCategory('others')" id="evcat-others" class="evcat-btn" style="padding:7px 18px;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">Others</button>
-                </div>
+
                 <div id="upcomingEventsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;margin-bottom:16px;"></div>
                 <div id="eventsPaginationRow" style="margin-top:8px;"></div>
             </div>
@@ -1218,7 +1202,7 @@
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Contact Number</label>
-                                <input type="text" id="borrowerContact" required class="form-input" placeholder="09XX XXX XXXX">
+                                <input type="tel" id="borrowerContact" required class="form-input" placeholder="09XX XXX XXXX" maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,11)">
                             </div>
                         </div>
                         <div class="form-field">
@@ -3293,7 +3277,8 @@
             const fullName = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
             const address = document.getElementById('borrowerAddress').value;
-            
+            if (!/^\d{11}$/.test(contact)) return showToast('Please enter a valid 11-digit phone number.', 'error');
+
             const borrowTime = document.getElementById('borrowTime').value;
             const returnTime = document.getElementById('returnTime').value;
             
@@ -4077,6 +4062,10 @@
             const isToday2 = dateStr === new Date().toISOString().slice(0, 10);
             const dayEvents = allEvents.filter(e => {
                 if (e.date !== dateStr || e.status !== 'approved') return false;
+                // Venue filter: match events to the currently-viewed facility
+                const isMultiVenue = e.venue === 'multipurpose' || (e.location && (e.location.toLowerCase().includes('multi') || e.location.toLowerCase().includes('hall')));
+                if (venue === 'basketball' && isMultiVenue) return false;
+                if (venue === 'multipurpose' && !isMultiVenue) return false;
                 // If selected date is today, hide events whose end time has already passed
                 if (isToday2) {
                     const endTimeStr = e.end_time || e.time;
@@ -4514,7 +4503,7 @@
                     const today = new Date().toISOString().split('T')[0];
                     const { data: evList } = await window.supabase
                         .from('events')
-                        .select('id,title,date,start_time,end_time,category,description')
+                        .select('id,title,date,time,end_time,category,description,location')
                         .gte('date', today)
                         .order('date', { ascending: true })
                         .limit(4);
@@ -4526,7 +4515,7 @@
                             evList.map(ev => {
                                 const d = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }) : '—';
                                 const cc = catColors[ev.category] || '#64748b';
-                                const timeStr = ev.start_time ? ev.start_time + (ev.end_time ? ' – ' + ev.end_time : '') : '';
+                                const timeStr = ev.time ? fmt12(ev.time) + (ev.end_time ? ' – ' + fmt12(ev.end_time) : '') : '';
                                 return '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-top:3px solid ' + cc + ';">' +
                                     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
                                     '<span style="font-size:10px;font-weight:700;background:' + cc + '20;color:' + cc + ';padding:2px 8px;border-radius:20px;">' + (ev.category||'Event') + '</span>' +

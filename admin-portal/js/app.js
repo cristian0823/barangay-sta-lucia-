@@ -1351,7 +1351,7 @@ async function getMyBorrowings() {
 async function getAllBorrowings() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username)').order('id', { ascending: false });
+        const { data, error } = await supabase.from('borrowings').select('*, users(full_name, username)').order('created_at', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_BORROWINGS_KEY)) || [];
             return localData.map(item => ({
@@ -1839,7 +1839,7 @@ async function getMyConcerns() {
 async function getAllConcerns() {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('concerns').select('*, users(full_name, username)').order('id', { ascending: false });
+        const { data, error } = await supabase.from('concerns').select('*, users(full_name, username)').order('created_at', { ascending: false });
         if (error) {
             const localData = JSON.parse(localStorage.getItem(LOCAL_CONCERNS_KEY)) || [];
             return localData.map(item => ({
@@ -3142,7 +3142,7 @@ async function deleteEvent(eventId) {
                         const notifPayloads = allUsers.map(u => ({
                             user_id: String(u.id),
                             type: 'event_cancelled',
-                            message: `❌ Barangay Event Cancelled: "${eventRecord.title}" scheduled on ${new Date(eventRecord.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} has been cancelled.`,
+                            message: `\u274C Barangay Event Cancelled: "${eventRecord.title}" scheduled on ${new Date(eventRecord.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} has been cancelled.`,
                             meta: { event_title: eventRecord.title, date: eventRecord.date },
                             is_read: false
                         }));
