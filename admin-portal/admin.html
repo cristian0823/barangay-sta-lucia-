@@ -890,6 +890,25 @@
                             </div>
                         </div>
 
+                        <!-- GLOBAL DELIVERY TOGGLE -->
+                        <div id="globalDeliveryBanner" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-radius:12px;margin-bottom:20px;border:2px solid #bbf7d0;background:#f0fdf4;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <i class="bi bi-truck" style="font-size:22px;color:#15803d;flex-shrink:0;"></i>
+                                <div>
+                                    <div id="globalDelivBannerLabel" style="font-size:14px;font-weight:700;color:#15803d;">Delivery Available &mdash; Residents can choose delivery or pickup</div>
+                                    <div style="font-size:11px;color:#4ade80;margin-top:2px;">Global setting &mdash; overrides all individual item delivery settings</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                                <span id="globalDelivStatusText" style="font-size:12px;font-weight:700;color:#15803d;">ON</span>
+                                <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;" title="Toggle global delivery availability">
+                                    <input type="checkbox" id="globalDelivToggle" checked style="opacity:0;width:0;height:0;position:absolute;" onchange="setGlobalDelivery(this.checked)">
+                                    <span id="globalDelivTrack" style="position:absolute;inset:0;border-radius:28px;background:#16a34a;transition:background 0.25s;"></span>
+                                    <span id="globalDelivKnob" style="position:absolute;left:4px;top:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.25s;box-shadow:0 1px 3px rgba(0,0,0,0.25);transform:translateX(24px);"></span>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- STAT PILLS -->
                         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
                             <div style="background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
@@ -1970,20 +1989,7 @@
                             <input type="checkbox" id="editEquipArchived" style="width:15px;height:15px;cursor:pointer;accent-color:#1A3A6B;flex-shrink:0;">
                             <span>Archive this equipment (hide from active inventory)</span>
                         </label>
-                        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <i class="bi bi-truck" style="color:#1A3A6B;font-size:16px;flex-shrink:0;"></i>
-                                <div>
-                                    <div style="font-size:13px;font-weight:600;color:#374151;">Delivery Mode</div>
-                                    <div id="editEquipDelivLabel" style="font-size:11px;color:#6B7280;margin-top:1px;">Delivery available</div>
-                                </div>
-                            </div>
-                            <label style="position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;cursor:pointer;">
-                                <input type="checkbox" id="editEquipCanDeliver" style="opacity:0;width:0;height:0;position:absolute;" onchange="(function(c){document.getElementById('editEquipDelivLabel').textContent=c.checked?'Delivery available':'Pickup Only — resident collects in person';document.getElementById('editDelivTrack').style.background=c.checked?'#1A3A6B':'#D1D5DB';document.getElementById('editDelivKnob').style.transform=c.checked?'translateX(18px)':'none';})(this)">
-                                <span id="editDelivTrack" style="position:absolute;inset:0;border-radius:24px;background:#D1D5DB;transition:background 0.2s;"></span>
-                                <span id="editDelivKnob" style="position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
-                            </label>
-                        </div>
+
                     </div>
                 </form>
                 <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
@@ -5060,7 +5066,53 @@
         var _pgEquipPage = 1;
         var _pgEquipPerPage = 10;
 
+        window._adminGlobalDelivery = true;
+
+        async function loadGlobalDeliverySetting() {
+            try {
+                if (!window.supabase) return;
+                const { data } = await window.supabase.from('settings').select('value').eq('key', 'delivery_available').maybeSingle();
+                const isOn = data ? data.value !== 'false' : true;
+                window._adminGlobalDelivery = isOn;
+                _applyGlobalDeliveryUI(isOn);
+            } catch(e) { console.warn('loadGlobalDeliverySetting error:', e); }
+        }
+
+        function _applyGlobalDeliveryUI(isOn) {
+            const toggle = document.getElementById('globalDelivToggle');
+            const track = document.getElementById('globalDelivTrack');
+            const knob = document.getElementById('globalDelivKnob');
+            const label = document.getElementById('globalDelivBannerLabel');
+            const status = document.getElementById('globalDelivStatusText');
+            const banner = document.getElementById('globalDeliveryBanner');
+            if (toggle) toggle.checked = isOn;
+            if (track) track.style.background = isOn ? '#16a34a' : '#dc2626';
+            if (knob) knob.style.transform = isOn ? 'translateX(24px)' : 'none';
+            if (label) label.textContent = isOn
+                ? 'Delivery Available — Residents can choose delivery or pickup'
+                : 'Delivery Unavailable — Pickup Only (e.g. vehicle is broken)';
+            if (label) label.style.color = isOn ? '#15803d' : '#b91c1c';
+            if (status) { status.textContent = isOn ? 'ON' : 'OFF'; status.style.color = isOn ? '#15803d' : '#b91c1c'; }
+            if (banner) {
+                banner.style.background = isOn ? '#f0fdf4' : '#fef2f2';
+                banner.style.borderColor = isOn ? '#bbf7d0' : '#fecaca';
+            }
+        }
+
+        async function setGlobalDelivery(isOn) {
+            window._adminGlobalDelivery = isOn;
+            _applyGlobalDeliveryUI(isOn);
+            try {
+                if (window.supabase) {
+                    await window.supabase.from('settings')
+                        .upsert({ key: 'delivery_available', value: isOn ? 'true' : 'false', updated_at: new Date().toISOString() });
+                }
+            } catch(e) { console.warn('setGlobalDelivery error:', e); }
+            renderEquipmentPg();
+        }
+
         async function loadEquipment() {
+                await loadGlobalDeliverySetting();
                 const equipment = await getEquipment();
                 _pgEquipList = equipment;
                 _pgEquipPage = 1;
@@ -5125,12 +5177,18 @@
                         } else {
                             photoCell = '<div onclick="quickUploadEquipImage('+e.id+',this)" title="Upload photo" style="width:40px;height:40px;border-radius:8px;border:1.5px dashed #D1D5DB;background:#F9FAFB;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;position:relative;"><i class="bi bi-camera" style="font-size:16px;color:#9CA3AF;"></i><input type="file" accept="image/*" style="display:none;" onchange="handleQuickImageChange('+e.id+',this)"></div>';
                         }
-                        var lower = (e.name||'').toLowerCase();
-                        var _defCanDeliv = !['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
-                        var _canDeliv = (e.can_deliver !== null && e.can_deliver !== undefined) ? !!e.can_deliver : _defCanDeliv;
-                        var delivToggle = _canDeliv
-                            ? '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#DBEAFE;color:#1E40AF;text-transform:uppercase;letter-spacing:0.04em;">Delivery</span>'
-                            : '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
+                        var _globalDelivOn = (typeof window._adminGlobalDelivery !== 'undefined') ? window._adminGlobalDelivery : true;
+                        var delivToggle;
+                        if (!_globalDelivOn) {
+                            delivToggle = '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#FEE2E2;color:#991b1b;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
+                        } else {
+                            var lower = (e.name||'').toLowerCase();
+                            var _defCanDeliv = !['table','tent'].some(function(kw){return lower.indexOf(kw)>=0;});
+                            var _canDeliv = (e.can_deliver !== null && e.can_deliver !== undefined) ? !!e.can_deliver : _defCanDeliv;
+                            delivToggle = _canDeliv
+                                ? '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#DBEAFE;color:#1E40AF;text-transform:uppercase;letter-spacing:0.04em;">Delivery</span>'
+                                : '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3E8FF;color:#6B21A8;text-transform:uppercase;letter-spacing:0.04em;">Pickup Only</span>';
+                        }
                         rows += '<tr style="border-top:1px solid #F3F4F6;vertical-align:middle;'+(e.isArchived?'opacity:0.55;':'')+'">'
                             +'<td style="padding:12px 18px;"><div style="display:flex;align-items:center;gap:12px;">'+photoCell+'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+(e.name||'')+'</div>'+(e.description?'<div style="font-size:12px;color:#9CA3AF;margin-top:1px;">'+e.description+'</div>':'')+'</div></div></td>'
                             +'<td style="padding:12px 18px;text-align:center;font-size:14px;font-weight:600;color:#374151;">'+qty+'</td>'
@@ -5179,16 +5237,6 @@
                 _pgEquipPage = Math.max(1, Math.min(pg, Math.max(1,Math.ceil(list.length/_pgEquipPerPage))));
                 renderEquipmentPg();
             }
-            async function toggleDeliveryAdmin(equipId, currentVal) {
-                const newVal = !currentVal;
-                try {
-                    if (window.supabase) {
-                        await window.supabase.from('equipment').update({ can_deliver: newVal }).eq('id', equipId);
-                    }
-                } catch(e) { console.warn('toggleDeliveryAdmin error:', e); }
-                loadEquipment();
-            }
-
             function quickUploadEquipImage(id, cell) {
                 const input = cell.querySelector('input[type="file"]');
                 if (input) input.click();
@@ -5338,17 +5386,6 @@
                 document.getElementById('editPhotoLabel').textContent = 'Click to upload new photo';
                 calcEditAvail();
 
-                var _lower = (equipment.name||'').toLowerCase();
-                var _defCanDeliv = !['table','tent'].some(function(kw){return _lower.indexOf(kw)>=0;});
-                var _canDeliv = (equipment.can_deliver !== null && equipment.can_deliver !== undefined) ? !!equipment.can_deliver : _defCanDeliv;
-                var _dcb = document.getElementById('editEquipCanDeliver');
-                if (_dcb) {
-                    _dcb.checked = _canDeliv;
-                    document.getElementById('editEquipDelivLabel').textContent = _canDeliv ? 'Delivery available' : 'Pickup Only — resident collects in person';
-                    document.getElementById('editDelivTrack').style.background = _canDeliv ? '#1A3A6B' : '#D1D5DB';
-                    document.getElementById('editDelivKnob').style.transform = _canDeliv ? 'translateX(18px)' : 'none';
-                }
-
                 document.getElementById('editEquipmentModal').classList.add('active');
                 history.pushState({ modal: 'editEquipmentModal' }, '', '#editEquipmentModal');
             }
@@ -5391,8 +5428,7 @@
                     quantity: newQty,
                     broken: newBroken,
                     disposal: newDisposal,
-                    isArchived: document.getElementById('editEquipArchived').checked,
-                    canDeliver: document.getElementById('editEquipCanDeliver').checked
+                    isArchived: document.getElementById('editEquipArchived').checked
                 };
                 if (image_url !== undefined) {
                     updates.image_url = image_url;
@@ -5404,9 +5440,6 @@
                 btn.innerHTML = originalText;
 
                 if (result.success) {
-                    if (window.supabase) {
-                        supabase.from('equipment').update({ can_deliver: updates.canDeliver }).eq('id', id).then(() => {}).catch(() => {});
-                    }
                     showAlert('Equipment updated successfully', 'success');
                     closeModal('editEquipmentModal');
                     await loadEquipment();

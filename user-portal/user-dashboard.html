@@ -1908,12 +1908,22 @@
         const BUROL_EXCLUDED = ['microphone', 'speaker', 'ladder', 'electric fan', 'fan'];
         const ALL_BORROW_ITEMS = ['Chair', 'Table', 'Tent', 'Microphone', 'Speaker', 'Electric Fan', 'Ladder'];
         const PICKUP_ONLY_ITEMS = ['table', 'tent'];
+
+        // Global delivery state (loaded from settings table)
+        window._globalDeliveryEnabled = true;
+        async function loadGlobalDeliveryState() {
+            try {
+                if (!window.supabase) return;
+                const { data } = await window.supabase.from('settings').select('value').eq('key', 'delivery_available').maybeSingle();
+                window._globalDeliveryEnabled = data ? data.value !== 'false' : true;
+            } catch(e) { window._globalDeliveryEnabled = true; }
+        }
+
         function _itemDeliveryAllowed(item) {
-            // Primary: use can_deliver from Supabase data
+            // Per-item only check (no global — global checked in updateDeliveryOptions)
             if (item && typeof item === 'object' && item.can_deliver !== undefined && item.can_deliver !== null) {
                 return !!item.can_deliver;
             }
-            // Fallback: name-based heuristic (for items not yet migrated)
             const lower = (typeof item === 'string' ? item : (item && item.name) || '').toLowerCase();
             return !PICKUP_ONLY_ITEMS.some(kw => lower.includes(kw));
         }
@@ -2963,7 +2973,9 @@
         }
 
         function updateDeliveryOptions(itemOrName) {
-            const allowed = _itemDeliveryAllowed(itemOrName);
+            const globalOff = window._globalDeliveryEnabled === false;
+            const perItemAllowed = _itemDeliveryAllowed(itemOrName);
+            const allowed = !globalOff && perItemAllowed;
             const deliveryLabel = document.getElementById('deliveryToAddrLabel');
             const notice = document.getElementById('deliveryPickupOnlyNotice');
             const pickupRadio = document.getElementById('deliveryPickup');
@@ -2972,7 +2984,17 @@
             if (pickupRadio) pickupRadio.checked = false;
             if (deliveryRadio) deliveryRadio.checked = false;
             if (deliveryLabel) { deliveryLabel.style.display = allowed ? 'flex' : 'none'; deliveryLabel.style.border = '2px solid #e2e8f0'; }
-            if (notice) notice.style.display = allowed ? 'none' : 'block';
+            if (notice) {
+                if (globalOff) {
+                    notice.innerHTML = '⚠️ <strong>Delivery is currently unavailable.</strong> Pickup only at this time.';
+                    notice.style.display = 'block';
+                } else if (!perItemAllowed) {
+                    notice.innerHTML = '⚠️ This item is <strong>Pickup only</strong> — large/heavy items cannot be delivered.';
+                    notice.style.display = 'block';
+                } else {
+                    notice.style.display = 'none';
+                }
+            }
             if (pickupLabel) pickupLabel.style.border = '2px solid #e2e8f0';
             if (!allowed) { if (pickupRadio) pickupRadio.checked = true; if (pickupLabel) pickupLabel.style.border = '2px solid #1e3a5f'; }
         }
@@ -3541,6 +3563,7 @@
         // HISTORY / ACTIVITY PANEL LOGIC
         // ==========================================
         async function openBorrowModalWithEquip(equipId) {
+            await loadGlobalDeliveryState();
             const list = await getEquipment();
             const item = list.find(e => e.id === equipId);
             if (!item) return;
@@ -3632,6 +3655,7 @@
             renderBorrowAlerts();
             renderExistingBookings();
             selectBorrowPurpose('event');
+            updateDeliveryOptions(item);
             updateBorrowLockState();
             document.getElementById('borrowModal').classList.remove('hidden');
         }
