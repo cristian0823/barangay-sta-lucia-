@@ -640,7 +640,7 @@
                 setTimeout(() => window.location.href = 'setup-totp.html', 1200);
             } else {
                 recordFailedAttempt(username);
-                showToast(result.message || 'Barangay ID not found. Please contact the Barangay Office.', 'error');
+                showToast(result.message || 'No account or Barangay ID registered.', 'error');
             }
         } catch (err) {
             console.error('Login error:', err);

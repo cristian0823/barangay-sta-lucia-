@@ -5105,13 +5105,13 @@
                         var broken = e.broken||0;
                         var disposal = parseInt(e.category)||0;
                         var qty = e.quantity||1;
-                        var availColor = avail===qty ? '#166534' : (avail>0 ? '#92400e' : '#991b1b');
-                        var availBg = avail===qty ? '#DCFCE7' : (avail>0 ? '#FEF3C7' : '#FEE2E2');
+                        var availColor = avail===0 ? '#991b1b' : (avail<=50 ? '#92400e' : '#166534');
+                        var availBg = avail===0 ? '#FEE2E2' : (avail<=50 ? '#FEF3C7' : '#DCFCE7');
                         var bb = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
                         var statusBadge;
                         if (e.isArchived) statusBadge = '<span style="'+bb+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">Archived</span>';
                         else if (avail===0) statusBadge = '<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Out of Stock</span>';
-                        else if (avail<qty) statusBadge = '<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Low Stock</span>';
+                        else if (avail<=50) statusBadge = '<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Low Stock</span>';
                         else statusBadge = '<span style="'+bb+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Available</span>';
                         var photoCell;
                         if (e.image_url) {

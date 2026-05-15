@@ -543,8 +543,9 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
             // Local storage could have a stale/old password and bypass security.
             return { success: false, message: 'Incorrect password. Please try again.' };
         } else {
-            // User not found in Supabase at all — try local storage fallback
+            // User not found in Supabase at all
             window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for unknown Supabase user: ${username}`, username);
+            return { success: false, message: 'No account or Barangay ID registered.' };
         }
 
         if (error) {
@@ -616,7 +617,7 @@ async function loginUser(username, password, rememberMe = false, options = {}) {
 
     // Log failed local login
     window.logSecurity('Login Failed', 'Password', 'warning', `Failed login attempt for ${username}.`, username);
-    return { success: false, message: 'Barangay ID not found. Please contact the Barangay Office.' };
+    return { success: false, message: 'No account or Barangay ID registered.' };
 }
 
 async function resetPassword(username, newPassword) {
