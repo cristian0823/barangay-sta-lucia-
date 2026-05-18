@@ -1017,6 +1017,7 @@ async function updateEquipment(id, updates) {
         if (updates.isArchived  !== undefined) payload.is_archived = updates.isArchived;
         if (updates.icon        !== undefined) payload.icon        = updates.icon;
         if (updates.image_url   !== undefined) payload.image_url   = updates.image_url;
+        if (updates.variation    !== undefined) payload.variation   = updates.variation;
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };

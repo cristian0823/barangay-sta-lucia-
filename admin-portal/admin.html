@@ -307,6 +307,19 @@
       @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
       @keyframes statPulse { 0%{transform:scale(1);} 40%{transform:scale(1.18);} 100%{transform:scale(1);} }
       .stat-pulse { animation: statPulse 0.3s ease-out; }
+
+        /* Mobile sidebar responsive */
+        @media (max-width: 768px) {
+            #adminSidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
+            #adminSidebar.sidebar-open { transform: translateX(0); }
+            #mainContentArea { margin-left: 0 !important; }
+            #sidebarOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 89; }
+            #sidebarOverlay.active { display: block; }
+            #mobileHamburger { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+            #mobileHamburger { display: none !important; }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -338,6 +351,7 @@
 
 <!-- Fixed Topbar -->
 <header style="position:fixed;top:0;left:0;right:0;height:64px;background:#1A3A6B;border-bottom:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;padding:0 24px;z-index:100;box-shadow:0 2px 8px rgba(15,37,71,0.35);">
+    <button id="mobileHamburger" onclick="toggleSidebar()" style="display:none;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,255,255,0.1);border:none;border-radius:8px;cursor:pointer;margin-right:12px;flex-shrink:0;"><i class="bi bi-list" style="font-size:22px;color:#fff;"></i></button>
     <!-- Hamburger (mobile only) -->
     <button id="hamburgerBtn" onclick="openMobileSidebar()" aria-label="Menu" style="display:none;flex-direction:column;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:8px;cursor:pointer;margin-right:12px;">
         <span style="display:block;width:18px;height:2px;background:#fff;border-radius:2px;"></span>
@@ -418,7 +432,7 @@
 </header>
 
 <!-- Fixed Desktop Sidebar -->
-<aside style="position:fixed;top:64px;left:0;bottom:0;width:220px;background:#0F2547;overflow:hidden;z-index:90;display:flex;flex-direction:column;">
+<aside id="adminSidebar" style="position:fixed;top:64px;left:0;bottom:0;width:220px;background:#0F2547;overflow:hidden;z-index:90;display:flex;flex-direction:column;">
     <!-- Nav: MAIN -->
     <div style="padding:8px;">
         <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);padding:10px 12px 6px;text-transform:uppercase;">Main</div>
@@ -444,6 +458,10 @@
         </button>
         <button class="sidebar-btn" onclick="switchSection('events', this)">
             <i class="bi bi-calendar-event-fill"></i> Court Events
+        </button>
+        <button class="sidebar-btn" onclick="switchSection('announcements', this)">
+            <i class="bi bi-megaphone-fill"></i>
+            <span>Announcements</span>
         </button>
         <button class="sidebar-btn" onclick="switchSection('equipment', this)">
             <i class="bi bi-box-seam-fill"></i> Inventory
@@ -471,7 +489,8 @@
 </aside>
 
 <!-- Main Content Area -->
-<div style="margin-left:220px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
+<div id="mainContentArea" style="margin-left:220px;padding-top:64px;min-height:100vh;background:#EDEEF2;">
+<div id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div style="padding:28px;">
                     <!-- Overview Section -->
                     <div id="overview-section">
@@ -554,6 +573,17 @@
                                     <button onclick="switchSection('concerns',document.querySelector('.sidebar-btn[onclick*=concerns]'))" style="font-size:12px;color:#1A3A6B;font-weight:600;background:none;border:none;cursor:pointer;padding:0;">View all &rarr;</button>
                                 </div>
                                 <div id="overviewConcernsList" style="padding:8px 0;"><div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">Loading...</div></div>
+                            </div>
+                        </div>
+
+                        <!-- WEEKLY ACTIVITY CHART -->
+                        <div style="background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.07);overflow:hidden;margin-bottom:22px;">
+                            <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
+                                <div style="font-size:14px;font-weight:700;color:#0f2952;display:flex;align-items:center;gap:8px;"><i class="bi bi-bar-chart-fill" style="color:#1A3A6B;"></i> Weekly Activity</div>
+                                <span style="font-size:12px;color:#6b7280;font-weight:600;">Last 4 weeks</span>
+                            </div>
+                            <div style="padding:20px;">
+                                <canvas id="weeklyActivityChart" height="80"></canvas>
                             </div>
                         </div>
 
@@ -871,6 +901,22 @@
                         </div>
                         </div><!-- end eventsPanel-schedule -->
                     </div>
+                    <div id="announcements-section" class="section-container" style="display: none;">
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;"><i class="bi bi-megaphone-fill"></i> COMMUNITY</p>
+                                    <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Announcements</h1>
+                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Post and manage barangay announcements and bulletins.</p>
+                                </div>
+                                <button onclick="document.getElementById('addAnnouncementModal').classList.add('active')" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-plus-lg"></i> New Announcement</button>
+                            </div>
+                        </div>
+                        <div id="announcementsList" style="display:flex;flex-direction:column;gap:12px;">
+                            <div style="padding:40px;text-align:center;color:#94a3b8;font-size:13px;">Loading announcements...</div>
+                        </div>
+                    </div>
+
                     <div id="equipment-section" class="section-container" style="display: none;">
 
                         <!-- PAGE HEADING -->
@@ -913,6 +959,28 @@
                                     <span id="globalDelivTrack" style="position:absolute;inset:0;border-radius:28px;background:#16a34a;transition:background 0.25s;"></span>
                                     <span id="globalDelivKnob" style="position:absolute;left:4px;top:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.25s;box-shadow:0 1px 3px rgba(0,0,0,0.25);transform:translateX(24px);"></span>
                                 </label>
+                            </div>
+                        </div>
+
+                        <!-- STOCK THRESHOLD SETTINGS -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;border-radius:12px;margin-bottom:16px;border:1.5px solid #e2e8f0;background:#f8fafc;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <i class="bi bi-sliders2" style="font-size:18px;color:#1A3A6B;flex-shrink:0;"></i>
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#0f2952;">Stock Alert Thresholds</div>
+                                    <div style="font-size:11px;color:#6b7280;">Set when stock bars turn yellow (low) and red (critical)</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+                                <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#374151;">
+                                    <span style="color:#d97706;">Low %</span>
+                                    <input type="number" id="threshLow" min="1" max="99" value="40" style="width:56px;padding:5px 8px;border:1px solid #D1D5DB;border-radius:6px;font-size:12px;font-weight:700;color:#1A1A2E;font-family:inherit;text-align:center;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#374151;">
+                                    <span style="color:#dc2626;">Critical %</span>
+                                    <input type="number" id="threshHigh" min="1" max="99" value="75" style="width:56px;padding:5px 8px;border:1px solid #D1D5DB;border-radius:6px;font-size:12px;font-weight:700;color:#1A1A2E;font-family:inherit;text-align:center;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                </label>
+                                <button onclick="saveStockThresholds()" style="padding:6px 16px;background:#1A3A6B;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">Save</button>
                             </div>
                         </div>
 
@@ -1737,6 +1805,12 @@
                     <button class="modal-close" onclick="closeModal('concernModal')">&times;</button>
                 </div>
                 <div id="concernDetails" style="margin-bottom: 18px;"></div>
+                <div id="concernReplySection" style="display:none;border-top:1px solid #e5e7eb;padding-top:14px;margin-top:6px;">
+                    <div style="font-size:12px;font-weight:700;color:#0f2952;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Admin Responses</div>
+                    <div id="concernResponseThread" style="max-height:160px;overflow-y:auto;margin-bottom:10px;"></div>
+                    <textarea id="concernReplyText" rows="2" placeholder="Type a reply to the resident..." style="width:100%;padding:8px 12px;border:1.5px solid #D1D5DB;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;"></textarea>
+                    <button onclick="submitConcernReply()" style="margin-top:8px;padding:8px 18px;background:#1A3A6B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;"><i class="bi bi-send-fill"></i> Send Reply</button>
+                </div>
                 <form id="concernResponseForm">
                     <input type="hidden" id="concernId">
                     <div class="form-group">
@@ -1997,6 +2071,24 @@
                             <span>Archive this equipment (hide from active inventory)</span>
                         </label>
 
+                    </div>
+                    <div style="background:#F8FAFF;border:1px solid #E5E9F5;border-radius:10px;padding:16px 20px;">
+                        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#1A3A6B;text-transform:uppercase;margin-bottom:14px;">Advanced Settings</div>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Variation <span style="font-size:11px;color:#9CA3AF;font-weight:400;">(optional)</span></label>
+                            <input type="text" id="editEquipVariation" placeholder="e.g. Blue, Red, Large, Small..." style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        </div>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;">
+                            <div style="position:relative;width:44px;height:24px;flex-shrink:0;">
+                                <input type="checkbox" id="editEquipDelivery" style="opacity:0;width:0;height:0;position:absolute;" onchange="(function(v){var t=document.getElementById('editDelivTrack');var k=document.getElementById('editDelivKnob');if(t)t.style.background=v?'#16a34a':'#D1D5DB';if(k)k.style.transform=v?'translateX(20px)':'translateX(0)';})(this.checked)">
+                                <span id="editDelivTrack" style="position:absolute;inset:0;border-radius:24px;background:#D1D5DB;transition:background 0.2s;"></span>
+                                <span id="editDelivKnob" style="position:absolute;left:2px;top:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.25);transition:transform 0.2s;"></span>
+                            </div>
+                            <div>
+                                <div style="font-size:13px;font-weight:600;color:#374151;">Allow Delivery</div>
+                                <div style="font-size:11px;color:#6B7280;">Residents can request delivery for this item</div>
+                            </div>
+                        </label>
                     </div>
                 </form>
                 <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
@@ -2764,7 +2856,25 @@
                 await renderAdminCalendar();
             }
 
+            function toggleSidebar() {
+                const sidebar = document.getElementById('adminSidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                if (!sidebar) return;
+                const isOpen = sidebar.classList.contains('sidebar-open');
+                sidebar.classList.toggle('sidebar-open', !isOpen);
+                if (overlay) overlay.classList.toggle('active', !isOpen);
+            }
+
             function switchSection(section, btn) {
+                if (section === 'equipment') { setTimeout(loadStockThresholdUI, 50); }
+                if (section === 'announcements') { setTimeout(loadAnnouncements, 50); }
+                // Auto-close sidebar on mobile after navigation
+                const sidebar = document.getElementById('adminSidebar');
+                if (sidebar && window.innerWidth <= 768) {
+                    sidebar.classList.remove('sidebar-open');
+                    const overlay = document.getElementById('sidebarOverlay');
+                    if (overlay) overlay.classList.remove('active');
+                }
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
                 const allSections = ['overview', 'court-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'audit-log', 'security-log', 'profile', 'system', 'analytics'];
@@ -4463,9 +4573,53 @@
                     }
 
 
+
+                    // Weekly activity chart (#14)
+                    try {
+                        const fourWeeksAgo = new Date(); fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+                        const fwStr = fourWeeksAgo.toISOString();
+                        const [wBRes, wCRes, wRRes] = await Promise.all([
+                            supabase.from('borrowings').select('created_at').gte('created_at', fwStr),
+                            supabase.from('concerns').select('created_at').gte('created_at', fwStr),
+                            supabase.from('facility_reservations').select('created_at').gte('created_at', fwStr)
+                        ]);
+                        const wLabels = [], wBorr = [0,0,0,0], wCon = [0,0,0,0], wRes = [0,0,0,0];
+                        const now2 = new Date();
+                        for (let w = 3; w >= 0; w--) {
+                            const ws = new Date(now2); ws.setDate(now2.getDate() - (w+1)*7);
+                            const we = new Date(now2); we.setDate(now2.getDate() - w*7);
+                            wLabels.push('Week ' + (4-w));
+                            const i = 3-w;
+                            (wBRes.data||[]).forEach(r => { const d=new Date(r.created_at); if(d>=ws&&d<we) wBorr[i]++; });
+                            (wCRes.data||[]).forEach(r => { const d=new Date(r.created_at); if(d>=ws&&d<we) wCon[i]++; });
+                            (wRRes.data||[]).forEach(r => { const d=new Date(r.created_at); if(d>=ws&&d<we) wRes[i]++; });
+                        }
+                        const cEl = document.getElementById('weeklyActivityChart');
+                        if (cEl && typeof Chart !== 'undefined') {
+                            if (window._weeklyChart) window._weeklyChart.destroy();
+                            window._weeklyChart = new Chart(cEl, {
+                                type: 'bar',
+                                data: { labels: wLabels, datasets: [
+                                    { label: 'Equipment Requests', data: wBorr, backgroundColor: '#1A3A6B', borderRadius: 4 },
+                                    { label: 'Concerns',           data: wCon,  backgroundColor: '#dc2626', borderRadius: 4 },
+                                    { label: 'Reservations',       data: wRes,  backgroundColor: '#16a34a', borderRadius: 4 }
+                                ]},
+                                options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                            });
+                        }
+                    } catch(e) { console.warn('Weekly chart error', e); }
+
                 } catch (err) {
                     console.error('loadOverviewPanels error:', err);
                 }
+            }
+
+            function saveStockThresholds() {
+                const low  = parseInt(document.getElementById('threshLow')?.value) || 40;
+                const high = parseInt(document.getElementById('threshHigh')?.value) || 75;
+                if (low >= high) { showAlert('Critical % must be greater than Low %', 'error'); return; }
+                localStorage.setItem('brgy_stock_thresholds', JSON.stringify({ low, high }));
+                showAlert('Stock thresholds saved (' + low + '% low, ' + high + '% critical)', 'success');
             }
 
             function switchEventsTab(tab) {
@@ -4800,16 +4954,53 @@
                 }
             }
 
-            async function returnRequest(id) {
-                if (await showConfirmModal('Mark this equipment as returned?', 'Return Equipment', 'Yes, Returned', 'Cancel', 'info')) {
-                    const result = await returnEquipmentRequest(id);
-                    if (result && result.success) {
-                        showAlert('Equipment marked as returned', 'success');
-                        _updateReqRow(id, 'returned');
-                        loadStats();
-                    } else if (result) {
-                        showAlert(result.message || 'Error returning equipment', 'error');
+            let _currentReturnId = null;
+
+            function returnRequest(id) {
+                _currentReturnId = id;
+                const condEl = document.getElementById('returnCondition');
+                const notesEl = document.getElementById('returnNotes');
+                if (condEl) condEl.value = 'good';
+                if (notesEl) notesEl.value = '';
+                document.getElementById('returnEquipModal').style.display = 'flex';
+            }
+
+            async function confirmReturnEquip() {
+                const id = _currentReturnId;
+                if (!id) return;
+                const condition = document.getElementById('returnCondition')?.value || 'good';
+                const notes = document.getElementById('returnNotes')?.value?.trim() || '';
+                document.getElementById('returnEquipModal').style.display = 'none';
+                _currentReturnId = null;
+
+                const result = await returnEquipmentRequest(id);
+                if (result && result.success) {
+                    // If damaged or lost, adjust stock
+                    if (condition !== 'good') {
+                        const reqObj = (_allAdminRequestsList || []).find(r => r.id === id);
+                        if (reqObj) {
+                            const equipList = await getEquipment();
+                            const eq = equipList.find(e => String(e.name) === String(reqObj.equipment));
+                            if (eq) {
+                                const addBroken = condition === 'damaged' ? (parseInt(reqObj.quantity) || 1) : 0;
+                                const addDisposal = condition === 'lost' ? (parseInt(reqObj.quantity) || 1) : 0;
+                                await updateEquipment(eq.id, {
+                                    broken: (eq.broken || 0) + addBroken,
+                                    disposal: parseInt(eq.category) + addDisposal
+                                });
+                            }
+                        }
                     }
+                    const condLabel = condition === 'damaged' ? ' (Damaged — added to repair)' : condition === 'lost' ? ' (Lost — added to disposal)' : '';
+                    showAlert('Equipment marked as returned' + condLabel, 'success');
+                    _updateReqRow(id, 'returned');
+                    loadStats();
+                    await loadEquipment();
+                    if (notes) {
+                        logAudit('borrowing', id, 'Returned', { condition, notes });
+                    }
+                } else if (result) {
+                    showAlert(result.message || 'Error returning equipment', 'error');
                 }
             }
 
@@ -4830,6 +5021,8 @@
                         <p><strong>Submitted by:</strong> ${concern.userName}</p>
                     </div>
                 `;
+                // Load concern response thread
+                loadConcernResponses(concernId);
                     document.getElementById('concernModal').classList.add('active');
                     history.pushState({ modal: 'concernModal' }, '', '#concernModal');
                 }
@@ -5136,6 +5329,14 @@
             renderEquipmentPg();
         }
 
+        function loadStockThresholdUI() {
+                const t = JSON.parse(localStorage.getItem('brgy_stock_thresholds') || '{"high":75,"low":40}');
+                const lowEl  = document.getElementById('threshLow');
+                const highEl = document.getElementById('threshHigh');
+                if (lowEl)  lowEl.value  = t.low;
+                if (highEl) highEl.value = t.high;
+            }
+
         async function loadEquipment() {
                 await loadGlobalDeliverySetting();
                 const equipment = await getEquipment();
@@ -5409,6 +5610,18 @@
                 }
                 document.getElementById('editEquipImage').value = '';
                 document.getElementById('editPhotoLabel').textContent = 'Click to upload new photo';
+                // Variation
+                const varField = document.getElementById('editEquipVariation');
+                if (varField) varField.value = equipment.variation || '';
+                // Per-item delivery
+                const ds = JSON.parse(localStorage.getItem('brgy_delivery_settings') || '{}');
+                const delivOn = ds['id_' + equipment.id] !== undefined ? ds['id_' + equipment.id] : false;
+                const delivCb = document.getElementById('editEquipDelivery');
+                const delivTrack = document.getElementById('editDelivTrack');
+                const delivKnob = document.getElementById('editDelivKnob');
+                if (delivCb) { delivCb.checked = delivOn; }
+                if (delivTrack) delivTrack.style.background = delivOn ? '#16a34a' : '#D1D5DB';
+                if (delivKnob) delivKnob.style.transform = delivOn ? 'translateX(20px)' : 'translateX(0)';
                 calcEditAvail();
 
                 document.getElementById('editEquipmentModal').classList.add('active');
@@ -5453,8 +5666,16 @@
                     quantity: newQty,
                     broken: newBroken,
                     disposal: newDisposal,
-                    isArchived: document.getElementById('editEquipArchived').checked
+                    isArchived: document.getElementById('editEquipArchived').checked,
+                    variation: (document.getElementById('editEquipVariation') || {}).value || ''
                 };
+                // Save per-item delivery setting to localStorage
+                const delivCbEl = document.getElementById('editEquipDelivery');
+                if (delivCbEl) {
+                    const dsObj = JSON.parse(localStorage.getItem('brgy_delivery_settings') || '{}');
+                    dsObj['id_' + id] = delivCbEl.checked;
+                    localStorage.setItem('brgy_delivery_settings', JSON.stringify(dsObj));
+                }
                 if (image_url !== undefined) {
                     updates.image_url = image_url;
                 }
@@ -7349,6 +7570,118 @@
                 document.getElementById('adminRequestModal').style.display = 'none';
             }
 
+            // ======================== CONCERN RESPONSES (#18) ========================
+            async function loadConcernResponses(concernId) {
+                const threadEl = document.getElementById('concernResponseThread');
+                const replySection = document.getElementById('concernReplySection');
+                if (replySection) replySection.style.display = 'block';
+                if (!threadEl) return;
+                threadEl.innerHTML = '<div style="color:#9CA3AF;font-size:12px;padding:8px 0;">Loading responses...</div>';
+                try {
+                    const { data, error } = await window.supabase.from('concern_responses').select('*').eq('concern_id', concernId).order('created_at', { ascending: true });
+                    if (error) throw error;
+                    if (!data || data.length === 0) { threadEl.innerHTML = '<div style="color:#9CA3AF;font-size:12px;padding:8px 0;">No responses yet.</div>'; return; }
+                    threadEl.innerHTML = data.map(r => {
+                        const dateStr = new Date(r.created_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+                        return '<div style="padding:10px 14px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;margin-bottom:8px;">'
+                            + '<div style="font-size:11px;font-weight:700;color:#0369a1;margin-bottom:4px;">' + (r.admin_id || 'Admin') + ' &bull; ' + dateStr + '</div>'
+                            + '<div style="font-size:13px;color:#0f2952;line-height:1.5;white-space:pre-wrap;">' + r.message + '</div></div>';
+                    }).join('');
+                } catch(e) {
+                    threadEl.innerHTML = '<div style="color:#9CA3AF;font-size:12px;padding:8px 0;">Responses unavailable (table may not exist yet).</div>';
+                }
+            }
+
+            async function submitConcernReply() {
+                const concernId = document.getElementById('concernId')?.value;
+                const msg = document.getElementById('concernReplyText')?.value?.trim();
+                if (!msg) { showAlert('Enter a reply message', 'error'); return; }
+                const user = getCurrentUser();
+                const { error } = await window.supabase.from('concern_responses').insert({
+                    concern_id: concernId, message: msg,
+                    admin_id: user?.fullName || user?.username || 'Admin'
+                });
+                if (error) { showAlert('Error: ' + error.message, 'error'); return; }
+                document.getElementById('concernReplyText').value = '';
+                showAlert('Reply sent', 'success');
+                loadConcernResponses(concernId);
+                // Also send notification to resident
+                const supabase = window.supabase;
+                const concernList = await getAllConcerns();
+                const concern = concernList.find(c2 => c2.id === concernId);
+                if (concern && concern.userId) {
+                    await supabase.from('user_notifications').insert({
+                        user_id: concern.userId, type: 'concern_in_progress',
+                        message: 'May bagong tugon ang admin sa inyong concern: "' + (concern.title || '') + '"',
+                        is_read: false
+                    });
+                }
+            }
+            // ======================== END CONCERN RESPONSES ========================
+
+            // ======================== ANNOUNCEMENTS (#15) ========================
+            async function loadAnnouncements() {
+                const listEl = document.getElementById('announcementsList');
+                if (!listEl) return;
+                const supabase = window.supabase;
+                if (!supabase) return;
+                listEl.innerHTML = '<div style="padding:32px;text-align:center;color:#94a3b8;font-size:13px;">Loading...</div>';
+                try {
+                    const { data, error } = await supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(50);
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        listEl.innerHTML = '<div style="padding:48px;text-align:center;"><div style="font-size:36px;margin-bottom:12px;">&#128226;</div><p style="font-size:15px;font-weight:700;color:#374151;margin:0 0 6px;">No announcements yet</p><p style="font-size:13px;color:#9CA3AF;">Post the first barangay announcement.</p></div>';
+                        return;
+                    }
+                    const catColors = { General:'#1A3A6B', Health:'#dc2626', Infrastructure:'#d97706', Events:'#16a34a', Safety:'#7c3aed' };
+                    listEl.innerHTML = data.map(a => {
+                        const expired = a.expires_at && new Date(a.expires_at) < new Date();
+                        const cat = a.category || 'General';
+                        const color = catColors[cat] || '#1A3A6B';
+                        const dateStr = new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        return '<div style="background:#fff;border:1.5px solid ' + (expired?'#e5e7eb':'#e2e8f0') + ';border-left:4px solid ' + color + ';border-radius:10px;padding:16px 20px;opacity:' + (expired?'0.6':'1') + ';">'
+                            + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">'
+                            + '<div style="display:flex;align-items:center;gap:8px;">'
+                            + '<span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;background:' + color + '18;color:' + color + ';border:1px solid ' + color + '33;">' + cat + '</span>'
+                            + (expired ? '<span style="font-size:11px;color:#9CA3AF;font-weight:600;">Expired</span>' : '')
+                            + '</div>'
+                            + '<div style="display:flex;align-items:center;gap:10px;">'
+                            + '<span style="font-size:11px;color:#9CA3AF;">' + dateStr + '</span>'
+                            + '<button onclick="deleteAnnouncement(\'' + a.id + '\')" style="font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-weight:600;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='none'"><i class="bi bi-trash3"></i></button>'
+                            + '</div></div>'
+                            + '<h4 style="font-size:15px;font-weight:700;color:#0f2952;margin:0 0 6px;">' + (a.title || '') + '</h4>'
+                            + '<p style="font-size:13px;color:#374151;margin:0;line-height:1.5;white-space:pre-wrap;">' + (a.content || '') + '</p>'
+                            + '</div>';
+                    }).join('');
+                } catch(e) { listEl.innerHTML = '<div style="padding:24px;text-align:center;color:#dc2626;font-size:13px;">Error loading announcements: ' + e.message + '</div>'; }
+            }
+
+            async function submitAnnouncement() {
+                const title   = document.getElementById('annTitle')?.value?.trim();
+                const content = document.getElementById('annContent')?.value?.trim();
+                const cat     = document.getElementById('annCategory')?.value || 'General';
+                const expiry  = document.getElementById('annExpiry')?.value;
+                if (!title || !content) { showAlert('Please fill in title and content', 'error'); return; }
+                const supabase = window.supabase;
+                const user = getCurrentUser();
+                const { error } = await supabase.from('announcements').insert({
+                    title, content, category: cat,
+                    expires_at: expiry || null,
+                    created_by: user?.fullName || user?.username || 'Admin'
+                });
+                if (error) { showAlert('Error: ' + error.message, 'error'); return; }
+                showAlert('Announcement posted!', 'success');
+                document.getElementById('addAnnouncementModal').classList.remove('active');
+                loadAnnouncements();
+            }
+
+            async function deleteAnnouncement(id) {
+                if (!await showConfirmModal('Delete this announcement?', 'Delete', 'Yes, Delete', 'Cancel', 'danger')) return;
+                const { error } = await window.supabase.from('announcements').delete().eq('id', id);
+                if (error) { showAlert('Error: ' + error.message, 'error'); } else { showAlert('Deleted', 'success'); loadAnnouncements(); }
+            }
+            // ======================== END ANNOUNCEMENTS ========================
+
             async function markConcernResolved(id) {
                 const concern = _allAdminConcerns.find(c => c.id === id);
                 if (!concern) return;
@@ -7374,6 +7707,70 @@
             // DOMContentLoaded for other potential form listeners goes here if needed.
 
         </script>
+
+        <!-- Add Announcement Modal (#15) -->
+        <div class="modal" id="addAnnouncementModal">
+            <div class="modal-content" style="max-width:540px;width:92vw;border-radius:12px;overflow:hidden;padding:0;display:flex;flex-direction:column;max-height:90vh;">
+                <div style="background:#1A3A6B;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;"><i class="bi bi-megaphone-fill" style="color:#FDB913;"></i> New Announcement</div>
+                    <button onclick="closeModal('addAnnouncementModal')" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">&times;</button>
+                </div>
+                <div style="padding:20px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;">
+                    <div>
+                        <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Title *</label>
+                        <input type="text" id="annTitle" placeholder="Announcement title" style="width:100%;padding:9px 12px;border:1.5px solid #D1D5DB;border-radius:7px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Category</label>
+                        <select id="annCategory" style="width:100%;padding:9px 12px;border:1.5px solid #D1D5DB;border-radius:7px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                            <option value="General">General</option>
+                            <option value="Health">Health</option>
+                            <option value="Infrastructure">Infrastructure</option>
+                            <option value="Events">Events</option>
+                            <option value="Safety">Safety</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Content *</label>
+                        <textarea id="annContent" rows="5" placeholder="Write the announcement..." style="width:100%;padding:9px 12px;border:1.5px solid #D1D5DB;border-radius:7px;font-size:13px;color:#111;font-family:inherit;resize:vertical;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Expires on <span style="font-weight:400;color:#9CA3AF;">(optional)</span></label>
+                        <input type="date" id="annExpiry" style="width:100%;padding:9px 12px;border:1.5px solid #D1D5DB;border-radius:7px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                    </div>
+                </div>
+                <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
+                    <button onclick="closeModal('addAnnouncementModal')" style="height:38px;padding:0 18px;border:1.5px solid #1A3A6B;border-radius:7px;background:transparent;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+                    <button onclick="submitAnnouncement()" style="height:38px;padding:0 18px;border:none;border-radius:7px;background:#1A3A6B;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-send-fill" style="margin-right:5px;"></i>Post Announcement</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Return Equipment Condition Modal (#16) -->
+        <div id="returnEquipModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 style="font-size:18px;font-weight:800;color:#111;display:flex;align-items:center;gap:8px;"><i class="bi bi-box-arrow-in-left" style="color:#3b82f6;"></i> Mark as Returned</h3>
+                    <button onclick="document.getElementById('returnEquipModal').style.display='none'" style="width:30px;height:30px;border-radius:50%;background:#f3f4f6;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#374151;">&times;</button>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Item Condition</label>
+                    <select id="returnCondition" style="width:100%;padding:10px 12px;border:1.5px solid #D1D5DB;border-radius:8px;font-size:13px;font-weight:600;color:#111;font-family:inherit;background:#fff;outline:none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#D1D5DB'">
+                        <option value="good">Good — No issues</option>
+                        <option value="damaged">Damaged — Needs repair</option>
+                        <option value="lost">Lost / Cannot return</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Notes <span style="font-weight:400;text-transform:none;color:#9CA3AF;">(optional)</span></label>
+                    <textarea id="returnNotes" rows="3" placeholder="Describe condition, damage, or circumstances..." style="width:100%;padding:10px 12px;border:1.5px solid #D1D5DB;border-radius:8px;font-size:13px;color:#111;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="document.getElementById('returnEquipModal').style.display='none'" style="flex:1;padding:11px;border:1.5px solid #D1D5DB;border-radius:10px;background:#fff;color:#374151;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+                    <button onclick="confirmReturnEquip()" style="flex:1;padding:11px;border:none;border-radius:10px;background:#3b82f6;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'"><i class="bi bi-check-lg"></i> Confirm Return</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Admin Eq Reject Modal -->
         <div id="rejectEqModal"
@@ -8257,6 +8654,9 @@
                 var email = (document.getElementById('newUserEmail').value||'').trim().toLowerCase();
                 var sitio = (document.getElementById('newUserSitio').value||'').trim();
                 var house = (document.getElementById('newUserHouse').value||'').trim();
+                var fullAddress = (document.getElementById('newUserFullAddress')?document.getElementById('newUserFullAddress').value||'':'').trim();
+                var idType1 = (document.getElementById('newUserIdType')?document.getElementById('newUserIdType').value||'':'').trim();
+                var idType2 = (document.getElementById('newUserIdType2')?document.getElementById('newUserIdType2').value||'':'').trim();
                 var errEl = document.getElementById('addUserError');
                 var showErr = function(msg){errEl.textContent=msg;errEl.style.display='block';};
                 errEl.style.display='none';
@@ -8272,9 +8672,10 @@
                 if (suffix) nameParts.push(suffix);
                 var fullName = nameParts.join(' ');
                 var addrParts = [];
-                if (house) addrParts.push(house);
-                addrParts.push('Sitio '+sitio+', Brgy. Sta. Lucia');
+                if (fullAddress) { addrParts.push(fullAddress); } else { if (house) addrParts.push(house); addrParts.push('Sitio '+sitio+', Brgy. Sta. Lucia'); }
                 var address = addrParts.join(', ');
+                var idNotes = [idType1, idType2].filter(Boolean).join(', ');
+                if (idNotes) address += ' [IDs: ' + idNotes + ']';
                 var btn = document.getElementById('addUserSubmitBtn');
                 var orig = btn.innerHTML;
                 btn.innerHTML = '<i class="bi bi-hourglass-split" style="margin-right:6px;"></i>Adding...';
@@ -8717,6 +9118,38 @@
                     </select>
                 </div>
             </div>
+            <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #F3F4F6;">Identity</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Primary ID Type</label>
+                    <select id="newUserIdType" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <option value="">None / Not Provided</option>
+                        <option value="PhilSys (National ID)">PhilSys (National ID)</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Driver's License">Driver's License</option>
+                        <option value="Voter's ID">Voter's ID</option>
+                        <option value="SSS ID">SSS ID</option>
+                        <option value="PhilHealth ID">PhilHealth ID</option>
+                        <option value="Pag-IBIG ID">Pag-IBIG ID</option>
+                        <option value="Postal ID">Postal ID</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Secondary ID Type</label>
+                    <select id="newUserIdType2" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        <option value="">None</option>
+                        <option value="PhilSys (National ID)">PhilSys (National ID)</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Driver's License">Driver's License</option>
+                        <option value="Voter's ID">Voter's ID</option>
+                        <option value="SSS ID">SSS ID</option>
+                        <option value="PhilHealth ID">PhilHealth ID</option>
+                        <option value="Pag-IBIG ID">Pag-IBIG ID</option>
+                        <option value="Postal ID">Postal ID</option>
+                        <option value="Barangay Clearance">Barangay Clearance</option>
+                    </select>
+                </div>
+            </div>
             <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #F3F4F6;">Contact Information</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                 <div>
@@ -8746,6 +9179,10 @@
             <div style="margin-bottom:6px;">
                 <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">House / Unit No.</label>
                 <input type="text" id="newUserHouse" placeholder="e.g. 12B" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+            </div>
+            <div style="margin-bottom:6px;">
+                <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Full Address / Place of Living <span style="font-weight:400;color:#9CA3AF;">(optional)</span></label>
+                <input type="text" id="newUserFullAddress" placeholder="e.g. 12B Sampaguita St., Sitio III" style="width:100%;padding:9px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#111;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
             </div>
         </div>
         <div style="padding:14px 22px;border-top:1px solid #E5E7EB;background:#FAFAFA;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
