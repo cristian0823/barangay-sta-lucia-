@@ -696,21 +696,28 @@
                         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9000; align-items:center; justify-content:center;">
                         <div
                             style="background:#fff; border-radius:16px; padding:28px; width:90%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-                            <h3 style="font-size:18px; font-weight:800; color:#111; margin-bottom:6px;"> Reject Reservation
-                            </h3>
-                            <p style="font-size:13px; color:#6b7280; margin-bottom:18px;">Please provide a reason so the
-                                resident knows why their booking was rejected.</p>
-                            <textarea id="rejectReasonText" rows="4"
-                                placeholder="e.g. The venue is reserved for a barangay event on this date."
-                                style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
-                                onfocus="this.style.borderColor='#ef4444'"
-                                onblur="this.style.borderColor='#d1d5db'"></textarea>
+                            <h3 style="font-size:18px; font-weight:800; color:#111; margin-bottom:6px;">Reject Reservation</h3>
+                            <p style="font-size:13px; color:#6b7280; margin-bottom:18px;">Select a reason so the resident knows why their booking was rejected.</p>
+                            <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Reason for Rejection <span style="color:#ef4444;">*</span></label>
+                            <select id="rejectReasonSelect" onchange="(function(v){var el=document.getElementById('rejectReasonOther');if(el)el.style.display=v==='Other'?'block':'none';})(this.value)"
+                                style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;cursor:pointer;margin-bottom:10px;"
+                                onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'">
+                                <option value="">Select reason...</option>
+                                <option value="No available slot">No available slot</option>
+                                <option value="Item under repair">Item under repair</option>
+                                <option value="Insufficient stock">Insufficient stock</option>
+                                <option value="Incomplete information">Incomplete information</option>
+                                <option value="Policy violation">Policy violation</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <textarea id="rejectReasonOther" rows="3" placeholder="Please specify the reason..."
+                                style="display:none;width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;"
+                                onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'"></textarea>
                             <div style="display:flex; gap:10px; margin-top:16px;">
                                 <button onclick="closeRejectModal()"
                                     style="flex:1; padding:11px; border:1.5px solid #d1d5db; border-radius:10px; font-weight:600; cursor:pointer; background:#fff;">Cancel</button>
                                 <button onclick="confirmReject()"
-                                    style="flex:1; padding:11px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;">Confirm
-                                    Reject</button>
+                                    style="flex:1; padding:11px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;">Confirm Reject</button>
                             </div>
                         </div>
                     </div>
@@ -2806,29 +2813,42 @@
                 
                 let supabaseLogs = [];
                 try {
-                    const { data, error } = await supabase.from('audit_log').select('*, users(id, full_name, username, barangay_id, email, role)').order('created_at', { ascending: false }).limit(500);
+                    // No embedded FK join — avoids silent failure when FK not defined in schema
+                    const { data, error } = await supabase.from('audit_log').select('id, user_id, actor_type, entity_type, entity_id, action, details, local_username, local_full_name, local_role, created_at').order('created_at', { ascending: false }).limit(500);
                     if (!error && data) {
-                        for (let l of data) {
-                            try {
-                                if (l.users && l.users.email) l.users.email = await decryptData(l.users.email);
-                            } catch(e) {}
-                        }
                         supabaseLogs = data;
                     }
                 } catch(e) {
                     console.warn('loadAuditLog Supabase error:', e);
                 }
-                
-                // Build a user lookup map from Supabase
+
+                // Batch-fetch user details for all unique user_ids — avoids FK join dependency
+                const _auditUids = [...new Set(supabaseLogs.map(l => l.user_id).filter(Boolean))];
                 const _userMap = {};
-                try {
-                    const _allUsers = await getAllUsers(); // Auto-decrypts!
-                    if (_allUsers) {
-                        _allUsers.forEach(u => {
-                            if (u.id) _userMap[String(u.id)] = u;
-                        });
-                    }
-                } catch(e) {}
+                if (_auditUids.length) {
+                    try {
+                        const { data: uList } = await supabase.from('users').select('id, full_name, username, barangay_id, email, role').in('id', _auditUids);
+                        if (uList) {
+                            for (let u of uList) {
+                                try { if (u.email) u.email = await decryptData(u.email); } catch(e) {}
+                                _userMap[String(u.id)] = u;
+                            }
+                        }
+                    } catch(e) {}
+                }
+
+                // Attach synthetic users object: DB lookup first, then local_* field fallbacks stored at write time
+                supabaseLogs = supabaseLogs.map(l => {
+                    const u = l.user_id ? (_userMap[String(l.user_id)] || null) : null;
+                    return {
+                        ...l,
+                        users: {
+                            full_name: (u && (u.full_name || u.username)) || l.local_full_name || null,
+                            username:  (u && u.username) || l.local_username || null,
+                            role:      (u && u.role) || l.local_role || (l.actor_type === 'admin' ? 'admin' : 'user')
+                        }
+                    };
+                });
 
                 const localUsersList = JSON.parse(localStorage.getItem('barangay_local_users')) || [];
                 const localLogs = JSON.parse(localStorage.getItem('barangay_local_audit_log')) || [];
@@ -3932,7 +3952,7 @@
                     const actionHtml = isSuspended 
                         ? `<button onclick="liftSuspension('${u.id}', '${displayName}')" style="background:var(--green-xl);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Lift Ban</button>`
                         : `<button onclick="openSuspendModal('${u.id}', '${displayName}', ${u.offense_count || 0})" style="background:transparent;color:#CE1126;border:1px solid #CE1126;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;">Suspend</button>
-                           <button onclick="adminDeleteUserConfirm('${u.id}', '${displayName}')" style="background:#dc2626;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Delete</button>`;
+                           <button onclick="adminDeleteUserConfirm('${u.id}', '${displayName}')" style="background:transparent;color:#dc2626;border:1.5px solid #dc2626;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">Delete</button>`;
 
                     return `<tr onclick="openUserDetailPanel(this)" data-uid="${u.id}" style="cursor:pointer;transition:background 0.12s;" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background=''">
                         <td style="font-size:12px;font-weight:700;color:var(--green-xl);white-space:nowrap;">${u.barangay_id || ''}</td>
@@ -4735,7 +4755,10 @@
 
             function rejectRequest(id) {
                 _currentRejectEqId = id;
-                document.getElementById('rejectEqReasonText').value = '';
+                const sel = document.getElementById('rejectEqReasonSelect');
+                if (sel) sel.value = '';
+                const oth = document.getElementById('rejectEqReasonOther');
+                if (oth) { oth.value = ''; oth.style.display = 'none'; }
                 document.getElementById('rejectEqModal').style.display = 'flex';
             }
 
@@ -4745,12 +4768,14 @@
             }
 
             async function confirmRejectEq(btnElem) {
-                const reason = document.getElementById('rejectEqReasonText').value.trim();
+                const sel = document.getElementById('rejectEqReasonSelect');
+                const oth = document.getElementById('rejectEqReasonOther');
+                let reason = sel ? sel.value : '';
                 let eventBtn = btnElem || (window.event ? window.event.currentTarget : null);
-                
-                if (!reason) {
-                    showAlert('Please enter a reason for rejection.', 'error');
-                    return;
+                if (!reason) { showAlert('Please select a reason for rejection.', 'error'); return; }
+                if (reason === 'Other') {
+                    reason = oth ? oth.value.trim() : '';
+                    if (!reason) { showAlert('Please specify the rejection reason.', 'error'); return; }
                 }
                 
                 if (eventBtn) {
@@ -6001,7 +6026,10 @@
 
             function openRejectModal(bookingId) {
                 _rejectBookingId = bookingId;
-                document.getElementById('rejectReasonText').value = '';
+                const sel = document.getElementById('rejectReasonSelect');
+                if (sel) sel.value = '';
+                const oth = document.getElementById('rejectReasonOther');
+                if (oth) { oth.value = ''; oth.style.display = 'none'; }
                 const modal = document.getElementById('rejectReasonModal');
                 modal.style.display = 'flex';
             }
@@ -6012,10 +6040,13 @@
             }
 
             async function confirmReject() {
-                const reason = document.getElementById('rejectReasonText').value.trim();
-                if (!reason) {
-                    showAlert('Please enter a reason for rejection.', 'error');
-                    return;
+                const sel = document.getElementById('rejectReasonSelect');
+                const oth = document.getElementById('rejectReasonOther');
+                let reason = sel ? sel.value : '';
+                if (!reason) { showAlert('Please select a reason for rejection.', 'error'); return; }
+                if (reason === 'Other') {
+                    reason = oth ? oth.value.trim() : '';
+                    if (!reason) { showAlert('Please specify the rejection reason.', 'error'); return; }
                 }
                 try {
                     const { error } = await supabase.from('facility_reservations')
@@ -6026,10 +6057,11 @@
                     const booking = _allAdminBookingsList ? _allAdminBookingsList.find(b => b.id === _rejectBookingId) : null;
                     if (booking && booking.user_id) {
                         const vName = booking.venue || 'Facility';
+                        const dateStr = booking.date ? new Date(booking.date + 'T00:00:00').toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}) : booking.date;
                         await supabase.from('user_notifications').insert([{
                             user_id: String(booking.user_id),
                             type: 'booking_rejected',
-                            message: `Your reservation for ${vName} on ${booking.date} was rejected. Reason: ${reason}`,
+                            message: `Ang inyong reservation para sa ${vName} noong ${dateStr} ay tinanggihan. Dahilan: ${reason}`,
                             is_read: false
                         }]);
                         if (typeof broadcastSync === 'function') broadcastSync();
@@ -7351,14 +7383,23 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h3 style="font-size:18px; font-weight:800; color:#111;">Reject Request</h3>
                     <button onclick="closeRejectEqModal()"
-                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;"></button>
+                        style="background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280;">&times;</button>
                 </div>
-                <div style="margin-bottom:20px;">
-                    <label
-                        style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">Reason
-                        for Rejection *</label>
-                    <textarea id="rejectEqReasonText" rows="4" required placeholder="State the reason why..."
-                        style="width:100%; padding:12px; border:1.5px solid #d1d5db; border-radius:10px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none;"
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:13px; font-weight:500; color:#374151; margin-bottom:6px;">Reason for Rejection <span style="color:#ef4444;">*</span></label>
+                    <select id="rejectEqReasonSelect" onchange="(function(v){var el=document.getElementById('rejectEqReasonOther');if(el)el.style.display=v==='Other'?'block':'none';})(this.value)"
+                        style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;background:#fff;cursor:pointer;margin-bottom:10px;"
+                        onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'">
+                        <option value="">Select reason...</option>
+                        <option value="No available slot">No available slot</option>
+                        <option value="Item under repair">Item under repair</option>
+                        <option value="Insufficient stock">Insufficient stock</option>
+                        <option value="Incomplete information">Incomplete information</option>
+                        <option value="Policy violation">Policy violation</option>
+                        <option value="Other">Other (specify below)</option>
+                    </select>
+                    <textarea id="rejectEqReasonOther" rows="3" placeholder="Please specify the reason..."
+                        style="display:none;width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;"
                         onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#d1d5db'"></textarea>
                 </div>
                 <div style="display:flex; gap:10px;">
