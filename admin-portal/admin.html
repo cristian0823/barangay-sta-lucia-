@@ -514,6 +514,23 @@
                                 <!-- Today's Summary -->
                             </div>
                         </div>
+                        <script>
+                        (function(){
+                            function _tick(){
+                                var n=new Date(),h=n.getHours();
+                                var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+                                var ds=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+                                var ts=n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+                                var grEl=document.getElementById('welcomeGreeting');
+                                var dtEl=document.getElementById('heroDate');
+                                if(grEl&&grEl.textContent.indexOf('Loading')===-1&&grEl.textContent===grEl.textContent){}
+                                if(dtEl)dtEl.textContent=ds;
+                                if(grEl)grEl.textContent=g+', Admin';
+                            }
+                            _tick();
+                            setInterval(_tick,1000);
+                        })();
+                        </script>
 
 
                         <!-- KPI STAT CARDS -->
@@ -4522,7 +4539,14 @@
             async function loadOverviewPanels() {
                 try {
                     const supabase = window.supabase;
-                    if (!supabase) return;
+                    if (!supabase) {
+                        // Show "unavailable" instead of stuck "Loading..."
+                        const pendingEl = document.getElementById('overviewPendingList');
+                        const concernEl = document.getElementById('overviewConcernsList');
+                        if (pendingEl) pendingEl.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">Database unavailable</div>';
+                        if (concernEl) concernEl.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">Database unavailable</div>';
+                        return;
+                    }
 
                     // Today's summary counts
                     const today = new Date().toISOString().split('T')[0];
@@ -6443,6 +6467,11 @@
                 }
               } catch(e) {
                 console.warn('loadOverview error:', e);
+                // Fallback: show 0 on stat cards so they don't stay stuck at "—"
+                ['pendingRequests','pendingConcerns','upcomingEvents','totalUsers'].forEach(id => {
+                    const node = document.getElementById(id);
+                    if (node && node.textContent === '—') node.textContent = '0';
+                });
               }
             }
 
@@ -7674,7 +7703,7 @@
                             + '</div>'
                             + '<div style="display:flex;align-items:center;gap:10px;">'
                             + '<span style="font-size:11px;color:#9CA3AF;">' + dateStr + '</span>'
-                            + '<button onclick="deleteAnnouncement(\'' + a.id + '\')" style="font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-weight:600;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='none'"><i class="bi bi-trash3"></i></button>'
+                            + '<button onclick="deleteAnnouncement(\'' + a.id + '\')" style="font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-weight:600;" onmouseover="this.style.background=\'#fee2e2\'" onmouseout="this.style.background=\'none\'"><i class="bi bi-trash3"></i></button>'
                             + '</div></div>'
                             + '<h4 style="font-size:15px;font-weight:700;color:#0f2952;margin:0 0 6px;">' + (a.title || '') + '</h4>'
                             + '<p style="font-size:13px;color:#374151;margin:0;line-height:1.5;white-space:pre-wrap;">' + (a.content || '') + '</p>'
