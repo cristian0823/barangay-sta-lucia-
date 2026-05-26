@@ -625,8 +625,21 @@
 
             if (valid) {
                 document.getElementById('verifySuccess').style.display = 'block';
-                await saveTOTPSecretToDB(pendingUser.id, currentSecret);
-                await window.supabase.from('users').update({ otp_method: 'totp' }).eq('id', pendingUser.id);
+                const saveResult = await saveTOTPSecretToDB(pendingUser.id, currentSecret);
+                if (!saveResult.success) {
+                    // Column may not exist yet — direct update as fallback
+                    try {
+                        if (window.supabase) {
+                            await window.supabase.from('users').update({
+                                totp_secret: currentSecret,
+                                totp_enabled: true,
+                                otp_method: 'totp'
+                            }).eq('id', pendingUser.id);
+                        }
+                    } catch(e) { console.warn('[TOTP] Direct save fallback failed:', e); }
+                } else {
+                    try { if (window.supabase) await window.supabase.from('users').update({ otp_method: 'totp' }).eq('id', pendingUser.id); } catch(e) {}
+                }
                 if (typeof logActivity === 'function') {
                     logActivity('2FA Enabled', `User ${pendingUser.username} enabled Google Authenticator`);
                 }

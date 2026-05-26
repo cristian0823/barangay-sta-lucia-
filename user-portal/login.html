@@ -598,10 +598,11 @@
                 let otpMethod   = null;
                 let userEmail   = result.user.email || null;
                 try {
-                    if (window.supabase) {
+                    if (window.supabase && result.user.id) {
+                        // Query by id (primary key) — more reliable than username lookup
                         const { data: totpRow } = await window.supabase
                             .from('users').select('totp_secret, totp_enabled, otp_method, email, id')
-                            .eq('username', result.user.username).maybeSingle();
+                            .eq('id', result.user.id).maybeSingle();
                         if (totpRow) {
                             totpEnabled = !!totpRow.totp_enabled;
                             totpSecret  = totpRow.totp_secret || null;

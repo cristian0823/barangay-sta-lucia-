@@ -520,15 +520,19 @@
                                 var n=new Date(),h=n.getHours();
                                 var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
                                 var ds=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-                                var ts=n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-                                var grEl=document.getElementById('welcomeGreeting');
                                 var dtEl=document.getElementById('heroDate');
-                                if(grEl&&grEl.textContent.indexOf('Loading')===-1&&grEl.textContent===grEl.textContent){}
+                                var grEl=document.getElementById('welcomeGreeting');
                                 if(dtEl)dtEl.textContent=ds;
-                                if(grEl)grEl.textContent=g+', Admin';
+                                // Only set greeting if initWelcomeClock hasn't run yet (still showing default)
+                                if(grEl&&grEl.textContent==='Good morning, Admin'){grEl.textContent=g+', Admin';}
                             }
                             _tick();
-                            setInterval(_tick,1000);
+                            setInterval(function(){
+                                var n=new Date();
+                                var ds=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+                                var dtEl=document.getElementById('heroDate');
+                                if(dtEl)dtEl.textContent=ds;
+                            },1000);
                         })();
                         </script>
 
