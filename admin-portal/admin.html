@@ -325,6 +325,7 @@
 </head>
 
 <body style="font-family:'Inter',sans-serif;background:#EDEEF2;margin:0;padding:0;">
+<div id="_adminDiagBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;padding:10px 16px;font-size:13px;font-family:monospace;word-break:break-all;"></div>
 
 <!-- Mobile Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
@@ -2107,8 +2108,30 @@
         <script src="js/realtime-listeners.js"></script>
         <script src="js/darkmode.js"></script>
         <script>
+            // ── Failsafe error capture ──────────────────────────────────────────────
+            window.__adminErrors = [];
+            window.onerror = function(msg, src, line, col, err) {
+                window.__adminErrors.push({ msg, src, line, col });
+                var banner = document.getElementById('_adminDiagBanner');
+                if (banner) {
+                    banner.style.display = 'block';
+                    banner.textContent = 'JS Error: ' + msg + ' (' + (src||'').split('/').pop() + ':' + line + ')';
+                }
+            };
+
             if (!requireAuth()) window.location.href = 'login.html';
             if (!requireAdmin()) window.location.href = 'home.html';
+
+            // ── Failsafe clock: fires when DOM ready OR immediately if already ready ─
+            function _safeInitClock() {
+                if (typeof initWelcomeClock === 'function') { initWelcomeClock(); return; }
+                setTimeout(_safeInitClock, 100);
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', _safeInitClock);
+            } else {
+                _safeInitClock();
+            }
 
             document.addEventListener('DOMContentLoaded', async function () {
                 const user = getCurrentUser();
