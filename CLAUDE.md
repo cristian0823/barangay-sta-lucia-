@@ -58,6 +58,18 @@ Each portal is effectively a **single large HTML file** with all HTML, inline CS
 
 These files are the **source of truth**. The root-level `*.html` files (`user-dashboard.html`, `admin.html`) are stale backups — do not edit them.
 
+### Root-level files
+
+| File | Role |
+|------|------|
+| `index.html` | Public landing page **and** auth router — reads `currentUser` from storage and redirects to the appropriate portal |
+| `login.html`, `forgot-password.html`, `setup-totp.html` | Public auth pages |
+| `vercel.json` | Vercel config: no-cache headers for HTML/JS, security headers (HSTS, CSP, X-Frame-Options), catch-all rewrites |
+| `supabase_schema.sql` | DB schema reference — not applied automatically; used for documentation/migrations |
+| `DEPLOY.md` | Step-by-step Vercel deploy + Supabase URL allowlist instructions |
+
+The hundreds of root-level `fix-*.js`, `patch-*.js`, `temp-*.js`, and `add-*.js` files are **one-off dev artifacts** — do not edit or rely on them.
+
 ### Shared JS (duplicated per portal)
 
 Each portal has its own copy under `user-portal/js/` and `admin-portal/js/`:
@@ -71,8 +83,10 @@ Each portal has its own copy under `user-portal/js/` and `admin-portal/js/`:
 | `crypto-utils.js` | Password hashing / encryption helpers |
 | `totp-handler.js` | 2FA TOTP logic |
 | `incident-manager.js` | Security incident detection and logging |
+| `auth-visuals.js` | Login form UI / modal styling |
+| `otpauth.js` | Third-party OTP library used by `totp-handler.js` |
 | `darkmode.js` | Dark mode toggle (user portal only) |
-| `realtime-listeners.js` | Supabase realtime subscriptions (user portal only) |
+| `realtime-listeners.js` | Supabase realtime subscriptions (user portal only) — notifies residents of equipment status changes and concern responses; notifies admins of new submissions |
 
 When modifying shared logic, edit both `user-portal/js/app.js` and `admin-portal/js/app.js` unless the change is portal-specific.
 

@@ -1288,8 +1288,8 @@
                         </div>
                         
 
-                        <button type="submit" id="submitBorrowBtn" class="w-full mt-2 bg-gradient-to-r from-slate-500 to-emerald-600 hover:from-slate-50 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;">
-                            Submit Borrow Request
+                        <button type="submit" id="submitBorrowBtn" class="w-full mt-2 bg-gradient-to-r from-slate-500 to-emerald-600 hover:from-slate-50 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 border-none cursor-pointer" style="margin-bottom:32px;" data-default-label="Submit Equipment Request">
+                            Submit Equipment Request
                         </button>
                     </form>
                     </div><!-- /borrowDetailsReveal -->
@@ -1372,6 +1372,18 @@
                         <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">
+                            Proof of Billing / Valid ID <span style="color:#dc2626;">*</span>
+                        </label>
+                        <div id="dsProofUploadArea" onclick="document.getElementById('dsProofFile').click()" style="border:2px dashed #bfdbfe;border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:#eff6ff;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#bfdbfe'">
+                            <i class="bi bi-upload" style="font-size:20px;color:#3b82f6;display:block;margin-bottom:4px;"></i>
+                            <p id="dsProofLabel" class="text-xs font-medium text-blue-700">Click to upload (JPG, PNG, PDF — max 5MB)</p>
+                        </div>
+                        <input type="file" id="dsProofFile" accept="image/jpeg,image/png,application/pdf" style="display:none;" onchange="(function(f){if(!f)return;if(f.size>5*1024*1024){alert('File exceeds 5MB limit.');this.value='';return;}document.getElementById('dsProofLabel').textContent='✓ '+f.name;document.getElementById('dsProofUploadArea').style.borderColor='#16a34a';document.getElementById('dsProofUploadArea').style.background='#f0fdf4';}).call(this,this.files[0])">
+                        <p class="text-[10px] text-gray-500 mt-1">Required for all facility reservation requests (e.g., barangay clearance, government-issued ID, or proof of billing).</p>
+                    </div>
+
                     <div class="mt-2 text-[10px] leading-relaxed text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-200 shadow-sm flex items-start gap-2 mb-3">
                         <i class="bi bi-info-circle" style="font-size:14px;color:#3b82f6;flex-shrink:0;margin-top:2px;"></i>
                         <div>
@@ -1427,6 +1439,25 @@
                         No, Go Back
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SCHEDULING CONFLICT SUGGESTION MODAL ========== -->
+    <div id="bookingConflictSuggestModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" style="animation:fadeInUp 0.3s ease;">
+            <div style="background:linear-gradient(135deg,#1e3a5f,#0f1f3d);padding:28px 24px 20px;text-align:center;">
+                <div style="font-size:40px;margin-bottom:10px;line-height:1;">&#128197;</div>
+                <h3 style="font-size:20px;font-weight:800;color:#fff;margin:0 0 8px;">Time Slot Unavailable</h3>
+                <p id="bookingConflictMsg" style="font-size:13px;color:rgba(255,255,255,0.9);margin:0;line-height:1.5;"></p>
+            </div>
+            <div style="padding:20px;">
+                <p style="font-size:12px;font-weight:700;color:#374151;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.06em;">Suggested Available Dates</p>
+                <div id="bookingConflictSuggestions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+                <button onclick="document.getElementById('bookingConflictSuggestModal').classList.replace('flex','hidden');document.getElementById('bookingConflictSuggestModal').classList.add('hidden');"
+                    style="width:100%;padding:12px;background:#f3f4f6;color:#374151;font-weight:700;font-size:13px;border-radius:12px;border:1.5px solid #e5e7eb;cursor:pointer;transition:all 0.2s;">
+                    &#10005; Close &amp; Pick Another Slot
+                </button>
             </div>
         </div>
     </div>
@@ -2578,8 +2609,10 @@
             try {
                 const list = await getEquipment();
                 console.log('[DEBUG] getEquipment returned:', list);
-                allEquipmentList = list;
-                await renderEquipmentGrid(list);
+                // Filter out items flagged Under Maintenance — they must not appear in borrowing catalog
+                const borrowableList = list.filter(item => !item.is_maintenance && !item.isMaintenance);
+                allEquipmentList = borrowableList;
+                await renderEquipmentGrid(borrowableList);
                 loadMyBorrowingsList();
             } catch(err) {
                 console.error('[DEBUG] loadEquipmentView error:', err);
@@ -2759,7 +2792,7 @@
             updateBorrowLockState();
             window._borrowTermsAgreed = false;
             const _sbtn = document.getElementById('submitBorrowBtn');
-            if (_sbtn) { _sbtn.innerHTML = 'Submit Borrow Request'; _sbtn.style.background = ''; }
+            if (_sbtn) { _sbtn.innerHTML = 'Submit Equipment Request'; _sbtn.style.background = ''; }
             const _bdr = document.getElementById('borrowDetailsReveal'); if (_bdr) _bdr.style.display = 'none';
         }
 
@@ -2811,7 +2844,9 @@
         function updateBorrowSubmitButton() {
             const btn = document.getElementById('submitBorrowBtn');
             if (!btn) return;
-            const qty = parseInt(document.getElementById('borrowQty').value);
+            const qtyInput = document.getElementById('borrowQty');
+            const qty = parseInt(qtyInput.value) || 0;
+            const maxAvail = parseInt(qtyInput.max) || 9999;
             const purpose = document.getElementById('borrowPurpose').value;
             const name = document.getElementById('borrowerFullName').value;
             const contact = document.getElementById('borrowerContact').value;
@@ -2821,7 +2856,14 @@
             const deliveryPickup = document.getElementById('deliveryPickup');
             const deliveryDelivery = document.getElementById('deliveryDelivery');
             const deliveryMethodSelected = (deliveryPickup && deliveryPickup.checked) || (deliveryDelivery && deliveryDelivery.checked);
-            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected);
+            const helpEl = document.getElementById('borrowMaxHelp');
+            // Show "Only X available" warning when qty exceeds available stock
+            if (borrowStartDate && borrowReturnDate && qty > maxAvail && maxAvail < 9999) {
+                if (helpEl) helpEl.innerHTML = '<span style="color:#dc2626;font-weight:700;">&#9888; Only ' + maxAvail + ' available for selected dates. Please reduce quantity.</span>';
+                btn.disabled = true;
+                return;
+            }
+            btn.disabled = !(currentBorrowPurpose && borrowStartDate && borrowReturnDate && qty > 0 && qty <= maxAvail && purpose.trim() !== '' && name.trim() !== '' && contact.trim() !== '' && timesValid && deliveryMethodSelected);
         }
         document.getElementById('borrowQty')?.addEventListener('input', updateBorrowSubmitButton);
         document.getElementById('borrowPurpose')?.addEventListener('input', updateBorrowSubmitButton);
@@ -3404,7 +3446,7 @@
             } else { 
                 showToast(result.message, 'error'); 
             }
-            btn.disabled = false; btn.innerHTML = '<i class="bi bi-send-fill" style="margin-right:6px;"></i>Submit Borrow Request';
+            btn.disabled = false; btn.innerHTML = '<i class="bi bi-send-fill" style="margin-right:6px;"></i>Submit Equipment Request';
         }
 
         /* cancelEqRequest moved down */
@@ -4305,6 +4347,12 @@
                 return showToast(`Reservations are currently closed. Available from ${fmtH(facOpen)} to ${fmtH(facClose)}.`, 'error');
             }
 
+            // Require proof of billing/ID upload before submission
+            const _proofFile = document.getElementById('dsProofFile');
+            if (!_proofFile || !_proofFile.files || _proofFile.files.length === 0) {
+                return showToast('Please upload your Proof of Billing or Valid ID before submitting.', 'error');
+            }
+
             btn.disabled = true; btn.innerHTML = 'Processing...';
 
             const date = document.getElementById('dsDate').value;
@@ -4358,14 +4406,76 @@
                 document.getElementById('dsPurpose').value = '';
                 document.getElementById('dsStartTime').value = '';
                 document.getElementById('dsEndTime').value = '';
+                const _pf = document.getElementById('dsProofFile'); if (_pf) _pf.value = '';
+                const _pl = document.getElementById('dsProofLabel'); if (_pl) _pl.textContent = 'Click to upload (JPG, PNG, PDF — max 5MB)';
+                const _pa = document.getElementById('dsProofUploadArea'); if (_pa) { _pa.style.borderColor='#bfdbfe'; _pa.style.background='#eff6ff'; }
                 closeDsBookingModal();
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span> Add Facility Reservation</span>';
                 await refreshDsSchedule(date, venue);
                 await loadBookingView();
                 await loadDashboardStats();
             } else {
-                showToast(result.message, 'error');
+                // Show conflict suggestion modal when a time-overlap is detected
+                if (result.message && result.message.toLowerCase().includes('overlap')) {
+                    showBookingConflictSuggestions(date, venue, result.message);
+                } else {
+                    showToast(result.message, 'error');
+                }
             }
+        }
+
+        async function showBookingConflictSuggestions(conflictDate, venue, conflictMsg) {
+            const modal = document.getElementById('bookingConflictSuggestModal');
+            const msgEl = document.getElementById('bookingConflictMsg');
+            const suggestEl = document.getElementById('bookingConflictSuggestions');
+            if (!modal || !msgEl || !suggestEl) return;
+            msgEl.textContent = conflictMsg;
+            suggestEl.innerHTML = '<div style="font-size:12px;color:#6b7280;text-align:center;padding:8px 0;">Finding available slots…</div>';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Find next 3 free dates for the same venue starting tomorrow
+            try {
+                const allBookings = await getCourtBookings();
+                const allEvents = await getEvents();
+                const bookedOrBlocked = new Set();
+                allBookings.forEach(b => {
+                    if (!['rejected','cancelled','cancelled_by_admin','admin_cancelled'].includes(b.status)) bookedOrBlocked.add(b.date + '|' + (b.venue || 'basketball'));
+                });
+                allEvents.forEach(e => { if (e.status === 'approved') bookedOrBlocked.add(e.date + '|all'); });
+                const suggestions = [];
+                const check = new Date(conflictDate);
+                check.setDate(check.getDate() + 1);
+                let attempts = 0;
+                while (suggestions.length < 3 && attempts < 60) {
+                    attempts++;
+                    const ds = check.getFullYear() + '-' + String(check.getMonth()+1).padStart(2,'0') + '-' + String(check.getDate()).padStart(2,'0');
+                    const isBlocked = bookedOrBlocked.has(ds + '|' + venue) || bookedOrBlocked.has(ds + '|all');
+                    if (!isBlocked) {
+                        suggestions.push(new Date(check));
+                    }
+                    check.setDate(check.getDate() + 1);
+                }
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                if (suggestions.length === 0) {
+                    suggestEl.innerHTML = '<p style="font-size:13px;color:#6b7280;text-align:center;">No available dates found in the next 2 months.</p>';
+                } else {
+                    suggestEl.innerHTML = suggestions.map(d => {
+                        const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                        return '<button onclick="applyConflictSuggestedDate(\'' + ds + '\'); document.getElementById(\'bookingConflictSuggestModal\').classList.replace(\'flex\',\'hidden\'); document.getElementById(\'bookingConflictSuggestModal\').classList.add(\'hidden\');" style="width:100%;padding:10px 14px;background:#f0f4ff;color:#1e3a5f;font-weight:700;font-size:13px;border-radius:10px;border:1.5px solid #c7d2fe;cursor:pointer;text-align:left;transition:background 0.15s;" onmouseover="this.style.background=\'#e0e7ff\'" onmouseout="this.style.background=\'#f0f4ff\'">'
+                            + '<i class="bi bi-calendar-check" style="margin-right:6px;"></i>'
+                            + days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
+                            + '</button>';
+                    }).join('');
+                }
+            } catch(err) {
+                suggestEl.innerHTML = '<p style="font-size:13px;color:#dc2626;">Could not load suggestions. Please pick a different date manually.</p>';
+            }
+        }
+
+        function applyConflictSuggestedDate(dateStr) {
+            const dateInput = document.getElementById('dsDate');
+            if (dateInput) { dateInput.value = dateStr; dateInput.dispatchEvent(new Event('change')); }
         }
 
         function checkCancellationLimit() {

@@ -1012,12 +1012,15 @@ async function updateEquipment(id, updates) {
             available:    newAvailable,
             category:     categoryValue
         };
-        if (updates.name        !== undefined) payload.name        = updates.name;
-        if (updates.description !== undefined) payload.description = updates.description;
-        if (updates.isArchived  !== undefined) payload.is_archived = updates.isArchived;
-        if (updates.icon        !== undefined) payload.icon        = updates.icon;
-        if (updates.image_url   !== undefined) payload.image_url   = updates.image_url;
-        if (updates.variation    !== undefined) payload.variation   = updates.variation;
+        if (updates.name          !== undefined) payload.name          = updates.name;
+        if (updates.description   !== undefined) payload.description   = updates.description;
+        if (updates.isArchived    !== undefined) payload.is_archived   = updates.isArchived;
+        if (updates.icon          !== undefined) payload.icon          = updates.icon;
+        if (updates.image_url     !== undefined) payload.image_url     = updates.image_url;
+        if (updates.variation     !== undefined) payload.variation     = updates.variation;
+        if (updates.item_type     !== undefined) payload.item_type     = updates.item_type;
+        if (updates.item_location !== undefined) payload.item_location = updates.item_location;
+        if (updates.is_maintenance !== undefined) payload.is_maintenance = updates.is_maintenance;
 
         const { error } = await supabase.from('equipment').update(payload).eq('id', id);
         if (error) return { success: false, message: error.message };
@@ -1120,7 +1123,6 @@ async function addEquipment(equipmentData) {
         const payload = {
             name: equipmentData.name,
             icon: equipmentData.icon || '',
-            category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
@@ -1128,7 +1130,10 @@ async function addEquipment(equipmentData) {
             is_archived: equipmentData.is_archived || false,
             category: equipmentData.disposal ? String(equipmentData.disposal) : '0'
         };
-        if (equipmentData.image_url) payload.image_url = equipmentData.image_url;
+        if (equipmentData.item_type)         payload.item_type      = equipmentData.item_type;
+        if (equipmentData.item_location)    payload.item_location  = equipmentData.item_location;
+        if (equipmentData.is_maintenance !== undefined) payload.is_maintenance = equipmentData.is_maintenance;
+        if (equipmentData.image_url)        payload.image_url      = equipmentData.image_url;
         const { error } = await supabase.from('equipment').insert([payload]);
         if (error) return { success: false, message: error.message };
         await logActivity('Inventory Addition', `Admin added new equipment: ${equipmentData.name}`);
@@ -1142,13 +1147,14 @@ async function addEquipment(equipmentData) {
             id: newId,
             name: equipmentData.name,
             icon: equipmentData.icon || '',
-            category: equipmentData.category || 'General',
             description: equipmentData.description || '',
             quantity: equipmentData.quantity || 1,
             available: equipmentData.available !== undefined ? equipmentData.available : (equipmentData.quantity || 1),
             broken: equipmentData.broken || 0,
             isArchived: equipmentData.is_archived || false,
             category: equipmentData.disposal ? String(equipmentData.disposal) : '0',
+            item_type: equipmentData.item_type || '',
+            item_location: equipmentData.item_location || '',
             image_url: equipmentData.image_url || null
         };
         equipment.push(newEq);
@@ -1233,7 +1239,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         // Removed immediate deduction
 
-        await logActivity('Borrow Request', `User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
+        await logActivity('Equipment Request', `User submitted an equipment request for ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     } else {
@@ -1287,7 +1293,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         borrowings.push(newBorrowing);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
-        logActivity('Borrow Request', `Local User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
+        logActivity('Equipment Request', `Local User submitted an equipment request for ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `Local User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     }
@@ -1426,7 +1432,7 @@ async function approveEquipmentRequest(borrowingId) {
 
         const { data: userInfo } = await supabase.from('users').select('full_name, barangay_id').eq('id', targetUserId).maybeSingle();
         const rLabel = userInfo ? (userInfo.full_name || '') + (userInfo.barangay_id ? ' (' + userInfo.barangay_id + ')' : '') : 'Resident';
-        await logActivity('Borrow Approved', 'Admin approved borrow request for ' + rLabel + ' — ' + (rec?.quantity||1) + 'x ' + (equipmentName||'Item') + ' [Request #' + borrowingId + ']');
+        await logActivity('Equipment Approved', 'Admin approved borrow request for ' + rLabel + ' — ' + (rec?.quantity||1) + 'x ' + (equipmentName||'Item') + ' [Request #' + borrowingId + ']');
         return { success: true, message: 'Status updated to approved' };
     } else {
         // Local fallback
@@ -1458,7 +1464,7 @@ async function approveEquipmentRequest(borrowingId) {
             broadcastSync();
         }
 
-        logActivity(`Borrow Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
+        logActivity(`Equipment Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to approved` };
     }
 }
@@ -1562,7 +1568,7 @@ async function rejectEquipmentRequest(borrowingId, reason) {
             broadcastSync();
         }
 
-        await logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowing.quantity}x ${borrowing.equipment}. Reason: ${reason}`);
+        await logActivity(`Equipment Rejected`, `Admin rejected request for ${borrowing.quantity}x ${borrowing.equipment}. Reason: ${reason}`);
         return { success: true, message: `Status updated to rejected` };
     } else {
         // Local fallback
@@ -1576,7 +1582,7 @@ async function rejectEquipmentRequest(borrowingId, reason) {
 
         // Removed restore reserved stock
 
-        logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
+        logActivity(`Equipment Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to rejected` };
     }
 }

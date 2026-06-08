@@ -626,8 +626,8 @@
                             <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
                                 <i class="bi bi-box-seam"></i> MANAGEMENT
                             </p>
-                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Equipment Borrowing Requests</h1>
-                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Approve, reject, or track equipment borrowing requests from residents.</p>
+                            <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Equipment Requests</h1>
+                            <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Approve, reject, or track equipment requests from residents.</p>
                         </div>
 
                         <!-- FILTER + SEARCH BAR -->
@@ -1979,6 +1979,33 @@
                             <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Equipment Name <span style="color:#CE1126;">*</span></label>
                             <input type="text" id="equipName" placeholder="e.g., Portable Tables" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
                         </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Item Type <span style="color:#CE1126;">*</span></label>
+                                <select id="equipItemType" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <option value="">-- Select Type --</option>
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Sports Equipment">Sports Equipment</option>
+                                    <option value="Audio/Visual">Audio/Visual</option>
+                                    <option value="Tent/Shelter">Tent/Shelter</option>
+                                    <option value="Cleaning Supplies">Cleaning Supplies</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Item Location <span style="color:#CE1126;">*</span></label>
+                                <select id="equipItemLocation" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <option value="">-- Select Location --</option>
+                                    <option value="Barangay Hall - Storage Room">Barangay Hall - Storage Room</option>
+                                    <option value="Barangay Hall - Main Hall">Barangay Hall - Main Hall</option>
+                                    <option value="Basketball Court">Basketball Court</option>
+                                    <option value="Multi-Purpose Hall">Multi-Purpose Hall</option>
+                                    <option value="Covered Court">Covered Court</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
                         <div style="margin-bottom:12px;">
                             <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Description</label>
                             <textarea id="equipDesc" placeholder="Brief description of the item..." rows="2" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'"></textarea>
@@ -2022,6 +2049,10 @@
                             </div>
                         </div>
                         <div id="addQtyWarn" style="display:none;margin-top:8px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff9ed;border:1px solid #fcd34d;border-radius:6px;margin-top:10px;">
+                            <input type="checkbox" id="equipMaintenance" style="width:15px;height:15px;cursor:pointer;accent-color:#d97706;flex-shrink:0;">
+                            <span><i class="bi bi-tools" style="color:#d97706;margin-right:4px;"></i> Under Maintenance <span style="font-size:11px;color:#92400e;font-weight:400;">(hides item from resident borrowing catalog)</span></span>
+                        </label>
                     </div>
                 </form>
                 <div style="padding:14px 24px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#FAFAFA;">
@@ -2049,6 +2080,33 @@
                         <div style="margin-bottom:12px;">
                             <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Equipment Name <span style="color:#CE1126;">*</span></label>
                             <input type="text" id="editEquipName" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Item Type <span style="color:#CE1126;">*</span></label>
+                                <select id="editEquipItemType" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <option value="">-- Select Type --</option>
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Sports Equipment">Sports Equipment</option>
+                                    <option value="Audio/Visual">Audio/Visual</option>
+                                    <option value="Tent/Shelter">Tent/Shelter</option>
+                                    <option value="Cleaning Supplies">Cleaning Supplies</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Item Location <span style="color:#CE1126;">*</span></label>
+                                <select id="editEquipItemLocation" required style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <option value="">-- Select Location --</option>
+                                    <option value="Barangay Hall - Storage Room">Barangay Hall - Storage Room</option>
+                                    <option value="Barangay Hall - Main Hall">Barangay Hall - Main Hall</option>
+                                    <option value="Basketball Court">Basketball Court</option>
+                                    <option value="Multi-Purpose Hall">Multi-Purpose Hall</option>
+                                    <option value="Covered Court">Covered Court</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
                         </div>
                         <div style="margin-bottom:12px;">
                             <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Description</label>
@@ -2088,6 +2146,10 @@
                             </div>
                         </div>
                         <div id="editQtyWarn" style="display:none;margin-bottom:10px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff9ed;border:1px solid #fcd34d;border-radius:6px;margin-bottom:8px;">
+                            <input type="checkbox" id="editEquipMaintenance" style="width:15px;height:15px;cursor:pointer;accent-color:#d97706;flex-shrink:0;">
+                            <span><i class="bi bi-tools" style="color:#d97706;margin-right:4px;"></i> Under Maintenance <span style="font-size:11px;color:#92400e;font-weight:400;">(hides item from resident borrowing catalog)</span></span>
+                        </label>
                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff;border:1px solid #D1D5DB;border-radius:6px;margin-bottom:8px;">
                             <input type="checkbox" id="editEquipArchived" style="width:15px;height:15px;cursor:pointer;accent-color:#1A3A6B;flex-shrink:0;">
                             <span>Archive this equipment (hide from active inventory)</span>
@@ -3098,9 +3160,9 @@
                 // Derive a human-readable action label
                 function getActionLabel(action) {
                     if (!action) return 'System';
-                    if (action.includes('Borrow Request') || action === 'Borrow Request') return 'Borrow Request';
-                    if (action.includes('Borrow Approved') || action.includes('Approve')) return 'Approved';
-                    if (action.includes('Borrow Rejected') || action.includes('Reject')) return 'Rejected';
+                    if (action.includes('Equipment Request') || action === 'Equipment Request' || action.includes('Borrow Request') || action === 'Borrow Request') return 'Equipment Request';
+                    if (action.includes('Equipment Approved') || action.includes('Borrow Approved') || action.includes('Approve')) return 'Approved';
+                    if (action.includes('Equipment Rejected') || action.includes('Borrow Rejected') || action.includes('Reject')) return 'Rejected';
                     if (action.includes('Borrow Return'))  return 'Returned';
                     if (action.includes('Reservation') || action.includes('Reserve')) return 'Reservation';
                     if (action.includes('Booking Approved')) return 'Approved';
@@ -3169,7 +3231,7 @@
                     let actColor = '#1A3A6B', actBg = 'rgba(26,58,107,0.10)';
                     if (actionLabel === 'Approved' || actionLabel === 'Returned') { actColor = '#16A34A'; actBg = 'rgba(22,163,74,0.10)'; }
                     else if (actionLabel === 'Rejected' || actionLabel === 'Deleted') { actColor = '#ef4444'; actBg = 'rgba(239,68,68,0.15)'; }
-                    else if (actionLabel === 'Pending' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#f59e0b'; actBg = 'rgba(245,158,11,0.15)'; }
+                    else if (actionLabel === 'Pending' || actionLabel === 'Equipment Request' || actionLabel === 'Borrow Request' || actionLabel === 'Reservation' || actionLabel === 'Concern Filed') { actColor = '#f59e0b'; actBg = 'rgba(245,158,11,0.15)'; }
 
                     // Pass entire row data to modal via JSON
                     const logDataStr = encodeURIComponent(JSON.stringify({
@@ -3588,7 +3650,7 @@
                     notifications.push({
                         type: 'request',
                         icon: '',
-                        title: `New Borrowing Request`,
+                        title: `New Equipment Request`,
                         detail: `${req.userName || req.user_name || 'Resident'} requested ${req.quantity}x ${req.equipment}`,
                         time: date,
                         action: () => switchSection('requests', document.querySelectorAll('.sidebar-btn')[2])
@@ -3974,7 +4036,7 @@
 
             const LOG_FILTER_KEYWORDS = {
                 inventory: ['Inventory Update', 'Equipment Added', 'Equipment'],
-                requests: ['Borrow Request', 'Borrow Approved', 'Borrow Rejected', 'Borrow Returned', 'Borrow Cancelled'],
+                requests: ['Equipment Request', 'Borrow Request', 'Equipment Approved', 'Borrow Approved', 'Equipment Rejected', 'Borrow Rejected', 'Borrow Returned', 'Borrow Cancelled'],
                 bookings: ['Facility Reservation'],
                 concerns: ['Concern Submitted', 'Concern Updated', 'Concern Deleted'],
             };
@@ -5152,6 +5214,11 @@
                 const formObj = document.getElementById('eventForm');
                 const btn = formObj.querySelector('button[type="submit"]');
                 const originalText = btn.innerHTML;
+                // Explicit JS guard: both date AND start time are required
+                const _evDate = document.getElementById('eventDate').value.trim();
+                const _evTime = document.getElementById('eventTime').value.trim();
+                if (!_evDate) { showAlert('Event date is required.', 'error'); return; }
+                if (!_evTime) { showAlert('Event start time is required.', 'error'); return; }
                 btn.disabled = true;
                 btn.innerHTML = 'Saving...';
 
@@ -5206,6 +5273,11 @@
                 e.preventDefault();
                 const btn = this.querySelector('button[type="submit"]');
                 const originalText = btn.innerHTML;
+                // Explicit JS guard: both date AND start time are required
+                const _edDate = document.getElementById('editEventDate').value.trim();
+                const _edTime = document.getElementById('editEventTime').value.trim();
+                if (!_edDate) { showAlert('Event date is required.', 'error'); return; }
+                if (!_edTime) { showAlert('Event start time is required.', 'error'); return; }
                 btn.disabled = true;
                 btn.innerHTML = 'Saving...';
 
@@ -5445,6 +5517,7 @@
                         var bb = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
                         var statusBadge;
                         if (e.isArchived) statusBadge = '<span style="'+bb+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">Archived</span>';
+                        else if (e.is_maintenance || e.isMaintenance) statusBadge = '<span style="'+bb+'background:#FFF9ED;color:#92400E;border:1px solid #FCD34D;"><i class="bi bi-tools" style="margin-right:3px;"></i>Under Maintenance</span>';
                         else if (avail===0) statusBadge = '<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Out of Stock</span>';
                         else if (avail<=50) statusBadge = '<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Low Stock</span>';
                         else statusBadge = '<span style="'+bb+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Available</span>';
@@ -5616,11 +5689,14 @@
                     name: document.getElementById('equipName').value,
                     icon: document.getElementById('equipIcon').value,
                     category: document.getElementById('equipCategory').value,
+                    item_type: document.getElementById('equipItemType').value,
+                    item_location: document.getElementById('equipItemLocation').value,
                     description: document.getElementById('equipDesc').value,
                     quantity: parseInt(document.getElementById('equipQuantity').value),
                     available: parseInt(document.getElementById('equipQuantity').value),
                     broken: 0,
                     is_archived: false,
+                    is_maintenance: !!(document.getElementById('equipMaintenance') || {}).checked,
                     image_url: image_url
                 });
 
@@ -5649,6 +5725,13 @@
                 document.getElementById('editEquipArchived').checked = equipment.isArchived || false;
                 document.getElementById('editEquipCategory').value = equipment.category || 'General';
                 document.getElementById('editEquipDisposal').value = parseInt(equipment.category) || 0;
+                // Populate Item Type, Item Location, and Maintenance status
+                const _itEl = document.getElementById('editEquipItemType');
+                if (_itEl) _itEl.value = equipment.item_type || '';
+                const _ilEl = document.getElementById('editEquipItemLocation');
+                if (_ilEl) _ilEl.value = equipment.item_location || '';
+                const _maintEl = document.getElementById('editEquipMaintenance');
+                if (_maintEl) _maintEl.checked = !!(equipment.is_maintenance || equipment.isMaintenance);
                 
                 const previewDiv = document.getElementById('editEquipImagePreview');
                 const previewImg = previewDiv.querySelector('img');
@@ -5713,6 +5796,9 @@
                     name: document.getElementById('editEquipName').value,
                     icon: document.getElementById('editEquipIcon').value,
                     equipCategory: document.getElementById('editEquipCategory').value,
+                    item_type: (document.getElementById('editEquipItemType') || {}).value || '',
+                    item_location: (document.getElementById('editEquipItemLocation') || {}).value || '',
+                    is_maintenance: !!(document.getElementById('editEquipMaintenance') || {}).checked,
                     description: document.getElementById('editEquipDesc').value,
                     quantity: newQty,
                     broken: newBroken,
@@ -5959,7 +6045,7 @@
                 const data = await getEquipment();
                 const rows = data.map(e => {
                     const broken = e.broken || 0;
-                    const status = e.isArchived ? 'Archived' : broken > 0 && e.available === 0 ? 'Under Repair' : e.available === 0 ? 'In Use' : broken > 0 ? 'Partial/Repair' : 'Available';
+                    const status = e.isArchived ? 'Archived' : (e.is_maintenance || e.isMaintenance) ? 'Under Maintenance' : broken > 0 && e.available === 0 ? 'Under Repair' : e.available === 0 ? 'In Use' : broken > 0 ? 'Partial/Repair' : 'Available';
                     return `<tr><td>${e.icon} ${e.name}</td><td>${e.quantity}</td><td>${e.available}</td><td>${broken}</td><td><strong>${status}</strong></td><td>${e.description || ''}</td></tr>`;
                 }).join('');
                 openPrintWindow('Barangay Sta. Lucia  Equipment & Asset Report',
@@ -8539,7 +8625,7 @@
                             const dateRange = b.borrow_date ? new Date(b.borrow_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) + (b.return_date ? ' – ' + new Date(b.return_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '') : '';
                             items.push({ id: 'borrow_' + b.id, refId: b.id, type: 'borrow',
                                 icon: '<i class="bi bi-box-seam"></i>', iconColor: '#2563eb', iconBg: 'rgba(37,99,235,0.1)',
-                                title: 'New Borrow Request',
+                                title: 'New Equipment Request',
                                 message: rName + ' — ' + (b.equipment||'Item') + ' x' + (b.quantity||1) + (dateRange ? ' (' + dateRange + ')' : ''),
                                 createdAt: b.created_at });
                         });

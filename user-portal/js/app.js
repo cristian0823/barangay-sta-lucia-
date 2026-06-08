@@ -1047,7 +1047,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
 
         const _bid = user.barangay_id || user.username || '';
         const _uLabel = (user.fullName || user.full_name || user.username || 'Resident') + (_bid ? ' (' + _bid + ')' : '');
-        await logActivity('Borrow Request', _uLabel + ' submitted a borrow request for ' + item.name + ' x' + quantity + ' — ' + borrowDate + ' to ' + returnDate);
+        await logActivity('Equipment Request', _uLabel + ' submitted an equipment request for ' + item.name + ' x' + quantity + ' — ' + borrowDate + ' to ' + returnDate);
         await addNotification('admin', 'borrow', `User requested to borrow ${quantity}x ${item.name}`);
         if (typeof broadcastSync === 'function') broadcastSync();
         return { success: true, message: 'Equipment request submitted' };
@@ -1102,7 +1102,7 @@ async function borrowEquipment(equipmentId, quantity, borrowDate, returnDate, pu
         borrowings.push(newBorrowing);
         localStorage.setItem(LOCAL_BORROWINGS_KEY, JSON.stringify(borrowings));
 
-        logActivity('Borrow Request', `Local User requested to borrow ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
+        logActivity('Equipment Request', `Local User submitted an equipment request for ${quantity}x ${item.name} from ${borrowDate} to ${returnDate}. Purpose: ${purpose}`);
         await addNotification('admin', 'borrow', `Local User requested to borrow ${quantity}x ${item.name}`);
         return { success: true, message: 'Equipment request submitted' };
     }
@@ -1219,7 +1219,7 @@ async function approveEquipmentRequest(borrowingId) {
             broadcastSync();
         }
 
-        await logActivity('Borrow Approved', `Admin approved equipment request #${borrowingId}`);
+        await logActivity('Equipment Approved', `Admin approved equipment request #${borrowingId}`);
         return { success: true, message: 'Status updated to approved' };
     } else {
         // Local fallback
@@ -1251,7 +1251,7 @@ async function approveEquipmentRequest(borrowingId) {
             broadcastSync();
         }
 
-        logActivity(`Borrow Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
+        logActivity(`Equipment Approved`, `Admin approved request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to approved` };
     }
 }
@@ -1348,7 +1348,7 @@ async function rejectEquipmentRequest(borrowingId, reason) {
             broadcastSync();
         }
 
-        await logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowing.quantity}x ${borrowing.equipment}. Reason: ${reason}`);
+        await logActivity(`Equipment Rejected`, `Admin rejected request for ${borrowing.quantity}x ${borrowing.equipment}. Reason: ${reason}`);
         return { success: true, message: `Status updated to rejected` };
     } else {
         // Local fallback
@@ -1362,7 +1362,7 @@ async function rejectEquipmentRequest(borrowingId, reason) {
 
         // Removed restore reserved stock
 
-        logActivity(`Borrow Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
+        logActivity(`Equipment Rejected`, `Admin rejected request for ${borrowings[index].quantity}x ${borrowings[index].equipment} (Local)`);
         return { success: true, message: `Status updated to rejected` };
     }
 }
