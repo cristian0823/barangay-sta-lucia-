@@ -790,7 +790,7 @@ async function getEquipment() {
     let equipmentList = [];
 
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('equipment').select('*').order('id', { ascending: true });
+        const { data, error } = await supabase.from('equipment').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('id', { ascending: true });
         
         if (!error && data) {
             // One-time auto-fix for corrupted available quantities exceeding max quantity

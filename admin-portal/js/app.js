@@ -791,7 +791,7 @@ async function getEquipment() {
     let equipmentList = [];
 
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('equipment').select('*').order('id', { ascending: true });
+        const { data, error } = await supabase.from('equipment').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('id', { ascending: true });
         
         if (!error && data) {
             // One-time auto-fix for corrupted available quantities exceeding max quantity
@@ -1022,7 +1022,16 @@ async function updateEquipment(id, updates) {
         if (updates.item_location !== undefined) payload.item_location = updates.item_location;
         if (updates.is_maintenance !== undefined) payload.is_maintenance = updates.is_maintenance;
 
-        const { error } = await supabase.from('equipment').update(payload).eq('id', id);
+        let { error } = await supabase.from('equipment').update(payload).eq('id', id);
+        // Graceful fallback: if is_maintenance/is_deleted caused schema cache error, retry without them
+        if (error && error.message && (error.message.includes('is_maintenance') || error.message.includes('is_deleted') || error.message.includes('schema cache'))) {
+            const safePayload = Object.assign({}, payload);
+            delete safePayload.is_maintenance;
+            delete safePayload.is_deleted;
+            const retry = await supabase.from('equipment').update(safePayload).eq('id', id);
+            error = retry.error;
+            console.warn('[updateEquipment] Schema cache miss — retried without is_maintenance/is_deleted columns');
+        }
         if (error) return { success: false, message: error.message };
 
         if (diffBroken !== 0) {
@@ -1166,17 +1175,17 @@ async function addEquipment(equipmentData) {
 async function deleteEquipment(id) {
     const supabaseAvailable = await isSupabaseAvailable();
     if (supabaseAvailable) {
-        const { error } = await supabase.from('equipment').delete().eq('id', id);
+        const { error } = await supabase.from('equipment').update({ is_deleted: true }).eq('id', id);
         if (error) return { success: false, message: error.message };
-        await logActivity('Inventory Update', `Admin deleted equipment item #${id}`);
-        return { success: true, message: 'Equipment deleted successfully' };
+        await logActivity('Inventory Update', `Admin removed equipment item #${id} from inventory`);
+        return { success: true, message: 'Equipment removed successfully' };
     } else {
         initializeLocalEquipment();
         let equipment = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY));
         equipment = equipment.filter(e => e.id !== id);
         localStorage.setItem(LOCAL_EQUIPMENT_KEY, JSON.stringify(equipment));
-        logActivity('Inventory Update', `Local Admin deleted equipment item #${id}`);
-        return { success: true, message: 'Equipment deleted successfully' };
+        logActivity('Inventory Update', `Local Admin removed equipment item #${id} from inventory`);
+        return { success: true, message: 'Equipment removed successfully' };
     }
 }
 

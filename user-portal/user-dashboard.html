@@ -84,6 +84,23 @@
         [data-theme="dark"] .nav-item:hover .nav-icon { background-color: rgba(30,58,95,0.12); }
         .nav-item.active { background: var(--nav-active-bg) !important; color: var(--nav-active-text) !important; border-left: 4px solid #1e3a5f !important; box-shadow: none; }
         .nav-item.active .nav-icon { background: rgba(255,255,255,0.15) !important; color: #fff !important; }
+        /* Admin-style sidebar buttons */
+        .sidebar-btn {
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; padding: 9px 14px; border: none;
+            background: transparent; color: rgba(255,255,255,0.72);
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            text-align: left; border-radius: 6px; font-family: inherit;
+            transition: all 0.15s;
+        }
+        .sidebar-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .sidebar-btn.active { background: #1e40af; color: #fff; font-weight: 700; }
+        .sidebar-btn.active i { color: rgba(255,255,255,0.9); }
+        .sidebar-section-label {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.35); padding: 10px 14px 4px;
+            text-transform: uppercase; display: block;
+        }
         .content-panel { display: none !important; animation: fadeIn 0.3s ease; }
         .content-panel.active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -465,36 +482,43 @@
     <!-- DASHBOARD CONTAINER -->
     <div class="dashboard-container" style="display:flex;flex:1;overflow:hidden;min-height:0;">
         <!-- SIDEBAR -->
-        <aside class="sidebar w-[240px] flex flex-col gap-1 overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background:#0f1f3d; border-right:1px solid #1a3a6b;">
-            <div style="padding: 14px 14px 4px;">
-                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(245,166,35,0.7);padding:0 8px;display:block;">Navigation</span>
+        <aside class="sidebar w-[220px] flex flex-col overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background:#0f1f3d; border-right:1px solid #1a3a6b;">
+            <!-- Nav: MAIN -->
+            <div style="padding: 8px;">
+                <span class="sidebar-section-label">Main</span>
+                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="sidebar-btn active">
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                </button>
             </div>
-            <nav style="padding: 4px 10px; display:flex; flex-direction:column; gap:4px; flex:1;">
-                <button onclick="showPanel('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left active" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-grid-1x2-fill"></i></div>
-                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Dashboard</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Overview &amp; stats</div></div>
+            <!-- Nav: SERVICES -->
+            <div style="padding: 0 8px;">
+                <span class="sidebar-section-label">Services</span>
+                <button onclick="showPanel('equipment')" id="nav-equipment" class="sidebar-btn">
+                    <i class="bi bi-box-seam"></i> Equipment
                 </button>
-                <button onclick="showPanel('equipment')" id="nav-equipment" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-box-seam"></i></div>
-                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Equipment</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Borrow barangay items</div></div>
+                <button onclick="showPanel('concerns')" id="nav-concerns" class="sidebar-btn">
+                    <i class="bi bi-megaphone-fill"></i> Concerns
                 </button>
-                <button onclick="showPanel('concerns')" id="nav-concerns" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-megaphone-fill"></i></div>
-                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Concerns</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Report issues</div></div>
+                <button onclick="showPanel('booking')" id="nav-booking" class="sidebar-btn">
+                    <i class="bi bi-calendar-check-fill"></i> Facility
                 </button>
-                <button onclick="showPanel('booking')" id="nav-booking" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-calendar-check-fill"></i></div>
-                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Facility</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Reserve court &amp; hall</div></div>
+                <button onclick="showPanel('events')" id="nav-events" class="sidebar-btn">
+                    <i class="bi bi-calendar-event-fill"></i> Events
                 </button>
-                <button onclick="showPanel('events')" id="nav-events" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-calendar-event-fill"></i></div>
-                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">Events</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">Upcoming activities</div></div>
+                <button onclick="showPanel('history')" id="nav-history" class="sidebar-btn">
+                    <i class="bi bi-clock-history"></i> My Activity
                 </button>
-                <button onclick="showPanel('history')" id="nav-history" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left" style="color:rgba(255,255,255,0.75);background:transparent;border:none;font-family:inherit;">
-                    <div class="nav-icon-box" style="flex-shrink:0;"><i class="bi bi-clock-history"></i></div>
-                    <div style="min-width:0;"><div style="font-size:13px;font-weight:700;line-height:1.2;">My Activity</div><div style="font-size:10px;opacity:0.6;line-height:1.3;">All your requests</div></div>
+            </div>
+            <!-- Nav: ACCOUNT -->
+            <div style="padding: 0 8px;">
+                <span class="sidebar-section-label">Account</span>
+                <button onclick="showPanel('profile')" id="nav-profile" class="sidebar-btn">
+                    <i class="bi bi-person-fill"></i> My Profile
                 </button>
-            </nav>
+                <button onclick="showPanel('settings')" id="nav-settings" class="sidebar-btn">
+                    <i class="bi bi-gear-fill"></i> Settings
+                </button>
+            </div>
         </aside>
 
         <!-- MAIN CONTENT AREA -->
@@ -1924,7 +1948,7 @@
         function showPanel(panelId) {
             if (panelId === 'announcements') { setTimeout(loadUserAnnouncements, 50); }
             document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(l => l.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
             const p = document.getElementById('panel-' + panelId);

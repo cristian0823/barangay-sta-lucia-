@@ -162,6 +162,10 @@ ALTER TABLE equipment ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'Ge
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS item_type VARCHAR(100) DEFAULT '';
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS item_location VARCHAR(150) DEFAULT '';
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_maintenance BOOLEAN DEFAULT false;
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT false;
+
+-- Reload PostgREST schema cache so new columns are recognized immediately
+NOTIFY pgrst, 'reload schema';
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(255);
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS response TEXT;
 ALTER TABLE concerns ADD COLUMN IF NOT EXISTS is_read BOOLEAN DEFAULT false;
