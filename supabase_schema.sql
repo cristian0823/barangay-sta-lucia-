@@ -163,6 +163,8 @@ ALTER TABLE equipment ADD COLUMN IF NOT EXISTS item_type VARCHAR(100) DEFAULT ''
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS item_location VARCHAR(150) DEFAULT '';
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_maintenance BOOLEAN DEFAULT false;
 ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT false;
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS low_stock_threshold INTEGER DEFAULT 2;
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS out_of_stock_threshold INTEGER DEFAULT 0;
 
 -- Reload PostgREST schema cache so new columns are recognized immediately
 NOTIFY pgrst, 'reload schema';

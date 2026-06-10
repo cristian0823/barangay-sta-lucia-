@@ -2045,6 +2045,22 @@
                             </div>
                         </div>
                         <div id="addQtyWarn" style="display:none;margin-top:8px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
+                        <!-- Stock Thresholds -->
+                        <div style="margin-top:12px;padding:12px 14px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:#1A3A6B;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="bi bi-sliders"></i> Stock Alert Thresholds</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                <div>
+                                    <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Low Stock at ≤</label>
+                                    <input type="number" id="equipLowStockThreshold" min="0" value="2" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <div style="font-size:11px;color:#6B7280;margin-top:3px;">Show "Low Stock" when available qty reaches this number</div>
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Out of Stock at ≤</label>
+                                    <input type="number" id="equipOutOfStockThreshold" min="0" value="0" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <div style="font-size:11px;color:#6B7280;margin-top:3px;">Show "Out of Stock" when available qty reaches this number</div>
+                                </div>
+                            </div>
+                        </div>
                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff9ed;border:1px solid #fcd34d;border-radius:6px;margin-top:10px;">
                             <input type="checkbox" id="equipMaintenance" style="width:15px;height:15px;cursor:pointer;accent-color:#d97706;flex-shrink:0;">
                             <span><i class="bi bi-tools" style="color:#d97706;margin-right:4px;"></i> Under Maintenance <span style="font-size:11px;color:#92400e;font-weight:400;">(hides item from resident borrowing catalog)</span></span>
@@ -2142,6 +2158,22 @@
                             </div>
                         </div>
                         <div id="editQtyWarn" style="display:none;margin-bottom:10px;font-size:12px;color:#CE1126;"><i class="bi bi-exclamation-triangle-fill"></i> Under Repair + Disposal cannot exceed Total.</div>
+                        <!-- Stock Thresholds -->
+                        <div style="margin-top:0;margin-bottom:10px;padding:12px 14px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:#1A3A6B;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="bi bi-sliders"></i> Stock Alert Thresholds</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                <div>
+                                    <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Low Stock at &le;</label>
+                                    <input type="number" id="editEquipLowStockThreshold" min="0" value="2" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <div style="font-size:11px;color:#6B7280;margin-top:3px;">Show &ldquo;Low Stock&rdquo; when available qty reaches this number</div>
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">Out of Stock at &le;</label>
+                                    <input type="number" id="editEquipOutOfStockThreshold" min="0" value="0" style="width:100%;padding:8px 12px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;font-family:inherit;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#D1D5DB'">
+                                    <div style="font-size:11px;color:#6B7280;margin-top:3px;">Show &ldquo;Out of Stock&rdquo; when available qty reaches this number</div>
+                                </div>
+                            </div>
+                        </div>
                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;font-weight:500;padding:10px 12px;background:#fff9ed;border:1px solid #fcd34d;border-radius:6px;margin-bottom:8px;">
                             <input type="checkbox" id="editEquipMaintenance" style="width:15px;height:15px;cursor:pointer;accent-color:#d97706;flex-shrink:0;">
                             <span><i class="bi bi-tools" style="color:#d97706;margin-right:4px;"></i> Under Maintenance <span style="font-size:11px;color:#92400e;font-weight:400;">(hides item from resident borrowing catalog)</span></span>
@@ -5481,9 +5513,11 @@
                     var broken = e.broken||0;
                     var ms = !srch || (e.name||'').toLowerCase().indexOf(srch)>=0 || (e.description||'').toLowerCase().indexOf(srch)>=0;
                     var mf = true;
-                    if (filt==='available') mf = !e.isArchived && avail===(e.quantity||1);
-                    else if (filt==='low') mf = !e.isArchived && avail>0 && avail<(e.quantity||1);
-                    else if (filt==='out') mf = !e.isArchived && avail===0;
+                    var _fLst = (e.low_stock_threshold !== undefined && e.low_stock_threshold !== null) ? e.low_stock_threshold : 2;
+                    var _fOst = (e.out_of_stock_threshold !== undefined && e.out_of_stock_threshold !== null) ? e.out_of_stock_threshold : 0;
+                    if (filt==='available') mf = !e.isArchived && avail>_fLst;
+                    else if (filt==='low') mf = !e.isArchived && avail>_fOst && avail<=_fLst;
+                    else if (filt==='out') mf = !e.isArchived && avail<=_fOst;
                     else if (filt==='repair') mf = !e.isArchived && broken>0;
                     else if (filt==='archived') mf = !!e.isArchived;
                     return ms && mf;
@@ -5511,10 +5545,12 @@
                         var availBg = avail===0 ? '#FEE2E2' : (avail<=50 ? '#FEF3C7' : '#DCFCE7');
                         var bb = 'padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;display:inline-block;';
                         var statusBadge;
+                        var _lst = (e.low_stock_threshold !== undefined && e.low_stock_threshold !== null) ? e.low_stock_threshold : 2;
+                        var _ost = (e.out_of_stock_threshold !== undefined && e.out_of_stock_threshold !== null) ? e.out_of_stock_threshold : 0;
                         if (e.isArchived) statusBadge = '<span style="'+bb+'background:#F3F4F6;color:#6B7280;border:1px solid #D1D5DB;">Archived</span>';
                         else if (e.is_maintenance || e.isMaintenance) statusBadge = '<span style="'+bb+'background:#FFF9ED;color:#92400E;border:1px solid #FCD34D;"><i class="bi bi-tools" style="margin-right:3px;"></i>Under Maintenance</span>';
-                        else if (avail===0) statusBadge = '<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Out of Stock</span>';
-                        else if (avail<=50) statusBadge = '<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Low Stock</span>';
+                        else if (avail<=_ost) statusBadge = '<span style="'+bb+'background:#FEE2E2;color:#991b1b;border:1px solid #FECACA;">Out of Stock</span>';
+                        else if (avail<=_lst) statusBadge = '<span style="'+bb+'background:#FEF3C7;color:#92400e;border:1px solid #FDE68A;">Low Stock</span>';
                         else statusBadge = '<span style="'+bb+'background:#DCFCE7;color:#166534;border:1px solid #86EFAC;">Available</span>';
                         var photoCell;
                         if (e.image_url) {
@@ -5572,8 +5608,9 @@
                     var avail=Math.min(e.available||0,e.quantity||1), broken=e.broken||0;
                     var ms=!srch||(e.name||'').toLowerCase().indexOf(srch)>=0||(e.description||'').toLowerCase().indexOf(srch)>=0;
                     var mf=true;
-                    if(filt==='available') mf=!e.isArchived&&avail===(e.quantity||1);
-                    else if(filt==='low') mf=!e.isArchived&&avail>0&&avail<(e.quantity||1);
+                    var _f2Lst=(e.low_stock_threshold!==undefined&&e.low_stock_threshold!==null)?e.low_stock_threshold:2;var _f2Ost=(e.out_of_stock_threshold!==undefined&&e.out_of_stock_threshold!==null)?e.out_of_stock_threshold:0;
+                    if(filt==='available') mf=!e.isArchived&&avail>_f2Lst;
+                    else if(filt==='low') mf=!e.isArchived&&avail>_f2Ost&&avail<=_f2Lst;
                     else if(filt==='out') mf=!e.isArchived&&avail===0;
                     else if(filt==='repair') mf=!e.isArchived&&broken>0;
                     else if(filt==='archived') mf=!!e.isArchived;
@@ -5692,7 +5729,9 @@
                     broken: 0,
                     is_archived: false,
                     is_maintenance: !!(document.getElementById('equipMaintenance') || {}).checked,
-                    image_url: image_url
+                    image_url: image_url,
+                    low_stock_threshold: parseInt(document.getElementById('equipLowStockThreshold')?.value ?? 2) || 0,
+                    out_of_stock_threshold: parseInt(document.getElementById('equipOutOfStockThreshold')?.value ?? 0) || 0
                 });
 
                 btn.disabled = false;
@@ -5727,6 +5766,10 @@
                 if (_ilEl) _ilEl.value = equipment.item_location || '';
                 const _maintEl = document.getElementById('editEquipMaintenance');
                 if (_maintEl) _maintEl.checked = !!(equipment.is_maintenance || equipment.isMaintenance);
+                const _lstEl = document.getElementById('editEquipLowStockThreshold');
+                if (_lstEl) _lstEl.value = equipment.low_stock_threshold !== undefined && equipment.low_stock_threshold !== null ? equipment.low_stock_threshold : 2;
+                const _ostEl = document.getElementById('editEquipOutOfStockThreshold');
+                if (_ostEl) _ostEl.value = equipment.out_of_stock_threshold !== undefined && equipment.out_of_stock_threshold !== null ? equipment.out_of_stock_threshold : 0;
                 
                 const previewDiv = document.getElementById('editEquipImagePreview');
                 const previewImg = previewDiv.querySelector('img');
@@ -5799,7 +5842,9 @@
                     broken: newBroken,
                     disposal: newDisposal,
                     isArchived: document.getElementById('editEquipArchived').checked,
-                    variation: (document.getElementById('editEquipVariation') || {}).value || ''
+                    variation: (document.getElementById('editEquipVariation') || {}).value || '',
+                    low_stock_threshold: parseInt((document.getElementById('editEquipLowStockThreshold') || {}).value ?? 2) || 0,
+                    out_of_stock_threshold: parseInt((document.getElementById('editEquipOutOfStockThreshold') || {}).value ?? 0) || 0
                 };
                 // Save per-item delivery setting to localStorage
                 const delivCbEl = document.getElementById('editEquipDelivery');

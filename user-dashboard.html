@@ -2555,17 +2555,17 @@
             grid.innerHTML = list.map(item => {
                 // Sanity check
                 item.available = Math.min(item.available || 0, item.quantity || 1);
-                const pct = item.quantity > 0 ? Math.min(100, Math.round((item.available / item.quantity) * 100)) : 0;
                 let color, statusColor, statusBg, statusIcon;
-                const _t = JSON.parse(localStorage.getItem('brgy_stock_thresholds') || '{"high":75,"low":40}');
-                if (pct === 0)               { color = 'bg-gray-400';   statusColor = 'text-gray-500';   statusBg = 'bg-gray-50';   statusIcon = '<i class="bi bi-x-circle-fill"></i>'; }
-                else if (pct < _t.low)       { color = 'bg-red-500';    statusColor = 'text-red-600';    statusBg = 'bg-red-50';    statusIcon = '<i class="bi bi-exclamation-triangle-fill"></i>'; }
-                else if (pct < _t.high)      { color = 'bg-amber-400';  statusColor = 'text-amber-600';  statusBg = 'bg-amber-50';  statusIcon = '<i class="bi bi-dash-circle-fill"></i>'; }
-                else                         { color = 'bg-green-500';  statusColor = 'text-green-600';  statusBg = 'bg-green-50';  statusIcon = '<i class="bi bi-check-circle-fill"></i>'; }
+                const _lst = (item.low_stock_threshold !== undefined && item.low_stock_threshold !== null) ? item.low_stock_threshold : 2;
+                const _ost = (item.out_of_stock_threshold !== undefined && item.out_of_stock_threshold !== null) ? item.out_of_stock_threshold : 0;
+                if (item.available <= _ost)       { color = 'bg-gray-400';   statusColor = 'text-gray-500';   statusBg = 'bg-gray-50';   statusIcon = '<i class="bi bi-x-circle-fill"></i>'; }
+                else if (item.available <= _lst)  { color = 'bg-amber-400';  statusColor = 'text-amber-600';  statusBg = 'bg-amber-50';  statusIcon = '<i class="bi bi-exclamation-triangle-fill"></i>'; }
+                else                              { color = 'bg-green-500';  statusColor = 'text-green-600';  statusBg = 'bg-green-50';  statusIcon = '<i class="bi bi-check-circle-fill"></i>'; }
                 const ok = item.available > 0;
                 const disposal = parseInt(item.category) || 0;
                 const broken = item.broken || 0;
                 let statusText = item.available + ' Available';
+                if (item.available > _ost && item.available <= _lst) statusText = item.available + ' Left — Low Stock';
                 
                 let detailsArr = [];
                 if (broken > 0) detailsArr.push(broken + ' Under Repair');
