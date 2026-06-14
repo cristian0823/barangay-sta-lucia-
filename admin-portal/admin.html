@@ -641,6 +641,31 @@
                             </div>
                         </div>
 
+                        <!-- CALENDAR VIEW (shown when calendar toggle is active) -->
+                        <div id="adminBookingCalendarWrap" style="display:none;background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:16px;">
+                            <!-- Calendar header -->
+                            <div style="background:#1A3A6B;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
+                                <button onclick="changeAdminCalMonth(-1)" style="background:rgba(255,255,255,0.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'"><i class="bi bi-chevron-left"></i></button>
+                                <div id="adminCalMonthTitle" style="font-size:15px;font-weight:700;color:#fff;"></div>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <button onclick="changeAdminCalMonth(0,true)" style="background:rgba(255,255,255,0.12);border:none;color:#fff;padding:4px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Today</button>
+                                    <button onclick="changeAdminCalMonth(1)" style="background:rgba(255,255,255,0.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'"><i class="bi bi-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <!-- Day labels -->
+                            <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#0F2547;">
+                                <div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">SUN</div><div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">MON</div><div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">TUE</div><div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">WED</div><div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">THU</div><div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">FRI</div><div style="padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">SAT</div>
+                            </div>
+                            <!-- Calendar grid -->
+                            <div id="adminBookingCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
+                            <!-- Legend -->
+                            <div style="padding:10px 16px;border-top:1px solid #f1f5f9;display:flex;gap:16px;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#15803d;display:inline-block;"></span>Approved</div>
+                                <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#d97706;display:inline-block;"></span>Pending</div>
+                                <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#374151;"><span style="width:10px;height:10px;border-radius:2px;background:#9ca3af;display:inline-block;"></span>Cancelled/Rejected</div>
+                            </div>
+                        </div>
+
                         <!-- TABLE -->
                         <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
                             <table class="data-table" style="width:100%;border-collapse:collapse;">
@@ -684,6 +709,9 @@
                                     <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Review, approve or reject resident reservation requests.</p>
                                 </div>
                                 <div style="display:flex;gap:8px;align-items:center;">
+                                    <button id="adminCalViewBtn" onclick="toggleAdminBookingCalView()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1.5px solid #1A3A6B;border-radius:8px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="if(!_adminCalViewOn){this.style.background='transparent';this.style.color='#1A3A6B';}">
+                                        <i class="bi bi-calendar3"></i> Calendar View
+                                    </button>
                                     <button onclick="loadAdminBookings()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1.5px solid #2563eb;border-radius:8px;color:#2563eb;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#2563eb';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#2563eb'">
                                         <i class="bi bi-arrow-clockwise"></i> Refresh
                                     </button>
@@ -9524,7 +9552,116 @@ function closeUserDetailPanel() {
     if (overlay) overlay.style.display = 'none';
     document.body.style.overflow = '';
 }
-        </script>
+        
+            // ── Admin Booking Calendar View ───────────────────────────────────────────────
+            var _adminCalViewOn = false;
+            var _adminCalMonth = new Date().getMonth();
+            var _adminCalYear  = new Date().getFullYear();
+
+            function toggleAdminBookingCalView() {
+                _adminCalViewOn = !_adminCalViewOn;
+                const calWrap = document.getElementById('adminBookingCalendarWrap');
+                const btn = document.getElementById('adminCalViewBtn');
+                if (_adminCalViewOn) {
+                    calWrap.style.display = 'block';
+                    btn.style.background = '#1A3A6B';
+                    btn.style.color = '#fff';
+                    btn.onmouseout = null;
+                    renderAdminBookingCal();
+                } else {
+                    calWrap.style.display = 'none';
+                    btn.style.background = 'transparent';
+                    btn.style.color = '#1A3A6B';
+                    btn.onmouseout = function(){ this.style.background='transparent'; this.style.color='#1A3A6B'; };
+                }
+            }
+
+            function changeAdminCalMonth(delta, goToday) {
+                if (goToday) {
+                    const n = new Date();
+                    _adminCalMonth = n.getMonth();
+                    _adminCalYear  = n.getFullYear();
+                } else {
+                    _adminCalMonth += delta;
+                    if (_adminCalMonth > 11) { _adminCalMonth = 0; _adminCalYear++; }
+                    else if (_adminCalMonth < 0) { _adminCalMonth = 11; _adminCalYear--; }
+                }
+                renderAdminBookingCal();
+            }
+
+            async function renderAdminBookingCal() {
+                const grid = document.getElementById('adminBookingCalGrid');
+                const titleEl = document.getElementById('adminCalMonthTitle');
+                if (!grid || !titleEl) return;
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                titleEl.textContent = months[_adminCalMonth] + ' ' + _adminCalYear;
+
+                const allBookings = await getCourtBookings();
+                // Group by date
+                const byDate = {};
+                allBookings.forEach(b => {
+                    if (!b.date) return;
+                    if (!byDate[b.date]) byDate[b.date] = [];
+                    byDate[b.date].push(b);
+                });
+
+                grid.innerHTML = '';
+                const firstDay = new Date(_adminCalYear, _adminCalMonth, 1).getDay();
+                const daysInMonth = new Date(_adminCalYear, _adminCalMonth + 1, 0).getDate();
+                const today = new Date(); today.setHours(0,0,0,0);
+
+                for (let i = 0; i < firstDay; i++) {
+                    const empty = document.createElement('div');
+                    empty.style.cssText = 'min-height:80px;border:0.5px solid #e2e8f0;background:#FAFAFA;';
+                    grid.appendChild(empty);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = _adminCalYear + '-' + String(_adminCalMonth+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+                    const dateObj = new Date(_adminCalYear, _adminCalMonth, day);
+                    const isPast = dateObj < today;
+                    const isToday = dateObj.getTime() === today.getTime();
+
+                    const cell = document.createElement('div');
+                    cell.style.cssText = 'min-height:80px;border:0.5px solid #e2e8f0;display:flex;flex-direction:column;padding:5px 4px;overflow:hidden;background:' + (isPast ? '#FAFAFA' : '#fff') + ';';
+
+                    const numEl = document.createElement('div');
+                    if (isToday) {
+                        numEl.style.cssText = 'width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-bottom:3px;align-self:flex-start;';
+                    } else {
+                        numEl.style.cssText = 'font-size:12px;font-weight:700;color:' + (isPast?'#9CA3AF':'#374151') + ';margin-bottom:3px;align-self:flex-start;';
+                    }
+                    numEl.textContent = day;
+                    cell.appendChild(numEl);
+
+                    if (byDate[dateStr]) {
+                        const dayBks = byDate[dateStr];
+                        const maxShow = 3;
+                        dayBks.slice(0, maxShow).forEach(bk => {
+                            const chip = document.createElement('div');
+                            let bg = '#9ca3af'; // cancelled/rejected = gray
+                            if (bk.status === 'approved') bg = '#15803d';
+                            else if (bk.status === 'pending') bg = '#d97706';
+                            const timeStr = (bk.start_time || bk.time || '').substring(0,5);
+                            const nameStr = bk.userName || bk.user_name || '';
+                            chip.style.cssText = 'font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;cursor:pointer;background:'+bg+';color:#fff;';
+                            chip.textContent = (timeStr ? timeStr+' ' : '') + (nameStr || bk.purpose || 'Booking');
+                            chip.title = (nameStr || '') + ' — ' + (bk.purpose || '') + ' (' + (bk.time || '') + ')  [' + bk.status + ']';
+                            chip.onclick = () => { if(typeof openBookingDetail === 'function') openBookingDetail(bk.id); };
+                            cell.appendChild(chip);
+                        });
+                        if (dayBks.length > maxShow) {
+                            const more = document.createElement('div');
+                            more.style.cssText = 'font-size:9px;color:#6b7280;font-weight:600;margin-top:1px;';
+                            more.textContent = '+' + (dayBks.length - maxShow) + ' more';
+                            cell.appendChild(more);
+                        }
+                    }
+
+                    grid.appendChild(cell);
+                }
+            }
+</script>
 </body>
 
 </html>

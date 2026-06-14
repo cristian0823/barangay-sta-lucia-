@@ -3952,8 +3952,28 @@
                     }
                 }
             })();
-            const venueBookings = bookings.filter(b => b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' && b.status !== 'rejected' && b.status !== 'completed' && b.venue === selectedVenue);
-            const bookedDates = venueBookings.map(b => b.date);
+            // Group bookings by date for chips — approved (navy) + own pending (amber)
+            const venueBookings = bookings.filter(b =>
+                b.status !== 'cancelled' && b.status !== 'cancelled_by_admin' &&
+                b.status !== 'rejected' && b.status !== 'completed' && b.venue === selectedVenue
+            );
+            const bookingsByDate = {};
+            let currentUserId = '';
+            try {
+                const _cu = JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
+                currentUserId = String(_cu.id || '');
+                const _bidKey = _cu.barangay_id || _cu.username;
+                if (_bidKey) {
+                    const { data: _uRow } = await supabase.from('users').select('id').eq('barangay_id', _bidKey).maybeSingle();
+                    if (_uRow) currentUserId = String(_uRow.id);
+                }
+            } catch(_){}
+            venueBookings.forEach(b => {
+                if (b.status === 'pending' && String(b.user_id || b.userId) !== currentUserId) return; // hide others' pending
+                if (!bookingsByDate[b.date]) bookingsByDate[b.date] = [];
+                bookingsByDate[b.date].push(b);
+            });
+            const bookedDates = Object.keys(bookingsByDate);
             grid.innerHTML = '';
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -4009,17 +4029,35 @@
                 numEl.textContent = day;
                 dayDiv.appendChild(numEl);
 
-                // Indicator pills (event or booked)
+                // Indicator pills (barangay event or booking chips)
                 if (!isPast && hasEvent) {
                     const pill = document.createElement('div');
                     pill.style.cssText = 'font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;margin-top:3px;background:#1A3A6B;color:#fff;';
                     pill.textContent = hasEvent.title || 'Brgy Event';
                     dayDiv.appendChild(pill);
-                } else if (!isPast && bookedDates.includes(dateStr)) {
-                    const pill = document.createElement('div');
-                    pill.style.cssText = 'font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;margin-top:3px;background:#1A3A6B;color:#fff;';
-                    pill.textContent = 'Booked';
-                    dayDiv.appendChild(pill);
+                }
+                if (bookingsByDate[dateStr]) {
+                    const dayBookings = bookingsByDate[dateStr];
+                    const maxChips = hasEvent ? 1 : 2;
+                    dayBookings.slice(0, maxChips).forEach(bk => {
+                        const pill = document.createElement('div');
+                        const isApproved = bk.status === 'approved';
+                        const isOwnPending = bk.status === 'pending' && String(bk.user_id || bk.userId) === currentUserId;
+                        const bg = isApproved ? '#15803d' : '#d97706';
+                        const timeLabel = (bk.start_time || bk.time || '').substring(0,5);
+                        const label = (timeLabel ? timeLabel + ' ' : '') + (bk.purpose || 'Reservation');
+                        pill.style.cssText = 'font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;margin-top:2px;cursor:pointer;background:' + bg + ';color:#fff;';
+                        pill.title = (isOwnPending ? '⏳ Pending — ' : '✅ Approved — ') + (bk.purpose || '') + ' (' + (bk.time || '') + ')';
+                        pill.onclick = (ev) => { ev.stopPropagation(); openDaySchedulePopup(dateStr); };
+                        pill.textContent = label;
+                        dayDiv.appendChild(pill);
+                    });
+                    if (dayBookings.length > maxChips) {
+                        const more = document.createElement('div');
+                        more.style.cssText = 'font-size:9px;color:#6b7280;font-weight:600;margin-top:1px;';
+                        more.textContent = '+' + (dayBookings.length - maxChips) + ' more';
+                        dayDiv.appendChild(more);
+                    }
                 }
 
                 grid.appendChild(dayDiv);
