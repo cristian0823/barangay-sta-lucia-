@@ -791,30 +791,36 @@ async function getEquipment() {
     let equipmentList = [];
 
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('equipment').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('id', { ascending: true });
-        
+        // Try with is_deleted filter; if column doesn't exist yet, retry without filter
+        let { data, error } = await supabase.from('equipment').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('id', { ascending: true });
+        if (error) {
+            const fallback = await supabase.from('equipment').select('*').order('id', { ascending: true });
+            data = fallback.data;
+            error = fallback.error;
+        }
+
         if (!error && data) {
             // One-time auto-fix for corrupted available quantities exceeding max quantity
             for (const item of data) {
                 let fixed = false;
-                
+
                 // If category is a legacy string like 'Under Repair' or 'For Disposal', fix it to '0'
                 if (['Under Repair', 'For Disposal', 'Available', 'In Use'].includes(item.category)) {
                     item.category = '0';
                     item.available = item.quantity - (item.broken || 0);
                     fixed = true;
                 }
-                
+
                 if (item.available > item.quantity) {
                     item.available = item.quantity;
                     fixed = true;
                 }
-                
+
                 if (item.available < 0) {
                     item.available = 0;
                     fixed = true;
                 }
-                
+
                 if (fixed) {
                     await supabase.from('equipment').update({ category: item.category, available: item.available }).eq('id', item.id);
                 }
@@ -827,7 +833,8 @@ async function getEquipment() {
             initializeLocalEquipment();
             equipmentList = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
         } else {
-            equipmentList = mapRecords(data);
+            // Filter out soft-deleted items in JS (handles both column-exists and column-missing cases)
+            equipmentList = mapRecords(data.filter(item => !item.is_deleted));
         }
     } else {
         initializeLocalEquipment();

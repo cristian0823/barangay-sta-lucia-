@@ -790,8 +790,16 @@ async function getEquipment() {
     let equipmentList = [];
 
     if (supabaseAvailable) {
-        const { data, error } = await supabase.from('equipment').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('id', { ascending: true });
-        
+        // Try with is_deleted filter first; if column doesn't exist yet (migration not run),
+        // the query errors — fall back to a plain select with manual JS filter instead.
+        let { data, error } = await supabase.from('equipment').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('id', { ascending: true });
+        if (error) {
+            // Column may not exist yet — retry without the filter
+            const fallback = await supabase.from('equipment').select('*').order('id', { ascending: true });
+            data = fallback.data;
+            error = fallback.error;
+        }
+
         if (!error && data) {
             // One-time auto-fix for corrupted available quantities exceeding max quantity
             for (const item of data) {
@@ -808,7 +816,8 @@ async function getEquipment() {
             initializeLocalEquipment();
             equipmentList = JSON.parse(localStorage.getItem(LOCAL_EQUIPMENT_KEY)) || [];
         } else {
-            equipmentList = mapRecords(data);
+            // Filter out soft-deleted items in JS if column exists
+            equipmentList = mapRecords(data.filter(item => !item.is_deleted));
         }
     } else {
         initializeLocalEquipment();
