@@ -4391,6 +4391,29 @@
             const modal = document.getElementById('dsBookingModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            // Populate time selects if they are empty (opened without a date cell click)
+            const startSel = document.getElementById('dsStartTime');
+            const endSel   = document.getElementById('dsEndTime');
+            if (startSel && startSel.options.length <= 1) {
+                let openHour = 6, closeHour = 21;
+                try {
+                    const ls = JSON.parse(localStorage.getItem('brgy_operating_hours') || '{}');
+                    if (ls.facility_open_hour  != null) openHour  = parseInt(ls.facility_open_hour);
+                    if (ls.facility_close_hour != null) closeHour = parseInt(ls.facility_close_hour);
+                } catch(e) {}
+                const slots = [];
+                for (let i = openHour; i <= closeHour; i++) {
+                    slots.push(String(i).padStart(2,'0') + ':00');
+                    if (i !== closeHour) slots.push(String(i).padStart(2,'0') + ':30');
+                }
+                startSel.innerHTML = '<option value="">-- Select --</option>';
+                endSel.innerHTML   = '<option value="">-- Select --</option>';
+                slots.forEach(s => {
+                    const label = (typeof fmt12 === 'function') ? fmt12(s) : s;
+                    startSel.appendChild(new Option(label, label));
+                    endSel.appendChild(new Option(label, label));
+                });
+            }
         }
 
         function closeDsBookingModal() {
