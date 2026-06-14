@@ -692,79 +692,99 @@
                     </div>
 
                     <div id="court-bookings-section" class="section-container" style="display:none;">
-                        <style>
-                        .cb-tab-btn { padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;background:transparent;color:#6B7280;border:none;transition:all 0.15s; }
-                        .cb-tab-btn:hover { background:#fff;color:#1A1A2E; }
-                        .cb-tab-btn.cb-active { background:#2563eb;color:#fff;font-weight:600; }
-                        </style>
+<style>
+.facil-tab-btn { padding:8px 18px;border:1.5px solid #E5E7EB;background:#fff;color:#6B7280;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s; }
+.facil-tab-btn.active { background:#1A3A6B;color:#fff;border-color:#1A3A6B; }
+.facil-req-item { padding:14px 18px;border-bottom:1px solid #F3F4F6;cursor:pointer;transition:background 0.12s; }
+.facil-req-item:hover { background:#F9FAFB; }
+.facil-req-item:last-child { border-bottom:none; }
+</style>
 
-                        <!-- PAGE HEADING -->
-                        <div style="margin-bottom:20px;">
-                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-                                <div>
-                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#2563eb;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;">
-                                        <i class="bi bi-calendar-check-fill"></i> FACILITY MANAGEMENT
-                                    </p>
-                                    <h1 style="font-size:24px;font-weight:700;color:#0f2952;margin:0;">Court &amp; Facility Bookings</h1>
-                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Review, approve or reject resident reservation requests.</p>
-                                </div>
-                                <div style="display:flex;gap:8px;align-items:center;">
-                                    <button id="adminCalViewBtn" onclick="toggleAdminBookingCalView()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1.5px solid #1A3A6B;border-radius:8px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#1A3A6B';this.style.color='#fff'" onmouseout="if(!_adminCalViewOn){this.style.background='transparent';this.style.color='#1A3A6B';}">
-                                        <i class="bi bi-calendar3"></i> Calendar View
-                                    </button>
-                                    <button onclick="loadAdminBookings()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1.5px solid #2563eb;border-radius:8px;color:#2563eb;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;" onmouseover="this.style.background='#2563eb';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#2563eb'">
-                                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+<!-- PAGE HEADER -->
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+    <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#2563eb;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;"><i class="bi bi-calendar-check-fill"></i> FACILITY MANAGEMENT</p>
+        <h1 style="font-size:24px;font-weight:700;color:#0f2952;margin:0;">Facility Reservations</h1>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button onclick="facilSetTab('pending')" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:transparent;border:1.5px solid #1A3A6B;border-radius:8px;color:#1A3A6B;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;position:relative;" onmouseover="this.style.background='#EFF6FF'" onmouseout="this.style.background='transparent'">
+            <i class="bi bi-list-ul"></i> View All Requests
+            <span id="facilPendingBadge" style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;background:#DC2626;color:#fff;border-radius:20px;font-size:10px;font-weight:800;margin-left:2px;">0</span>
+        </button>
+        <button onclick="renderFacilityPage()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
 
-                        <!-- FILTER + SEARCH BAR -->
-                        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;">
-                            <div style="display:flex;gap:4px;padding:4px;background:#F3F4F6;border-radius:8px;width:fit-content;" id="courtBookingTabs">
-                                <button class="cb-tab-btn cb-active" onclick="setCourtBookingTab('All', this)">All</button>
-                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Pending', this)">Pending</button>
-                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Approved', this)">Approved</button>
-                                <button class="cb-tab-btn" onclick="setCourtBookingTab('Cancelled', this)">Cancelled / Rejected</button>
-                            </div>
-                            <div style="display:flex;gap:8px;align-items:center;">
-                                <select id="courtBookingVenueFilter" onchange="loadAdminBookings()" style="padding:8px 12px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.15s;" onfocus="this.style.borderColor='#2563eb';this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                                    <option value="all">All Venues</option>
-                                    <option value="basketball">Basketball Court</option>
-                                    <option value="multipurpose">Multi-Purpose Hall</option>
-                                </select>
-                                <div style="position:relative;">
-                                    <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:13px;pointer-events:none;"></i>
-                                    <input type="text" id="courtBookingSearch" placeholder="Search resident..." oninput="loadAdminBookings()" style="padding:8px 12px 8px 34px;border-radius:6px;border:1px solid #D1D5DB;outline:none;background:#fff;color:#1A1A2E;font-size:13px;width:200px;font-family:inherit;transition:all 0.15s;" onfocus="this.style.borderColor='#2563eb';this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.12)'" onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow=''">
-                                </div>
-                            </div>
-                        </div>
+<!-- LEGEND -->
+<div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;font-weight:500;"><span style="width:12px;height:12px;border-radius:3px;background:#DBEAFE;border:1px solid #93C5FD;display:inline-block;"></span>Basketball Court</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;font-weight:500;"><span style="width:12px;height:12px;border-radius:3px;background:#D1FAE5;border:1px solid #6EE7B7;display:inline-block;"></span>Covered Hall</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;font-weight:500;"><span style="width:12px;height:12px;border-radius:3px;background:#EDE9FE;border:1px solid #C4B5FD;display:inline-block;"></span>Mini Gym</div>
+</div>
 
-                        <!-- TABLE -->
-                        <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                            <table class="data-table" style="width:100%;border-collapse:collapse;">
-                                <thead>
-                                    <tr style="background:#1A3A6B;">
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;">Resident</th>
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;">Venue</th>
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;white-space:nowrap;">Date</th>
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;white-space:nowrap;">Time</th>
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:left;">Purpose</th>
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:center;">Status</th>
-                                        <th style="padding:13px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.85);text-align:center;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="courtBookingsTable"></tbody>
-                            </table>
-                            <div id="noCourtBookings" class="empty-state" style="display:none;padding:60px 20px;text-align:center;">
-                                <div style="width:56px;height:56px;background:rgba(26,58,107,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1A3A6B;margin:0 auto 16px;"><i class="bi bi-calendar-x"></i></div>
-                                <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:6px;">No Reservations Found</div>
-                                <div style="font-size:13px;color:#6B7280;">No facility reservations match your current filters.</div>
-                            </div>
-                        </div>
-                        <div id="courtBookingsPg" class="pg-controls" style="display:none;margin-top:16px;"></div>
+<!-- TWO-COLUMN LAYOUT -->
+<div style="display:grid;grid-template-columns:65% 35%;gap:16px;align-items:start;">
 
-                    </div> <!-- Closes court-bookings-section -->
+    <!-- LEFT: CALENDAR -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #E5E7EB;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+        <!-- Header -->
+        <div style="background:#1A3A6B;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
+            <button onclick="changeFacilMonth(-1)" style="background:rgba(255,255,255,0.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'"><i class="bi bi-chevron-left"></i></button>
+            <span id="facilCalTitle" style="font-size:15px;font-weight:700;color:#fff;"></span>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button onclick="changeFacilMonth(0,true)" style="background:rgba(255,255,255,0.12);border:none;color:#fff;padding:4px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Today</button>
+                <button onclick="changeFacilMonth(1)" style="background:rgba(255,255,255,0.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+        <!-- Day labels -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#0F2547;">
+            <div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">SUN</div><div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">MON</div><div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">TUE</div><div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">WED</div><div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">THU</div><div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">FRI</div><div style="padding:8px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.7);">SAT</div>
+        </div>
+        <!-- Grid -->
+        <div id="facilCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
+    </div>
+
+    <!-- RIGHT: REQUESTS PANEL -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #E5E7EB;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+        <!-- Panel header -->
+        <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:15px;font-weight:700;color:#0f2952;display:flex;align-items:center;gap:8px;"><i class="bi bi-inbox-fill" style="color:#1A3A6B;"></i> Requests</div>
+            <span id="facilReqCount" style="font-size:12px;color:#9CA3AF;font-weight:500;">0 records</span>
+        </div>
+        <!-- Tabs -->
+        <div style="display:flex;gap:6px;padding:12px 14px;border-bottom:1px solid #F3F4F6;background:#F9FAFB;">
+            <button id="facilTab-pending"  onclick="facilSetTab('pending')"  class="facil-tab-btn active">Pending <span id="facilTabBadge-pending"  style="font-size:10px;font-weight:800;margin-left:3px;opacity:0.7;"></span></button>
+            <button id="facilTab-approved" onclick="facilSetTab('approved')" class="facil-tab-btn">Approved <span id="facilTabBadge-approved" style="font-size:10px;font-weight:800;margin-left:3px;opacity:0.7;"></span></button>
+            <button id="facilTab-declined" onclick="facilSetTab('declined')" class="facil-tab-btn">Declined <span id="facilTabBadge-declined" style="font-size:10px;font-weight:800;margin-left:3px;opacity:0.7;"></span></button>
+        </div>
+        <!-- Items -->
+        <div id="facilReqList" style="overflow-y:auto;max-height:520px;">
+            <div style="padding:40px 20px;text-align:center;color:#9CA3AF;font-size:13px;"><i class="bi bi-hourglass" style="font-size:24px;display:block;margin-bottom:8px;"></i>Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="facilDetailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeFacilModal()">
+    <div style="background:#fff;border-radius:16px;width:90%;max-width:440px;box-shadow:0 24px 60px rgba(0,0,0,0.2);overflow:hidden;animation:fadeInUp 0.25s ease;">
+        <!-- Modal header -->
+        <div style="background:#1A3A6B;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">Facility Management</div>
+                <h3 id="facilModalTitle" style="font-size:17px;font-weight:700;color:#fff;margin:0;">Reservation Details</h3>
+            </div>
+            <button onclick="closeFacilModal()" style="background:rgba(255,255,255,0.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">&times;</button>
+        </div>
+        <div id="facilModalBody" style="padding:20px 24px 24px;"></div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="facilToast" style="display:none;position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;color:#fff;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.18);max-width:320px;font-family:inherit;"></div>
+
+</div> <!-- Closes court-bookings-section -->
 
 
 
@@ -9661,6 +9681,295 @@ function closeUserDetailPanel() {
                     grid.appendChild(cell);
                 }
             }
+
+            // ══════════════════════════════════════════════════════════════════
+            // FACILITY RESERVATIONS — Redesigned Page Logic
+            // ══════════════════════════════════════════════════════════════════
+            var _facilData = [];
+            var _facilTab  = 'pending';
+            var _facilCalYear  = new Date().getFullYear();
+            var _facilCalMonth = new Date().getMonth();
+
+            function _facilStatusNorm(b) {
+                const s = (b.status || '').toLowerCase();
+                if (s === 'rejected') return 'declined';
+                if (s === 'declined') return 'declined';
+                return s;
+            }
+
+            function _facilVenueType(b) {
+                const n = (b.venueName || b.venue_name || b.venue || '').toLowerCase();
+                if (n.includes('court') || n.includes('basketball')) return 'court';
+                if (n.includes('hall') || n.includes('function') || n.includes('multi')) return 'hall';
+                if (n.includes('gym') || n.includes('fitness')) return 'gym';
+                return 'court';
+            }
+
+            function _facilVenueName(b) {
+                if (b.venueName) return b.venueName;
+                if (b.venue_name) return b.venue_name;
+                if (b.venue === 'basketball') return 'Basketball Court';
+                if (b.venue === 'hall' || b.venue === 'multipurpose') return 'Covered Hall';
+                return b.venue || 'Facility';
+            }
+
+            function _facilFmtDate(dateStr) {
+                if (!dateStr) return '—';
+                try { return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' }); }
+                catch(e) { return dateStr; }
+            }
+
+            function _facilFmtTime(b) {
+                if (b.time) return b.time;
+                if (b.start_time) return b.start_time.substring(0,5) + (b.end_time ? ' – ' + b.end_time.substring(0,5) : '');
+                return '—';
+            }
+
+            async function renderFacilityPage() {
+                const listEl = document.getElementById('facilReqList');
+                if (listEl) listEl.innerHTML = '<div style="padding:40px 20px;text-align:center;color:#9CA3AF;font-size:13px;"><i class="bi bi-hourglass" style="font-size:24px;display:block;margin-bottom:8px;"></i>Loading...</div>';
+                _facilData = await getCourtBookings();
+                renderFacilityCal();
+                renderFacilityRequests();
+            }
+
+            function renderFacilityCal() {
+                const grid = document.getElementById('facilCalGrid');
+                const title = document.getElementById('facilCalTitle');
+                if (!grid || !title) return;
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                title.textContent = months[_facilCalMonth] + ' ' + _facilCalYear;
+
+                const approved = _facilData.filter(b => _facilStatusNorm(b) === 'approved');
+                const byDate = {};
+                approved.forEach(b => { if (!b.date) return; if (!byDate[b.date]) byDate[b.date] = []; byDate[b.date].push(b); });
+
+                grid.innerHTML = '';
+                const firstDay = new Date(_facilCalYear, _facilCalMonth, 1).getDay();
+                const daysInMonth = new Date(_facilCalYear, _facilCalMonth + 1, 0).getDate();
+                const prevDays = new Date(_facilCalYear, _facilCalMonth, 0).getDate();
+                const today = new Date(); today.setHours(0,0,0,0);
+                const chipColors = { court:'background:#DBEAFE;color:#1E3A8A;', hall:'background:#D1FAE5;color:#065F46;', gym:'background:#EDE9FE;color:#5B21B6;' };
+
+                // Leading empty cells (prev month)
+                for (let i = firstDay - 1; i >= 0; i--) {
+                    const cell = document.createElement('div');
+                    cell.style.cssText = 'min-height:90px;border:0.5px solid #e5e7eb;padding:6px 5px 4px;background:#FAFAFA;';
+                    const num = document.createElement('div');
+                    num.style.cssText = 'font-size:12px;font-weight:600;color:#D1D5DB;text-align:right;margin-bottom:3px;';
+                    num.textContent = prevDays - i;
+                    cell.appendChild(num);
+                    grid.appendChild(cell);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = _facilCalYear + '-' + String(_facilCalMonth+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+                    const dateObj = new Date(_facilCalYear, _facilCalMonth, day);
+                    const isToday = dateObj.getTime() === today.getTime();
+
+                    const cell = document.createElement('div');
+                    cell.style.cssText = 'min-height:90px;border:0.5px solid #e5e7eb;padding:6px 5px 4px;background:#fff;overflow:hidden;';
+
+                    const numWrap = document.createElement('div');
+                    numWrap.style.cssText = 'text-align:right;margin-bottom:4px;';
+                    if (isToday) {
+                        numWrap.innerHTML = '<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:#1A3A6B;color:#fff;border-radius:50%;font-size:11px;font-weight:700;">' + day + '</span>';
+                    } else {
+                        numWrap.innerHTML = '<span style="font-size:12px;font-weight:600;color:#374151;">' + day + '</span>';
+                    }
+                    cell.appendChild(numWrap);
+
+                    if (byDate[dateStr]) {
+                        const maxShow = 3;
+                        byDate[dateStr].slice(0, maxShow).forEach(b => {
+                            const type = _facilVenueType(b);
+                            const chip = document.createElement('div');
+                            chip.style.cssText = 'font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;cursor:pointer;' + (chipColors[type] || chipColors.court);
+                            chip.textContent = _facilVenueName(b);
+                            chip.title = _facilVenueName(b) + ' — ' + (b.userName || b.user_name || '') + ' (' + _facilFmtTime(b) + ')';
+                            chip.onclick = (ev) => { ev.stopPropagation(); openFacilModal(b.id); };
+                            cell.appendChild(chip);
+                        });
+                        if (byDate[dateStr].length > maxShow) {
+                            const more = document.createElement('div');
+                            more.style.cssText = 'font-size:9px;color:#6B7280;font-weight:600;margin-top:1px;';
+                            more.textContent = '+' + (byDate[dateStr].length - maxShow) + ' more';
+                            cell.appendChild(more);
+                        }
+                    }
+                    grid.appendChild(cell);
+                }
+
+                // Trailing empty cells (next month)
+                const totalCells = firstDay + daysInMonth;
+                const remaining = (7 - (totalCells % 7)) % 7;
+                for (let i = 1; i <= remaining; i++) {
+                    const cell = document.createElement('div');
+                    cell.style.cssText = 'min-height:90px;border:0.5px solid #e5e7eb;padding:6px 5px 4px;background:#FAFAFA;';
+                    const num = document.createElement('div');
+                    num.style.cssText = 'font-size:12px;font-weight:600;color:#D1D5DB;text-align:right;margin-bottom:3px;';
+                    num.textContent = i;
+                    cell.appendChild(num);
+                    grid.appendChild(cell);
+                }
+            }
+
+            function renderFacilityRequests() {
+                const list = document.getElementById('facilReqList');
+                if (!list) return;
+
+                const counts = { pending: 0, approved: 0, declined: 0 };
+                _facilData.forEach(b => { const s = _facilStatusNorm(b); if (s in counts) counts[s]++; });
+
+                ['pending','approved','declined'].forEach(t => {
+                    const el = document.getElementById('facilTabBadge-' + t);
+                    if (el) el.textContent = counts[t] || '';
+                });
+                const badge = document.getElementById('facilPendingBadge');
+                if (badge) badge.textContent = counts.pending;
+                const countEl = document.getElementById('facilReqCount');
+                if (countEl) countEl.textContent = _facilData.length + ' records';
+
+                const filtered = _facilData.filter(b => _facilStatusNorm(b) === _facilTab);
+
+                if (!filtered.length) {
+                    const labels = { pending:'pending', approved:'approved', declined:'declined' };
+                    list.innerHTML = '<div style="padding:48px 20px;text-align:center;color:#9CA3AF;font-size:13px;"><i class="bi bi-calendar-x" style="font-size:32px;display:block;margin-bottom:10px;color:#D1D5DB;"></i>No ' + (labels[_facilTab]||_facilTab) + ' reservations</div>';
+                    return;
+                }
+
+                const badgeStyleMap = { pending:'background:#FEF3C7;color:#92400E;', approved:'background:#D1FAE5;color:#065F46;', declined:'background:#FEE2E2;color:#991B1B;' };
+
+                list.innerHTML = filtered.map(b => {
+                    const sn = _facilStatusNorm(b);
+                    const name = b.userName || b.user_name || b.username || 'Unknown Resident';
+                    const venue = _facilVenueName(b);
+                    const date = b.date ? new Date(b.date + 'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+                    const time = _facilFmtTime(b);
+                    const bs = badgeStyleMap[sn] || badgeStyleMap.pending;
+                    const badgeText = sn.charAt(0).toUpperCase() + sn.slice(1);
+                    const actionBtns = sn === 'pending'
+                        ? '<div style="display:flex;gap:6px;margin-top:10px;">'
+                            + '<button onclick="event.stopPropagation();facilApprove(' + b.id + ')" style="flex:1;padding:6px 10px;background:#059669;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"><i class="bi bi-check-lg"></i> Approve</button>'
+                            + '<button onclick="event.stopPropagation();facilDecline(' + b.id + ')" style="flex:1;padding:6px 10px;background:#fff;color:#DC2626;border:1.5px solid #DC2626;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"><i class="bi bi-x-lg"></i> Decline</button>'
+                            + '</div>'
+                        : '<button onclick="event.stopPropagation();openFacilModal(' + b.id + ')" style="font-size:11px;color:#2563eb;background:none;border:none;cursor:pointer;font-weight:600;padding:4px 0;margin-top:6px;display:inline-block;font-family:inherit;">View details →</button>';
+
+                    return '<div class="facil-req-item" onclick="openFacilModal(' + b.id + ')">'
+                        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">'
+                        + '<span style="font-size:13px;font-weight:700;color:#111827;">' + name + '</span>'
+                        + '<span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;' + bs + '">' + badgeText + '</span>'
+                        + '</div>'
+                        + '<div style="font-size:11px;color:#6B7280;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+                        + '<i class="bi bi-building"></i><span>' + venue + '</span>'
+                        + '<span style="color:#D1D5DB;">·</span><i class="bi bi-calendar3"></i><span>' + date + '</span>'
+                        + '<span style="color:#D1D5DB;">·</span><i class="bi bi-clock"></i><span>' + time + '</span>'
+                        + '</div>'
+                        + actionBtns
+                        + '</div>';
+                }).join('');
+            }
+
+            function facilSetTab(tab) {
+                _facilTab = tab;
+                ['pending','approved','declined'].forEach(t => {
+                    const btn = document.getElementById('facilTab-' + t);
+                    if (!btn) return;
+                    if (t === tab) { btn.classList.add('active'); }
+                    else { btn.classList.remove('active'); }
+                });
+                renderFacilityRequests();
+            }
+
+            function openFacilModal(id) {
+                const b = _facilData.find(x => String(x.id) === String(id));
+                if (!b) return;
+                const modal = document.getElementById('facilDetailModal');
+                const body  = document.getElementById('facilModalBody');
+                const title = document.getElementById('facilModalTitle');
+                if (!modal || !body) return;
+
+                const sn = _facilStatusNorm(b);
+                const badgeStyleMap = { pending:'background:#FEF3C7;color:#92400E;', approved:'background:#D1FAE5;color:#065F46;', declined:'background:#FEE2E2;color:#991B1B;' };
+                const bs = badgeStyleMap[sn] || badgeStyleMap.pending;
+                const badgeText = sn.charAt(0).toUpperCase() + sn.slice(1);
+                const name  = b.userName || b.user_name || b.username || 'Unknown Resident';
+                const venue = _facilVenueName(b);
+                const date  = _facilFmtDate(b.date);
+                const time  = _facilFmtTime(b);
+                const purpose = b.purpose || '—';
+
+                if (title) title.textContent = venue + ' Reservation';
+
+                const rowStyle = 'display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F3F4F6;';
+                const labelStyle = 'font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;';
+                const valStyle   = 'font-size:13px;font-weight:600;color:#111827;text-align:right;max-width:65%;word-break:break-word;';
+
+                const rows = [
+                    ['Resident', '<span style="'+valStyle+'">'+name+'</span>'],
+                    ['Facility',  '<span style="'+valStyle+'">'+venue+'</span>'],
+                    ['Date',      '<span style="'+valStyle+'">'+date+'</span>'],
+                    ['Time',      '<span style="'+valStyle+'">'+time+'</span>'],
+                    ['Purpose',   '<span style="'+valStyle+'">'+purpose+'</span>'],
+                    ['Status',    '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;'+bs+'">'+badgeText+'</span>'],
+                ];
+
+                const actions = sn === 'pending'
+                    ? '<div style="display:flex;gap:10px;margin-top:20px;">'
+                        + '<button onclick="facilApprove('+b.id+');closeFacilModal()" style="flex:1;padding:11px;background:#059669;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;"><i class="bi bi-check-lg"></i> Approve</button>'
+                        + '<button onclick="facilDecline('+b.id+');closeFacilModal()" style="flex:1;padding:11px;background:#fff;color:#DC2626;border:1.5px solid #DC2626;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;"><i class="bi bi-x-lg"></i> Decline</button>'
+                        + '</div>' : '';
+
+                body.innerHTML = rows.map(([l,v]) => '<div style="'+rowStyle+'"><span style="'+labelStyle+'">'+l+'</span>'+v+'</div>').join('') + actions;
+                modal.style.display = 'flex';
+            }
+
+            function closeFacilModal() {
+                const modal = document.getElementById('facilDetailModal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            async function facilApprove(id) {
+                const b = _facilData.find(x => String(x.id) === String(id));
+                if (!b) return;
+                b.status = 'approved';
+                renderFacilityCal();
+                renderFacilityRequests();
+                showFacilToast('✓ Reservation approved — added to calendar', 'success');
+                try { await supabase.from('facility_reservations').update({ status: 'approved' }).eq('id', id); } catch(e) { console.error(e); }
+                if (typeof logAudit === 'function') logAudit('facility_reservation', id, 'Approved', { resident: b.userName || b.user_name });
+            }
+
+            async function facilDecline(id) {
+                const b = _facilData.find(x => String(x.id) === String(id));
+                if (!b) return;
+                b.status = 'rejected';
+                renderFacilityCal();
+                renderFacilityRequests();
+                showFacilToast('Reservation declined', 'info');
+                try { await supabase.from('facility_reservations').update({ status: 'rejected' }).eq('id', id); } catch(e) { console.error(e); }
+                if (typeof logAudit === 'function') logAudit('facility_reservation', id, 'Declined', { resident: b.userName || b.user_name });
+            }
+
+            function changeFacilMonth(delta, goToday) {
+                if (goToday) { const n = new Date(); _facilCalYear = n.getFullYear(); _facilCalMonth = n.getMonth(); }
+                else { _facilCalMonth += delta; if (_facilCalMonth > 11) { _facilCalMonth = 0; _facilCalYear++; } else if (_facilCalMonth < 0) { _facilCalMonth = 11; _facilCalYear--; } }
+                renderFacilityCal();
+            }
+
+            function showFacilToast(msg, type) {
+                const t = document.getElementById('facilToast');
+                if (!t) return;
+                t.textContent = msg;
+                t.style.background = type === 'success' ? '#059669' : '#374151';
+                t.style.display = 'block';
+                t.style.opacity = '1';
+                clearTimeout(t._tmr);
+                t._tmr = setTimeout(() => { t.style.opacity = '0'; setTimeout(() => { t.style.display = 'none'; }, 320); }, 2500);
+            }
+
+            // Override loadAdminBookings so switchSection() triggers the new page
+            loadAdminBookings = renderFacilityPage;
 </script>
 </body>
 
