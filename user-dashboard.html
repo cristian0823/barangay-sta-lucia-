@@ -1400,22 +1400,7 @@
                         <input type="text" id="dsName" required placeholder="Full Name" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">Purpose</label>
-                        <input type="text" id="dsPurpose" required placeholder="e.g. Liga Practice, Birthday Party" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">
-                            Proof of Billing / Valid ID <span style="color:#dc2626;">*</span>
-                        </label>
-                        <div id="dsProofUploadArea" onclick="document.getElementById('dsProofFile').click()" style="border:2px dashed #bfdbfe;border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:#eff6ff;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#bfdbfe'">
-                            <i class="bi bi-upload" style="font-size:20px;color:#3b82f6;display:block;margin-bottom:4px;"></i>
-                            <p id="dsProofLabel" class="text-xs font-medium text-blue-700">Click to upload (JPG, PNG, PDF — max 5MB)</p>
-                        </div>
-                        <input type="file" id="dsProofFile" accept="image/jpeg,image/png,application/pdf" style="display:none;" onchange="(function(f){if(!f)return;if(f.size>5*1024*1024){alert('File exceeds 5MB limit.');this.value='';return;}document.getElementById('dsProofLabel').textContent='✓ '+f.name;document.getElementById('dsProofUploadArea').style.borderColor='#16a34a';document.getElementById('dsProofUploadArea').style.background='#f0fdf4';}).call(this,this.files[0])">
-                        <p class="text-[10px] text-gray-500 mt-1">Required for all facility reservation requests (e.g., barangay clearance, government-issued ID, or proof of billing).</p>
-                    </div>
+                    <input type="hidden" id="dsPurpose" value="Facility Reservation">
 
                     <div class="mt-2 text-[10px] leading-relaxed text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-200 shadow-sm flex items-start gap-2 mb-3">
                         <i class="bi bi-info-circle" style="font-size:14px;color:#3b82f6;flex-shrink:0;margin-top:2px;"></i>
@@ -4431,12 +4416,6 @@
                 return showToast(`Reservations are currently closed. Available from ${fmtH(facOpen)} to ${fmtH(facClose)}.`, 'error');
             }
 
-            // Require proof of billing/ID upload before submission
-            const _proofFile = document.getElementById('dsProofFile');
-            if (!_proofFile || !_proofFile.files || _proofFile.files.length === 0) {
-                return showToast('Please upload your Proof of Billing or Valid ID before submitting.', 'error');
-            }
-
             btn.disabled = true; btn.innerHTML = 'Processing...';
 
             const date = document.getElementById('dsDate').value;
@@ -4487,12 +4466,8 @@
             btn.disabled = false; btn.innerHTML = ' Confirm Reservation';
 
             if (result.success) {
-                document.getElementById('dsPurpose').value = '';
                 document.getElementById('dsStartTime').value = '';
                 document.getElementById('dsEndTime').value = '';
-                const _pf = document.getElementById('dsProofFile'); if (_pf) _pf.value = '';
-                const _pl = document.getElementById('dsProofLabel'); if (_pl) _pl.textContent = 'Click to upload (JPG, PNG, PDF — max 5MB)';
-                const _pa = document.getElementById('dsProofUploadArea'); if (_pa) { _pa.style.borderColor='#bfdbfe'; _pa.style.background='#eff6ff'; }
                 closeDsBookingModal();
                 document.getElementById('dsToggleFormBtn').innerHTML = '<span> Add Facility Reservation</span>';
                 await refreshDsSchedule(date, venue);
