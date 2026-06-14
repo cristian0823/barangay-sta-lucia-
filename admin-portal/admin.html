@@ -919,6 +919,7 @@
                                 <h2 id="adminCalendarMonth" style="font-size:18px;font-weight:700;color:#fff;margin:0;letter-spacing:0;"></h2>
                                 <div style="display:flex;gap:8px;align-items:center;">
                                     <button onclick="jumpToToday()" style="padding:6px 14px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.7);background:transparent;cursor:pointer;font-size:12px;font-weight:700;color:#fff;transition:all 0.15s;font-family:inherit;letter-spacing:0.04em;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='#fff'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,0.7)'">Today</button>
+                                    <button onclick="openAdminAddEventModal()" style="padding:6px 14px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.18);cursor:pointer;font-size:12px;font-weight:700;color:#fff;font-family:inherit;display:flex;align-items:center;gap:5px;" onmouseover="this.style.background='rgba(255,255,255,0.28)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'"><i class="bi bi-plus-lg"></i> Add Event</button>
 
                                     <button onclick="changeAdminMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="bi bi-chevron-right"></i></button>
                                 </div>
@@ -939,11 +940,11 @@
                             <div id="adminCalendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
 
                             <!-- Legend -->
-                            <div style="display:flex;justify-content:center;gap:24px;padding:14px 20px;border-top:1px solid #F3F4F6;flex-wrap:wrap;">
-                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-available" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DCFCE7;border:1px solid #86EFAC;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Available</span></div>
-                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-event" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#FEF3C7;border:1px solid #FCD34D;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Brgy Event</span></div>
-                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-booked" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#DBEAFE;border:1px solid #93C5FD;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Booked</span></div>
-                                <div style="display:flex;align-items:center;gap:6px;"><span class="cal-box-past" style="width:12px;height:12px;border-radius:3px;display:inline-block;background:#F3F4F6;border:1px solid #D1D5DB;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Past</span></div>
+                            <div style="display:flex;justify-content:center;gap:20px;padding:14px 20px;border-top:1px solid #F3F4F6;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#16a34a;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Barangay Event</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#2563eb;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Court Booking</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#d97706;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Pending</span></div>
+                                <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#e5e7eb;border:1px solid #d1d5db;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Past / Available</span></div>
                             </div>
                         </div>
 
@@ -2580,225 +2581,274 @@
                 }
             });
 
+            let _adminCalData = { events: [], bookings: [] };
+
             async function renderAdminCalendar() {
                 const grid = document.getElementById('adminCalendarGrid');
                 const monthTitle = document.getElementById('adminCalendarMonth');
                 if (!grid || !monthTitle) return;
 
-                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                monthTitle.textContent = `${months[adminCalendarMonth]} ${adminCalendarYear}`;
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                monthTitle.textContent = months[adminCalendarMonth] + ' ' + adminCalendarYear;
 
-                grid.innerHTML = Array(35).fill('<div style="height:50px;border-radius:6px;background:var(--input-bg);animation:pulse 1.5s ease-in-out infinite;"></div>').join('');
+                grid.innerHTML = Array(35).fill('<div style="height:64px;border:0.5px solid #e2e8f0;background:#f8fafc;animation:pulse 1.5s ease-in-out infinite;"></div>').join('');
 
-                // Fetch data safely
-                let eventDates = {}, bookingDates = {};
                 let allEvents = [], allBookings = [];
                 try {
                     const [_e, _b] = await Promise.all([getEvents(), getCourtBookings()]);
-                    allEvents = _e;
-                    allBookings = _b;
-                    const selectedVenue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
-                    
-                    // Helper to check if time has passed
-                    function isBookingTimePassed(dateStr, timeStr) {
-                        const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
-                        if (dateStr < todayStr) return true;
-                        if (dateStr > todayStr) return false;
-                        if (!timeStr) return false;
-                        let endTimeStr = timeStr;
-                        if (timeStr.includes('-')) {
-                            endTimeStr = timeStr.split('-')[1].trim();
-                        }
-                        const match = endTimeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
-                        if (!match) return false;
-                        let h = parseInt(match[1]);
-                        let m = parseInt(match[2]);
-                        if (match[3].toUpperCase() === 'PM' && h < 12) h += 12;
-                        if (match[3].toUpperCase() === 'AM' && h === 12) h = 0;
-                        const now = new Date();
-                        if (now.getHours() > h) return true;
-                        if (now.getHours() === h && now.getMinutes() >= m) return true;
-                        return false;
-                    }
-
-                    // For EVENTS: only hide if the date is strictly BEFORE today (not time-based)
-                    // This ensures today's events always show as violet on the calendar
-                    const todayStr = new Date().toLocaleDateString('en-CA');
-                    _e.filter(e => e.status === 'approved' && e.date >= todayStr).forEach(e => {
-                        eventDates[e.date] = eventDates[e.date] || [];
-                        eventDates[e.date].push(e);
-                    });
-                    // For BOOKINGS: still use time-based check (hide once the slot is over)
-                    _b.filter(b => (b.status === 'approved' || b.status === 'pending') && b.venue === selectedVenue && !isBookingTimePassed(b.date, b.time)).forEach(b => {
-                        bookingDates[b.date] = bookingDates[b.date] || [];
-                        bookingDates[b.date].push(b);
-                    });
-                } catch (err) {
-                    console.warn('Calendar data fetch failed:', err);
-                }
+                    allEvents = _e || [];
+                    allBookings = _b || [];
+                    _adminCalData = { events: allEvents, bookings: allBookings };
+                } catch(err) { console.warn('Calendar fetch failed:', err); }
 
                 grid.innerHTML = '';
-
                 const firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
                 const daysInMonth = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                const today = new Date(); today.setHours(0,0,0,0);
 
-                // Empty spacer cells
+                const yr = adminCalendarYear, mo = adminCalendarMonth;
+                const moStr = yr + '-' + String(mo+1).padStart(2,'0');
+
+                // Index events/bookings by date for this month
+                const evByDate = {}, bkByDate = {};
+                allEvents.forEach(e => {
+                    if (!e.date || !e.date.startsWith(moStr)) return;
+                    if (!evByDate[e.date]) evByDate[e.date] = [];
+                    evByDate[e.date].push(e);
+                });
+                allBookings.forEach(b => {
+                    if (!b.date || !b.date.startsWith(moStr)) return;
+                    if (!bkByDate[b.date]) bkByDate[b.date] = [];
+                    bkByDate[b.date].push(b);
+                });
+
+                // Spacer cells
                 for (let i = 0; i < firstDay; i++) {
-                    const empty = document.createElement('div');
-                    grid.appendChild(empty);
+                    const sp = document.createElement('div');
+                    sp.style.cssText = 'border:0.5px solid #e2e8f0;background:#fafafa;';
+                    grid.appendChild(sp);
                 }
 
-                // Day tiles
                 for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const dateObj = new Date(adminCalendarYear, adminCalendarMonth, day);
-
-                    const hasEvents = eventDates[dateStr] && eventDates[dateStr].length > 0;
-                    const hasBookings = bookingDates[dateStr] && bookingDates[dateStr].length > 0;
-                    const isSelected = adminSelectedDate === dateStr;
-                    const isToday = dateObj.getTime() === today.getTime();
+                    const dateStr = yr + '-' + String(mo+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+                    const dateObj = new Date(yr, mo, day);
                     const isPast = dateObj < today;
+                    const isToday = dateObj.getTime() === today.getTime();
 
-                    const dayEl = document.createElement('div');
-                    dayEl.style.cssText = 'min-height:64px;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 3px 4px;transition:all 0.15s;cursor:pointer;overflow:hidden;border:0.5px solid #e2e8f0;';
+                    const dayEvs = evByDate[dateStr] || [];
+                    const dayBks = bkByDate[dateStr] || [];
 
-                    let baseClass = '';
-
-                    if (isPast) {
-                        baseClass = 'cal-box-past';
-                        dayEl.style.cursor = 'default';
-                    } else if (hasEvents) {
-                        baseClass = 'cal-box-event';
-                    } else if (hasBookings) {
-                        baseClass = 'cal-box-booked';
-                    } else {
-                        baseClass = 'cal-box-available';
-                    }
-
-                    if (isSelected) {
-                        baseClass += ' cal-box-selected';
-                    } else if (isToday) {
-                        baseClass += ' cal-box-today';
-                    }
-
-                    dayEl.className = baseClass;
+                    const cell = document.createElement('div');
+                    cell.style.cssText = 'min-height:64px;border:0.5px solid #e2e8f0;display:flex;flex-direction:column;align-items:flex-start;padding:4px 3px 3px;overflow:hidden;cursor:pointer;transition:background 0.12s;' + (isPast ? 'background:#FAFAFA;' : 'background:#fff;');
+                    cell.onclick = () => adminOpenDayDetail(dateStr);
 
                     // Day number
+                    const numWrap = document.createElement('div');
+                    numWrap.style.cssText = 'width:100%;display:flex;justify-content:center;margin-bottom:2px;';
                     const numEl = document.createElement('div');
-                    numEl.className = 'cal-day-num';
                     if (isToday) {
-                        numEl.style.cssText = 'width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;';
+                        numEl.style.cssText = 'width:22px;height:22px;background:#1A3A6B;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;';
+                        cell.style.outline = '2px solid #1A3A6B';
+                        cell.style.outlineOffset = '-1px';
+                    } else {
+                        numEl.style.cssText = 'font-size:11px;font-weight:600;color:' + (isPast ? '#9ca3af' : '#374151') + ';padding:2px 4px;';
                     }
                     numEl.textContent = day;
-                    dayEl.appendChild(numEl);
+                    numWrap.appendChild(numEl);
+                    cell.appendChild(numWrap);
 
-                    // Event pills
-                    if (hasEvents) {
-                        const evs = eventDates[dateStr].slice(0, 2);
-                        evs.forEach(e => {
-                            const pill = document.createElement('div');
-                            pill.className = 'cal-pill cal-pill-event';
-                            pill.textContent = e.title || 'Event';
-                            dayEl.appendChild(pill);
-                        });
-                        if (eventDates[dateStr].length > 2) {
-                            const more = document.createElement('div');
-                            more.className = 'cal-pill cal-pill-event';
-                            more.textContent = `+${eventDates[dateStr].length - 2} more`;
-                            dayEl.appendChild(more);
+                    // Combine items for display: events first then bookings
+                    const allItems = [];
+                    dayEvs.forEach(e => allItems.push({ kind:'event', obj:e }));
+                    dayBks.forEach(b => allItems.push({ kind:'booking', obj:b }));
+
+                    const showItems = allItems.slice(0, 2);
+                    showItems.forEach(item => {
+                        const pill = document.createElement('div');
+                        let bg, label;
+                        if (item.kind === 'event') {
+                            bg = '#16a34a'; label = item.obj.title || 'Event';
+                        } else {
+                            const st = (item.obj.status || '').toLowerCase();
+                            bg = st === 'pending' ? '#d97706' : '#2563eb';
+                            label = item.obj.userName || item.obj.purpose || 'Booking';
                         }
-                    } else if (hasBookings) {
-                        const bks = bookingDates[dateStr].slice(0, 2);
-                        bks.forEach(b => {
-                            const pill = document.createElement('div');
-                            pill.className = 'cal-pill cal-pill-booked';
-                            pill.textContent = b.purpose || b.venueName || 'Booked';
-                            dayEl.appendChild(pill);
-                        });
-                        if (bookingDates[dateStr].length > 2) {
-                            const more = document.createElement('div');
-                            more.className = 'cal-pill cal-pill-booked';
-                            more.textContent = `+${bookingDates[dateStr].length - 2} more`;
-                            dayEl.appendChild(more);
-                        }
+                        pill.style.cssText = 'width:100%;font-size:9px;font-weight:600;color:#fff;background:' + bg + ';border-radius:3px;padding:1px 4px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                        pill.textContent = label;
+                        cell.appendChild(pill);
+                    });
+                    if (allItems.length > 2) {
+                        const more = document.createElement('div');
+                        more.style.cssText = 'font-size:9px;color:#6b7280;font-weight:600;padding-left:3px;';
+                        more.textContent = '+' + (allItems.length - 2) + ' more';
+                        cell.appendChild(more);
                     }
 
-                    dayEl.onclick = () => adminSelectDate(dateStr);
-
-                    grid.appendChild(dayEl);
+                    grid.appendChild(cell);
                 }
 
-                // Sort and display all upcoming bookings/events in the right panel
+                // Update schedule overview list
                 const rightList = document.getElementById('adminAllBookingsList');
                 if (rightList) {
-                    const venue = (document.getElementById('adminSelectedVenue') || {}).value || 'basketball';
-                    const venueLabel = venue === 'basketball' ? 'Basketball Court' : 'Multi-Purpose Hall';
-                    const todayStr = `${adminCalendarYear}-${String(adminCalendarMonth + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                    
-                    const upcomingBooks = allBookings.filter(b => b.date >= todayStr && (b.status === 'approved' || b.status === 'pending') && (b.venue === venue || b.venueName === venueLabel) && !isBookingTimePassed(b.date, b.time));
-                    const upcomingEvents = allEvents.filter(e => e.date >= todayStr && e.status === 'approved' && !isBookingTimePassed(e.date, e.time || e.endTime));
-
+                    const todayStr = today.toLocaleDateString('en-CA');
+                    const upcomingEvs = allEvents.filter(e => e.date >= todayStr && e.status !== 'cancelled');
+                    const upcomingBks = allBookings.filter(b => b.date >= todayStr && (b.status === 'approved' || b.status === 'pending'));
                     const combined = [];
-                    upcomingBooks.forEach(b => combined.push({ type: 'booking', date: b.date, time: b.time, label: b.userName || 'Resident', sub: b.venueName || b.venue }));
-                    upcomingEvents.forEach(e => combined.push({ type: 'event', date: e.date, time: e.time, label: e.title, sub: 'Official Event' }));
-
-                    // Helper for sorting
-                    function _timeToMins(t) {
-                        if (!t) return 0;
-                        const parts = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
-                        if (!parts) return 0;
-                        let h = parseInt(parts[1], 10);
-                        let m = parseInt(parts[2], 10);
-                        if (parts[3].toUpperCase() === 'PM' && h < 12) h += 12;
-                        if (parts[3].toUpperCase() === 'AM' && h === 12) h = 0;
-                        return h * 60 + m;
-                    }
-
-                    combined.sort((a, b) => {
-                        if (a.date !== b.date) return a.date.localeCompare(b.date);
-                        return _timeToMins(a.time) - _timeToMins(b.time);
-                    });
-
-                    if (combined.length === 0) {
-                        rightList.innerHTML = `<div style="text-align:center;padding:32px 16px;">
-                            <div style="font-size:40px;margin-bottom:12px;"></div>
-                            <p style="color:var(--text, #1e293b);font-weight:700;font-size:14px;margin:0 0 4px;">All Clear!</p>
-                            <p style="color:var(--muted, #94a3b8);font-size:13px;margin:0;">No bookings or events scheduled yet.</p>
-                        </div>`;
+                    upcomingEvs.forEach(e => combined.push({ type:'event', date:e.date, time:e.time, label:e.title, sub:'Barangay Event', status:e.status }));
+                    upcomingBks.forEach(b => combined.push({ type:'booking', date:b.date, time:b.time, label:b.userName||'Resident', sub:b.venueName||b.venue||'Court', status:b.status }));
+                    combined.sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+                    if (!combined.length) {
+                        rightList.innerHTML = '<div style="text-align:center;padding:32px 16px;color:#94a3b8;font-size:13px;">No upcoming events or bookings.</div>';
                     } else {
                         rightList.innerHTML = combined.map(item => {
                             const isEv = item.type === 'event';
-                            const dot = isEv ? '' : '';
-                            const dateFmt = new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            return `<div style="background:var(--panel-bg, #f8fafc);border:1px solid var(--border, #e2e8f0);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:flex-start;">
-                                <div style="font-size:16px;line-height:1;margin-top:2px;">${dot}</div>
-                                <div>
-                                    <div style="font-size:13px;font-weight:700;color:var(--text, #0f172a);margin-bottom:2px;">${item.label}</div>
-                                    <div style="font-size:12px;color:var(--muted, #64748b);margin-bottom:4px;">${item.sub}</div>
-                                    <div style="font-weight:700;font-size:11px;color:${isEv ? '#D97706' : '#CE1126'};">${dateFmt}  ${item.time}</div>
-                                </div>
-                            </div>`;
+                            const dotColor = isEv ? '#16a34a' : (item.status === 'pending' ? '#d97706' : '#2563eb');
+                            const d = new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+                            return '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;">' +
+                                '<div style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';margin-top:4px;flex-shrink:0;"></div>' +
+                                '<div style="min-width:0;">' +
+                                '<div style="font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.label + '</div>' +
+                                '<div style="font-size:11px;color:#64748b;">' + item.sub + '</div>' +
+                                '<div style="font-size:11px;font-weight:700;color:' + dotColor + ';margin-top:2px;">' + d + (item.time ? '  ' + item.time : '') + '</div>' +
+                                '</div></div>';
                         }).join('');
                     }
                 }
             }
 
-            function adminSelectDate(dateStr) {
+            function adminSelectDate(dateStr) { adminOpenDayDetail(dateStr); }
+
+            function adminOpenDayDetail(dateStr) {
                 adminSelectedDate = dateStr;
-                renderAdminCalendar();
+                const modal = document.getElementById('adminDayDetailModal');
+                if (!modal) return;
 
-                // Format and display date for modal
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const formattedDate = new Date(dateStr).toLocaleDateString('en-US', options);
+                const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+                const label = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', opts);
+                const titleEl = document.getElementById('addDayDetailTitle');
+                if (titleEl) titleEl.textContent = label;
 
-                const actionModal = document.getElementById('adminEventActionModal');
-                const actionModalText = document.getElementById('actionModalDateText');
-                if(actionModal && actionModalText) {
-                    actionModalText.textContent = formattedDate;
-                    actionModal.style.display = 'flex';
+                // Gather items for this date
+                const dayEvs = (_adminCalData.events || []).filter(e => e.date === dateStr);
+                const dayBks = (_adminCalData.bookings || []).filter(b => b.date === dateStr);
+
+                const listEl = document.getElementById('addDayDetailList');
+                if (listEl) {
+                    if (!dayEvs.length && !dayBks.length) {
+                        listEl.innerHTML = '<div style="text-align:center;padding:28px 16px;color:#94a3b8;font-size:13px;">No events or bookings on this day.</div>';
+                    } else {
+                        const items = [];
+                        dayEvs.forEach(e => items.push({ kind:'event', obj:e }));
+                        dayBks.forEach(b => items.push({ kind:'booking', obj:b }));
+                        items.sort((a,b) => {
+                            const ta = a.obj.time||'', tb = b.obj.time||'';
+                            return ta < tb ? -1 : ta > tb ? 1 : 0;
+                        });
+                        listEl.innerHTML = items.map((item, idx) => {
+                            const isEv = item.kind === 'event';
+                            const st = isEv ? (item.obj.status||'approved') : (item.obj.status||'pending');
+                            let dotColor = isEv ? '#16a34a' : (st === 'pending' ? '#d97706' : st === 'approved' ? '#2563eb' : '#6b7280');
+                            let stLabel = st.charAt(0).toUpperCase() + st.slice(1);
+                            let stBg = st === 'approved' ? '#dcfce7' : st === 'pending' ? '#fef3c7' : '#f3f4f6';
+                            let stColor = st === 'approved' ? '#15803d' : st === 'pending' ? '#92400e' : '#6b7280';
+                            const title = isEv ? (item.obj.title||'Untitled Event') : (item.obj.userName||item.obj.purpose||'Booking');
+                            const sub = isEv ? (item.obj.location||'Barangay Event') : (item.obj.venueName||item.obj.venue||'Court');
+                            const time = item.obj.time || '';
+                            const endTime = item.obj.end_time || item.obj.endTime || '';
+                            const timeStr = time ? (endTime ? time + ' – ' + endTime : time) : '';
+                            return '<div onclick="adminOpenEventDetail(' + idx + ','' + dateStr + '')" style="display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;background:#fff;">' +
+                                '<div style="width:10px;height:10px;border-radius:50%;background:' + dotColor + ';margin-top:4px;flex-shrink:0;"></div>' +
+                                '<div style="flex:1;min-width:0;">' +
+                                '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">' +
+                                '<span style="font-size:13px;font-weight:700;color:#0f172a;">' + title + '</span>' +
+                                '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:' + stBg + ';color:' + stColor + ';">' + stLabel + '</span>' +
+                                '</div>' +
+                                '<div style="font-size:12px;color:#64748b;">' + sub + (timeStr ? '  ·  ' + timeStr : '') + '</div>' +
+                                '</div>' +
+                                '<i class="bi bi-chevron-right" style="font-size:12px;color:#cbd5e1;margin-top:2px;"></i>' +
+                                '</div>';
+                        }).join('');
+                        // Store items for detail modal
+                        modal._dayItems = items;
+                    }
                 }
+                modal.style.display = 'flex';
+            }
+
+            function adminOpenEventDetail(idx, dateStr) {
+                const dayModal = document.getElementById('adminDayDetailModal');
+                if (dayModal && dayModal._dayItems) {
+                    const item = dayModal._dayItems[idx];
+                    if (!item) return;
+                    adminShowEventDetail(item.kind, item.obj);
+                }
+            }
+
+            function adminShowEventDetail(kind, obj) {
+                const modal = document.getElementById('adminEventDetailModal');
+                if (!modal) return;
+                document.getElementById('adminDayDetailModal').style.display = 'none';
+
+                const isEv = kind === 'event';
+                const title = isEv ? (obj.title||'Untitled') : (obj.userName||obj.purpose||'Booking');
+                const status = obj.status || (isEv ? 'approved' : 'pending');
+                let stBg = status === 'approved' ? '#dcfce7' : status === 'pending' ? '#fef3c7' : '#fee2e2';
+                let stColor = status === 'approved' ? '#15803d' : status === 'pending' ? '#92400e' : '#dc2626';
+                const date = obj.date || '';
+                const time = obj.time || '';
+                const endTime = obj.end_time || obj.endTime || '';
+                const venue = isEv ? (obj.location||'') : (obj.venueName||obj.venue||'');
+                const desc = isEv ? (obj.description||'') : (obj.purpose||'');
+                const organizer = isEv ? (obj.organizer||'') : (obj.userName||'');
+                const coverPhoto = obj.cover_photo || '';
+                const dateFmt = date ? new Date(date + 'T00:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
+
+                document.getElementById('aedTitle').textContent = title;
+                document.getElementById('aedStatus').style.cssText = 'display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:' + stBg + ';color:' + stColor + ';';
+                document.getElementById('aedStatus').textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                document.getElementById('aedDate').textContent = dateFmt;
+                document.getElementById('aedTime').textContent = time ? (endTime ? time + ' – ' + endTime : time) : '—';
+                document.getElementById('aedVenue').textContent = venue || '—';
+                document.getElementById('aedDesc').textContent = desc || 'No description provided.';
+                document.getElementById('aedOrganizer').textContent = organizer || '—';
+                const imgEl = document.getElementById('aedCoverPhoto');
+                if (imgEl) { imgEl.src = coverPhoto; imgEl.style.display = coverPhoto ? 'block' : 'none'; }
+
+                // Store for edit/delete
+                modal._kind = kind;
+                modal._obj = obj;
+
+                // Show/hide edit button (only for events)
+                const editBtn = document.getElementById('aedEditBtn');
+                if (editBtn) editBtn.style.display = isEv ? 'flex' : 'none';
+                const deleteBtn = document.getElementById('aedDeleteBtn');
+                if (deleteBtn) deleteBtn.style.display = 'flex';
+
+                modal.style.display = 'flex';
+            }
+
+            function adminAedEdit() {
+                const modal = document.getElementById('adminEventDetailModal');
+                if (!modal || modal._kind !== 'event') return;
+                const obj = modal._obj;
+                modal.style.display = 'none';
+                openEditEventModal(obj.id);
+            }
+
+            function adminAedDelete() {
+                const modal = document.getElementById('adminEventDetailModal');
+                if (!modal || !modal._obj) return;
+                const obj = modal._obj;
+                const kind = modal._kind;
+                if (!confirm('Delete this ' + (kind === 'event' ? 'event' : 'booking') + '? This cannot be undone.')) return;
+                modal.style.display = 'none';
+                handleDeleteEvent(obj.id).then(() => renderAdminCalendar()).catch(()=>{});
+            }
+
+            function openAdminAddEventModal() {
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventDate').min = '';
+                document.getElementById('eventModal').classList.add('active');
             }
 
             function openAdminMassCancelModal() {
@@ -8574,6 +8624,84 @@
                     <button onclick="document.getElementById('adminEventActionModal').style.display='none'"
                     <button onclick="document.getElementById('adminEventActionModal').style.display='none'" style="padding:10px 16px;background:#F3F4F6;color:#374151;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;font-size:14px;margin-top:4px;transition:background 0.15s;width:100%" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
                         Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ADMIN DAY DETAIL MODAL -->
+        <!-- ========================================== -->
+        <div id="adminDayDetailModal"
+            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:#fff;border-radius:20px;width:100%;max-width:460px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+                <!-- Header -->
+                <div style="background:#1A3A6B;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;">Day Schedule</div>
+                        <div id="addDayDetailTitle" style="font-size:16px;font-weight:700;color:#fff;"></div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <button onclick="openAdminAddEventModal();document.getElementById('adminDayDetailModal').style.display='none';" style="display:flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+                            <i class="bi bi-plus-lg"></i> Add Event
+                        </button>
+                        <button onclick="document.getElementById('adminDayDetailModal').style.display='none'" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">&times;</button>
+                    </div>
+                </div>
+                <!-- List -->
+                <div id="addDayDetailList" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ADMIN EVENT DETAIL MODAL -->
+        <!-- ========================================== -->
+        <div id="adminEventDetailModal"
+            style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:10000;align-items:center;justify-content:center;padding:16px;">
+            <div style="background:#fff;border-radius:20px;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+                <!-- Cover Photo area -->
+                <div style="background:#1A3A6B;padding:24px;flex-shrink:0;position:relative;">
+                    <img id="aedCoverPhoto" src="" alt="" style="display:none;width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-bottom:12px;">
+                    <button onclick="document.getElementById('adminEventDetailModal').style.display='none';document.getElementById('adminDayDetailModal').style.display='flex';" style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">&times;</button>
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <div style="flex:1;min-width:0;">
+                            <h3 id="aedTitle" style="font-size:18px;font-weight:800;color:#fff;margin:0 0 6px;"></h3>
+                            <span id="aedStatus"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Details -->
+                <div style="flex:1;overflow-y:auto;padding:20px 24px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+                        <div style="background:#f8fafc;border-radius:10px;padding:12px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;"><i class="bi bi-calendar3" style="margin-right:4px;"></i>Date</div>
+                            <div id="aedDate" style="font-size:13px;font-weight:600;color:#0f172a;"></div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:10px;padding:12px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;"><i class="bi bi-clock" style="margin-right:4px;"></i>Time</div>
+                            <div id="aedTime" style="font-size:13px;font-weight:600;color:#0f172a;"></div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:10px;padding:12px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;"><i class="bi bi-geo-alt" style="margin-right:4px;"></i>Venue</div>
+                            <div id="aedVenue" style="font-size:13px;font-weight:600;color:#0f172a;"></div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:10px;padding:12px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;"><i class="bi bi-person" style="margin-right:4px;"></i>Organizer / By</div>
+                            <div id="aedOrganizer" style="font-size:13px;font-weight:600;color:#0f172a;"></div>
+                        </div>
+                    </div>
+                    <div style="background:#f8fafc;border-radius:10px;padding:12px;margin-bottom:16px;">
+                        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;"><i class="bi bi-text-paragraph" style="margin-right:4px;"></i>Description</div>
+                        <div id="aedDesc" style="font-size:13px;color:#374151;line-height:1.5;"></div>
+                    </div>
+                </div>
+                <!-- Action buttons -->
+                <div style="padding:16px 24px;border-top:1px solid #f1f5f9;display:flex;gap:10px;flex-shrink:0;">
+                    <button id="aedEditBtn" onclick="adminAedEdit()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:#1A3A6B;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+                        <i class="bi bi-pencil-fill"></i> Edit
+                    </button>
+                    <button id="aedDeleteBtn" onclick="adminAedDelete()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+                        <i class="bi bi-trash3-fill"></i> Delete
                     </button>
                 </div>
             </div>
