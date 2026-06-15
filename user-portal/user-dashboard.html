@@ -537,20 +537,28 @@
             <!-- PANEL 1: DASHBOARD -->
             <div id="panel-dashboard" class="content-panel active">
 
-                <!-- Welcome Banner -->
-                <div style="background:linear-gradient(135deg,#0f2952 0%,#1e3a5f 60%,#1a4a8a 100%);border-radius:20px;padding:28px 36px;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,41,82,0.35);position:relative;overflow:hidden;">
-                    <!-- Dot grid pattern -->
-                    <div style="position:absolute;inset:0;opacity:0.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:22px 22px;pointer-events:none;border-radius:20px;"></div>
-                    <!-- Diagonal accents -->
-                    <div style="position:absolute;top:0;right:300px;width:2px;height:100%;background:rgba(255,255,255,0.06);transform:skewX(-15deg);pointer-events:none;"></div>
-                    <div style="position:absolute;top:0;right:260px;width:1px;height:100%;background:rgba(255,255,255,0.04);transform:skewX(-15deg);pointer-events:none;"></div>
-                    <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
-                        <!-- Left: greeting -->
-                        <div>
+                <!-- DASHBOARD BANNER CAROUSEL -->
+                <div id="dashBannerCarousel" style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,41,82,0.3);background:#0f1f3d;min-height:200px;">
+                    <!-- Slides container -->
+                    <div id="dashBannerTrack" style="display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);will-change:transform;"></div>
+                    <!-- Fallback (shown when no slides loaded yet or no slides exist) -->
+                    <div id="dashBannerFallback" style="position:absolute;inset:0;background:linear-gradient(135deg,#0f2952 0%,#1e3a5f 60%,#1a4a8a 100%);display:flex;align-items:center;padding:28px 36px;">
+                        <div style="position:absolute;inset:0;opacity:0.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:22px 22px;pointer-events:none;"></div>
+                        <div style="position:relative;z-index:1;">
                             <h2 id="dashGreeting" style="font-size:26px;font-weight:800;color:#fff;margin:0 0 8px 0;line-height:1.25;">Good morning, <span id="welcomeName">Resident</span>!</h2>
                             <div id="dashDate" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;"></div>
                         </div>
                     </div>
+                    <!-- Greeting overlay (shown on slides) -->
+                    <div id="dashBannerGreetOverlay" style="display:none;position:absolute;bottom:0;left:0;right:0;padding:18px 24px;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);z-index:2;">
+                        <h2 style="font-size:20px;font-weight:800;color:#fff;margin:0 0 2px;"><span id="dashGreeting2"></span>, <span id="welcomeName2">Resident</span>!</h2>
+                        <div id="dashDate2" style="font-size:12px;color:rgba(255,255,255,0.7);"></div>
+                    </div>
+                    <!-- Prev/Next arrows -->
+                    <button id="dashBannerPrev" onclick="dashBannerGo(-1)" style="display:none;position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
+                    <button id="dashBannerNext" onclick="dashBannerGo(1)" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
+                    <!-- Dot indicators -->
+                    <div id="dashBannerDots" style="display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:6px;"></div>
                 </div>
 
                 <!-- Metric Cards -->
@@ -1878,6 +1886,7 @@
         const _initial = (_displayName)[0].toUpperCase();
         document.getElementById('sidebarUserName').textContent = _displayName;
         document.getElementById('welcomeName').textContent = _displayName;
+        const _wn2 = document.getElementById('welcomeName2'); if (_wn2) _wn2.textContent = _displayName;
         document.getElementById('userInitial').textContent = _initial;
         // Sync profile dropdown header
         const _pdName = document.getElementById('profileDropdownName');
@@ -1894,6 +1903,9 @@
             if (greetEl) { const nameSpan = greetEl.querySelector('#welcomeName'); if (greetEl.childNodes[0]) greetEl.childNodes[0].textContent = period + ', '; }
             const dateEl = document.getElementById('dashDate');
             if (dateEl) dateEl.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            // Mirror to carousel overlay
+            const _dg2 = document.getElementById('dashGreeting2'); if (_dg2) _dg2.textContent = period;
+            const _dd2 = document.getElementById('dashDate2'); if (_dd2) _dd2.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         })();
 
         const mobileAvatar = document.getElementById('mobileHeaderAvatar');
@@ -5458,6 +5470,7 @@ async function loadSettingsView() {
         showPanel('dashboard');
         loadHistoryView();
         checkPendingNotifications();
+        if (typeof loadDashBanner === 'function') loadDashBanner();
 
         // Real-time synchronization for events
         if (typeof subscribeToEvents === 'function') {
@@ -5878,8 +5891,109 @@ async function loadSettingsView() {
             }
         }
         // ──────────────────────────────────────────────────────────────
+        // =============================================
+        // DASHBOARD BANNER CAROUSEL
+        // =============================================
+        let _bannerSlides = [];
+        let _bannerIdx = 0;
+        let _bannerTimer = null;
+
+        async function loadDashBanner() {
+            try {
+                const { data, error } = await supabase
+                    .from('banner_slides')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('display_order', { ascending: true });
+                if (error || !data || data.length === 0) { showDashBannerFallback(); return; }
+                _bannerSlides = data;
+                buildDashBannerSlides();
+            } catch(e) { showDashBannerFallback(); }
+        }
+
+        function showDashBannerFallback() {
+            const fallback = document.getElementById('dashBannerFallback');
+            if (fallback) fallback.style.display = 'flex';
+            const greetOverlay = document.getElementById('dashBannerGreetOverlay');
+            if (greetOverlay) greetOverlay.style.display = 'none';
+        }
+
+        function buildDashBannerSlides() {
+            if (!_bannerSlides.length) { showDashBannerFallback(); return; }
+            const track = document.getElementById('dashBannerTrack');
+            const dots = document.getElementById('dashBannerDots');
+            const prev = document.getElementById('dashBannerPrev');
+            const next = document.getElementById('dashBannerNext');
+            const fallback = document.getElementById('dashBannerFallback');
+            const greetOverlay = document.getElementById('dashBannerGreetOverlay');
+            if (!track) return;
+
+            // Hide fallback, show overlay
+            if (fallback) fallback.style.display = 'none';
+            if (greetOverlay) greetOverlay.style.display = 'block';
+
+            // Build slides
+            track.innerHTML = _bannerSlides.map(slide => {
+                const bg = slide.image_url
+                    ? 'background-image:url(' + JSON.stringify(slide.image_url) + ');background-size:cover;background-position:center;'
+                    : 'background:linear-gradient(135deg,#0f2952,#1e3a5f);';
+                const overlayStyle = 'position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0.45),rgba(0,0,0,0.15));';
+                const hasText = slide.title || slide.subtitle;
+                return '<div style="flex-shrink:0;width:100%;min-height:220px;position:relative;' + bg + '">' +
+                    '<div style="' + overlayStyle + '"></div>' +
+                    (hasText ? '<div style="position:absolute;top:0;left:0;right:0;padding:28px 32px;z-index:1;">' +
+                        (slide.title ? '<div style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4);margin-bottom:6px;">' + slide.title + '</div>' : '') +
+                        (slide.subtitle ? '<div style="font-size:13px;color:rgba(255,255,255,0.85);text-shadow:0 1px 4px rgba(0,0,0,0.4);">' + slide.subtitle + '</div>' : '') +
+                    '</div>' : '') +
+                '</div>';
+            }).join('');
+
+            // Build dots
+            if (dots) {
+                dots.style.display = 'flex';
+                dots.innerHTML = _bannerSlides.map((_, i) =>
+                    '<div onclick="dashBannerGoTo(' + i + ')" style="width:8px;height:8px;border-radius:50%;background:' + (i === 0 ? '#fff' : 'rgba(255,255,255,0.4)') + ';cursor:pointer;transition:all 0.2s;"></div>'
+                ).join('');
+            }
+
+            // Show arrows if >1 slide
+            if (_bannerSlides.length > 1) {
+                if (prev) prev.style.display = 'flex';
+                if (next) next.style.display = 'flex';
+            }
+
+            dashBannerGoTo(0);
+            dashBannerStartAuto();
+        }
+
+        function dashBannerGoTo(idx) {
+            if (!_bannerSlides.length) return;
+            _bannerIdx = (idx + _bannerSlides.length) % _bannerSlides.length;
+            const track = document.getElementById('dashBannerTrack');
+            if (track) track.style.transform = 'translateX(-' + (_bannerIdx * 100) + '%)';
+            // Update dots
+            const dotEls = document.querySelectorAll('#dashBannerDots > div');
+            dotEls.forEach((d, i) => {
+                d.style.background = i === _bannerIdx ? '#fff' : 'rgba(255,255,255,0.4)';
+                d.style.width = i === _bannerIdx ? '20px' : '8px';
+                d.style.borderRadius = '4px';
+            });
+        }
+
+        function dashBannerGo(delta) {
+            dashBannerGoTo(_bannerIdx + delta);
+            dashBannerStartAuto(); // Reset timer
+        }
+
+        function dashBannerStartAuto() {
+            if (_bannerTimer) clearInterval(_bannerTimer);
+            if (_bannerSlides.length > 1) {
+                _bannerTimer = setInterval(() => dashBannerGoTo(_bannerIdx + 1), 5000);
+            }
+        }
+
         </script>
-    
+
     <!-- ========================================== -->
     <!-- RESCHEDULE / CANCEL MODAL -->
     <!-- ========================================== -->

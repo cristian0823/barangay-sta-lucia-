@@ -463,6 +463,9 @@
             <i class="bi bi-megaphone-fill"></i>
             <span>Announcements</span>
         </button>
+        <button class="sidebar-btn" onclick="switchSection('banners', this)">
+            <i class="bi bi-image-fill"></i><span>Dashboard Banners</span>
+        </button>
         <button class="sidebar-btn" onclick="switchSection('equipment', this)">
             <i class="bi bi-box-seam-fill"></i> Inventory
         </button>
@@ -967,6 +970,23 @@
                             </div>
                         </div>
                         </div><!-- end eventsPanel-schedule -->
+                    </div>
+                    <div id="banners-section" class="section-container" style="display: none;">
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#1A3A6B;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px;"><i class="bi bi-image-fill"></i> COMMUNITY</p>
+                                    <h1 style="font-size:24px;font-weight:700;color:#1A1A2E;margin:0;">Dashboard Banners</h1>
+                                    <p style="color:#6B7280;font-size:13px;margin:4px 0 0;">Manage the photo carousel shown on the resident dashboard homepage.</p>
+                                </div>
+                                <button onclick="openAddBannerModal()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#1A3A6B;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" onmouseover="this.style.background='#0F2547'" onmouseout="this.style.background='#1A3A6B'"><i class="bi bi-plus-lg"></i> Add Slide</button>
+                            </div>
+                        </div>
+
+                        <!-- Slides Grid -->
+                        <div id="bannerSlidesList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+                            <div style="padding:40px;text-align:center;color:#94a3b8;font-size:13px;grid-column:1/-1;">Loading banners...</div>
+                        </div>
                     </div>
                     <div id="announcements-section" class="section-container" style="display: none;">
                         <div style="margin-bottom:20px;">
@@ -3100,6 +3120,7 @@
             function switchSection(section, btn) {
                 if (section === 'equipment') { setTimeout(loadStockThresholdUI, 50); }
                 if (section === 'announcements') { setTimeout(loadAnnouncements, 50); }
+                if (section === 'banners') { setTimeout(loadBanners, 50); }
                 // Auto-close sidebar on mobile after navigation
                 const sidebar = document.getElementById('adminSidebar');
                 if (sidebar && window.innerWidth <= 768) {
@@ -7954,6 +7975,176 @@
             }
             // ======================== END CONCERN RESPONSES ========================
 
+            // =============================================
+            // DASHBOARD BANNERS
+            // =============================================
+            async function loadBanners() {
+                const list = document.getElementById('bannerSlidesList');
+                if (!list) return;
+                list.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8;font-size:13px;grid-column:1/-1;">Loading...</div>';
+                const { data, error } = await supabase.from('banner_slides').select('*').order('display_order', { ascending: true });
+                if (error || !data || !data.length) {
+                    list.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8;font-size:13px;grid-column:1/-1;"><i class="bi bi-image" style="font-size:32px;display:block;margin-bottom:8px;"></i>No banner slides yet. Click "Add Slide" to get started.</div>';
+                    return;
+                }
+                list.innerHTML = data.map(slide => {
+                    const bg = slide.image_url
+                        ? 'background-image:url(' + JSON.stringify(slide.image_url) + ');background-size:cover;background-position:center;'
+                        : 'background:linear-gradient(135deg,#1A3A6B,#2563eb);';
+                    const activeBadge = slide.is_active
+                        ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#dcfce7;color:#15803d;">Active</span>'
+                        : '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f3f4f6;color:#6b7280;">Hidden</span>';
+                    return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
+                        '<div style="height:140px;' + bg + 'position:relative;">' +
+                        '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);"></div>' +
+                        '<div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;">' +
+                        '<button onclick="openEditBannerModal(' + slide.id + ')" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.9);border:none;cursor:pointer;font-size:13px;color:#1A3A6B;display:flex;align-items:center;justify-content:center;"><i class="bi bi-pencil-fill"></i></button>' +
+                        '<button onclick="deleteBannerSlide(' + slide.id + ')" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.9);border:none;cursor:pointer;font-size:13px;color:#dc2626;display:flex;align-items:center;justify-content:center;"><i class="bi bi-trash3-fill"></i></button>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div style="padding:14px;">' +
+                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">' +
+                        '<div style="font-size:14px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (slide.title || '(No title)') + '</div>' +
+                        activeBadge +
+                        '</div>' +
+                        (slide.subtitle ? '<div style="font-size:12px;color:#64748b;margin-bottom:4px;">' + slide.subtitle + '</div>' : '') +
+                        '<div style="font-size:11px;color:#94a3b8;">Order: ' + (slide.display_order || 1) + '</div>' +
+                        '</div></div>';
+                }).join('');
+            }
+
+            function openAddBannerModal() {
+                document.getElementById('bannerModalTitle').textContent = 'Add Banner Slide';
+                document.getElementById('bannerEditId').value = '';
+                document.getElementById('bannerTitle').value = '';
+                document.getElementById('bannerSubtitle').value = '';
+                document.getElementById('bannerImgUrl').value = '';
+                document.getElementById('bannerOrder').value = '1';
+                document.getElementById('bannerActive').checked = true;
+                document.getElementById('bannerImgPreview').style.display = 'none';
+                document.getElementById('bannerImgPreview').src = '';
+                document.getElementById('bannerImgPlaceholder').style.display = 'block';
+                document.getElementById('addBannerModal').style.display = 'flex';
+            }
+
+            async function openEditBannerModal(id) {
+                const { data, error } = await supabase.from('banner_slides').select('*').eq('id', id).single();
+                if (error || !data) { showAlert('Could not load slide data.', 'error'); return; }
+                document.getElementById('bannerModalTitle').textContent = 'Edit Banner Slide';
+                document.getElementById('bannerEditId').value = data.id;
+                document.getElementById('bannerTitle').value = data.title || '';
+                document.getElementById('bannerSubtitle').value = data.subtitle || '';
+                document.getElementById('bannerImgUrl').value = data.image_url || '';
+                document.getElementById('bannerOrder').value = data.display_order || 1;
+                document.getElementById('bannerActive').checked = !!data.is_active;
+                if (data.image_url) {
+                    document.getElementById('bannerImgPreview').src = data.image_url;
+                    document.getElementById('bannerImgPreview').style.display = 'block';
+                    document.getElementById('bannerImgPlaceholder').style.display = 'none';
+                } else {
+                    document.getElementById('bannerImgPreview').style.display = 'none';
+                    document.getElementById('bannerImgPlaceholder').style.display = 'block';
+                }
+                document.getElementById('addBannerModal').style.display = 'flex';
+            }
+
+            function closeAddBannerModal() {
+                document.getElementById('addBannerModal').style.display = 'none';
+            }
+
+            function previewBannerImg(input) {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('bannerImgPreview').src = e.target.result;
+                    document.getElementById('bannerImgPreview').style.display = 'block';
+                    document.getElementById('bannerImgPlaceholder').style.display = 'none';
+                    document.getElementById('bannerImgUrl').value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function previewBannerUrl(url) {
+                if (!url) {
+                    document.getElementById('bannerImgPreview').style.display = 'none';
+                    document.getElementById('bannerImgPlaceholder').style.display = 'block';
+                    return;
+                }
+                document.getElementById('bannerImgPreview').src = url;
+                document.getElementById('bannerImgPreview').style.display = 'block';
+                document.getElementById('bannerImgPlaceholder').style.display = 'none';
+            }
+
+            async function saveBannerSlide() {
+                const btn = document.getElementById('saveBannerBtn');
+                btn.disabled = true; btn.textContent = 'Saving...';
+
+                const editId = document.getElementById('bannerEditId').value;
+                const fileInput = document.getElementById('bannerImgFile');
+                const urlInput = document.getElementById('bannerImgUrl').value.trim();
+                let imageUrl = urlInput;
+
+                // If a file is selected, try to upload to Supabase Storage
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    const ext = file.name.split('.').pop();
+                    const filePath = 'banners/' + Date.now() + '.' + ext;
+                    try {
+                        const { data: upData, error: upErr } = await supabase.storage
+                            .from('public-assets')
+                            .upload(filePath, file, { upsert: true });
+                        if (!upErr) {
+                            const { data: urlData } = supabase.storage.from('public-assets').getPublicUrl(filePath);
+                            imageUrl = urlData.publicUrl;
+                        } else {
+                            // Fallback: convert to base64
+                            imageUrl = await new Promise(resolve => {
+                                const reader = new FileReader();
+                                reader.onload = e => resolve(e.target.result);
+                                reader.readAsDataURL(file);
+                            });
+                        }
+                    } catch(e) {
+                        // Fallback to base64
+                        imageUrl = await new Promise(resolve => {
+                            const reader = new FileReader();
+                            reader.onload = e => resolve(e.target.result);
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                }
+
+                const payload = {
+                    title: document.getElementById('bannerTitle').value.trim() || null,
+                    subtitle: document.getElementById('bannerSubtitle').value.trim() || null,
+                    image_url: imageUrl || null,
+                    display_order: parseInt(document.getElementById('bannerOrder').value) || 1,
+                    is_active: document.getElementById('bannerActive').checked
+                };
+
+                let result;
+                if (editId) {
+                    result = await supabase.from('banner_slides').update(payload).eq('id', editId);
+                } else {
+                    result = await supabase.from('banner_slides').insert([payload]);
+                }
+
+                btn.disabled = false; btn.textContent = 'Save Slide';
+                if (result.error) { showAlert('Error: ' + result.error.message, 'error'); return; }
+                closeAddBannerModal();
+                showAlert('Banner slide saved!', 'success');
+                loadBanners();
+            }
+
+            async function deleteBannerSlide(id) {
+                if (!confirm('Delete this banner slide?')) return;
+                const { error } = await supabase.from('banner_slides').delete().eq('id', id);
+                if (error) { showAlert('Error: ' + error.message, 'error'); return; }
+                showAlert('Deleted', 'success');
+                loadBanners();
+            }
+
             // ======================== ANNOUNCEMENTS (#15) ========================
             async function loadAnnouncements() {
                 const listEl = document.getElementById('announcementsList');
@@ -10099,6 +10290,74 @@ function closeUserDetailPanel() {
             // Override loadAdminBookings so switchSection() triggers the new page
             loadAdminBookings = renderFacilityPage;
 </script>
+
+        <!-- ========================================== -->
+        <!-- ADD/EDIT BANNER MODAL -->
+        <!-- ========================================== -->
+        <div id="addBannerModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:10001;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;">
+            <div style="background:#fff;border-radius:20px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,0.25);margin:auto;">
+                <div style="background:#1A3A6B;padding:20px 24px;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between;">
+                    <h3 id="bannerModalTitle" style="font-size:17px;font-weight:700;color:#fff;margin:0;">Add Banner Slide</h3>
+                    <button onclick="closeAddBannerModal()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>
+                </div>
+                <div style="padding:24px;">
+                    <input type="hidden" id="bannerEditId">
+
+                    <!-- Image upload -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#374151;margin-bottom:8px;">Banner Image</label>
+                        <!-- Preview -->
+                        <div id="bannerImgPreviewWrap" style="width:100%;height:160px;border-radius:12px;overflow:hidden;background:#f1f5f9;margin-bottom:10px;display:flex;align-items:center;justify-content:center;position:relative;">
+                            <img id="bannerImgPreview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;">
+                            <div id="bannerImgPlaceholder" style="text-align:center;color:#94a3b8;">
+                                <i class="bi bi-image" style="font-size:40px;display:block;margin-bottom:8px;"></i>
+                                <div style="font-size:12px;">No image selected</div>
+                            </div>
+                        </div>
+                        <!-- Upload input -->
+                        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;border:1.5px dashed #d1d5db;border-radius:10px;cursor:pointer;font-size:13px;color:#374151;font-weight:600;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#1A3A6B'" onmouseout="this.style.borderColor='#d1d5db'">
+                            <i class="bi bi-upload" style="color:#1A3A6B;"></i> Choose Photo
+                            <input type="file" id="bannerImgFile" accept="image/*" style="display:none;" onchange="previewBannerImg(this)">
+                        </label>
+                        <div style="margin-top:8px;font-size:11px;color:#94a3b8;">Or paste an image URL:</div>
+                        <input type="url" id="bannerImgUrl" placeholder="https://..." oninput="previewBannerUrl(this.value)" style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;margin-top:6px;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#d1d5db'">
+                    </div>
+
+                    <!-- Title -->
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#374151;margin-bottom:6px;">Title <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
+                        <input type="text" id="bannerTitle" placeholder="e.g. Barangay Fiesta 2026" style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#d1d5db'">
+                    </div>
+
+                    <!-- Subtitle -->
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#374151;margin-bottom:6px;">Subtitle <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
+                        <input type="text" id="bannerSubtitle" placeholder="e.g. June 24, 2026 · Brgy Hall" style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#d1d5db'">
+                    </div>
+
+                    <!-- Order + Active -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+                        <div>
+                            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#374151;margin-bottom:6px;">Display Order</label>
+                            <input type="number" id="bannerOrder" value="1" min="1" style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#1A3A6B'" onblur="this.style.borderColor='#d1d5db'">
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;padding-top:22px;">
+                            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                                <input type="checkbox" id="bannerActive" checked style="opacity:0;width:0;height:0;position:absolute;" onchange="this.nextElementSibling.style.background=this.checked?'#1A3A6B':'#d1d5db'">
+                                <span style="position:absolute;inset:0;border-radius:24px;background:#1A3A6B;transition:background 0.2s;"></span>
+                                <span style="position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:translateX(20px);"></span>
+                            </label>
+                            <span style="font-size:13px;font-weight:600;color:#374151;">Active</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="closeAddBannerModal()" style="flex:1;padding:11px;border:1.5px solid #d1d5db;border-radius:10px;background:transparent;color:#374151;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Cancel</button>
+                        <button onclick="saveBannerSlide()" id="saveBannerBtn" style="flex:2;padding:11px;background:#1A3A6B;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Save Slide</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 </body>
 
 </html>

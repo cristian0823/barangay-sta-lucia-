@@ -561,3 +561,18 @@ DO $$ BEGIN
 EXCEPTION WHEN sqlstate '42710' THEN NULL; END $$;
 
 
+
+-- Dashboard Banner Slides
+CREATE TABLE IF NOT EXISTS banner_slides (
+    id BIGSERIAL PRIMARY KEY,
+    title TEXT,
+    subtitle TEXT,
+    image_url TEXT,
+    is_active BOOLEAN DEFAULT true,
+    display_order INTEGER DEFAULT 1,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE banner_slides ENABLE ROW LEVEL SECURITY;
+CREATE POLICY IF NOT EXISTS "Public read banner_slides" ON banner_slides FOR SELECT USING (true);
+CREATE POLICY IF NOT EXISTS "Admin manage banner_slides" ON banner_slides FOR ALL USING (true);
+NOTIFY pgrst, 'reload schema';
