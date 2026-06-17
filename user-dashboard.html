@@ -322,11 +322,13 @@
             .dash-metric-grid { grid-template-columns: repeat(2, 1fr) !important; }
             .dash-quick-grid { grid-template-columns: repeat(2, 1fr) !important; }
 
-            /* Status summary row */
+            /* Dashboard stats & quick actions responsive */
+            #dashQuickStats { grid-template-columns: repeat(2, 1fr) !important; }
             #panel-dashboard > div:last-child { grid-template-columns: 1fr !important; }
-
-            /* Quick action grid (legacy fallback) */
             #panel-dashboard > div:nth-child(3) { grid-template-columns: repeat(2, 1fr) !important; }
+
+            /* Carousel height on mobile */
+            #dashBannerCarousel { height: 200px !important; min-height: 160px !important; }
 
             /* Bottom Tab Nav */
             .bottom-tab-nav {
@@ -533,7 +535,7 @@
             <div id="panel-dashboard" class="content-panel active">
 
                 <!-- HERO CAROUSEL -->
-                <div id="dashBannerCarousel" style="position:relative;border-radius:16px;overflow:hidden;background:#0d1f3c;height:calc(100vh - 140px);min-height:400px;" onmouseenter="dashBannerPause()" onmouseleave="dashBannerResume()">
+                <div id="dashBannerCarousel" style="position:relative;border-radius:16px;overflow:hidden;background:#0d1f3c;height:340px;min-height:260px;" onmouseenter="dashBannerPause()" onmouseleave="dashBannerResume()">
                     <!-- Skeleton shimmer -->
                     <div id="dashBannerSkeleton" style="position:absolute;inset:0;background:linear-gradient(90deg,#0d1f3c 25%,#1e3a5f 50%,#0d1f3c 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;z-index:10;"></div>
                     <!-- Slides container -->
@@ -550,9 +552,6 @@
                     </div>
                     <!-- Slide counter -->
                     <div id="dashBannerCounter" style="display:none;position:absolute;bottom:16px;right:16px;z-index:4;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.35);padding:3px 9px;border-radius:20px;"></div>
-                    <!-- Prev/Next arrows (bottom-right) -->
-                    <button id="dashBannerPrev" onclick="dashBannerGo(-1)" style="display:none;position:absolute;bottom:12px;right:56px;z-index:3;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
-                    <button id="dashBannerNext" onclick="dashBannerGo(1)" style="display:none;position:absolute;bottom:12px;right:16px;z-index:3;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
                     <!-- Dot indicators -->
                     <div id="dashBannerDots" style="display:none;position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:6px;"></div>
                 </div>
@@ -563,9 +562,130 @@
                     <div id="stat-concerns" data-target="0">0</div>
                     <div id="stat-bookings" data-target="0">0</div>
                     <div id="stat-totalreq" data-target="0">0</div>
-                    <div id="dashActivityFeed"></div>
-                    <div id="dashEventsSection"></div>
                 </div>
+
+                <!-- QUICK STATS -->
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px;" id="dashQuickStats">
+                    <div style="background:var(--card-bg,#fff);border-radius:14px;padding:20px;border:1px solid var(--border-color,#e2e8f0);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;" onclick="showPanel('panel-equipment')">
+                        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-tools" style="font-size:20px;color:#fff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:22px;font-weight:800;color:var(--text-primary,#1e293b);" id="dashStatEquip">0</div>
+                            <div style="font-size:12px;color:var(--text-secondary,#64748b);font-weight:500;">Active Borrowings</div>
+                        </div>
+                    </div>
+                    <div style="background:var(--card-bg,#fff);border-radius:14px;padding:20px;border:1px solid var(--border-color,#e2e8f0);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;" onclick="showPanel('panel-concerns')">
+                        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-chat-dots" style="font-size:20px;color:#fff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:22px;font-weight:800;color:var(--text-primary,#1e293b);" id="dashStatConcerns">0</div>
+                            <div style="font-size:12px;color:var(--text-secondary,#64748b);font-weight:500;">Pending Concerns</div>
+                        </div>
+                    </div>
+                    <div style="background:var(--card-bg,#fff);border-radius:14px;padding:20px;border:1px solid var(--border-color,#e2e8f0);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;" onclick="showPanel('panel-booking')">
+                        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-calendar-check" style="font-size:20px;color:#fff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:22px;font-weight:800;color:var(--text-primary,#1e293b);" id="dashStatBookings">0</div>
+                            <div style="font-size:12px;color:var(--text-secondary,#64748b);font-weight:500;">Facility Bookings</div>
+                        </div>
+                    </div>
+                    <div style="background:var(--card-bg,#fff);border-radius:14px;padding:20px;border:1px solid var(--border-color,#e2e8f0);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;" onclick="showPanel('panel-history')">
+                        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-activity" style="font-size:20px;color:#fff;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:22px;font-weight:800;color:var(--text-primary,#1e293b);" id="dashStatTotal">0</div>
+                            <div style="font-size:12px;color:var(--text-secondary,#64748b);font-weight:500;">Total Requests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div style="margin-top:20px;">
+                    <h3 style="font-size:16px;font-weight:700;color:var(--text-primary,#1e293b);margin:0 0 12px 0;">Quick Actions</h3>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                        <button onclick="showPanel('panel-equipment')" style="background:var(--card-bg,#fff);border:1px solid var(--border-color,#e2e8f0);border-radius:12px;padding:18px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all 0.2s;text-decoration:none;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+                            <div style="width:42px;height:42px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-box-seam" style="font-size:18px;color:#3b82f6;"></i>
+                            </div>
+                            <span style="font-size:12px;font-weight:600;color:var(--text-primary,#1e293b);">Borrow Equipment</span>
+                        </button>
+                        <button onclick="showPanel('panel-concerns')" style="background:var(--card-bg,#fff);border:1px solid var(--border-color,#e2e8f0);border-radius:12px;padding:18px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all 0.2s;text-decoration:none;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+                            <div style="width:42px;height:42px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-megaphone" style="font-size:18px;color:#d97706;"></i>
+                            </div>
+                            <span style="font-size:12px;font-weight:600;color:var(--text-primary,#1e293b);">Report Concern</span>
+                        </button>
+                        <button onclick="showPanel('panel-booking')" style="background:var(--card-bg,#fff);border:1px solid var(--border-color,#e2e8f0);border-radius:12px;padding:18px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all 0.2s;text-decoration:none;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+                            <div style="width:42px;height:42px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-building" style="font-size:18px;color:#059669;"></i>
+                            </div>
+                            <span style="font-size:12px;font-weight:600;color:var(--text-primary,#1e293b);">Book Facility</span>
+                        </button>
+                        <button onclick="showPanel('panel-events')" style="background:var(--card-bg,#fff);border:1px solid var(--border-color,#e2e8f0);border-radius:12px;padding:18px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all 0.2s;text-decoration:none;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+                            <div style="width:42px;height:42px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-calendar-event" style="font-size:18px;color:#7c3aed;"></i>
+                            </div>
+                            <span style="font-size:12px;font-weight:600;color:var(--text-primary,#1e293b);">View Events</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BOTTOM ROW: UPCOMING EVENTS + RECENT ACTIVITY -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
+                    <!-- Upcoming Events -->
+                    <div style="background:var(--card-bg,#fff);border-radius:14px;border:1px solid var(--border-color,#e2e8f0);padding:20px;min-height:200px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                            <h3 style="font-size:15px;font-weight:700;color:var(--text-primary,#1e293b);margin:0;display:flex;align-items:center;gap:8px;">
+                                <i class="bi bi-calendar2-week" style="color:#10b981;"></i> Upcoming Events
+                            </h3>
+                            <button onclick="showPanel('panel-events')" style="font-size:12px;color:#10b981;font-weight:600;background:none;border:none;cursor:pointer;">View All →</button>
+                        </div>
+                        <div id="dashUpcomingEvents" style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="text-align:center;padding:30px 0;color:var(--text-secondary,#94a3b8);font-size:13px;">
+                                <i class="bi bi-calendar-x" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>
+                                No upcoming events
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Recent Activity -->
+                    <div style="background:var(--card-bg,#fff);border-radius:14px;border:1px solid var(--border-color,#e2e8f0);padding:20px;min-height:200px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                            <h3 style="font-size:15px;font-weight:700;color:var(--text-primary,#1e293b);margin:0;display:flex;align-items:center;gap:8px;">
+                                <i class="bi bi-clock-history" style="color:#8b5cf6;"></i> Recent Activity
+                            </h3>
+                            <button onclick="showPanel('panel-history')" style="font-size:12px;color:#8b5cf6;font-weight:600;background:none;border:none;cursor:pointer;">View All →</button>
+                        </div>
+                        <div id="dashRecentActivity" style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="text-align:center;padding:30px 0;color:var(--text-secondary,#94a3b8);font-size:13px;">
+                                <i class="bi bi-clock" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>
+                                No recent activity
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements Section -->
+                <div style="background:var(--card-bg,#fff);border-radius:14px;border:1px solid var(--border-color,#e2e8f0);padding:20px;margin-top:20px;min-height:120px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary,#1e293b);margin:0;display:flex;align-items:center;gap:8px;">
+                            <i class="bi bi-pin-angle" style="color:#ef4444;"></i> Announcements
+                        </h3>
+                    </div>
+                    <div id="dashAnnouncementsFeed" style="display:flex;flex-direction:column;gap:10px;">
+                        <div style="text-align:center;padding:20px 0;color:var(--text-secondary,#94a3b8);font-size:13px;">
+                            <i class="bi bi-megaphone" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>
+                            No announcements at the moment
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:none;" id="dashActivityFeed"></div>
+                <div style="display:none;" id="dashEventsSection"></div>
             </div><!-- end panel-dashboard -->
 
 
@@ -2052,6 +2172,8 @@
                 document.getElementById('stat-equipment').textContent = activeEq;
                 const equEl = document.getElementById('dash-statEquip');
                 if (equEl) equEl.textContent = activeEq;
+                const dse = document.getElementById('dashStatEquip');
+                if (dse) dse.textContent = activeEq;
 
                 const concerns = await getMyConcerns();
                 const pendingConcerns = concerns ? concerns.filter(c => c.status === 'pending').length : 0;
@@ -2059,6 +2181,8 @@
                 document.getElementById('stat-concerns').textContent = pendingConcerns;
                 const conEl = document.getElementById('dash-statConcerns');
                 if (conEl) conEl.textContent = pendingConcerns;
+                const dsc = document.getElementById('dashStatConcerns');
+                if (dsc) dsc.textContent = pendingConcerns;
 
                 const bookingsRaw = await getCourtBookings();
                 // Resolve real Supabase ID to prevent type mismatch (string vs integer)
@@ -2078,11 +2202,20 @@
                 document.getElementById('stat-bookings').textContent = upcomingCount;
                 const booEl = document.getElementById('dash-statBookings');
                 if (booEl) booEl.textContent = upcomingCount;
+                const dsb = document.getElementById('dashStatBookings');
+                if (dsb) dsb.textContent = upcomingCount;
 
                 // All-time total requests (borrowings + concerns + bookings)
                 const totalReq = (eqReqs ? eqReqs.length : 0) + (concerns ? concerns.length : 0) + (bookingsRaw ? bookingsRaw.filter(b => String(b.user_id) === resolvedStatUid || String(b.userId) === resolvedStatUid).length : 0);
                 const totEl = document.getElementById('stat-totalreq');
                 if (totEl) { totEl.setAttribute('data-target', totalReq); totEl.textContent = totalReq; }
+                const dst = document.getElementById('dashStatTotal');
+                if (dst) dst.textContent = totalReq;
+
+                // Populate recent activity feed
+                populateDashRecentActivity(eqReqs, concerns, bookingsRaw, resolvedStatUid);
+                // Populate upcoming events
+                populateDashUpcomingEvents();
 
                 // Check for generic notifications (Facebook style)
                 await pollBellNotifications();
@@ -2092,6 +2225,69 @@
         }
 
         
+
+        function populateDashRecentActivity(eqReqs, concerns, bookingsRaw, uid) {
+            const container = document.getElementById('dashRecentActivity');
+            if (!container) return;
+            const items = [];
+            if (eqReqs) eqReqs.forEach(b => {
+                items.push({ type: 'equipment', label: b.equipment_name || b.item_name || 'Equipment', status: b.status, date: b.created_at || b.request_date, icon: 'bi-tools', color: '#3b82f6' });
+            });
+            if (concerns) concerns.forEach(c => {
+                items.push({ type: 'concern', label: c.title || c.category || 'Concern', status: c.status, date: c.created_at, icon: 'bi-chat-dots', color: '#d97706' });
+            });
+            if (bookingsRaw) bookingsRaw.filter(b => String(b.user_id) === uid || String(b.userId) === uid).forEach(b => {
+                items.push({ type: 'booking', label: b.venue || b.facility_name || 'Facility', status: b.status, date: b.created_at || b.date, icon: 'bi-calendar-check', color: '#059669' });
+            });
+            items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            const recent = items.slice(0, 5);
+            if (!recent.length) {
+                container.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--text-secondary,#94a3b8);font-size:13px;"><i class="bi bi-clock" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>No recent activity</div>';
+                return;
+            }
+            const statusColors = { pending: '#f59e0b', approved: '#10b981', booked: '#10b981', rejected: '#ef4444', returned: '#6b7280', resolved: '#10b981', cancelled: '#ef4444' };
+            container.innerHTML = recent.map(it => {
+                const d = it.date ? new Date(it.date) : null;
+                const timeStr = d ? d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }) : '';
+                const sc = statusColors[it.status] || '#94a3b8';
+                return '<div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:var(--bg-secondary,#f8fafc);border:1px solid var(--border-color,#e2e8f0);">' +
+                    '<div style="width:34px;height:34px;border-radius:8px;background:' + it.color + '15;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi ' + it.icon + '" style="font-size:14px;color:' + it.color + ';"></i></div>' +
+                    '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text-primary,#1e293b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + it.label + '</div>' +
+                    '<div style="font-size:11px;color:var(--text-secondary,#94a3b8);">' + timeStr + '</div></div>' +
+                    '<span style="font-size:11px;font-weight:600;color:' + sc + ';background:' + sc + '15;padding:2px 8px;border-radius:6px;text-transform:capitalize;">' + (it.status || '') + '</span></div>';
+            }).join('');
+        }
+
+        async function populateDashUpcomingEvents() {
+            const container = document.getElementById('dashUpcomingEvents');
+            if (!container) return;
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const { data: events } = await supabase
+                    .from('events')
+                    .select('*')
+                    .gte('event_date', today)
+                    .order('event_date', { ascending: true })
+                    .limit(4);
+                if (!events || !events.length) {
+                    container.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--text-secondary,#94a3b8);font-size:13px;"><i class="bi bi-calendar-x" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>No upcoming events</div>';
+                    return;
+                }
+                container.innerHTML = events.map(ev => {
+                    const d = new Date(ev.event_date || ev.date);
+                    const month = d.toLocaleDateString('en-PH', { month: 'short' }).toUpperCase();
+                    const day = d.getDate();
+                    return '<div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:var(--bg-secondary,#f8fafc);border:1px solid var(--border-color,#e2e8f0);">' +
+                        '<div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:#fff;">' +
+                        '<span style="font-size:9px;font-weight:700;line-height:1;letter-spacing:0.05em;">' + month + '</span>' +
+                        '<span style="font-size:16px;font-weight:800;line-height:1;">' + day + '</span></div>' +
+                        '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text-primary,#1e293b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (ev.title || ev.event_name || 'Event') + '</div>' +
+                        '<div style="font-size:11px;color:var(--text-secondary,#94a3b8);">' + (ev.location || ev.venue || '') + '</div></div></div>';
+                }).join('');
+            } catch (e) {
+                console.error('Error loading upcoming events', e);
+            }
+        }
 
         // ==========================================
         // FACEBOOK-STYLE NOTIFICATION LOGIC
@@ -5874,8 +6070,6 @@ async function loadSettingsView() {
             if (!_bannerSlides.length) { showDashBannerFallback(); return; }
             const track = document.getElementById('dashBannerTrack');
             const dots = document.getElementById('dashBannerDots');
-            const prev = document.getElementById('dashBannerPrev');
-            const next = document.getElementById('dashBannerNext');
             const fallback = document.getElementById('dashBannerFallback');
             const counter = document.getElementById('dashBannerCounter');
             if (!track) return;
@@ -5901,11 +6095,6 @@ async function loadSettingsView() {
             // Counter - hidden per design
             if (counter) counter.style.display = 'none';
 
-            // Arrows
-            if (_bannerSlides.length > 1) {
-                if (prev) prev.style.display = 'flex';
-                if (next) next.style.display = 'flex';
-            }
 
             dashBannerGoTo(0);
             dashBannerStartAuto();
