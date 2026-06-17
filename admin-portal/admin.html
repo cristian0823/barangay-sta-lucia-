@@ -8052,17 +8052,19 @@
                 }
 
                 list.innerHTML = data.map((slide, idx) => {
-                    const bg = slide.image_url
-                        ? 'background-image:url(' + JSON.stringify(slide.image_url) + ');background-size:cover;background-position:center;'
-                        : 'background:linear-gradient(135deg,#1A3A6B,#2563eb);';
+                    const imgSrc = slide.image_url || '';
                     const isVisible = slide.is_visible !== false;
                     const eyeIcon = isVisible ? 'bi-eye-fill' : 'bi-eye-slash-fill';
                     const eyeColor = isVisible ? '#15803d' : '#94a3b8';
                     const visiBadge = isVisible
                         ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#dcfce7;color:#15803d;">Visible</span>'
                         : '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f3f4f6;color:#6b7280;">Hidden</span>';
+                    const imgTag = imgSrc
+                        ? '<img src="' + imgSrc.replace(/"/g, '&quot;') + '" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'">'
+                        : '';
                     return '<div draggable="true" data-slide-id="' + slide.id + '" data-slide-order="' + idx + '" ondragstart="bannerDragStart(event,this)" ondragover="bannerCardDragOver(event,this)" ondrop="bannerCardDrop(event,this)" ondragend="bannerDragEndCard(event)" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);cursor:grab;position:relative;">' +
-                        '<div style="height:150px;' + bg + 'position:relative;">' +
+                        '<div style="height:150px;background:linear-gradient(135deg,#1A3A6B,#2563eb);position:relative;">' +
+                        imgTag +
                         '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.4),transparent);"></div>' +
                         '<div style="position:absolute;top:10px;left:10px;width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.85);display:flex;align-items:center;justify-content:center;cursor:grab;" title="Drag to reorder"><i class="bi bi-grip-vertical" style="font-size:15px;color:#64748b;"></i></div>' +
                         '<div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;">' +

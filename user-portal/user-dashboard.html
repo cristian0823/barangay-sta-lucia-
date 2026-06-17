@@ -5952,9 +5952,7 @@ async function loadSettingsView() {
             if (fallback) fallback.style.display = 'none';
 
             track.innerHTML = _bannerSlides.map(slide => {
-                const bg = slide.image_url
-                    ? 'background-image:url(' + JSON.stringify(slide.image_url) + ');background-size:cover;background-position:center;'
-                    : 'background:linear-gradient(135deg,#0f2952,#1e3a5f);';
+                const imgSrc = slide.image_url || '';
                 const icon = _bannerIconFor(slide.title);
                 const titleHtml = slide.title
                     ? '<div style="font-size:clamp(18px,3vw,28px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.04em;text-shadow:0 2px 12px rgba(0,0,0,0.6);line-height:1.2;max-width:65%;">' + slide.title + '</div>'
@@ -5962,7 +5960,11 @@ async function loadSettingsView() {
                 const subtitleHtml = slide.subtitle
                     ? '<div style="font-size:13px;color:rgba(255,255,255,0.8);margin-top:6px;text-shadow:0 1px 4px rgba(0,0,0,0.5);">' + slide.subtitle + '</div>'
                     : '';
-                return '<div style="flex-shrink:0;width:100%;min-height:200px;position:relative;' + bg + '">' +
+                const imgTag = imgSrc
+                    ? '<img src="' + imgSrc.replace(/"/g, '&quot;') + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">'
+                    : '';
+                return '<div style="flex-shrink:0;width:100%;min-height:200px;position:relative;background:linear-gradient(135deg,#0f2952,#1e3a5f);">' +
+                    imgTag +
                     '<div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.2) 60%,rgba(0,0,0,0.35) 100%);"></div>' +
                     '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:28px 32px;z-index:1;">' +
                     '<div>' + titleHtml + subtitleHtml + '</div>' +
