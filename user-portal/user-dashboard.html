@@ -104,6 +104,7 @@
         .content-panel { display: none !important; animation: fadeIn 0.3s ease; }
         .content-panel.active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
         .glass-card { 
             background-color: var(--panel-bg); 
             border: 1px solid rgba(0, 0, 0, 0.06); 
@@ -537,26 +538,26 @@
             <!-- PANEL 1: DASHBOARD -->
             <div id="panel-dashboard" class="content-panel active">
 
-                <!-- DASHBOARD BANNER CAROUSEL -->
-                <div id="dashBannerCarousel" style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,41,82,0.3);background:#0f1f3d;min-height:200px;">
+                <!-- DASHBOARD BANNER CAROUSEL — Bonifacio Style -->
+                <div id="dashBannerCarousel" style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,41,82,0.3);background:#0f1f3d;min-height:200px;" onmouseenter="dashBannerPause()" onmouseleave="dashBannerResume()">
+                    <!-- Skeleton shimmer (shown while loading) -->
+                    <div id="dashBannerSkeleton" style="position:absolute;inset:0;background:linear-gradient(90deg,#0f1f3d 25%,#1e3a5f 50%,#0f1f3d 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;border-radius:20px;z-index:10;"></div>
                     <!-- Slides container -->
-                    <div id="dashBannerTrack" style="display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);will-change:transform;"></div>
-                    <!-- Fallback (shown when no slides loaded yet or no slides exist) -->
-                    <div id="dashBannerFallback" style="position:absolute;inset:0;background:linear-gradient(135deg,#0f2952 0%,#1e3a5f 60%,#1a4a8a 100%);display:flex;align-items:center;padding:28px 36px;">
+                    <div id="dashBannerTrack" style="display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);will-change:transform;min-height:200px;"></div>
+                    <!-- Fallback (shown when no slides) -->
+                    <div id="dashBannerFallback" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#0f2952 0%,#1e3a5f 60%,#1a4a8a 100%);display:none;align-items:center;padding:28px 36px;">
                         <div style="position:absolute;inset:0;opacity:0.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:22px 22px;pointer-events:none;"></div>
                         <div style="position:relative;z-index:1;">
                             <h2 id="dashGreeting" style="font-size:26px;font-weight:800;color:#fff;margin:0 0 8px 0;line-height:1.25;">Good morning, <span id="welcomeName">Resident</span>!</h2>
                             <div id="dashDate" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;"></div>
+                            <div style="font-size:22px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.04em;margin-top:10px;opacity:0.9;">Welcome to Barangay Sta. Lucia</div>
                         </div>
                     </div>
-                    <!-- Greeting overlay (shown on slides) -->
-                    <div id="dashBannerGreetOverlay" style="display:none;position:absolute;bottom:0;left:0;right:0;padding:18px 24px;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);z-index:2;">
-                        <h2 style="font-size:20px;font-weight:800;color:#fff;margin:0 0 2px;"><span id="dashGreeting2"></span>, <span id="welcomeName2">Resident</span>!</h2>
-                        <div id="dashDate2" style="font-size:12px;color:rgba(255,255,255,0.7);"></div>
-                    </div>
+                    <!-- Slide counter -->
+                    <div id="dashBannerCounter" style="display:none;position:absolute;bottom:14px;right:16px;z-index:4;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.35);padding:3px 9px;border-radius:20px;letter-spacing:0.04em;"></div>
                     <!-- Prev/Next arrows -->
-                    <button id="dashBannerPrev" onclick="dashBannerGo(-1)" style="display:none;position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
-                    <button id="dashBannerNext" onclick="dashBannerGo(1)" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
+                    <button id="dashBannerPrev" onclick="dashBannerGo(-1)" style="display:none;position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
+                    <button id="dashBannerNext" onclick="dashBannerGo(1)" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
                     <!-- Dot indicators -->
                     <div id="dashBannerDots" style="display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:6px;"></div>
                 </div>
@@ -5892,30 +5893,51 @@ async function loadSettingsView() {
         }
         // ──────────────────────────────────────────────────────────────
         // =============================================
-        // DASHBOARD BANNER CAROUSEL
+        // DASHBOARD BANNER CAROUSEL — Bonifacio Style
         // =============================================
         let _bannerSlides = [];
         let _bannerIdx = 0;
         let _bannerTimer = null;
+        let _bannerPaused = false;
+
+        // Icon map: keyword in title → Bootstrap Icon class
+        const _bannerIconMap = [
+            [/equipment|borrow|tool|box/i,        'bi-box-seam-fill'],
+            [/facility|hall|building|venue/i,      'bi-building-fill'],
+            [/event|sports|court|game|play/i,      'bi-trophy-fill'],
+            [/concern|report|issue|complaint/i,    'bi-megaphone-fill'],
+            [/health|medical|sanit/i,              'bi-heart-pulse-fill'],
+            [/announce|bulletin|news/i,            'bi-bell-fill'],
+            [/welcome|barangay|community/i,        'bi-house-heart-fill'],
+            [/youth|kids|children/i,               'bi-people-fill'],
+            [/peace|order|safe/i,                  'bi-shield-fill'],
+        ];
+        function _bannerIconFor(title) {
+            if (!title) return 'bi-image-fill';
+            for (const [re, icon] of _bannerIconMap) { if (re.test(title)) return icon; }
+            return 'bi-image-fill';
+        }
 
         async function loadDashBanner() {
+            const skeleton = document.getElementById('dashBannerSkeleton');
             try {
                 const { data, error } = await supabase
                     .from('banner_slides')
                     .select('*')
-                    .eq('is_active', true)
+                    .eq('is_visible', true)
                     .order('display_order', { ascending: true });
                 if (error || !data || data.length === 0) { showDashBannerFallback(); return; }
                 _bannerSlides = data;
                 buildDashBannerSlides();
             } catch(e) { showDashBannerFallback(); }
+            finally { if (skeleton) skeleton.style.display = 'none'; }
         }
 
         function showDashBannerFallback() {
+            const skeleton = document.getElementById('dashBannerSkeleton');
+            if (skeleton) skeleton.style.display = 'none';
             const fallback = document.getElementById('dashBannerFallback');
             if (fallback) fallback.style.display = 'flex';
-            const greetOverlay = document.getElementById('dashBannerGreetOverlay');
-            if (greetOverlay) greetOverlay.style.display = 'none';
         }
 
         function buildDashBannerSlides() {
@@ -5925,38 +5947,42 @@ async function loadSettingsView() {
             const prev = document.getElementById('dashBannerPrev');
             const next = document.getElementById('dashBannerNext');
             const fallback = document.getElementById('dashBannerFallback');
-            const greetOverlay = document.getElementById('dashBannerGreetOverlay');
+            const counter = document.getElementById('dashBannerCounter');
             if (!track) return;
-
-            // Hide fallback, show overlay
             if (fallback) fallback.style.display = 'none';
-            if (greetOverlay) greetOverlay.style.display = 'block';
 
-            // Build slides
             track.innerHTML = _bannerSlides.map(slide => {
                 const bg = slide.image_url
                     ? 'background-image:url(' + JSON.stringify(slide.image_url) + ');background-size:cover;background-position:center;'
                     : 'background:linear-gradient(135deg,#0f2952,#1e3a5f);';
-                const overlayStyle = 'position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0.45),rgba(0,0,0,0.15));';
-                const hasText = slide.title || slide.subtitle;
-                return '<div style="flex-shrink:0;width:100%;min-height:220px;position:relative;' + bg + '">' +
-                    '<div style="' + overlayStyle + '"></div>' +
-                    (hasText ? '<div style="position:absolute;top:0;left:0;right:0;padding:28px 32px;z-index:1;">' +
-                        (slide.title ? '<div style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4);margin-bottom:6px;">' + slide.title + '</div>' : '') +
-                        (slide.subtitle ? '<div style="font-size:13px;color:rgba(255,255,255,0.85);text-shadow:0 1px 4px rgba(0,0,0,0.4);">' + slide.subtitle + '</div>' : '') +
-                    '</div>' : '') +
-                '</div>';
+                const icon = _bannerIconFor(slide.title);
+                const titleHtml = slide.title
+                    ? '<div style="font-size:clamp(18px,3vw,28px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.04em;text-shadow:0 2px 12px rgba(0,0,0,0.6);line-height:1.2;max-width:65%;">' + slide.title + '</div>'
+                    : '';
+                const subtitleHtml = slide.subtitle
+                    ? '<div style="font-size:13px;color:rgba(255,255,255,0.8);margin-top:6px;text-shadow:0 1px 4px rgba(0,0,0,0.5);">' + slide.subtitle + '</div>'
+                    : '';
+                return '<div style="flex-shrink:0;width:100%;min-height:200px;position:relative;' + bg + '">' +
+                    '<div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.2) 60%,rgba(0,0,0,0.35) 100%);"></div>' +
+                    '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:28px 32px;z-index:1;">' +
+                    '<div>' + titleHtml + subtitleHtml + '</div>' +
+                    '<div style="width:72px;height:72px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);border:2px solid rgba(255,255,255,0.25);flex-shrink:0;">' +
+                    '<i class="bi ' + icon + '" style="font-size:30px;color:#fff;"></i>' +
+                    '</div></div></div>';
             }).join('');
 
-            // Build dots
+            // Dots
             if (dots) {
                 dots.style.display = 'flex';
                 dots.innerHTML = _bannerSlides.map((_, i) =>
-                    '<div onclick="dashBannerGoTo(' + i + ')" style="width:8px;height:8px;border-radius:50%;background:' + (i === 0 ? '#fff' : 'rgba(255,255,255,0.4)') + ';cursor:pointer;transition:all 0.2s;"></div>'
+                    '<div onclick="dashBannerGoTo(' + i + ')" style="width:8px;height:8px;border-radius:50%;cursor:pointer;transition:all 0.2s;background:rgba(255,255,255,0.4);"></div>'
                 ).join('');
             }
 
-            // Show arrows if >1 slide
+            // Counter
+            if (counter) counter.style.display = _bannerSlides.length > 1 ? 'block' : 'none';
+
+            // Arrows
             if (_bannerSlides.length > 1) {
                 if (prev) prev.style.display = 'flex';
                 if (next) next.style.display = 'flex';
@@ -5964,6 +5990,12 @@ async function loadSettingsView() {
 
             dashBannerGoTo(0);
             dashBannerStartAuto();
+
+            // Real-time subscription
+            supabase
+                .channel('banner_slides_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'banner_slides' }, loadDashBanner)
+                .subscribe();
         }
 
         function dashBannerGoTo(idx) {
@@ -5978,17 +6010,23 @@ async function loadSettingsView() {
                 d.style.width = i === _bannerIdx ? '20px' : '8px';
                 d.style.borderRadius = '4px';
             });
+            // Update counter
+            const counter = document.getElementById('dashBannerCounter');
+            if (counter) counter.textContent = (_bannerIdx + 1) + ' / ' + _bannerSlides.length;
         }
 
         function dashBannerGo(delta) {
             dashBannerGoTo(_bannerIdx + delta);
-            dashBannerStartAuto(); // Reset timer
+            dashBannerStartAuto();
         }
+
+        function dashBannerPause() { _bannerPaused = true; if (_bannerTimer) { clearInterval(_bannerTimer); _bannerTimer = null; } }
+        function dashBannerResume() { _bannerPaused = false; dashBannerStartAuto(); }
 
         function dashBannerStartAuto() {
             if (_bannerTimer) clearInterval(_bannerTimer);
-            if (_bannerSlides.length > 1) {
-                _bannerTimer = setInterval(() => dashBannerGoTo(_bannerIdx + 1), 5000);
+            if (_bannerSlides.length > 1 && !_bannerPaused) {
+                _bannerTimer = setInterval(() => dashBannerGoTo(_bannerIdx + 1), 3500);
             }
         }
 
