@@ -6078,7 +6078,7 @@ async function loadSettingsView() {
             track.innerHTML = _bannerSlides.map(slide => {
                 const imgSrc = slide.image_url || '';
                 const imgTag = imgSrc
-                    ? '<img src="' + imgSrc.replace(/"/g, '&quot;') + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">'
+                    ? '<img src="' + imgSrc.replace(/"/g, '&quot;') + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;" onerror="this.style.display=\'none\'">'
                     : '';
                 return '<div style="flex-shrink:0;width:100%;height:100%;position:relative;background:linear-gradient(135deg,#0d2a6b,#1a4fa8);">' +
                     imgTag + '</div>';
