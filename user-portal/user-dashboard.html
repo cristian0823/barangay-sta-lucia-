@@ -784,55 +784,54 @@
                     </button>
                 </div>
 
-                <!-- TAB: Reserve (Facility Cards) -->
+                <!-- TAB: Reserve (Calendar View) -->
                 <div id="booking-tab-calendar">
-                    <p style="font-size:13px;color:#64748b;margin:0 0 16px;">Select a facility below to make a reservation.</p>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
-
-                        <!-- Basketball Court Card -->
-                        <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(30,58,95,0.15)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'">
-                            <div style="height:100px;background:linear-gradient(135deg,#1e3a5f,#2563eb);display:flex;align-items:center;justify-content:center;">
-                                <i class="bi bi-dribbble" style="font-size:48px;color:rgba(255,255,255,0.85);"></i>
-                            </div>
-                            <div style="padding:16px;">
-                                <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin:0 0 6px;">Basketball Court</h3>
-                                <p style="font-size:12px;color:#64748b;margin:0 0 14px;line-height:1.5;">Outdoor basketball court available for sports events, tournaments, and community activities.</p>
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
-                                    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#dcfce7;color:#15803d;">Available</span>
-                                    <span style="font-size:11px;color:#94a3b8;">6:00 AM – 9:00 PM</span>
-                                </div>
-                                <button onclick="openFacilityReserveModal('Basketball Court')" style="width:100%;padding:10px;background:#1e3a5f;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;">
-                                    <i class="bi bi-calendar-plus-fill"></i> Reserve
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Multi-Purpose Hall Card -->
-                        <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(30,58,95,0.15)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'">
-                            <div style="height:100px;background:linear-gradient(135deg,#064e3b,#059669);display:flex;align-items:center;justify-content:center;">
-                                <i class="bi bi-building" style="font-size:48px;color:rgba(255,255,255,0.85);"></i>
-                            </div>
-                            <div style="padding:16px;">
-                                <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin:0 0 6px;">Multi-Purpose Hall</h3>
-                                <p style="font-size:12px;color:#64748b;margin:0 0 14px;line-height:1.5;">Indoor hall suitable for meetings, seminars, social gatherings, and barangay events.</p>
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
-                                    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#dcfce7;color:#15803d;">Available</span>
-                                    <span style="font-size:11px;color:#94a3b8;">8:00 AM – 10:00 PM</span>
-                                </div>
-                                <button onclick="openFacilityReserveModal('Multi-Purpose Hall')" style="width:100%;padding:10px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;">
-                                    <i class="bi bi-calendar-plus-fill"></i> Reserve
-                                </button>
-                            </div>
-                        </div>
-
+                    <!-- Venue Toggle -->
+                    <div id="venueToggleRow" style="display:flex;gap:8px;margin-bottom:16px;">
+                        <button id="sel-basketball" onclick="switchVenue('basketball')" style="padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#fff;background:#1e3a5f;border:none;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;">
+                            <i class="bi bi-dribbble"></i> Basketball Court
+                        </button>
+                        <button id="sel-multipurpose" onclick="switchVenue('multipurpose')" style="padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;color:#1e3a5f;background:#fff;border:1.5px solid #1e3a5f;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;">
+                            <i class="bi bi-building"></i> Multi-Purpose Hall
+                        </button>
                     </div>
 
-                    <!-- Existing calendar (hidden but kept for JS compatibility) -->
-                    <div id="bookingCalendarGrid" style="display:none;"></div>
-                    <input type="hidden" id="calendarMonthTitle">
-                    <div id="venueToggleRow" style="display:none;">
-                        <button id="sel-basketball" onclick="switchVenue('basketball')" style="display:none;"></button>
-                        <button id="sel-multipurpose" onclick="switchVenue('multipurpose')" style="display:none;"></button>
+                    <!-- Calendar -->
+                    <div style="background:#fff;border:1px solid #D1D5DB;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;">
+                        <!-- Calendar Header -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:#1A3A6B;">
+                            <button onclick="changeBookingMonth(-1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="bi bi-chevron-left"></i></button>
+                            <h3 id="calendarMonthTitle" style="font-size:18px;font-weight:700;color:#fff;margin:0;"></h3>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <button onclick="(function(){var t=new Date();currentYear=t.getFullYear();currentMonth=t.getMonth();loadBookingView();})()" style="padding:6px 14px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.7);background:transparent;cursor:pointer;font-size:12px;font-weight:700;color:#fff;font-family:inherit;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Today</button>
+                                <button onclick="changeBookingMonth(1)" style="width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="bi bi-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <!-- Day Labels -->
+                        <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#0F2547;">
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sun</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Mon</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Tue</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Wed</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Thu</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Fri</div>
+                            <div style="padding:10px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">Sat</div>
+                        </div>
+                        <!-- Calendar Grid -->
+                        <div id="bookingCalendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff;"></div>
+                        <!-- Legend -->
+                        <div style="display:flex;justify-content:center;gap:20px;padding:14px 20px;border-top:1px solid #F3F4F6;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#1A3A6B;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Barangay Event</span></div>
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#15803d;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">Approved Booking</span></div>
+                            <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:#d97706;"></span><span style="font-size:12px;font-weight:500;color:#1A1A2E;">My Pending Booking</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Reserve Button -->
+                    <div style="margin-top:16px;text-align:center;">
+                        <button onclick="openDsBookingModal()" style="padding:12px 32px;background:#1e3a5f;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(30,58,95,0.25);" onmouseover="this.style.background='#0f2547'" onmouseout="this.style.background='#1e3a5f'">
+                            <i class="bi bi-calendar-plus-fill"></i> Make a Reservation
+                        </button>
                     </div>
                 </div>
 
