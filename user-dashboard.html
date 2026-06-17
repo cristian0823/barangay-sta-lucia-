@@ -34,6 +34,7 @@
     <!-- ¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬¢â€â‚¬ -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+Pro:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script><script>tailwind.config = { darkMode: ['class', '[data-theme="dark"]'] }</script>
     <style>
         :root {
@@ -94,7 +95,7 @@
             transition: all 0.15s;
         }
         .sidebar-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .sidebar-btn.active { background: #1e40af; color: #fff; font-weight: 700; }
+        .sidebar-btn.active { background: #1e4fd8; color: #fff; font-weight: 700; }
         .sidebar-btn.active i { color: rgba(255,255,255,0.9); }
         .sidebar-section-label {
             font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
@@ -397,67 +398,56 @@
 </head>
 <body style="height:100vh;display:flex;flex-direction:column;overflow:hidden;">
 
-    <!-- HEADER -->
-    <header class="dashboard-header px-6 flex justify-between items-center h-[70px] sticky top-0 z-[100]" style="background:#0f1f3d;border-bottom:1px solid rgba(255,255,255,0.1);box-shadow:0 2px 16px rgba(0,0,0,0.25);">
-        <div class="header-left flex items-center gap-4">
-            <img src="barangay-sun-logo.jpg" alt="Logo" class="w-[46px] h-[46px] object-contain">
-            <!-- Mobile name shown next to logo -->
-            <div class="flex flex-col md:hidden">
-                <span class="text-[13px] font-extrabold text-white leading-tight" id="mobileUserName">Resident</span>
-                <span style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:600;text-transform:uppercase;letter-spacing:1px;">Resident Portal</span>
-            </div>
-            <div class="header-brand flex flex-col hidden md:flex">
-                <span class="brand text-[18px] font-extrabold" style="color:#fff;">Barangay Sta. Lucia</span>
-                <span class="subtitle text-[11px] uppercase tracking-widest font-semibold" style="color:rgba(255,255,255,0.6);">Resident Portal</span>
-            </div>
-            <!-- MOBILE RIGHT CONTROLS -->
-            <div class="mobile-header-controls">
-                <div class="mobile-header-avatar" onclick="toggleMobileProfileDropdown(event)" title="Profile & Settings" id="mobileHeaderAvatar">U</div>
-                
-                <!-- Mobile Profile Dropdown -->
-                <div id="mobileProfileDropdownContainer" class="hidden absolute top-[48px] right-0 w-[180px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
-                    <div class="py-1 bg-white dark:bg-slate-800">
-                        <button onclick="showPanel('profile'); document.getElementById('mobileProfileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-slate-50 hover:text-slate-700 dark:text-gray-100 dark:hover:bg-slate-700 py-3 px-4 transition-colors">My Profile</button>
-                    </div>
-                    <div class="py-1 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700">
-                        <button onclick="logoutUser()" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-red-50 hover:text-red-600 dark:text-gray-100 py-3 px-4 transition-colors">Logout</button>
-                    </div>
-                </div>
-                <!-- Mobile Bell -->
-                <button class="mobile-header-btn relative" onclick="toggleBellDropdown(event)" title="Notifications" style="font-size: 16px;">
-                    <i class="bi bi-bell-fill"></i>
-                    <span id="bellBadgeMobile" class="absolute -top-1.5 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full hidden" style="line-height:1;">0</span>
-                </button>
-                
-                
-                
+    <!-- TOPBAR -->
+    <header class="dashboard-header" style="background:#fff;border-bottom:0.5px solid #e5e7eb;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;">
+        <!-- Left: Greeting -->
+        <div class="hidden md:block">
+            <div id="topbarGreeting" style="font-size:16px;font-weight:700;color:#0f172a;">Good morning 👋</div>
+            <div id="topbarDate" style="font-size:12px;color:#6b7280;margin-top:2px;"></div>
+        </div>
+        <!-- Mobile: Logo + Name -->
+        <div class="flex items-center gap-3 md:hidden">
+            <img src="barangay-sun-logo.jpg" alt="Logo" class="w-[36px] h-[36px] object-contain">
+            <div>
+                <span class="text-[13px] font-extrabold text-gray-900 leading-tight" id="mobileUserName">Resident</span>
+                <div style="font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Resident Portal</div>
             </div>
         </div>
-        <div class="header-right flex items-center gap-4 hidden md:flex">
+        <!-- Right: Actions -->
+        <div class="flex items-center gap-3">
             <!-- Desktop Bell -->
             <div style="position:relative;display:flex;align-items:center;">
-                <button onclick="toggleBellDropdown(event)" id="desktopBellBtn" title="Notifications" style="background:transparent;border:none;padding:0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:22px;flex-shrink:0;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-                    <i class="bi bi-bell-fill"></i>
-                    <span id="bellBadgeDesktop" style="display:none;position:absolute;top:-2px;right:-2px;background:#CE1126;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;padding:0 3px;line-height:1;pointer-events:none;z-index:10;"></span>
+                <button onclick="toggleBellDropdown(event)" id="desktopBellBtn" title="Notifications" style="background:#f4f6f9;border:none;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#374151;font-size:18px;transition:background 0.15s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f4f6f9'">
+                    <i class="ti ti-bell"></i>
+                    <span id="bellBadgeDesktop" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid #fff;"></span>
                 </button>
             </div>
+            <!-- Mobile Bell -->
+            <button class="mobile-header-btn relative md:hidden" onclick="toggleBellDropdown(event)" title="Notifications" style="background:#f4f6f9;border:none;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#374151;font-size:18px;">
+                <i class="ti ti-bell"></i>
+                <span id="bellBadgeMobile" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+            </button>
+            <!-- Settings -->
+            <button onclick="showPanel('settings')" title="Settings" style="background:#f4f6f9;border:none;width:38px;height:38px;border-radius:10px;display:none;align-items:center;justify-content:center;cursor:pointer;color:#374151;font-size:18px;transition:background 0.15s;" class="hidden md:flex" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f4f6f9'">
+                <i class="ti ti-settings"></i>
+            </button>
             <!-- Divider -->
-            <div style="width:1px;height:28px;background:rgba(255,255,255,0.20);flex-shrink:0;"></div>
-            <!-- Profile Pill + Dropdown -->
-            <div style="position:relative;" id="topProfileMenuBtn">
-                <button onclick="toggleProfileDropdown(event)" id="profilePillBtn" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:5px 10px 5px 5px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
-                    <div id="userInitial" style="width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">U</div>
+            <div style="width:1px;height:28px;background:#e5e7eb;flex-shrink:0;" class="hidden md:block"></div>
+            <!-- Profile Pill -->
+            <div style="position:relative;" id="topProfileMenuBtn" class="hidden md:block">
+                <button onclick="toggleProfileDropdown(event)" id="profilePillBtn" style="display:flex;align-items:center;gap:8px;background:#f4f6f9;border:1px solid #e5e7eb;border-radius:10px;padding:5px 10px 5px 5px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f4f6f9'">
+                    <div id="userInitial" style="width:32px;height:32px;border-radius:50%;background:#1e4fd8;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">U</div>
                     <div style="line-height:1.3;text-align:left;">
-                        <div id="sidebarUserName" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;">Resident</div>
-                        <div style="font-size:11px;color:rgba(255,255,255,0.6);">Resident</div>
+                        <div id="sidebarUserName" style="font-size:13px;font-weight:600;color:#0f172a;white-space:nowrap;">Resident</div>
+                        <div style="font-size:11px;color:#6b7280;">Resident</div>
                     </div>
-                    <i class="bi bi-chevron-down" id="profileChevronDesktop" style="font-size:11px;color:rgba(255,255,255,0.6);transition:transform 0.15s;margin-left:2px;"></i>
+                    <i class="bi bi-chevron-down" id="profileChevronDesktop" style="font-size:11px;color:#6b7280;transition:transform 0.15s;margin-left:2px;"></i>
                 </button>
-                <!-- Profile Dropdown -->
+                <!-- Profile Dropdown (keep existing) -->
                 <div id="profileDropdownContainer" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:220px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);z-index:200;overflow:hidden;">
                     <div style="padding:14px 16px;border-bottom:1px solid #f3f4f6;background:#f9fafb;">
                         <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-                            <div id="profileDropdownAvatar" style="width:40px;height:40px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">U</div>
+                            <div id="profileDropdownAvatar" style="width:40px;height:40px;border-radius:50%;background:#1e4fd8;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">U</div>
                             <div>
                                 <div id="profileDropdownName" style="font-size:14px;font-weight:700;color:#1A1A2E;">Resident</div>
                                 <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
@@ -484,51 +474,85 @@
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
-    <!-- Dropdown UI -->
-                <div id="bellDropdownContainer" class="hidden absolute top-[65px] right-[16px] md:right-[24px] w-[350px] max-w-[95vw] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden dark:bg-slate-800 dark:border-slate-700 mt-2">
-                    <div class="absolute -top-2 right-[120px] md:right-[15px] w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45 dark:bg-slate-800 dark:border-slate-700 hidden md:block"></div>
-                    <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 relative z-10 w-full" onclick="event.stopPropagation()">
-                        <h3 class="font-bold text-gray-800 text-[15px] dark:text-gray-100">Notifications</h3>
-                        <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" style="font-size:12px;color:#2563eb;background:none;border:none;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;font-family:inherit;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><i class="bi bi-check-all"></i> Mark all read</button>
+            <!-- Mobile profile avatar -->
+            <div class="md:hidden" style="position:relative;">
+                <div class="mobile-header-avatar" onclick="toggleMobileProfileDropdown(event)" title="Profile & Settings" id="mobileHeaderAvatar" style="width:36px;height:36px;border-radius:50%;background:#1e4fd8;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;cursor:pointer;">U</div>
+                <div id="mobileProfileDropdownContainer" class="hidden absolute top-[42px] right-0 w-[180px] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden">
+                    <div class="py-1 bg-white">
+                        <button onclick="showPanel('profile'); document.getElementById('mobileProfileDropdownContainer').classList.add('hidden')" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-slate-50 py-3 px-4 transition-colors">My Profile</button>
                     </div>
-                    <div id="bellDropdownList" class="max-h-[380px] overflow-y-auto flex flex-col relative z-10 w-full" onclick="event.stopPropagation()">
-                        <p id="bellEmptyState" class="text-center text-sm text-gray-500 py-6 hidden dark:text-gray-400">No new notifications.</p>
+                    <div class="py-1 bg-white border-t border-gray-100">
+                        <button onclick="logoutUser()" class="w-full text-left font-semibold text-gray-800 text-[14px] hover:bg-red-50 hover:text-red-600 py-3 px-4 transition-colors">Logout</button>
                     </div>
-                    <div style="padding:10px 16px;background:#eff6ff;text-align:center;border-top:1px solid #bfdbfe;font-size:12px;font-weight:600;color:#2563eb;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'" onclick="showPanel('history'); document.getElementById('bellDropdownContainer').classList.add('hidden');">See all activity in history &#8594;</div>
-                
+                </div>
+            </div>
+        </div>
     </header>
+    <!-- Bell Dropdown (positioned absolute from body) -->
+    <div id="bellDropdownContainer" class="hidden absolute top-[55px] right-[16px] md:right-[24px] w-[350px] max-w-[95vw] bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] flex-col overflow-hidden mt-2">
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 relative z-10 w-full" onclick="event.stopPropagation()">
+            <h3 class="font-bold text-gray-800 text-[15px]">Notifications</h3>
+            <button onclick="markAllBellNotificationsRead(); event.stopPropagation();" style="font-size:12px;color:#1e4fd8;background:none;border:none;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;font-family:inherit;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><i class="bi bi-check-all"></i> Mark all read</button>
+        </div>
+        <div id="bellDropdownList" class="max-h-[380px] overflow-y-auto flex flex-col relative z-10 w-full" onclick="event.stopPropagation()">
+            <p id="bellEmptyState" class="text-center text-sm text-gray-500 py-6 hidden">No new notifications.</p>
+        </div>
+        <div style="padding:10px 16px;background:#f0f5ff;text-align:center;border-top:1px solid #dbeafe;font-size:12px;font-weight:600;color:#1e4fd8;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#f0f5ff'" onclick="showPanel('history'); document.getElementById('bellDropdownContainer').classList.add('hidden');">See all activity in history &#8594;</div>
+    </div>
 
     <!-- DASHBOARD CONTAINER -->
     <div class="dashboard-container" style="display:flex;flex:1;overflow:hidden;min-height:0;">
         <!-- SIDEBAR -->
-        <aside class="sidebar w-[220px] flex flex-col overflow-y-auto hidden md:flex" style="height: calc(100vh - 70px); background:#0f1f3d; border-right:1px solid #1a3a6b;">
+        <aside class="sidebar w-[220px] flex flex-col overflow-y-auto hidden md:flex" style="height:100%;background:#0d1f3c;border-right:1px solid rgba(255,255,255,0.06);">
+            <!-- Brand -->
+            <div style="padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <img src="barangay-sun-logo.jpg" alt="Logo" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;">Barangay Sta. Lucia</div>
+                        <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">Resident Portal</div>
+                    </div>
+                </div>
+            </div>
             <!-- Nav: MAIN -->
-            <div style="padding: 8px;">
+            <div style="padding:12px 8px 4px;">
                 <span class="sidebar-section-label">Main</span>
                 <button onclick="showPanel('dashboard')" id="nav-dashboard" class="sidebar-btn active">
-                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                    <i class="ti ti-layout-dashboard" style="font-size:18px;"></i> Dashboard
                 </button>
             </div>
             <!-- Nav: SERVICES -->
-            <div style="padding: 0 8px;">
+            <div style="padding:0 8px;">
                 <span class="sidebar-section-label">Services</span>
                 <button onclick="showPanel('equipment')" id="nav-equipment" class="sidebar-btn">
-                    <i class="bi bi-box-seam"></i> Equipment
+                    <i class="ti ti-package" style="font-size:18px;"></i> Equipment
                 </button>
                 <button onclick="showPanel('concerns')" id="nav-concerns" class="sidebar-btn">
-                    <i class="bi bi-megaphone-fill"></i> Concerns
+                    <i class="ti ti-speakerphone" style="font-size:18px;"></i> Concerns
                 </button>
                 <button onclick="showPanel('booking')" id="nav-booking" class="sidebar-btn">
-                    <i class="bi bi-calendar-check-fill"></i> Facility
+                    <i class="ti ti-calendar-event" style="font-size:18px;"></i> Facility
                 </button>
                 <button onclick="showPanel('events')" id="nav-events" class="sidebar-btn">
-                    <i class="bi bi-calendar-event-fill"></i> Events
+                    <i class="ti ti-confetti" style="font-size:18px;"></i> Events
                 </button>
+            </div>
+            <!-- Nav: ACCOUNT -->
+            <div style="padding:0 8px;">
+                <span class="sidebar-section-label">Account</span>
                 <button onclick="showPanel('history')" id="nav-history" class="sidebar-btn">
-                    <i class="bi bi-clock-history"></i> My Activity
+                    <i class="ti ti-history" style="font-size:18px;"></i> My Activity
                 </button>
+            </div>
+            <!-- Footer: user info -->
+            <div style="margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div id="sidebarFooterAvatar" style="width:34px;height:34px;border-radius:50%;background:#1e4fd8;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">U</div>
+                    <div style="min-width:0;">
+                        <div id="sidebarFooterName" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Resident</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.45);">Resident</div>
+                    </div>
+                </div>
             </div>
         </aside>
 
@@ -538,87 +562,83 @@
             <!-- PANEL 1: DASHBOARD -->
             <div id="panel-dashboard" class="content-panel active">
 
-                <!-- DASHBOARD BANNER CAROUSEL — Bonifacio Style -->
-                <div id="dashBannerCarousel" style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:0 8px 32px rgba(15,41,82,0.3);background:#0f1f3d;min-height:200px;" onmouseenter="dashBannerPause()" onmouseleave="dashBannerResume()">
-                    <!-- Skeleton shimmer (shown while loading) -->
-                    <div id="dashBannerSkeleton" style="position:absolute;inset:0;background:linear-gradient(90deg,#0f1f3d 25%,#1e3a5f 50%,#0f1f3d 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;border-radius:20px;z-index:10;"></div>
+                <!-- HERO CAROUSEL -->
+                <div id="dashBannerCarousel" style="position:relative;border-radius:12px;overflow:hidden;margin-bottom:24px;background:#0d1f3c;height:280px;" onmouseenter="dashBannerPause()" onmouseleave="dashBannerResume()">
+                    <!-- Skeleton shimmer -->
+                    <div id="dashBannerSkeleton" style="position:absolute;inset:0;background:linear-gradient(90deg,#0d1f3c 25%,#1e3a5f 50%,#0d1f3c 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;z-index:10;"></div>
                     <!-- Slides container -->
-                    <div id="dashBannerTrack" style="display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);will-change:transform;min-height:200px;"></div>
-                    <!-- Fallback (shown when no slides) -->
-                    <div id="dashBannerFallback" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#0f2952 0%,#1e3a5f 60%,#1a4a8a 100%);display:none;align-items:center;padding:28px 36px;">
-                        <div style="position:absolute;inset:0;opacity:0.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:22px 22px;pointer-events:none;"></div>
+                    <div id="dashBannerTrack" style="display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);will-change:transform;height:100%;"></div>
+                    <!-- Fallback -->
+                    <div id="dashBannerFallback" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#0d2a6b 0%,#1a4fa8 100%);align-items:center;padding:40px 48px;">
+                        <div style="position:absolute;inset:0;opacity:0.06;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:24px 24px;pointer-events:none;"></div>
                         <div style="position:relative;z-index:1;">
+                            <span style="display:inline-block;font-size:10px;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">Community</span>
                             <h2 id="dashGreeting" style="font-size:26px;font-weight:800;color:#fff;margin:0 0 8px 0;line-height:1.25;">Good morning, <span id="welcomeName">Resident</span>!</h2>
-                            <div id="dashDate" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;"></div>
-                            <div style="font-size:22px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.04em;margin-top:10px;opacity:0.9;">Welcome to Barangay Sta. Lucia</div>
+                            <div id="dashDate" style="font-size:13px;color:rgba(255,255,255,0.6);font-weight:500;"></div>
+                            <div style="font-size:18px;font-weight:700;color:rgba(255,255,255,0.85);margin-top:12px;">Welcome to Barangay Sta. Lucia</div>
                         </div>
                     </div>
                     <!-- Slide counter -->
-                    <div id="dashBannerCounter" style="display:none;position:absolute;bottom:14px;right:16px;z-index:4;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.35);padding:3px 9px;border-radius:20px;letter-spacing:0.04em;"></div>
-                    <!-- Prev/Next arrows -->
-                    <button id="dashBannerPrev" onclick="dashBannerGo(-1)" style="display:none;position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
-                    <button id="dashBannerNext" onclick="dashBannerGo(1)" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:16px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
+                    <div id="dashBannerCounter" style="display:none;position:absolute;bottom:16px;right:16px;z-index:4;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.35);padding:3px 9px;border-radius:20px;"></div>
+                    <!-- Prev/Next arrows (bottom-right) -->
+                    <button id="dashBannerPrev" onclick="dashBannerGo(-1)" style="display:none;position:absolute;bottom:12px;right:56px;z-index:3;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
+                    <button id="dashBannerNext" onclick="dashBannerGo(1)" style="display:none;position:absolute;bottom:12px;right:16px;z-index:3;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
                     <!-- Dot indicators -->
-                    <div id="dashBannerDots" style="display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:6px;"></div>
+                    <div id="dashBannerDots" style="display:none;position:absolute;bottom:18px;left:24px;z-index:3;display:flex;gap:6px;"></div>
                 </div>
 
-                <!-- Metric Cards -->
-                <div class="dash-metric-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;">
-                    <div onclick="showPanel('equipment')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(26,58,107,0.13)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
-                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1A3A6B;border-radius:16px 0 0 16px;"></div>
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                            <div style="width:40px;height:40px;background:rgba(26,58,107,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1A3A6B;"><i class="bi bi-box-seam-fill"></i></div>
-                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
-                        </div>
-                        <div id="stat-equipment" data-target="0" style="font-size:32px;font-weight:800;color:#0f2952;line-height:1;margin-bottom:4px;">0</div>
-                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Active Borrowings</div>
+                <!-- STAT CARDS -->
+                <div class="dash-metric-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+                    <!-- Active Borrowings -->
+                    <div onclick="showPanel('equipment')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.boxShadow='0 4px 16px rgba(30,79,216,0.08)'" onmouseout="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+                        <div style="width:36px;height:36px;background:#e6f1fb;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="ti ti-package" style="font-size:18px;color:#185fa5;"></i></div>
+                        <div id="stat-equipment" data-target="0" style="font-size:26px;font-weight:500;color:#0f172a;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Active Borrowings</div>
+                        <div onclick="showPanel('equipment');event.stopPropagation();" style="font-size:12px;color:#6b7280;cursor:pointer;font-weight:500;" onmouseover="this.style.color='#1e4fd8'" onmouseout="this.style.color='#6b7280'">View →</div>
                     </div>
-                    <div onclick="showPanel('concerns')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(30,58,95,0.13)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
-                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1e3a5f;border-radius:16px 0 0 16px;"></div>
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                            <div style="width:40px;height:40px;background:rgba(30,58,95,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1e3a5f;"><i class="bi bi-megaphone-fill"></i></div>
-                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
-                        </div>
-                        <div id="stat-concerns" data-target="0" style="font-size:32px;font-weight:800;color:#0f2952;line-height:1;margin-bottom:4px;">0</div>
-                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Pending Concerns</div>
+                    <!-- Pending Concerns -->
+                    <div onclick="showPanel('concerns')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.boxShadow='0 4px 16px rgba(30,79,216,0.08)'" onmouseout="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+                        <div style="width:36px;height:36px;background:#faeeda;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="ti ti-speakerphone" style="font-size:18px;color:#854f0b;"></i></div>
+                        <div id="stat-concerns" data-target="0" style="font-size:26px;font-weight:500;color:#0f172a;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Pending Concerns</div>
+                        <div onclick="showPanel('concerns');event.stopPropagation();" style="font-size:12px;color:#6b7280;cursor:pointer;font-weight:500;" onmouseover="this.style.color='#1e4fd8'" onmouseout="this.style.color='#6b7280'">View →</div>
                     </div>
-                    <div onclick="showPanel('booking')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(30,58,95,0.13)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
-                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1e3a5f;border-radius:16px 0 0 16px;"></div>
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                            <div style="width:40px;height:40px;background:rgba(30,58,95,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1e3a5f;"><i class="bi bi-calendar-check-fill"></i></div>
-                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
-                        </div>
-                        <div id="stat-bookings" data-target="0" style="font-size:32px;font-weight:800;color:#0f2952;line-height:1;margin-bottom:4px;">0</div>
-                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Upcoming Reservations</div>
+                    <!-- Upcoming Reservations -->
+                    <div onclick="showPanel('booking')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.boxShadow='0 4px 16px rgba(30,79,216,0.08)'" onmouseout="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+                        <div style="width:36px;height:36px;background:#e1f5ee;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="ti ti-calendar-check" style="font-size:18px;color:#0f6e56;"></i></div>
+                        <div id="stat-bookings" data-target="0" style="font-size:26px;font-weight:500;color:#0f172a;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Upcoming Reservations</div>
+                        <div onclick="showPanel('booking');event.stopPropagation();" style="font-size:12px;color:#6b7280;cursor:pointer;font-weight:500;" onmouseover="this.style.color='#1e4fd8'" onmouseout="this.style.color='#6b7280'">View →</div>
                     </div>
-                    <div onclick="showPanel('history')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 28px rgba(30,58,95,0.13)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.05)'">
-                        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1e3a5f;border-radius:16px 0 0 16px;"></div>
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                            <div style="width:40px;height:40px;background:rgba(30,58,95,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#1e3a5f;"><i class="bi bi-clipboard2-data-fill"></i></div>
-                            <i class="bi bi-arrow-up-right" style="font-size:12px;color:#94a3b8;"></i>
-                        </div>
-                        <div id="stat-totalreq" data-target="0" style="font-size:32px;font-weight:800;color:#0f2952;line-height:1;margin-bottom:4px;">0</div>
-                        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Total Requests</div>
+                    <!-- Total Requests -->
+                    <div onclick="showPanel('history')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.boxShadow='0 4px 16px rgba(30,79,216,0.08)'" onmouseout="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+                        <div style="width:36px;height:36px;background:#eeedfe;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><i class="ti ti-file-check" style="font-size:18px;color:#534ab7;"></i></div>
+                        <div id="stat-totalreq" data-target="0" style="font-size:26px;font-weight:500;color:#0f172a;line-height:1;margin-bottom:4px;">0</div>
+                        <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Total Requests</div>
+                        <div onclick="showPanel('history');event.stopPropagation();" style="font-size:12px;color:#6b7280;cursor:pointer;font-weight:500;" onmouseover="this.style.color='#1e4fd8'" onmouseout="this.style.color='#6b7280'">View →</div>
                     </div>
                 </div>
 
-                <!-- QUICK ACTIONS BAR -->
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
-                    <div onclick="showPanel('equipment')" style="background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:22px 16px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#1e3a5f';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(30,58,95,0.12)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-                        <div style="width:52px;height:52px;background:rgba(30,58,95,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="bi bi-box-seam-fill" style="font-size:22px;color:#1e3a5f;"></i></div>
-                        <div style="font-size:13px;font-weight:700;color:#0f2952;">Borrow Equipment</div>
-                    </div>
-                    <div onclick="showPanel('concerns')" style="background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:22px 16px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#1e3a5f';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(30,58,95,0.12)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-                        <div style="width:52px;height:52px;background:rgba(30,58,95,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="bi bi-megaphone-fill" style="font-size:22px;color:#1e3a5f;"></i></div>
-                        <div style="font-size:13px;font-weight:700;color:#0f2952;">Report Concern</div>
-                    </div>
-                    <div onclick="showPanel('booking')" style="background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:22px 16px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#1e3a5f';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(30,58,95,0.12)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-                        <div style="width:52px;height:52px;background:rgba(30,58,95,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="bi bi-calendar-check-fill" style="font-size:22px;color:#1e3a5f;"></i></div>
-                        <div style="font-size:13px;font-weight:700;color:#0f2952;">Reserve Facility</div>
-                    </div>
-                    <div onclick="showPanel('events')" style="background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:22px 16px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#1e3a5f';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(30,58,95,0.12)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-                        <div style="width:52px;height:52px;background:rgba(30,58,95,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="bi bi-calendar-event-fill" style="font-size:22px;color:#1e3a5f;"></i></div>
-                        <div style="font-size:13px;font-weight:700;color:#0f2952;">View Events</div>
+                <!-- QUICK ACTIONS -->
+                <div style="margin-bottom:24px;">
+                    <div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Quick Actions</div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+                        <div onclick="showPanel('equipment')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.background='#f0f5ff'" onmouseout="this.style.borderColor='#e5e7eb';this.style.background='#fff'">
+                            <div style="width:44px;height:44px;background:#e6f1fb;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i class="ti ti-package" style="font-size:20px;color:#185fa5;"></i></div>
+                            <div style="font-size:13px;font-weight:600;color:#0f172a;">Borrow Equipment</div>
+                        </div>
+                        <div onclick="showPanel('concerns')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.background='#f0f5ff'" onmouseout="this.style.borderColor='#e5e7eb';this.style.background='#fff'">
+                            <div style="width:44px;height:44px;background:#faeeda;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i class="ti ti-speakerphone" style="font-size:20px;color:#854f0b;"></i></div>
+                            <div style="font-size:13px;font-weight:600;color:#0f172a;">Report Concern</div>
+                        </div>
+                        <div onclick="showPanel('booking')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.background='#f0f5ff'" onmouseout="this.style.borderColor='#e5e7eb';this.style.background='#fff'">
+                            <div style="width:44px;height:44px;background:#e1f5ee;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i class="ti ti-calendar-event" style="font-size:20px;color:#0f6e56;"></i></div>
+                            <div style="font-size:13px;font-weight:600;color:#0f172a;">Reserve Facility</div>
+                        </div>
+                        <div onclick="showPanel('events')" style="background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#1e4fd8';this.style.background='#f0f5ff'" onmouseout="this.style.borderColor='#e5e7eb';this.style.background='#fff'">
+                            <div style="width:44px;height:44px;background:#eeedfe;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i class="ti ti-confetti" style="font-size:20px;color:#534ab7;"></i></div>
+                            <div style="font-size:13px;font-weight:600;color:#0f172a;">View Events</div>
+                        </div>
                     </div>
                 </div>
 
@@ -1894,6 +1914,10 @@
         if (_pdName) _pdName.textContent = _displayName;
         const _pdAvatar = document.getElementById('profileDropdownAvatar');
         if (_pdAvatar) _pdAvatar.textContent = _initial;
+        var sfn = document.getElementById('sidebarFooterName');
+        if (sfn) sfn.textContent = _displayName;
+        var sfa = document.getElementById('sidebarFooterAvatar');
+        if (sfa) sfa.textContent = _initial;
 
         // Set dashboard greeting and date (no clock)
         (function() {
@@ -1902,11 +1926,18 @@
             const period = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
             const greetEl = document.getElementById('dashGreeting');
             if (greetEl) { const nameSpan = greetEl.querySelector('#welcomeName'); if (greetEl.childNodes[0]) greetEl.childNodes[0].textContent = period + ', '; }
+            const dateStr = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             const dateEl = document.getElementById('dashDate');
-            if (dateEl) dateEl.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            if (dateEl) dateEl.textContent = dateStr;
             // Mirror to carousel overlay
             const _dg2 = document.getElementById('dashGreeting2'); if (_dg2) _dg2.textContent = period;
-            const _dd2 = document.getElementById('dashDate2'); if (_dd2) _dd2.textContent = now.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const _dd2 = document.getElementById('dashDate2'); if (_dd2) _dd2.textContent = dateStr;
+            // Update topbar greeting
+            var firstName = (_displayName || 'Resident').split(' ')[0];
+            var topG = document.getElementById('topbarGreeting');
+            if (topG) topG.textContent = period + ', ' + firstName + ' \u{1F44B}';
+            var topD = document.getElementById('topbarDate');
+            if (topD) topD.textContent = dateStr;
         })();
 
         const mobileAvatar = document.getElementById('mobileHeaderAvatar');
@@ -5955,21 +5986,22 @@ async function loadSettingsView() {
                 const imgSrc = slide.image_url || '';
                 const icon = _bannerIconFor(slide.title);
                 const titleHtml = slide.title
-                    ? '<div style="font-size:clamp(18px,3vw,28px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.04em;text-shadow:0 2px 12px rgba(0,0,0,0.6);line-height:1.2;max-width:65%;">' + slide.title + '</div>'
+                    ? '<div style="font-size:26px;font-weight:800;color:#fff;line-height:1.2;max-width:70%;text-shadow:0 2px 12px rgba(0,0,0,0.5);">' + slide.title + '</div>'
                     : '';
                 const subtitleHtml = slide.subtitle
-                    ? '<div style="font-size:13px;color:rgba(255,255,255,0.8);margin-top:6px;text-shadow:0 1px 4px rgba(0,0,0,0.5);">' + slide.subtitle + '</div>'
+                    ? '<div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:8px;text-shadow:0 1px 4px rgba(0,0,0,0.4);">' + slide.subtitle + '</div>'
                     : '';
+                const tagText = slide.title ? (slide.title.match(/event/i) ? 'EVENTS' : slide.title.match(/facil|hall|court|reserv/i) ? 'RESERVATIONS' : 'COMMUNITY') : 'COMMUNITY';
                 const imgTag = imgSrc
                     ? '<img src="' + imgSrc.replace(/"/g, '&quot;') + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">'
                     : '';
-                return '<div style="flex-shrink:0;width:100%;min-height:200px;position:relative;background:linear-gradient(135deg,#0f2952,#1e3a5f);">' +
+                return '<div style="flex-shrink:0;width:100%;height:280px;position:relative;background:linear-gradient(135deg,#0d2a6b,#1a4fa8);">' +
                     imgTag +
-                    '<div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.2) 60%,rgba(0,0,0,0.35) 100%);"></div>' +
-                    '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:28px 32px;z-index:1;">' +
-                    '<div>' + titleHtml + subtitleHtml + '</div>' +
-                    '<div style="width:72px;height:72px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);border:2px solid rgba(255,255,255,0.25);flex-shrink:0;">' +
-                    '<i class="bi ' + icon + '" style="font-size:30px;color:#fff;"></i>' +
+                    '<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.2) 60%,rgba(0,0,0,0.3) 100%);"></div>' +
+                    '<div style="position:absolute;inset:0;display:flex;align-items:center;padding:40px 48px;z-index:1;">' +
+                    '<div>' +
+                    '<span style="display:inline-block;font-size:10px;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">' + tagText + '</span>' +
+                    titleHtml + subtitleHtml +
                     '</div></div></div>';
             }).join('');
 
