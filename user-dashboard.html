@@ -669,20 +669,7 @@
                     </div>
                 </div>
 
-                <!-- Announcements Section -->
-                <div style="background:var(--card-bg,#fff);border-radius:14px;border:1px solid var(--border-color,#e2e8f0);padding:20px;margin-top:20px;min-height:120px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary,#1e293b);margin:0;display:flex;align-items:center;gap:8px;">
-                            <i class="bi bi-pin-angle" style="color:#ef4444;"></i> Announcements
-                        </h3>
-                    </div>
-                    <div id="dashAnnouncementsFeed" style="display:flex;flex-direction:column;gap:10px;">
-                        <div style="text-align:center;padding:20px 0;color:var(--text-secondary,#94a3b8);font-size:13px;">
-                            <i class="bi bi-megaphone" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>
-                            No announcements at the moment
-                        </div>
-                    </div>
-                </div>
+
 
                 <div style="display:none;" id="dashActivityFeed"></div>
                 <div style="display:none;" id="dashEventsSection"></div>
@@ -1145,23 +1132,6 @@
                 </div>
             </div>
 
-            <!-- PANEL: ANNOUNCEMENTS -->
-            <div id="panel-announcements" class="content-panel">
-                <div class="settings-hero" style="position:relative;background:linear-gradient(135deg,#0a1628 0%,#1e3a5f 50%,#0f4c2a 100%);border-radius:20px;padding:24px 28px;margin-bottom:24px;overflow:hidden;">
-                    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="bi bi-megaphone-fill" style="color:#fdb913;"></i></div>
-                        <div>
-                            <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:3px;">Barangay Announcements</div>
-                            <div style="font-size:13px;color:#cbd5e1;">Official bulletins and updates from Barangay Sta. Lucia.</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card p-6 min-h-[400px]">
-                    <div id="userAnnouncementsList" style="display:flex;flex-direction:column;gap:12px;">
-                        <p class="text-gray-400 italic text-sm">Loading announcements...</p>
-                    </div>
-                </div>
-            </div>
 
             <!-- PANEL 7: HISTORY -->
             <div id="panel-history" class="content-panel">
@@ -2059,7 +2029,6 @@
             }
         }
         function showPanel(panelId) {
-            if (panelId === 'announcements') { setTimeout(loadUserAnnouncements, 50); }
             document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar-btn').forEach(l => l.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -5084,36 +5053,6 @@
                 + btns.join('') + '</div>';
         }
 
-        async function loadUserAnnouncements() {
-            const listEl = document.getElementById('userAnnouncementsList');
-            if (!listEl) return;
-            const supabase = window.supabase;
-            if (!supabase) { listEl.innerHTML = '<p class="text-gray-400 italic text-sm">Unavailable.</p>'; return; }
-            try {
-                const { data, error } = await supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(30);
-                if (error) throw error;
-                const now = new Date();
-                const active = (data || []).filter(a => !a.expires_at || new Date(a.expires_at) >= now);
-                if (active.length === 0) {
-                    listEl.innerHTML = '<div style="text-align:center;padding:48px 20px;"><div style="font-size:40px;margin-bottom:12px;">&#128226;</div><p style="font-size:16px;font-weight:700;color:#374151;margin:0 0 6px;">Walang bagong anunsyo</p><p style="font-size:13px;color:#9CA3AF;">Check back soon for updates from Barangay Sta. Lucia.</p></div>';
-                    return;
-                }
-                const catColors = { General:'#1e3a5f', Health:'#dc2626', Infrastructure:'#d97706', Events:'#16a34a', Safety:'#7c3aed' };
-                listEl.innerHTML = active.map(a => {
-                    const cat = a.category || 'General';
-                    const color = catColors[cat] || '#1e3a5f';
-                    const dateStr = new Date(a.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                    return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-left:4px solid ' + color + ';border-radius:12px;padding:16px 20px;dark:border-gray-700;">'
-                        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
-                        + '<span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;background:' + color + '18;color:' + color + ';border:1px solid ' + color + '33;">' + cat + '</span>'
-                        + '<span style="font-size:11px;color:#9CA3AF;margin-left:auto;">' + dateStr + '</span></div>'
-                        + '<h4 style="font-size:15px;font-weight:700;color:#0f2952;margin:0 0 6px;">' + (a.title || '') + '</h4>'
-                        + '<p style="font-size:13px;color:#374151;margin:0;line-height:1.6;white-space:pre-wrap;">' + (a.content || '') + '</p></div>';
-                }).join('');
-            } catch(e) {
-                listEl.innerHTML = '<p class="text-gray-400 italic text-sm">Announcements unavailable (table may not exist yet).</p>';
-            }
-        }
 
         async function loadEventsView() {
             const eventsRaw = await getEvents();
@@ -5571,11 +5510,7 @@ async function loadSettingsView() {
                     statusText.textContent = 'Not Enabled';
                     statusBadge.style.cssText = 'padding:4px 12px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:12px;font-weight:700;';
                     statusBadge.textContent = 'Not Set Up';
-                    actionsEl.innerHTML = `<a href="setup-totp.html" style="display:inline-block;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;text-decoration:none;box-shadow:0 4px 12px rgba(99,102,241,0.3);transition:all 0.2s;"> Enable Google Authenticator</a>
-                    <a href="#" class="nav-link" onclick="showPanel('announcements')">
-                        <i class="bi bi-megaphone-fill nav-icon"></i>
-                        <span>Announcements</span>
-                    </a>`;
+                    actionsEl.innerHTML = `<a href="setup-totp.html" style="display:inline-block;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;text-decoration:none;box-shadow:0 4px 12px rgba(99,102,241,0.3);transition:all 0.2s;"> Enable Google Authenticator</a>`;
                 }
             } catch(e) {
                 actionsEl.innerHTML = '<p style="color:#ef4444;font-size:13px;">Failed to load 2FA status.</p>';
