@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -3149,7 +3149,7 @@
                 }
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 if (btn) btn.classList.add('active');
-                const allSections = ['overview', 'court-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'audit-log', 'profile', 'system', 'analytics'];
+                const allSections = ['overview', 'court-bookings', 'requests', 'concerns', 'events', 'equipment', 'users', 'audit-log', 'profile', 'system', 'analytics', 'banners', 'security-log'];
                 allSections.forEach(s => {
                     const el = document.getElementById(s + '-section');
                     if (el) el.style.display = 'none';
@@ -7487,12 +7487,46 @@
                             }
                         });
 
-                    // Polling fallback: refresh overview every 8 seconds so stats
-                    // stay accurate even if a realtime event is missed.
+                    // Polling fallback: lightweight count-only refresh every 30 seconds
+                    // so stats stay accurate even if a realtime event is missed.
+                    // Uses HEAD count queries instead of fetching all rows to avoid UI jank.
                     setInterval(async () => {
-                        if (typeof loadOverview === 'function') await loadOverview();
+                        try {
+                            const [rReqs, rCons, rBooks, rUsers] = await Promise.all([
+                                supabase.from('borrowings').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+                                supabase.from('concerns').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+                                supabase.from('facility_reservations').select('id', { count: 'exact', head: true }).in('status', ['pending', 'approved']),
+                                supabase.from('users').select('id', { count: 'exact', head: true }).eq('role', 'user')
+                            ]);
+                            const pendingReqs  = rReqs.count  ?? 0;
+                            const pendingCons  = rCons.count  ?? 0;
+                            const activeBooks  = rBooks.count ?? 0;
+                            const totalUsers   = rUsers.count ?? 0;
+                            function _setStatQ(id, val) {
+                                const node = document.getElementById(id);
+                                if (!node) return;
+                                const prev = node.textContent;
+                                node.textContent = val;
+                                if (String(prev) !== String(val) && prev !== '—') {
+                                    node.classList.remove('stat-pulse');
+                                    void node.offsetWidth;
+                                    node.classList.add('stat-pulse');
+                                    node.addEventListener('animationend', () => node.classList.remove('stat-pulse'), { once: true });
+                                }
+                            }
+                            _setStatQ('pendingRequests', pendingReqs);
+                            _setStatQ('pendingConcerns', pendingCons);
+                            _setStatQ('upcomingEvents',  activeBooks);
+                            _setStatQ('totalUsers',      totalUsers);
+                            // Glance row
+                            const el = id => document.getElementById(id);
+                            if (el('glancePendingReqs')) el('glancePendingReqs').textContent = pendingReqs;
+                            if (el('glancePendingCons')) el('glancePendingCons').textContent = pendingCons;
+                            if (el('glanceBookings'))    el('glanceBookings').textContent    = activeBooks;
+                            if (el('glanceUsers'))       el('glanceUsers').textContent       = totalUsers;
+                        } catch(e) { /* ignore poll errors silently */ }
                         if (typeof refreshAdminBell === 'function') refreshAdminBell();
-                    }, 8000);
+                    }, 30000);
                 }
             }
 
